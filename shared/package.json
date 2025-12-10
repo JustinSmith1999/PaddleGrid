@@ -1,0 +1,15 @@
+{
+  "name": "@paddlegrid/shared",
+  "version": "1.0.0",
+  "description": "Shared API and logic for PaddleGrid web and mobile apps",
+  "main": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  }
+}

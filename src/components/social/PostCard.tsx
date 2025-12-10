@@ -1,0 +1,416 @@
+import { useState, useEffect } from 'react';
+import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SocialPost, toggleLike, getPostLikes, joinMatch, leaveMatch, formatTimeAgo, deletePost } from '../../lib/socialUtils';
+import { useAuth } from '../../contexts/AuthContext';
+
+interface PostCardProps {
+  post: SocialPost;
+  onClick: () => void;
+  onUpdate?: () => void;
+  onClubClick?: (facilityId: string) => void;
+  onProfileClick?: (userId: string) => void;
+}
+
+export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfileClick }: PostCardProps) {
+  const { user } = useAuth();
+  const [likesCount, setLikesCount] = useState(0);
+  const [userLiked, setUserLiked] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [hasJoined, setHasJoined] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [expandedImage, setExpandedImage] = useState<number | null>(null);
+
+  useEffect(() => {
+    loadStats();
+    checkJoinStatus();
+  }, [post.id]);
+
+  async function loadStats() {
+    const likes = await getPostLikes(post.id);
+    setLikesCount(likes.count);
+    setUserLiked(likes.userLiked);
+
+    const { count } = await import('../../lib/supabase').then(m =>
+      m.supabase
+        .from('social_comments')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id)
+        .eq('is_deleted', false)
+    );
+
+    setCommentsCount(count || 0);
+  }
+
+  async function checkJoinStatus() {
+    if (!user || post.post_type !== 'match_invite') return;
+
+    const { data } = await import('../../lib/supabase').then(m =>
+      m.supabase
+        .from('social_post_participants')
+        .select('id')
+        .eq('post_id', post.id)
+        .eq('user_id', user.id)
+        .maybeSingle()
+    );
+
+    setHasJoined(!!data);
+  }
+
+  async function handleLike(e: React.MouseEvent) {
+    e.stopPropagation();
+    const result = await toggleLike(post.id);
+    if (result.success) {
+      setUserLiked(result.liked);
+      setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+    }
+  }
+
+  async function handleJoinMatch(e: React.MouseEvent) {
+    e.stopPropagation();
+    setLoading(true);
+
+    if (hasJoined) {
+      const result = await leaveMatch(post.id);
+      if (result.success) {
+        setHasJoined(false);
+        onUpdate?.();
+      }
+    } else {
+      const result = await joinMatch(post.id);
+      if (result.success) {
+        setHasJoined(true);
+        onUpdate?.();
+      } else if (result.error) {
+        alert(result.error);
+      }
+    }
+
+    setLoading(false);
+  }
+
+  async function handleDeletePost(e: React.MouseEvent) {
+    e.stopPropagation();
+
+    if (!confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+
+    const result = await deletePost(post.id);
+    if (result.success) {
+      onUpdate?.();
+    } else {
+      alert(result.error || 'Failed to delete post');
+    }
+    setShowMenu(false);
+  }
+
+  const isFull = post.spots_needed && post.spots_filled >= post.spots_needed;
+  const spotsLeft = post.spots_needed ? post.spots_needed - post.spots_filled : 0;
+
+  function handleImageClick(e: React.MouseEvent, index: number) {
+    e.stopPropagation();
+    setExpandedImage(index);
+  }
+
+  function handleNextImage() {
+    if (post.media_urls && expandedImage !== null) {
+      setExpandedImage((expandedImage + 1) % post.media_urls.length);
+    }
+  }
+
+  function handlePrevImage() {
+    if (post.media_urls && expandedImage !== null) {
+      setExpandedImage((expandedImage - 1 + post.media_urls.length) % post.media_urls.length);
+    }
+  }
+
+  return (
+    <>
+      {expandedImage !== null && post.media_urls && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+          onClick={() => setExpandedImage(null)}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedImage(null);
+            }}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 transition z-10"
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          {post.media_urls.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrevImage();
+                }}
+                className="absolute left-4 text-white hover:text-gray-300 transition z-10"
+              >
+                <ChevronLeft className="w-10 h-10" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNextImage();
+                }}
+                className="absolute right-4 text-white hover:text-gray-300 transition z-10"
+              >
+                <ChevronRight className="w-10 h-10" />
+              </button>
+            </>
+          )}
+
+          <img
+            src={post.media_urls[expandedImage]}
+            alt={`Post media ${expandedImage + 1}`}
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {post.media_urls.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
+              {expandedImage + 1} / {post.media_urls.length}
+            </div>
+          )}
+        </div>
+      )}
+
+    <div
+      onClick={onClick}
+      className="bg-white hover:bg-gray-50 transition cursor-pointer p-4 border-b border-gray-200"
+    >
+      <div className="flex gap-3">
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden ${
+          (post.facilities?.logo_url || post.profiles?.profile_picture_url)
+            ? 'bg-white'
+            : 'bg-gradient-to-br from-blue-500 to-blue-600'
+        }`}>
+          {(post.facilities?.logo_url || post.profiles?.profile_picture_url) ? (
+            <img
+              src={post.facilities?.logo_url || post.profiles.profile_picture_url}
+              alt={(post.facilities?.name || post.profiles?.full_name) || 'User'}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span>{(post.facilities?.name || post.profiles?.full_name)?.charAt(0).toUpperCase() || 'U'}</span>
+          )}
+        </div>
+
+        <div className="flex-1">
+          <div className="flex items-start justify-between mb-1">
+            <div className="flex-1 overflow-visible">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (post.facilities?.id) {
+                    onClubClick?.(post.facilities.id);
+                  } else if (post.profiles?.id) {
+                    onProfileClick?.(post.profiles.id);
+                  }
+                }}
+                className="font-bold text-gray-900 hover:underline block text-left"
+              >
+                {post.facilities?.name || post.profiles?.full_name || 'Unknown User'}
+              </button>
+              <div className="flex items-center gap-1.5 flex-wrap text-sm text-gray-500 mt-0.5">
+                <span className="whitespace-nowrap flex-shrink-0">{formatTimeAgo(post.created_at)}</span>
+              </div>
+            </div>
+            {user && user.id === post.author_id && (
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowMenu(!showMenu);
+                  }}
+                  className="p-1.5 hover:bg-gray-100 rounded-full transition text-gray-500 hover:text-gray-700"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                    <button
+                      onClick={handleDeletePost}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete Post
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {post.post_type === 'match_invite' ? (
+            <div className="space-y-3">
+              <p className="text-gray-900 text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
+
+              {post.media_urls && post.media_urls.length > 0 && (
+                <div className={`grid gap-1 rounded-xl overflow-hidden max-w-2xl ${
+                  post.media_urls.length === 1 ? 'grid-cols-1' :
+                  post.media_urls.length === 2 ? 'grid-cols-2' :
+                  'grid-cols-2'
+                }`}>
+                  {post.media_urls.slice(0, 4).map((url, idx) => (
+                    <div
+                      key={idx}
+                      className={`relative ${
+                        post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
+                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-gray-100 overflow-hidden`}
+                    >
+                      <img
+                        src={url}
+                        alt={`Post media ${idx + 1}`}
+                        className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer"
+                        onClick={(e) => handleImageClick(e, idx)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-transparent p-4 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-semibold text-blue-700">
+                  <Trophy className="w-4 h-4" />
+                  {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span className="truncate">
+                      {post.play_date ? new Date(post.play_date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                      }) : 'TBD'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span className="truncate">{post.play_start_time ? post.play_start_time.slice(0, 5) : 'TBD'}</span>
+                  </div>
+
+                  {post.courts && (
+                    <div className="flex items-center gap-1.5 col-span-2">
+                      <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span className="break-words">{post.courts.name}</span>
+                    </div>
+                  )}
+
+                  {post.skill_min !== null && post.skill_max !== null && (
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Trophy className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span className="truncate">{post.skill_min}-{post.skill_max} level</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Users className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span className="truncate">{post.spots_filled}/{post.spots_needed} players</span>
+                  </div>
+                </div>
+
+                {user && (
+                  <button
+                    onClick={handleJoinMatch}
+                    disabled={loading || (isFull && !hasJoined)}
+                    className={`w-full py-2 px-4 rounded-lg text-sm font-semibold transition ${
+                      hasJoined
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : isFull
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {hasJoined ? 'Leave Match' : isFull ? 'Match Full' : `Join Match (${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left)`}
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-gray-900 text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
+
+              {post.media_urls && post.media_urls.length > 0 && (
+                <div className={`grid gap-1 rounded-xl overflow-hidden max-w-2xl ${
+                  post.media_urls.length === 1 ? 'grid-cols-1' :
+                  post.media_urls.length === 2 ? 'grid-cols-2' :
+                  'grid-cols-2'
+                }`}>
+                  {post.media_urls.slice(0, 4).map((url, idx) => (
+                    <div
+                      key={idx}
+                      className={`relative ${
+                        post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
+                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-gray-100 overflow-hidden`}
+                    >
+                      <img
+                        src={url}
+                        alt={`Post media ${idx + 1}`}
+                        className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer"
+                        onClick={(e) => handleImageClick(e, idx)}
+                      />
+                      {post.media_urls!.length > 4 && idx === 3 && (
+                        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center pointer-events-none">
+                          <span className="text-white text-2xl font-bold">+{post.media_urls!.length - 4}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex items-center gap-4 mt-3 max-w-2xl">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+              }}
+              className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition group"
+            >
+              <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
+                <MessageCircle className="w-[18px] h-[18px]" />
+              </div>
+              {commentsCount > 0 && <span className="text-sm">{commentsCount}</span>}
+            </button>
+
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-2 transition group ${
+                userLiked
+                  ? 'text-red-600'
+                  : 'text-gray-500 hover:text-red-600'
+              }`}
+            >
+              <div className={`p-2 rounded-full transition ${
+                userLiked ? 'bg-red-50' : 'group-hover:bg-red-50'
+              }`}>
+                <Heart className={`w-[18px] h-[18px] ${userLiked ? 'fill-current' : ''}`} />
+              </div>
+              {likesCount > 0 && <span className="text-sm">{likesCount}</span>}
+            </button>
+
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition group opacity-0 pointer-events-none"
+            >
+              <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
+                <MoreHorizontal className="w-[18px] h-[18px]" />
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
+  );
+}

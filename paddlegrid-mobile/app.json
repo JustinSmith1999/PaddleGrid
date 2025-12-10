@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "PaddleGrid",
+    "slug": "paddlegrid",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#10b981"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "sdkVersion": "51.0.0",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.paddlegrid.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow PaddleGrid to access your camera to take profile pictures and post photos.",
+        "NSPhotoLibraryUsageDescription": "Allow PaddleGrid to access your photos to select profile pictures and post photos.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#10b981"
+      },
+      "package": "com.paddlegrid.app",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "NOTIFICATIONS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f69a4a7c-1b1a-427b-98c0-375bb729f48a"
+      }
+    },
+    "owner": "justinsmith2099"
+  }
+}
