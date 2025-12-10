@@ -292,118 +292,153 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <div className="relative h-48 md:h-60 bg-white dark:bg-slate-800">
+      <div className="relative h-72 md:h-96 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200')] bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+
         <button
           onClick={onBack}
-          className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 rounded-lg shadow-md hover:shadow-lg transition-all"
+          className="absolute top-6 left-6 z-10 flex items-center gap-2 px-4 py-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-700 dark:text-slate-200 rounded-xl shadow-xl hover:shadow-2xl hover:bg-white transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Back</span>
+          <span className="text-sm font-semibold">Back</span>
         </button>
-        {facility.logo_url && (
-          <img
-            src={facility.logo_url}
-            alt={facility.name}
-            className="absolute inset-0 w-full h-full object-contain p-6"
-          />
-        )}
+
+        <div className="absolute bottom-8 left-0 right-0 px-6">
+          <div className="max-w-7xl mx-auto flex items-end gap-6">
+            {facility.logo_url && (
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-2xl flex-shrink-0 border-4 border-white/50">
+                <img
+                  src={facility.logo_url}
+                  alt={facility.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+            <div className="flex-1 pb-2">
+              <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+                {facility.name}
+              </h1>
+              <button
+                onClick={() => {
+                  const address = '645 National Blvd, Medford, NY 11763';
+                  const encodedAddress = encodeURIComponent(address);
+                  window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
+                }}
+                className="flex items-center gap-2 text-white/90 hover:text-white text-base md:text-lg transition-colors group"
+              >
+                <MapPin className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span className="font-medium drop-shadow">{facility.city}, {facility.state}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative -mt-8 mb-4">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-3 sm:p-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1 truncate">
-                  {facility.name}
-                </h1>
-                <button
-                  onClick={() => {
-                    const address = '645 National Blvd, Medford, NY 11763';
-                    const encodedAddress = encodeURIComponent(address);
-                    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
-                  }}
-                  className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                >
-                  <MapPin className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{facility.city}, {facility.state}</span>
-                </button>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 mb-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex-1">
+              {facility.description && (
+                <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed mb-4">
+                  {facility.description}
+                </p>
+              )}
 
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{followerCount}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Members</div>
+                  </div>
+                </div>
+
+                <div className="h-12 w-px bg-slate-200 dark:bg-slate-700"></div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{courts.length}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Courts</div>
+                  </div>
+                </div>
+
+                <div className="h-12 w-px bg-slate-200 dark:bg-slate-700"></div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{eventsCount}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Events</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
               {!user ? (
                 <button
                   onClick={handleJoinClub}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <UserPlus className="w-4 h-4" />
-                  Follow
+                  <UserPlus className="w-5 h-5" />
+                  Follow Club
                 </button>
               ) : !isMember ? (
                 <button
                   onClick={handleJoinClub}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <UserPlus className="w-4 h-4" />
-                  Follow
+                  <UserPlus className="w-5 h-5" />
+                  Follow Club
                 </button>
               ) : (
                 <button
                   onClick={handleLeaveClub}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="px-8 py-3.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <UserCheck className="w-4 h-4" />
+                  <UserCheck className="w-5 h-5" />
                   Following
                 </button>
               )}
-            </div>
-
-            {facility.description && (
-              <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm sm:text-base">
-                {facility.description}
-              </p>
-            )}
-
-            <div className="flex items-center justify-center gap-4 text-sm">
-              <div className="flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-600 dark:text-slate-400 font-medium">{followerCount}</span>
-              </div>
-              <div className="h-4 w-px bg-slate-300 dark:bg-slate-600"></div>
-              <div className="flex items-center gap-1.5">
-                <Activity className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-600 dark:text-slate-400 font-medium">{courts.length} Courts</span>
-              </div>
             </div>
           </div>
         </div>
 
         {(facility.phone || facility.email || facility.website) && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {facility.phone && (
               <a
                 href={`tel:${facility.phone}`}
-                className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-4 p-5 bg-white dark:bg-slate-800 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700 transition-all shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 group"
               >
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                  <Phone className="w-6 h-6 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Phone</div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">{facility.phone}</div>
+                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-0.5">Phone</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">{facility.phone}</div>
                 </div>
               </a>
             )}
             {facility.email && (
               <a
                 href={`mailto:${facility.email}`}
-                className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-4 p-5 bg-white dark:bg-slate-800 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-700 transition-all shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 group"
               >
-                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                  <Mail className="w-6 h-6 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Email</div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">{facility.email}</div>
+                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-0.5">Email</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">{facility.email}</div>
                 </div>
               </a>
             )}
@@ -412,14 +447,14 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 href={facility.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-4 p-5 bg-white dark:bg-slate-800 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-700 transition-all shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 group"
               >
-                <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
-                  <Globe className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                  <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Website</div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">Visit Site</div>
+                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-0.5">Website</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">Visit Site</div>
                 </div>
               </a>
             )}
@@ -429,26 +464,31 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-28">
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-emerald-600" />
-                Our Courts ({courts.length})
-              </h2>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
+                  <Activity className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Our Courts</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{courts.length} courts available</p>
+                </div>
+              </div>
 
               {nextAvailableTime && availableCourtsAtTime.length > 0 && (
-                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-xl p-5 mb-6 border-2 border-emerald-200 dark:border-emerald-700 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-800/50">
-                      <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl p-6 mb-6 shadow-xl border-2 border-emerald-300">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+                      <Clock className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white">Next Available</h3>
-                      <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{nextAvailableTime}</p>
+                      <h3 className="font-bold text-white/90 text-sm uppercase tracking-wide">Next Available</h3>
+                      <p className="text-3xl font-bold text-white drop-shadow-lg">{nextAvailableTime}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                  <p className="text-white/90 font-medium mb-4">
                     {availableCourtsAtTime.length} {availableCourtsAtTime.length === 1 ? 'court' : 'courts'} available right now
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {availableCourtsAtTime.map((court) => (
                       <button
                         key={court.id}
@@ -460,16 +500,16 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                           setSelectedCourtId(court.id);
                           setShowScheduler(true);
                         }}
-                        className="bg-white dark:bg-slate-800 rounded-lg p-3 border-2 border-emerald-500 dark:border-emerald-600 hover:border-emerald-600 dark:hover:border-emerald-500 hover:shadow-lg transition-all text-left group"
+                        className="bg-white dark:bg-slate-800 rounded-xl p-4 border-2 border-white/50 hover:border-white hover:shadow-2xl transition-all text-left group"
                       >
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-bold text-slate-900 dark:text-white text-sm">
                             {court.name}
                           </h4>
-                          <div className="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 group-hover:scale-150 transition-transform shadow-lg" />
                         </div>
-                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
-                          Click to book
+                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+                          Book Now
                         </p>
                       </button>
                     ))}
@@ -478,12 +518,12 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               )}
 
               {courts.length === 0 ? (
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-8 text-center">
-                  <Activity className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-                  <p className="text-slate-500 dark:text-slate-400">No courts available</p>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center shadow-lg border border-slate-200 dark:border-slate-700">
+                  <Activity className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                  <p className="text-slate-500 dark:text-slate-400 text-lg">No courts available</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {courts.map((court) => (
                     <button
                       key={court.id}
@@ -495,17 +535,20 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                         setSelectedCourtId(court.id);
                         setShowScheduler(true);
                       }}
-                      className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg transition-all text-left group"
+                      className="bg-white dark:bg-slate-800 rounded-2xl p-5 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-xl transition-all text-left group"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="font-bold text-slate-900 dark:text-white text-base">
                           {court.name}
                         </h3>
-                        <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                        <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 group-hover:scale-125 transition-transform" />
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-2">
                         {court.description}
                       </p>
+                      <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        View Schedule
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -513,10 +556,15 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-emerald-600" />
-                Community Feed
-              </h2>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                  <MessageSquare className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Community Feed</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{posts.length} posts</p>
+                </div>
+              </div>
 
               {posts.length === 0 ? (
                 <div className="bg-white dark:bg-slate-800 rounded-xl p-8 text-center">
@@ -549,52 +597,54 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
             </div>
           </div>
 
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-emerald-600" />
-                Event Calendar
-              </h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg">
+                  <Calendar className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Event Calendar</h2>
+              </div>
 
               <EventCalendar facilityId={facilityId} />
             </div>
 
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-700 rounded-xl p-5 border border-emerald-200 dark:border-slate-700 shadow-sm">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                  <Star className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-xl border border-slate-700">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2 rounded-xl bg-white/10">
+                  <TrendingUp className="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  Quick Stats
+                <h3 className="text-lg font-bold text-white">
+                  Club Stats
                 </h3>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-white/90 dark:bg-slate-700/50 rounded-lg shadow-sm">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                      <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="p-2.5 rounded-lg bg-emerald-500/20">
+                      <Activity className="w-5 h-5 text-emerald-400" />
                     </div>
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Courts</span>
+                    <span className="text-sm font-semibold text-white/80">Courts</span>
                   </div>
-                  <span className="text-lg font-bold text-slate-900 dark:text-white">{courts.length}</span>
+                  <span className="text-2xl font-bold text-white">{courts.length}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-white/90 dark:bg-slate-700/50 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                      <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div className="p-2.5 rounded-lg bg-blue-500/20">
+                      <Users className="w-5 h-5 text-blue-400" />
                     </div>
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Members</span>
+                    <span className="text-sm font-semibold text-white/80">Members</span>
                   </div>
-                  <span className="text-lg font-bold text-slate-900 dark:text-white">{followerCount}</span>
+                  <span className="text-2xl font-bold text-white">{followerCount}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-white/90 dark:bg-slate-700/50 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                      <Calendar className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <div className="p-2.5 rounded-lg bg-orange-500/20">
+                      <Calendar className="w-5 h-5 text-orange-400" />
                     </div>
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Events</span>
+                    <span className="text-sm font-semibold text-white/80">Events</span>
                   </div>
-                  <span className="text-lg font-bold text-slate-900 dark:text-white">{eventsCount}</span>
+                  <span className="text-2xl font-bold text-white">{eventsCount}</span>
                 </div>
               </div>
             </div>
