@@ -131,9 +131,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 overflow-y-auto bg-white dark:bg-slate-900">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
-          <nav className="space-y-1">
+          <nav className="space-y-1 mb-4">
             <button
               onClick={() => setActiveView('feed')}
               className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
@@ -209,7 +209,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           </nav>
 
           {/* Local Clubs */}
-          <div>
+          <div className="mt-6 mb-4">
             <div className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-850 rounded-2xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60">
               <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
                 <h2 className="font-black text-base text-slate-900 dark:text-white tracking-tight">Local Clubs</h2>
@@ -284,14 +284,30 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               </div>
             </div>
           </div>
+
+          {/* Spacer to push content to bottom */}
+          <div className="flex-1"></div>
+
+          {/* User Profile */}
+          {user && profile && (
+            <div className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
+                {profile.full_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm text-slate-900 dark:text-white truncate">{profile.full_name || 'User'}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 truncate">@{profile.full_name?.toLowerCase().replace(' ', '') || 'user'}</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Main Feed - Centered with fixed width */}
-        <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900">
+        <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900 mt-20">
           {/* Sticky Header */}
           <div className="sticky top-20 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             {activeView !== 'feed' && (
-              <div className="pt-6 pb-5 lg:pb-6 px-4">
+              <div className="pt-6 pb-5 lg:pt-7 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
                   {activeView === 'notifications' && 'Notifications'}
@@ -303,7 +319,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
-              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-6">
+              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-4">
                 <button
                   onClick={() => setActiveTab('all_local')}
                   className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
@@ -456,11 +472,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
         {/* Right Sidebar - Trending & Suggestions */}
         <div className="hidden xl:block w-[350px] flex-shrink-0">
-          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
-              <div className="px-6 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
-                <h2 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Trending</h2>
+              <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
+                <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">Trending</h2>
               </div>
               <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
                 <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
@@ -515,18 +531,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             </div>
 
             {/* Footer Links */}
-            <div className="text-sm font-medium text-slate-500 dark:text-slate-400 space-x-3">
+            <div className="px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 space-x-3">
               <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Terms</a>
               <span>·</span>
               <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Privacy</a>
               <span>·</span>
               <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Help</a>
-              <div className="font-semibold">© 2025 PaddleGrid</div>
+              <div className="mt-2 font-semibold">© 2025 PaddleGrid</div>
             </div>
 
             {/* Post Button */}
             {user && (
-              <div>
+              <div className="px-4 mt-4 pb-6">
                 <button
                   onClick={onCreatePost}
                   className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
