@@ -120,6 +120,24 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <span className={`text-lg font-semibold ${activeView === 'explore' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Courts</span>
             </button>
 
+            <button
+              onClick={() => user ? onProfileClick?.(user.id) : null}
+              className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+            >
+              <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+              <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
+            </button>
+
+            {profile?.role === 'admin' && (
+              <button
+                onClick={() => window.location.href = '/admin'}
+                className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+              >
+                <Shield className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
+              </button>
+            )}
+
             {user && (
               <>
                 <button
@@ -152,24 +170,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   <Bookmark className={`w-6 h-6 ${activeView === 'bookmarks' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
                   <span className={`text-lg font-semibold ${activeView === 'bookmarks' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Bookmarks</span>
                 </button>
-
-                <button
-                  onClick={() => onProfileClick?.(user.id)}
-                  className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
-                >
-                  <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
-                </button>
-
-                {profile?.role === 'admin' && (
-                  <button
-                    onClick={() => window.location.href = '/admin'}
-                    className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
-                  >
-                    <Shield className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                    <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
-                  </button>
-                )}
               </>
             )}
           </nav>
