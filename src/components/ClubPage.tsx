@@ -338,7 +338,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-4">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-slate-200 dark:border-slate-700">
           {facility.description && (
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-5">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8 mt-4">
               {facility.description}
             </p>
           )}
