@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, MoreHorizontal, PlusCircle, X } from 'lucide-react';
+import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, MoreHorizontal, PlusCircle, X, Shield } from 'lucide-react';
 import { SocialPost, getFeedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -88,13 +88,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       <div className="flex justify-center w-full">
         {/* Left Sidebar Navigation */}
         <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-6 pt-6 pb-6 overflow-y-auto bg-white dark:bg-slate-900">
-          {/* Logo */}
-          <div className="mb-6 flex-shrink-0">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-              <Building2 className="w-7 h-7 text-white" />
-            </div>
-          </div>
-
           {/* Navigation Links */}
           <nav className="space-y-1 mb-4">
             <button
@@ -113,43 +106,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 activeView === 'explore' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
               }`}
             >
-              <Search className={`w-6 h-6 ${activeView === 'explore' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-              <span className={`text-lg font-semibold ${activeView === 'explore' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Explore</span>
+              <Building2 className={`w-6 h-6 ${activeView === 'explore' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+              <span className={`text-lg font-semibold ${activeView === 'explore' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Courts</span>
             </button>
 
             {user && (
               <>
-                <button
-                  onClick={() => setActiveView('notifications')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative ${
-                    activeView === 'notifications' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                  }`}
-                >
-                  <Bell className={`w-6 h-6 ${activeView === 'notifications' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                  <span className={`text-lg font-semibold ${activeView === 'notifications' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Notifications</span>
-                  <span className="absolute top-2.5 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
-                </button>
-
-                <button
-                  onClick={() => setActiveView('messages')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
-                    activeView === 'messages' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                  }`}
-                >
-                  <MessageCircle className={`w-6 h-6 ${activeView === 'messages' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                  <span className={`text-lg font-semibold ${activeView === 'messages' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Messages</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveView('bookmarks')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
-                    activeView === 'bookmarks' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                  }`}
-                >
-                  <Bookmark className={`w-6 h-6 ${activeView === 'bookmarks' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                  <span className={`text-lg font-semibold ${activeView === 'bookmarks' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Bookmarks</span>
-                </button>
-
                 <button
                   onClick={() => onProfileClick?.(user.id)}
                   className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
@@ -158,15 +120,15 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
                 </button>
 
-                <button
-                  onClick={() => setShowMoreMenu(!showMoreMenu)}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
-                    showMoreMenu ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                  }`}
-                >
-                  <MoreHorizontal className={`w-6 h-6 ${showMoreMenu ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                  <span className={`text-lg font-semibold ${showMoreMenu ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>More</span>
-                </button>
+                {profile?.role === 'admin' && (
+                  <button
+                    onClick={() => window.location.href = '/admin'}
+                    className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+                  >
+                    <Shield className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                    <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
+                  </button>
+                )}
               </>
             )}
           </nav>
@@ -263,7 +225,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {activeView !== 'feed' && (
               <div className="pt-6 pb-5 lg:pt-7 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {activeView === 'explore' && 'Explore'}
+                  {activeView === 'explore' && 'Courts'}
                   {activeView === 'notifications' && 'Notifications'}
                   {activeView === 'messages' && 'Messages'}
                   {activeView === 'bookmarks' && 'Bookmarks'}
@@ -375,12 +337,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             </>
           )}
 
-          {/* Explore View */}
+          {/* Courts View */}
           {activeView === 'explore' && (
             <div className="p-8 text-center">
-              <div className="text-6xl mb-4">🔍</div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Explore Pickleball</h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">Discover trending posts, top players, and popular clubs in your area</p>
+              <div className="text-6xl mb-4">🎾</div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Browse Courts</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">Find and book courts at clubs in your area</p>
               <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
                 <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
               </div>
