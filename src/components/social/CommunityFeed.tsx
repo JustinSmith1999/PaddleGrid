@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, MoreHorizontal, PlusCircle, X, Shield } from 'lucide-react';
+import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, MoreHorizontal, PlusCircle, Shield } from 'lucide-react';
 import { SocialPost, getFeedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -155,24 +155,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 </button>
 
                 <button
-                  onClick={() => onProfileClick?.(user.id)}
-                  className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
-                >
-                  <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
-                </button>
-
-                {profile?.role === 'admin' && (
-                  <button
-                    onClick={() => window.location.href = '/admin'}
-                    className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
-                  >
-                    <Shield className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                    <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
-                  </button>
-                )}
-
-                <button
                   onClick={() => setShowMoreMenu(!showMoreMenu)}
                   className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
                     showMoreMenu ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
@@ -181,6 +163,60 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   <MoreHorizontal className={`w-6 h-6 ${showMoreMenu ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
                   <span className={`text-lg font-semibold ${showMoreMenu ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>More</span>
                 </button>
+
+                {showMoreMenu && (
+                  <div className="ml-4 space-y-1 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
+                    <button
+                      onClick={() => {
+                        setActiveView('feed');
+                        setShowMoreMenu(false);
+                      }}
+                      className={`flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                        activeView === 'feed' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                      }`}
+                    >
+                      <Home className={`w-5 h-5 ${activeView === 'feed' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                      <span className={`text-base font-semibold ${activeView === 'feed' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Feed</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setActiveView('explore');
+                        setShowMoreMenu(false);
+                      }}
+                      className={`flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                        activeView === 'explore' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                      }`}
+                    >
+                      <Building2 className={`w-5 h-5 ${activeView === 'explore' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                      <span className={`text-base font-semibold ${activeView === 'explore' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Courts</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onProfileClick?.(user.id);
+                        setShowMoreMenu(false);
+                      }}
+                      className="flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+                    >
+                      <User className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                      <span className="text-base font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
+                    </button>
+
+                    {profile?.role === 'admin' && (
+                      <button
+                        onClick={() => {
+                          window.location.href = '/admin';
+                          setShowMoreMenu(false);
+                        }}
+                        className="flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+                      >
+                        <Shield className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                        <span className="text-base font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </>
             )}
           </nav>
@@ -523,182 +559,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
       </div>
 
-      {/* More Menu Modal */}
-      {showMoreMenu && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/30 z-40"
-            onClick={() => setShowMoreMenu(false)}
-          />
-          <div className="fixed left-[max(20px,calc((100vw-1280px)/2+20px))] top-1/2 -translate-y-1/2 w-[400px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-3xl shadow-2xl z-50 border border-slate-200 dark:border-slate-800">
-            <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900">
-              <div className="flex items-center justify-between">
-                <h2 className="font-black text-2xl text-slate-900 dark:text-white tracking-tight">Menu</h2>
-                <button
-                  onClick={() => setShowMoreMenu(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                >
-                  <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                </button>
-              </div>
-            </div>
-
-            <div className="py-2">
-              <button
-                onClick={() => {
-                  setActiveView('feed');
-                  setShowMoreMenu(false);
-                }}
-                className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 text-left group"
-              >
-                <Home className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                <div>
-                  <div className="text-lg font-semibold text-slate-900 dark:text-white">Feed</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400">View your social feed</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveView('explore');
-                  setShowMoreMenu(false);
-                }}
-                className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 text-left group"
-              >
-                <Building2 className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                <div>
-                  <div className="text-lg font-semibold text-slate-900 dark:text-white">Courts</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400">Browse all courts</div>
-                </div>
-              </button>
-
-              {user && (
-                <>
-                  <button
-                    onClick={() => {
-                      onProfileClick?.(user.id);
-                      setShowMoreMenu(false);
-                    }}
-                    className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 text-left group"
-                  >
-                    <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                    <div>
-                      <div className="text-lg font-semibold text-slate-900 dark:text-white">Profile</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400">View your profile</div>
-                    </div>
-                  </button>
-
-                  {profile?.role === 'admin' && (
-                    <button
-                      onClick={() => {
-                        window.location.href = '/admin';
-                        setShowMoreMenu(false);
-                      }}
-                      className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 text-left group"
-                    >
-                      <Shield className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                      <div>
-                        <div className="text-lg font-semibold text-slate-900 dark:text-white">Admin</div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400">Manage facility</div>
-                      </div>
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div className="border-t border-slate-200 dark:border-slate-800 py-2">
-              <div className="px-6 py-3">
-                <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Clubs Near You</h3>
-              </div>
-              <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
-              <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 cursor-pointer group">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/30 group-hover:shadow-xl group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200">
-                    <Building2 className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Pickleball Heaven</div>
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
-                      <MapPin className="w-4 h-4" />
-                      <span>Chicago, IL</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                      <Users className="w-4 h-4" />
-                      <span>487 members</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 cursor-pointer group">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200">
-                    <Building2 className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Metro Courts</div>
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
-                      <MapPin className="w-4 h-4" />
-                      <span>Chicago, IL</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400">
-                      <Users className="w-4 h-4" />
-                      <span>832 members</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 cursor-pointer group">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/30 group-hover:shadow-xl group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200">
-                    <Building2 className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Windy City Pickleball</div>
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
-                      <MapPin className="w-4 h-4" />
-                      <span>Chicago, IL</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm font-semibold text-orange-600 dark:text-orange-400">
-                      <Users className="w-4 h-4" />
-                      <span>1.2K members</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 dark:hover:from-purple-900/10 dark:hover:to-pink-900/10 transition-all duration-200 cursor-pointer group">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30 group-hover:shadow-xl group-hover:shadow-purple-500/40 group-hover:scale-105 transition-all duration-200">
-                    <Building2 className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Lakeshore Athletic Club</div>
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
-                      <MapPin className="w-4 h-4" />
-                      <span>Chicago, IL</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm font-semibold text-purple-600 dark:text-purple-400">
-                      <Users className="w-4 h-4" />
-                      <span>654 members</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            </div>
-
-            {/* Footer Links in Modal */}
-            <div className="px-6 py-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-sm font-medium text-slate-500 dark:text-slate-400 space-x-3">
-              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Terms</a>
-              <span>·</span>
-              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Privacy</a>
-              <span>·</span>
-              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Help</a>
-              <div className="mt-2 font-semibold">© 2025 PaddleGrid</div>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }
