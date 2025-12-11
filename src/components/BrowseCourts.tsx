@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, MapPin, Building2, ArrowRight, Search, Star } from 'lucide-react';
+import { Loader2, MapPin, Building2, Search, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -227,8 +227,6 @@ export function BrowseCourts() {
                     <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed hidden sm:block">{facility.description}</p>
                   )}
                 </div>
-
-                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
               </button>
             </div>
           ))}
