@@ -197,9 +197,9 @@ export function BrowseCourts() {
 
               <button
                 onClick={() => navigate(`/club/${facility.slug}`)}
-                className="w-full p-6 text-left flex items-center gap-5"
+                className="w-full p-4 sm:p-6 text-left flex items-center gap-3 sm:gap-5"
               >
-                <div className="w-20 h-20 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200 p-2">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200 p-2">
                   {facility.logo_url ? (
                     <img
                       src={facility.logo_url}
@@ -207,18 +207,18 @@ export function BrowseCourts() {
                       className="w-full h-full object-contain"
                     />
                   ) : (
-                    <Building2 className="w-10 h-10 text-slate-400 dark:text-slate-500" />
+                    <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400 dark:text-slate-500" />
                   )}
                 </div>
 
-                <div className="flex-1 min-w-0 pr-8">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                <div className="flex-1 min-w-0 pr-2 sm:pr-8">
+                  <h2 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
                     {facility.name}
                   </h2>
                   {(facility.city || facility.state) && (
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 mb-2">
-                      <MapPin className="w-4 h-4 flex-shrink-0" />
-                      <span className="font-medium truncate">
+                    <div className="flex items-start gap-1.5 sm:gap-2 text-slate-600 dark:text-slate-400 mb-2">
+                      <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm sm:text-base font-medium line-clamp-2">
                         {[facility.city, facility.state].filter(Boolean).join(', ')}
                       </span>
                     </div>
@@ -228,7 +228,7 @@ export function BrowseCourts() {
                   )}
                 </div>
 
-                <ArrowRight className="w-6 h-6 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
+                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-1 transition-all flex-shrink-0" />
               </button>
             </div>
           ))}
