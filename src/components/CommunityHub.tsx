@@ -42,37 +42,37 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           </div>
 
           {/* Hero Content */}
-          <div className="relative z-10 w-full px-6 sm:px-8 lg:px-12 xl:px-20 py-12 sm:py-16 lg:py-20">
-            <div className="w-full max-w-7xl mx-auto">
+          <div className="relative z-10 w-full px-6 sm:px-8 lg:px-16 xl:px-24 py-16 sm:py-20 lg:py-24">
+            <div className="w-full max-w-6xl mx-auto">
               {/* Logo */}
-              <div className="mb-12 sm:mb-14 lg:mb-16 flex justify-center">
+              <div className="mb-10 sm:mb-12 lg:mb-14 flex justify-center">
                 <img
                   src="/untitled_design__2_-removebg-preview.png"
                   alt="PaddleGrid Logo"
-                  className="h-20 sm:h-20 md:h-22 lg:h-24 xl:h-28 w-auto drop-shadow-2xl"
+                  className="h-16 sm:h-20 md:h-20 lg:h-24 w-auto drop-shadow-2xl"
                 />
               </div>
 
               {/* Hero Content */}
               <div className="text-center">
-                <div className="text-6xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[10rem] text-white mb-16 sm:mb-18 md:mb-20 lg:mb-24 xl:mb-28 mx-auto leading-tight font-extrabold drop-shadow-lg space-y-3 sm:space-y-4 lg:space-y-5 xl:space-y-7">
+                <div className="text-5xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl text-white mb-12 sm:mb-14 lg:mb-16 xl:mb-20 mx-auto leading-[1.1] font-extrabold drop-shadow-2xl space-y-2 sm:space-y-3 lg:space-y-4">
                   <div>Connect.</div>
                   <div>Play.</div>
                   <div>Discover.</div>
-                  <div className="text-emerald-300">Achieve.</div>
+                  <div className="bg-gradient-to-r from-emerald-300 to-green-300 bg-clip-text text-transparent">Achieve.</div>
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 lg:gap-6 justify-center max-w-2xl mx-auto">
+                <div className="flex flex-col sm:flex-row gap-4 lg:gap-5 justify-center items-center max-w-3xl mx-auto px-4">
                   <button
                     onClick={() => onAuthRequired?.('signup')}
-                    className="w-full sm:w-auto px-10 sm:px-10 md:px-12 lg:px-14 xl:px-16 py-5 sm:py-5 md:py-6 lg:py-7 xl:py-8 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
+                    className="w-full sm:w-auto min-w-[200px] px-8 sm:px-10 lg:px-12 py-4 sm:py-4 lg:py-5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-lg sm:text-xl lg:text-xl font-bold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-emerald-500/50 hover:scale-105 border-2 border-emerald-400/50"
                   >
                     Create Free Account
                   </button>
                   <button
                     onClick={() => onAuthRequired?.('login')}
-                    className="w-full sm:w-auto px-10 sm:px-10 md:px-12 lg:px-14 xl:px-16 py-5 sm:py-5 md:py-6 lg:py-7 xl:py-8 bg-white/95 backdrop-blur text-emerald-600 text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
+                    className="w-full sm:w-auto min-w-[200px] px-8 sm:px-10 lg:px-12 py-4 sm:py-4 lg:py-5 bg-white/95 backdrop-blur text-emerald-700 text-lg sm:text-xl lg:text-xl font-bold rounded-xl border-2 border-white hover:bg-white hover:shadow-2xl transition-all duration-200 hover:scale-105 shadow-xl"
                   >
                     Sign In
                   </button>
@@ -83,32 +83,47 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         </div>
 
         {/* Feature Cards Section with Color Background */}
-        <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 py-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all hover:scale-105 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                    <Users className="w-8 h-8 text-white" />
+        <div className="relative bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 py-24 overflow-hidden">
+          {/* Subtle pattern overlay */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+          </div>
+
+          <div className="relative container mx-auto px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Header */}
+              <div className="text-center mb-16">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+                  Everything You Need to <span className="text-emerald-400">Elevate Your Game</span>
+                </h2>
+                <p className="text-emerald-100/70 text-lg max-w-2xl mx-auto">
+                  Join the most comprehensive pickleball platform designed for players of all levels
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
+                <div className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-emerald-400/50 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-emerald-500/50 group-hover:scale-110 transition-transform duration-300">
+                    <Users className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Connect with Players</h3>
-                  <p className="text-gray-600 leading-relaxed">Find playing partners, follow friends, and build your pickleball network.</p>
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-300 transition-colors">Connect with Players</h3>
+                  <p className="text-emerald-100/80 leading-relaxed text-base">Find playing partners, follow friends, and build your pickleball network in your community.</p>
                 </div>
 
-                <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all hover:scale-105 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                    <Calendar className="w-8 h-8 text-white" />
+                <div className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-emerald-400/50 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-blue-500/50 group-hover:scale-110 transition-transform duration-300">
+                    <Calendar className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Join Events & Series</h3>
-                  <p className="text-gray-600 leading-relaxed">Discover tournaments, leagues, and social play events near you.</p>
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-300 transition-colors">Join Events & Series</h3>
+                  <p className="text-emerald-100/80 leading-relaxed text-base">Discover tournaments, leagues, and social play events at your favorite facilities.</p>
                 </div>
 
-                <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all hover:scale-105 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                    <TrendingUp className="w-8 h-8 text-white" />
+                <div className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-emerald-400/50 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-orange-500/50 group-hover:scale-110 transition-transform duration-300">
+                    <TrendingUp className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Track Your Progress</h3>
-                  <p className="text-gray-600 leading-relaxed">Log matches, track your rating, and celebrate your achievements.</p>
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-300 transition-colors">Track Your Progress</h3>
+                  <p className="text-emerald-100/80 leading-relaxed text-base">Log matches, track your rating, and celebrate your achievements as you improve.</p>
                 </div>
               </div>
             </div>
@@ -116,16 +131,17 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         </div>
 
         {/* Social Proof Section */}
-        <div className="bg-white py-16">
-          <div className="container mx-auto px-4">
+        <div className="bg-gradient-to-b from-white to-emerald-50 py-20">
+          <div className="container mx-auto px-6">
             <div className="max-w-5xl mx-auto text-center">
-              <p className="text-gray-500 text-sm mb-4">Trusted by pickleball players everywhere</p>
-              <div className="flex items-center justify-center gap-1">
+              <p className="text-emerald-600/70 text-sm uppercase tracking-wider font-semibold mb-4">Trusted by pickleball players everywhere</p>
+              <div className="flex items-center justify-center gap-1.5 mb-3">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+                  <Star key={i} className="w-8 h-8 text-yellow-500 fill-yellow-500 drop-shadow-sm" />
                 ))}
-                <span className="ml-3 text-gray-700 font-semibold text-lg">4.9/5 rating</span>
               </div>
+              <p className="text-slate-700 font-bold text-2xl">4.9 out of 5 stars</p>
+              <p className="text-slate-500 mt-2">Rated by thousands of players</p>
             </div>
           </div>
         </div>
