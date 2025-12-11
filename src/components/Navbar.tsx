@@ -3,6 +3,7 @@ import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, 
 import { useAuth } from '../contexts/AuthContext';
 import { getUnreadNotificationCount } from '../lib/socialUtils';
 import NotificationsPanel from './social/NotificationsPanel';
+import { useLocation } from 'react-router-dom';
 
 type ViewType = 'home' | 'browse' | 'bookings' | 'profile' | 'admin' | 'series' | 'my-series' | 'community' | 'trending' | 'discover' | 'sales';
 
@@ -13,14 +14,21 @@ interface NavbarProps {
 
 export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
   const { user, profile, signOut, isAdmin } = useAuth();
+  const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [audienceType, setAudienceType] = useState<'players' | 'facilities'>('players');
+  const [audienceType, setAudienceType] = useState<'players' | 'facilities'>(
+    location.pathname === '/sales' ? 'facilities' : 'players'
+  );
 
   const handleViewChange = (view: ViewType) => {
     onViewChange(view);
   };
+
+  useEffect(() => {
+    setAudienceType(location.pathname === '/sales' ? 'facilities' : 'players');
+  }, [location.pathname]);
 
   useEffect(() => {
     if (user) {
