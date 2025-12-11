@@ -147,7 +147,7 @@ export function BrowseCourts() {
 
       <div className="mb-8 space-y-5">
         <div className="text-center mb-4">
-          <p className="text-2xl font-bold text-slate-800 dark:text-white">
+          <p className="text-2xl font-bold text-slate-800 dark:text-white whitespace-nowrap">
             <span className="text-emerald-600 dark:text-emerald-400">{userCount.toLocaleString()}</span> Pickleball Enthusiasts and counting
           </p>
         </div>
