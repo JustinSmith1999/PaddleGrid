@@ -197,10 +197,10 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-stone-800">
-                  {filteredNav.find(item => item.id === currentView)?.label || 'Dashboard'}
+                  Welcome back, {((user as any)?.full_name || (user as any)?.first_name || 'Admin').split(' ')[0]}
                 </h1>
                 <p className="text-sm text-stone-600 font-medium">
-                  Welcome back, {(user as any)?.full_name || 'Admin'}
+                  {filteredNav.find(item => item.id === currentView)?.label || 'Dashboard'}
                 </p>
               </div>
             </div>
@@ -212,11 +212,6 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
               </button>
 
               <div className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
-                <div className="w-9 h-9 bg-gradient-to-br from-emerald-600 to-green-700 rounded-full flex items-center justify-center shadow-sm">
-                  <span className="text-white font-semibold text-sm">
-                    {((user as any)?.full_name || 'A').charAt(0).toUpperCase()}
-                  </span>
-                </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-semibold text-emerald-800">
                     {(user as any)?.full_name || 'Admin'}
