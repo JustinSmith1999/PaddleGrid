@@ -21,11 +21,13 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [refreshing, setRefreshing] = useState(false);
   const [userFacilityId, setUserFacilityId] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState(25);
+  const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; memberCount: number }>>([]);
 
   useEffect(() => {
     if (user) {
       fetchUserFacility();
     }
+    fetchFacilities();
   }, [user]);
 
   useEffect(() => {
@@ -48,6 +50,38 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       }
     } catch (error) {
       console.error('Error fetching user facility:', error);
+    }
+  }
+
+  async function fetchFacilities() {
+    try {
+      const { data: facilitiesData, error } = await supabase
+        .from('facilities')
+        .select('id, name, slug')
+        .order('created_at', { ascending: true })
+        .limit(4);
+
+      if (error) throw error;
+
+      if (facilitiesData) {
+        const facilitiesWithCounts = await Promise.all(
+          facilitiesData.map(async (facility) => {
+            const { count } = await supabase
+              .from('facility_users')
+              .select('*', { count: 'exact', head: true })
+              .eq('facility_id', facility.id);
+
+            return {
+              ...facility,
+              memberCount: count || 0
+            };
+          })
+        );
+
+        setFacilities(facilitiesWithCounts);
+      }
+    } catch (error) {
+      console.error('Error fetching facilities:', error);
     }
   }
 
@@ -97,9 +131,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-1/2 -translate-y-1/2 max-h-[90vh] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 pb-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
-          <nav className="space-y-1 mb-4">
+          <nav className="space-y-1 mb-4 pt-6">
             <button
               onClick={() => setActiveView('feed')}
               className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
@@ -181,89 +215,83 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <h2 className="font-black text-base text-slate-900 dark:text-white tracking-tight">Local Clubs</h2>
               </div>
               <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
-                <button className="w-full px-4 py-3 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/30 group-hover:shadow-lg group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200">
-                      <Building2 className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Pickleball Heaven</div>
-                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        <span>487 members</span>
+                {facilities.map((facility, index) => {
+                  const buttonClasses = [
+                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group',
+                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group',
+                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group',
+                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-slate-50/50 dark:hover:from-slate-900/10 dark:hover:to-slate-900/10 transition-all duration-200 text-left group'
+                  ];
+
+                  const bgClasses = [
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/30 group-hover:shadow-lg group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200 p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/30 group-hover:shadow-lg group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200 p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-orange-500/30 group-hover:shadow-lg group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200 p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-slate-500/30 group-hover:shadow-lg group-hover:shadow-slate-500/40 group-hover:scale-105 transition-all duration-200 p-1'
+                  ];
+
+                  return (
+                    <button
+                      key={facility.id}
+                      onClick={() => onClubClick?.(facility.slug)}
+                      className={buttonClasses[index]}
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <div className={bgClasses[index]}>
+                          <img
+                            src="/untitled_design__2_-removebg-preview.png"
+                            alt={facility.name}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">{facility.name}</div>
+                          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            <span>{facility.memberCount} {facility.memberCount === 1 ? 'member' : 'members'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+                {[...Array(Math.max(0, 4 - facilities.length))].map((_, index) => {
+                  const bgClasses = [
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md p-1'
+                  ];
+
+                  return (
+                    <div key={`placeholder-${index}`} className="w-full px-4 py-3 opacity-50">
+                      <div className="flex items-start gap-2.5">
+                        <div className={bgClasses[facilities.length + index]}>
+                          <img
+                            src="/untitled_design__2_-removebg-preview.png"
+                            alt="Coming Soon"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Coming Soon</div>
+                          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">More clubs arriving</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </button>
-                <button className="w-full px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/30 group-hover:shadow-lg group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200">
-                      <Building2 className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Metro Courts</div>
-                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        <span>832 members</span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-                <button className="w-full px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-orange-500/30 group-hover:shadow-lg group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200">
-                      <Building2 className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Windy City Pickleball</div>
-                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        <span>1.2K members</span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-                <button className="w-full px-4 py-3 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 dark:hover:from-purple-900/10 dark:hover:to-pink-900/10 transition-all duration-200 text-left group">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-purple-500/30 group-hover:shadow-lg group-hover:shadow-purple-500/40 group-hover:scale-105 transition-all duration-200">
-                      <Building2 className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Lakeshore Athletic</div>
-                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        <span>654 members</span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
+                  );
+                })}
               </div>
             </div>
           </div>
-
-          {/* Spacer to push content to bottom */}
-          <div className="flex-1"></div>
-
-          {/* User Profile */}
-          {user && profile && (
-            <div className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
-                {profile.full_name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm text-slate-900 dark:text-white truncate">{profile.full_name || 'User'}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 truncate">@{profile.full_name?.toLowerCase().replace(' ', '') || 'user'}</div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Main Feed - Centered with fixed width */}
         <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="sticky top-20 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             {activeView !== 'feed' && (
-              <div className="pt-6 pb-5 lg:pt-7 lg:pb-6 px-4">
+              <div className="pt-6 pb-5 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
                   {activeView === 'notifications' && 'Notifications'}
@@ -275,7 +303,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
-              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-4">
+              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-6">
                 <button
                   onClick={() => setActiveTab('all_local')}
                   className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
@@ -428,9 +456,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
         {/* Right Sidebar - Trending & Suggestions */}
         <div className="hidden xl:block w-[350px] flex-shrink-0">
-          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-1/2 -translate-y-1/2 w-[350px] space-y-6 pl-8 pr-4 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Trending Topics */}
-            <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
+            <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40 mt-6">
               <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
                 <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">Trending</h2>
               </div>
