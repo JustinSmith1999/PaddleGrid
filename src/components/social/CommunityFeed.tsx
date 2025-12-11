@@ -254,7 +254,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <div className="font-bold text-sm text-slate-900 dark:text-white truncate">{profile.full_name || 'User'}</div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 truncate">@{profile.full_name?.toLowerCase().replace(' ', '') || 'user'}</div>
               </div>
-              <MoreHorizontal className="w-5 h-5 text-slate-400" />
             </div>
           )}
         </div>
