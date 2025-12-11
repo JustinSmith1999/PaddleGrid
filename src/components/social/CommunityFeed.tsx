@@ -131,7 +131,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-1/2 -translate-y-1/2 max-h-[90vh] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
           <nav className="space-y-1 mb-4">
             <button
@@ -288,6 +288,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Spacer to push content to bottom */}
           <div className="flex-1"></div>
 
+          {/* Post Button */}
+          <button
+            onClick={() => {
+              setActiveView('feed');
+              const composer = document.querySelector('[data-post-composer]');
+              if (composer) composer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="w-full mb-4 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            Post
+          </button>
+
           {/* User Profile */}
           {user && profile && (
             <div className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
@@ -300,6 +312,22 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               </div>
             </div>
           )}
+
+          {/* Footer */}
+          <div className="flex-shrink-0 mt-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div className="text-center space-y-2">
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <button className="hover:underline">Terms</button>
+                <span>·</span>
+                <button className="hover:underline">Privacy</button>
+                <span>·</span>
+                <button className="hover:underline">Help</button>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                © 2025 PaddleGrid
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main Feed - Centered with fixed width */}
@@ -472,7 +500,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
         {/* Right Sidebar - Trending & Suggestions */}
         <div className="hidden xl:block w-[350px] flex-shrink-0">
-          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-1/2 -translate-y-1/2 w-[350px] space-y-6 pl-8 pr-4 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
               <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
