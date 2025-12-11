@@ -336,66 +336,60 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-4">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6 border border-slate-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-slate-200 dark:border-slate-700">
           {facility.description && (
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-5">
               {facility.description}
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500 dark:bg-emerald-600 flex items-center justify-center shadow-sm">
+                  <Users className="w-4 h-4 text-white" />
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{followerCount}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Members</div>
-                </div>
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">Members</span>
               </div>
-
-              <div className="w-px h-12 bg-slate-200 dark:bg-slate-700"></div>
-
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{courts.length}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Courts</div>
-                </div>
-              </div>
+              <div className="text-3xl font-bold text-emerald-900 dark:text-emerald-100">{followerCount}</div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              {!user ? (
-                <button
-                  onClick={handleJoinClub}
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  Follow Club
-                </button>
-              ) : !isMember ? (
-                <button
-                  onClick={handleJoinClub}
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  Follow Club
-                </button>
-              ) : (
-                <button
-                  onClick={handleLeaveClub}
-                  className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                >
-                  <UserCheck className="w-5 h-5" />
-                  Following
-                </button>
-              )}
+            <div className="bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-900/20 dark:to-sky-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-500 dark:bg-blue-600 flex items-center justify-center shadow-sm">
+                  <Activity className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">Courts</span>
+              </div>
+              <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">{courts.length}</div>
             </div>
           </div>
+
+          {!user ? (
+            <button
+              onClick={handleJoinClub}
+              className="w-full px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <UserPlus className="w-5 h-5" />
+              Follow Club
+            </button>
+          ) : !isMember ? (
+            <button
+              onClick={handleJoinClub}
+              className="w-full px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <UserPlus className="w-5 h-5" />
+              Follow Club
+            </button>
+          ) : (
+            <button
+              onClick={handleLeaveClub}
+              className="w-full px-6 py-3.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <UserCheck className="w-5 h-5" />
+              Following
+            </button>
+          )}
         </div>
 
         {(facility.phone || facility.email || facility.website) && (
