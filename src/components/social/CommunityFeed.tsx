@@ -84,8 +84,19 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <div className="flex justify-center w-full">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 relative">
+      {/* Background Pattern - Desktop Only */}
+      <div
+        className="hidden lg:block fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: 'url(/whie_pickleball.webp)',
+          backgroundSize: '400px',
+          backgroundRepeat: 'repeat',
+          filter: 'grayscale(100%)',
+          opacity: 0.5
+        }}
+      />
+      <div className="flex justify-center w-full relative z-10">
         {/* Left Sidebar Navigation */}
         <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-6 pt-6 pb-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
