@@ -199,15 +199,15 @@ export function BrowseCourts() {
                 onClick={() => navigate(`/club/${facility.slug}`)}
                 className="w-full p-6 text-left flex items-center gap-5"
               >
-                <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200">
+                <div className="w-20 h-20 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200 p-2">
                   {facility.logo_url ? (
                     <img
                       src={facility.logo_url}
                       alt={facility.name}
-                      className="w-full h-full object-cover rounded-xl"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
-                    <Building2 className="w-10 h-10 text-white" />
+                    <Building2 className="w-10 h-10 text-slate-400 dark:text-slate-500" />
                   )}
                 </div>
 
