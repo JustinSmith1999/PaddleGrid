@@ -155,14 +155,12 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="max-w-2xl mx-auto">
-        <CommunityFeed
-          onCreatePost={() => setShowComposer(true)}
-          onPostClick={(postId) => navigate(`/post/${postId}`)}
-          onProfileClick={(userId) => navigate(`/player/${userId}`)}
-          onClubClick={handleClubClick}
-        />
-      </div>
+      <CommunityFeed
+        onCreatePost={() => setShowComposer(true)}
+        onPostClick={(postId) => navigate(`/post/${postId}`)}
+        onProfileClick={(userId) => navigate(`/player/${userId}`)}
+        onClubClick={handleClubClick}
+      />
 
       {/* Floating action button */}
       <button
