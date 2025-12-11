@@ -287,11 +287,15 @@ export async function addComment(postId: string, content: string): Promise<{ suc
       .single();
 
     if (post && post.author_id !== user.user.id) {
-      await supabase.rpc('create_social_notification', {
-        p_user_id: post.author_id,
-        p_type: 'comment',
-        p_data: { post_id: postId, from_user_id: user.user.id, comment_id: data.id }
-      });
+      try {
+        await supabase.rpc('create_social_notification', {
+          p_user_id: post.author_id,
+          p_type: 'comment',
+          p_data: { post_id: postId, from_user_id: user.user.id, comment_id: data.id }
+        });
+      } catch (err) {
+        console.warn('Failed to create notification (non-critical):', err);
+      }
     }
 
     return { success: true, comment: data };
@@ -354,11 +358,15 @@ export async function joinMatch(postId: string): Promise<{ success: boolean; err
     }
 
     if (post.author_id !== user.user.id) {
-      await supabase.rpc('create_social_notification', {
-        p_user_id: post.author_id,
-        p_type: 'match_join',
-        p_data: { post_id: postId, from_user_id: user.user.id }
-      });
+      try {
+        await supabase.rpc('create_social_notification', {
+          p_user_id: post.author_id,
+          p_type: 'match_join',
+          p_data: { post_id: postId, from_user_id: user.user.id }
+        });
+      } catch (err) {
+        console.warn('Failed to create notification (non-critical):', err);
+      }
     }
 
     return { success: true };
@@ -461,11 +469,15 @@ export async function followUser(userId: string): Promise<{ success: boolean; er
       throw error;
     }
 
-    await supabase.rpc('create_social_notification', {
-      p_user_id: userId,
-      p_type: 'follow',
-      p_data: { from_user_id: user.user.id }
-    });
+    try {
+      await supabase.rpc('create_social_notification', {
+        p_user_id: userId,
+        p_type: 'follow',
+        p_data: { from_user_id: user.user.id }
+      });
+    } catch (err) {
+      console.warn('Failed to create notification (non-critical):', err);
+    }
 
     return { success: true };
   } catch (error: any) {
