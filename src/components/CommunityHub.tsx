@@ -142,29 +142,29 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
             <div className="max-w-6xl mx-auto">
               {/* Main rating display */}
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-lg border border-emerald-100 mb-6">
+                <div className="inline-flex items-center gap-2 sm:gap-3 bg-white rounded-full px-4 py-2 sm:px-6 sm:py-3 shadow-lg border border-emerald-100 mb-4 sm:mb-6">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <p className="text-emerald-700 text-sm font-bold uppercase tracking-wide">Trusted by Pickleball Players Everywhere</p>
+                  <p className="text-emerald-700 text-xs sm:text-sm font-bold uppercase tracking-wide">Trusted by Pickleball Players Everywhere</p>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-3 sm:mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-12 h-12 text-yellow-400 fill-yellow-400 drop-shadow-lg animate-[pulse_2s_ease-in-out_infinite]"
+                      className="w-8 h-8 sm:w-12 sm:h-12 text-yellow-400 fill-yellow-400 drop-shadow-lg animate-[pulse_2s_ease-in-out_infinite]"
                       style={{ animationDelay: `${i * 0.1}s` }}
                     />
                   ))}
                 </div>
 
-                <div className="mb-4">
-                  <p className="text-6xl sm:text-7xl font-extrabold bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-600 bg-clip-text text-transparent mb-2">
+                <div className="mb-3 sm:mb-4">
+                  <p className="text-5xl sm:text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                     4.9
                   </p>
-                  <p className="text-slate-600 text-xl font-medium">out of 5 stars</p>
+                  <p className="text-slate-600 text-base sm:text-xl font-medium">out of 5 stars</p>
                 </div>
 
-                <p className="text-slate-500 text-lg">
+                <p className="text-slate-500 text-sm sm:text-lg px-4">
                   Rated by <span className="font-bold text-emerald-600">thousands of players</span> across the country
                 </p>
               </div>
