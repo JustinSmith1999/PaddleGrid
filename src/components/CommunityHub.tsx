@@ -33,7 +33,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           </video>
 
           {/* Green Tint Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/90 via-teal-700/85 to-emerald-800/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/50 via-teal-700/45 to-emerald-800/50"></div>
 
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-40">
             <div className="text-center space-y-10">

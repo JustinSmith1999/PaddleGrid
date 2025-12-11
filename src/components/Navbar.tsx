@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar, ChevronDown } from 'lucide-react';
+import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUnreadNotificationCount } from '../lib/socialUtils';
 import NotificationsPanel from './social/NotificationsPanel';
@@ -16,7 +16,6 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showAudienceMenu, setShowAudienceMenu] = useState(false);
   const [audienceType, setAudienceType] = useState<'players' | 'facilities'>('players');
 
   const handleViewChange = (view: ViewType) => {
@@ -37,16 +36,13 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
       if (!target.closest('[data-profile-menu]')) {
         setShowProfileMenu(false);
       }
-      if (!target.closest('[data-audience-menu]')) {
-        setShowAudienceMenu(false);
-      }
     }
 
-    if (showProfileMenu || showAudienceMenu) {
+    if (showProfileMenu) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [showProfileMenu, showAudienceMenu]);
+  }, [showProfileMenu]);
 
   async function loadUnreadCount() {
     const count = await getUnreadNotificationCount();
@@ -69,33 +65,33 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
               />
             </button>
             {!user && (
-              <div className="relative hidden sm:block" data-audience-menu>
+              <div className="hidden sm:flex items-center gap-2 bg-green-700/30 rounded-full p-1">
                 <button
-                  onClick={() => setShowAudienceMenu(!showAudienceMenu)}
-                  className="flex items-center gap-1 text-sm text-emerald-300 hover:text-white transition-colors font-medium"
+                  onClick={() => {
+                    setAudienceType('players');
+                    handleViewChange('community');
+                  }}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    audienceType === 'players'
+                      ? 'bg-white text-emerald-700 shadow-sm'
+                      : 'text-emerald-200 hover:text-white'
+                  }`}
                 >
-                  {audienceType === 'players' ? 'Social' : 'Facility Manager'}
-                  <ChevronDown className="w-4 h-4" />
+                  Social
                 </button>
-                {showAudienceMenu && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                    <button
-                      onClick={() => {
-                        setShowAudienceMenu(false);
-                        const newType = audienceType === 'players' ? 'facilities' : 'players';
-                        setAudienceType(newType);
-                        if (newType === 'facilities') {
-                          handleViewChange('sales');
-                        } else {
-                          handleViewChange('community');
-                        }
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      {audienceType === 'players' ? 'Facility Manager' : 'Social'}
-                    </button>
-                  </div>
-                )}
+                <button
+                  onClick={() => {
+                    setAudienceType('facilities');
+                    handleViewChange('sales');
+                  }}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                    audienceType === 'facilities'
+                      ? 'bg-white text-emerald-700 shadow-sm'
+                      : 'text-emerald-200 hover:text-white'
+                  }`}
+                >
+                  Facilities Manager
+                </button>
               </div>
             )}
           </div>
