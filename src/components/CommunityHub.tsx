@@ -168,24 +168,6 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                   Rated by <span className="font-bold text-emerald-600">thousands of players</span> across the country
                 </p>
               </div>
-
-              {/* Stats grid */}
-              <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto">
-                <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
-                  <p className="text-3xl sm:text-4xl font-bold text-emerald-600 mb-2">10K+</p>
-                  <p className="text-slate-600 text-sm sm:text-base font-medium">Active Players</p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
-                  <p className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">500+</p>
-                  <p className="text-slate-600 text-sm sm:text-base font-medium">Facilities</p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
-                  <p className="text-3xl sm:text-4xl font-bold text-orange-600 mb-2">50K+</p>
-                  <p className="text-slate-600 text-sm sm:text-base font-medium">Matches Played</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
