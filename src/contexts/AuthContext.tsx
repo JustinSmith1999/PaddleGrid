@@ -134,24 +134,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email,
+        options: {
+          data: {
             first_name: firstName,
             last_name: lastName,
             phone: phone || null,
             role: 'user',
-          });
+          }
+        }
+      });
 
-        if (profileError) throw profileError;
-      }
+      if (error) throw error;
 
       return { error: null };
     } catch (error) {
@@ -177,6 +170,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone || null,
+            role: 'owner',
+          }
+        }
       });
 
       if (error) throw error;
@@ -209,18 +210,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (facilityError) throw facilityError;
 
-        const { error: profileError } = await supabase
+        await supabase
           .from('profiles')
-          .insert({
-            id: data.user.id,
-            email,
-            first_name: firstName,
-            last_name: lastName,
-            phone: phone || null,
-            role: 'owner',
-          });
-
-        if (profileError) throw profileError;
+          .update({ role: 'owner' })
+          .eq('id', data.user.id);
 
         const { error: facilityUserError } = await supabase
           .from('facility_users')
