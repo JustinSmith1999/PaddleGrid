@@ -122,7 +122,7 @@ export function BrowseCourts() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 py-8 lg:py-12">
-      <div className="hidden lg:block text-center mb-10 pb-10 border-b-2 border-slate-200 dark:border-slate-700">
+      <div className="hidden lg:block text-center mb-6">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 mb-6 shadow-xl">
           <Building2 className="w-8 h-8 text-white" />
         </div>
@@ -130,7 +130,7 @@ export function BrowseCourts() {
         <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Find and explore pickleball clubs in your area</p>
       </div>
 
-      <div className="mb-8 space-y-5">
+      <div className="mb-6 space-y-5">
         <div className="relative">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
           <input
