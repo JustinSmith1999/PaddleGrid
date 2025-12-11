@@ -366,18 +366,6 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   <div className="text-xs text-slate-500 dark:text-slate-400">Courts</div>
                 </div>
               </div>
-
-              <div className="w-px h-12 bg-slate-200 dark:bg-slate-700"></div>
-
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{eventsCount}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Events</div>
-                </div>
-              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
