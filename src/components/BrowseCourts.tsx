@@ -205,6 +205,7 @@ export function BrowseCourts() {
                       src={facility.logo_url}
                       alt={facility.name}
                       className="w-full h-full object-contain"
+                      style={{ mixBlendMode: 'multiply' }}
                     />
                   ) : (
                     <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400 dark:text-slate-500" />

@@ -260,6 +260,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                               src={facility.logo_url}
                               alt={facility.name}
                               className="w-full h-full object-contain rounded-lg"
+                              style={{ mixBlendMode: 'multiply' }}
                             />
                           ) : (
                             <img

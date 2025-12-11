@@ -232,6 +232,7 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                   src={facility.logo_url}
                   alt={facility.name}
                   className="absolute inset-0 w-full h-full object-cover"
+                  style={{ mixBlendMode: 'multiply' }}
                 />
               )}
             </div>

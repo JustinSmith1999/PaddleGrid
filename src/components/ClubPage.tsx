@@ -312,6 +312,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   src={facility.logo_url}
                   alt={facility.name}
                   className="w-full h-full object-contain"
+                  style={{ mixBlendMode: 'multiply' }}
                 />
               </div>
             )}
