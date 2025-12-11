@@ -238,11 +238,19 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     >
                       <div className="flex items-start gap-2.5">
                         <div className={bgClasses[index]}>
-                          <img
-                            src="/untitled_design__2_-removebg-preview.png"
-                            alt={facility.name}
-                            className="w-full h-full object-contain"
-                          />
+                          {facility.logo_url ? (
+                            <img
+                              src={facility.logo_url}
+                              alt={facility.name}
+                              className="w-full h-full object-contain rounded-lg"
+                            />
+                          ) : (
+                            <img
+                              src="/untitled_design__2_-removebg-preview.png"
+                              alt={facility.name}
+                              className="w-full h-full object-contain"
+                            />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">{facility.name}</div>
