@@ -32,6 +32,8 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | null>(null);
+  const [honeypot, setHoneypot] = useState('');
+  const [formOpenTime, setFormOpenTime] = useState<number>(0);
   const { signIn, signUp, signUpWithFacility, signInWithApple, profile, resetPassword } = useAuth();
   const navigate = useNavigate();
 
@@ -43,6 +45,8 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
       setRegistrationSuccess(false);
       setIsForgotPassword(false);
       setResetEmailSent(false);
+      setHoneypot('');
+      setFormOpenTime(Date.now());
     }
   }, [isOpen, mode]);
 
@@ -104,11 +108,23 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
       }
 
       const { error } = await resetPassword(email);
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+          throw new Error('Network error. Please check your internet connection and try again.');
+        }
+        if (error.message.includes('rate limit')) {
+          throw new Error('Too many attempts. Please wait a few minutes and try again.');
+        }
+        throw error;
+      }
 
       setResetEmailSent(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -120,13 +136,36 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
     setLoading(true);
 
     try {
+      if (honeypot) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        throw new Error('Submission failed. Please try again.');
+      }
+
+      if (!isLogin && (Date.now() - formOpenTime) < 2000) {
+        throw new Error('Please take a moment to review the form before submitting.');
+      }
+
       if (!validateEmail(email)) {
         throw new Error('Please enter a valid email address');
       }
 
       if (isLogin) {
         const { error } = await signIn(email, password);
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            throw new Error('Invalid email or password. Please try again.');
+          }
+          if (error.message.includes('Email not confirmed')) {
+            throw new Error('Please confirm your email address before signing in.');
+          }
+          if (error.message.includes('network') || error.message.includes('fetch')) {
+            throw new Error('Network error. Please check your internet connection and try again.');
+          }
+          if (error.message.includes('rate limit')) {
+            throw new Error('Too many login attempts. Please wait a few minutes and try again.');
+          }
+          throw error;
+        }
         onClose();
       } else if (accountType === 'facility') {
         if (!validateBusinessEmail(email)) {
@@ -178,7 +217,18 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           ownerName,
           ownerPhone
         );
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('already registered') || error.message.includes('already exists')) {
+            throw new Error('This email is already registered. Please sign in or use a different email.');
+          }
+          if (error.message.includes('network') || error.message.includes('fetch')) {
+            throw new Error('Network error. Please check your internet connection and try again.');
+          }
+          if (error.message.includes('rate limit')) {
+            throw new Error('Too many registration attempts. Please wait a few minutes and try again.');
+          }
+          throw error;
+        }
         setRegistrationSuccess(true);
       } else {
         if (password.length < 8) {
@@ -186,11 +236,26 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
         }
 
         const { error } = await signUp(email, password, firstName, lastName, phone);
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('already registered') || error.message.includes('already exists')) {
+            throw new Error('This email is already registered. Please sign in or use a different email.');
+          }
+          if (error.message.includes('network') || error.message.includes('fetch')) {
+            throw new Error('Network error. Please check your internet connection and try again.');
+          }
+          if (error.message.includes('rate limit')) {
+            throw new Error('Too many registration attempts. Please wait a few minutes and try again.');
+          }
+          throw error;
+        }
         onClose();
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -410,6 +475,16 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
             </div>
 
             <form onSubmit={isForgotPassword ? handlePasswordReset : handleSubmit} className="space-y-4 px-6 pb-4">
+              <input
+                type="text"
+                name="website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               {!isLogin && (
                 <>
                   {isFacilitySignup && (
