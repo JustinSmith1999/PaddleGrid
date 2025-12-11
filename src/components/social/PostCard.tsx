@@ -59,15 +59,29 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
   async function handleLike(e: React.MouseEvent) {
     e.stopPropagation();
+
+    if (!user) {
+      alert('Please log in to like posts');
+      return;
+    }
+
     const result = await toggleLike(post.id);
     if (result.success) {
       setUserLiked(result.liked);
       setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+    } else {
+      alert('Failed to like post. Please try again.');
     }
   }
 
   async function handleJoinMatch(e: React.MouseEvent) {
     e.stopPropagation();
+
+    if (!user) {
+      alert('Please log in to join matches');
+      return;
+    }
+
     setLoading(true);
 
     if (hasJoined) {

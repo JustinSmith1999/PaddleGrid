@@ -64,15 +64,27 @@ export default function PostDetail({ postId, onBack, onProfileClick }: PostDetai
   }
 
   async function handleLike() {
+    if (!user) {
+      alert('Please log in to like posts');
+      return;
+    }
+
     const result = await toggleLike(postId);
     if (result.success) {
       setUserLiked(result.liked);
       setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+    } else {
+      alert('Failed to like post. Please try again.');
     }
   }
 
   async function handleSubmitComment() {
     if (!newComment.trim()) return;
+
+    if (!user) {
+      alert('Please log in to comment');
+      return;
+    }
 
     setSubmitting(true);
     const result = await addComment(postId, newComment);
@@ -88,6 +100,11 @@ export default function PostDetail({ postId, onBack, onProfileClick }: PostDetai
   }
 
   async function handleJoinMatch() {
+    if (!user) {
+      alert('Please log in to join matches');
+      return;
+    }
+
     if (hasJoined) {
       const result = await leaveMatch(postId);
       if (result.success) {
