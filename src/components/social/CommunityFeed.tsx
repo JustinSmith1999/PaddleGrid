@@ -358,8 +358,8 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden xl:block w-[350px] flex-shrink-0 h-screen overflow-y-auto">
-          <div className="sticky top-4 space-y-6 pl-8 pr-4">
+        <div className="hidden xl:block w-[350px] flex-shrink-0">
+          <div className="sticky top-4 space-y-6 pl-8 pr-4 max-h-[calc(100vh-2rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
               <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
@@ -417,6 +417,57 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               </div>
             </div>
 
+            {/* Local Clubs */}
+            <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
+              <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
+                <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">Local Clubs</h2>
+              </div>
+              <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/30 group-hover:shadow-xl group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-1">Pickleball Heaven</div>
+                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5" />
+                        <span>487 members</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-1">Metro Courts</div>
+                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5" />
+                        <span>832 members</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/30 group-hover:shadow-xl group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-slate-900 dark:text-white text-sm mb-1">Windy City Pickleball</div>
+                      <div className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5" />
+                        <span>1.2K members</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
             {/* Footer Links */}
             <div className="px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 space-x-3">
               <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Terms</a>
@@ -429,7 +480,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             {/* Post Button */}
             {user && (
-              <div className="px-4 mt-4">
+              <div className="px-4 mt-4 pb-6">
                 <button
                   onClick={onCreatePost}
                   className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
