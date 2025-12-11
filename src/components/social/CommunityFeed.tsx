@@ -83,12 +83,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="flex w-full">
-        {/* Main Feed - Center Column */}
-        <div className="flex-1 border-x border-slate-200 dark:border-slate-800 min-h-screen">
+      <div className="flex w-full max-w-[2000px] mx-auto">
+        {/* Main Feed - Takes most of the space */}
+        <div className="flex-1 min-w-0 px-4 lg:px-8 xl:px-12">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-            <div className="px-4 py-3">
+          <div className="sticky top-0 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 -mx-4 lg:-mx-8 xl:-mx-12 px-4 lg:px-8 xl:px-12">
+            <div className="py-3">
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">Community</h1>
             </div>
 
@@ -191,7 +191,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden lg:block w-[380px] xl:w-[420px] px-6 py-4 flex-shrink-0">
+        <div className="hidden lg:block w-[340px] xl:w-[380px] flex-shrink-0 pl-6 pr-8 py-4">
           <div className="sticky top-4 space-y-4">
             {/* Trending Topics */}
             <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
