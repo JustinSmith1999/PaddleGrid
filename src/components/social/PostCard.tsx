@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { SocialPost, toggleLike, getPostLikes, joinMatch, leaveMatch, formatTimeAgo, deletePost } from '../../lib/socialUtils';
+import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface PostCardProps {
@@ -13,34 +13,20 @@ interface PostCardProps {
 
 export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfileClick }: PostCardProps) {
   const { user } = useAuth();
-  const [likesCount, setLikesCount] = useState(0);
-  const [userLiked, setUserLiked] = useState(false);
-  const [commentsCount, setCommentsCount] = useState(0);
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
+  const [userLiked, setUserLiked] = useState(post.user_liked || false);
+  const [commentsCount, setCommentsCount] = useState(post.comments_count || 0);
   const [hasJoined, setHasJoined] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
 
   useEffect(() => {
-    loadStats();
+    setLikesCount(post.likes_count || 0);
+    setUserLiked(post.user_liked || false);
+    setCommentsCount(post.comments_count || 0);
     checkJoinStatus();
-  }, [post.id]);
-
-  async function loadStats() {
-    const likes = await getPostLikes(post.id);
-    setLikesCount(likes.count);
-    setUserLiked(likes.userLiked);
-
-    const { count } = await import('../../lib/supabase').then(m =>
-      m.supabase
-        .from('social_comments')
-        .select('*', { count: 'exact', head: true })
-        .eq('post_id', post.id)
-        .eq('is_deleted', false)
-    );
-
-    setCommentsCount(count || 0);
-  }
+  }, [post.id, post.likes_count, post.user_liked, post.comments_count]);
 
   async function checkJoinStatus() {
     if (!user || post.post_type !== 'match_invite') return;

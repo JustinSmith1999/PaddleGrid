@@ -5,7 +5,6 @@ import {
   getPostComments,
   addComment,
   toggleLike,
-  getPostLikes,
   getMatchParticipants,
   joinMatch,
   leaveMatch,
@@ -45,12 +44,13 @@ export default function PostDetail({ postId, onBack, onProfileClick }: PostDetai
     const postData = await getPostById(postId);
     setPost(postData);
 
+    if (postData) {
+      setLikesCount(postData.likes_count || 0);
+      setUserLiked(postData.user_liked || false);
+    }
+
     const commentsData = await getPostComments(postId);
     setComments(commentsData);
-
-    const likesData = await getPostLikes(postId);
-    setLikesCount(likesData.count);
-    setUserLiked(likesData.userLiked);
 
     if (postData?.post_type === 'match_invite') {
       const participantsData = await getMatchParticipants(postId);

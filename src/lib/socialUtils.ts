@@ -19,6 +19,9 @@ export interface SocialPost {
   visibility: 'facility' | 'friends' | 'public';
   created_at: string;
   updated_at: string;
+  likes_count?: number;
+  comments_count?: number;
+  user_liked?: boolean;
   profiles?: {
     id: string;
     full_name: string;
@@ -97,6 +100,57 @@ export async function createPost(post: {
   }
 }
 
+async function enrichPostsWithInteractions(posts: SocialPost[]): Promise<SocialPost[]> {
+  if (posts.length === 0) return posts;
+
+  const postIds = posts.map(p => p.id);
+  const { data: user } = await supabase.auth.getUser();
+
+  const [likesData, commentsData, userLikesData] = await Promise.all([
+    supabase
+      .from('social_post_likes')
+      .select('post_id')
+      .in('post_id', postIds),
+
+    supabase
+      .from('social_comments')
+      .select('post_id')
+      .in('post_id', postIds)
+      .eq('is_deleted', false),
+
+    user.user
+      ? supabase
+          .from('social_post_likes')
+          .select('post_id')
+          .in('post_id', postIds)
+          .eq('user_id', user.user.id)
+      : Promise.resolve({ data: [] })
+  ]);
+
+  const likesCounts = new Map<string, number>();
+  const commentsCounts = new Map<string, number>();
+  const userLikedSet = new Set<string>();
+
+  likesData.data?.forEach(like => {
+    likesCounts.set(like.post_id, (likesCounts.get(like.post_id) || 0) + 1);
+  });
+
+  commentsData.data?.forEach(comment => {
+    commentsCounts.set(comment.post_id, (commentsCounts.get(comment.post_id) || 0) + 1);
+  });
+
+  userLikesData.data?.forEach(like => {
+    userLikedSet.add(like.post_id);
+  });
+
+  return posts.map(post => ({
+    ...post,
+    likes_count: likesCounts.get(post.id) || 0,
+    comments_count: commentsCounts.get(post.id) || 0,
+    user_liked: userLikedSet.has(post.id)
+  }));
+}
+
 export async function getFeedPosts(filter: {
   type?: 'my_club' | 'following' | 'all_local';
   facilityId?: string;
@@ -138,7 +192,9 @@ export async function getFeedPosts(filter: {
     const { data, error } = await query;
 
     if (error) throw error;
-    return data || [];
+
+    const posts = data || [];
+    return await enrichPostsWithInteractions(posts);
   } catch (error) {
     console.error('Error fetching feed:', error);
     return [];
@@ -154,7 +210,11 @@ export async function getPostById(postId: string): Promise<SocialPost | null> {
       .single();
 
     if (error) throw error;
-    return data;
+
+    if (!data) return null;
+
+    const enrichedPosts = await enrichPostsWithInteractions([data]);
+    return enrichedPosts[0];
   } catch (error) {
     console.error('Error fetching post:', error);
     return null;
