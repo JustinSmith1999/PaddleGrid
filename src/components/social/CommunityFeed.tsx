@@ -133,7 +133,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         {/* Left Sidebar Navigation */}
         <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 pb-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
-          <nav className="space-y-1 mb-4">
+          <nav className="space-y-1 mb-4 pt-6">
             <button
               onClick={() => setActiveView('feed')}
               className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
@@ -291,7 +291,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Sticky Header */}
           <div className="sticky top-20 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             {activeView !== 'feed' && (
-              <div className="pb-5 lg:pb-6 px-4">
+              <div className="pt-6 pb-5 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
                   {activeView === 'notifications' && 'Notifications'}
@@ -303,7 +303,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
-              <div className="flex border-b border-slate-200 dark:border-slate-800">
+              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-6">
                 <button
                   onClick={() => setActiveTab('all_local')}
                   className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
@@ -456,7 +456,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
         {/* Right Sidebar - Trending & Suggestions */}
         <div className="hidden xl:block w-[350px] flex-shrink-0">
-          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] space-y-6 pl-8 pr-4 pt-6 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
               <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
