@@ -83,9 +83,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="flex justify-center w-full px-4 lg:px-6 xl:px-8">
+      <div className="flex w-full">
         {/* Main Feed - Center Column */}
-        <div className="w-full max-w-[1000px] lg:max-w-[1200px] xl:max-w-[1400px] border-x border-slate-200 dark:border-slate-800 min-h-screen">
+        <div className="flex-1 border-x border-slate-200 dark:border-slate-800 min-h-screen">
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
             <div className="px-4 py-3">
@@ -191,7 +191,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden lg:block w-full max-w-[400px] xl:max-w-[450px] px-6 py-4 flex-1">
+        <div className="hidden lg:block w-[380px] xl:w-[420px] px-6 py-4 flex-shrink-0">
           <div className="sticky top-4 space-y-4">
             {/* Trending Topics */}
             <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
