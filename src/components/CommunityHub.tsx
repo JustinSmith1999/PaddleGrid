@@ -42,20 +42,20 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           </div>
 
           {/* Hero Content */}
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 py-8 sm:py-16 w-full">
-            <div className="max-w-5xl mx-auto">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 py-8 sm:py-16 w-full">
+            <div className="max-w-7xl mx-auto">
               {/* Logo */}
-              <div className="mb-8 sm:mb-12 flex justify-center">
+              <div className="mb-8 sm:mb-12 lg:mb-16 flex justify-center">
                 <img
                   src="/untitled_design__2_-removebg-preview.png"
                   alt="PaddleGrid Logo"
-                  className="h-12 sm:h-16 md:h-20 w-auto drop-shadow-2xl"
+                  className="h-12 sm:h-16 md:h-20 lg:h-24 xl:h-28 w-auto drop-shadow-2xl"
                 />
               </div>
 
               {/* Hero Content */}
               <div className="text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white mb-10 sm:mb-14 md:mb-16 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2 sm:space-y-3">
+                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-white mb-10 sm:mb-14 md:mb-16 lg:mb-20 xl:mb-24 mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2 sm:space-y-3 lg:space-y-4 xl:space-y-6">
                   <div>Connect.</div>
                   <div>Play.</div>
                   <div>Discover.</div>
@@ -63,16 +63,16 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 justify-center px-4 sm:px-0">
                   <button
                     onClick={() => onAuthRequired?.('signup')}
-                    className="px-6 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-base sm:text-lg md:text-xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
+                    className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 py-3.5 sm:py-4 md:py-5 lg:py-6 xl:py-7 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-base sm:text-lg md:text-xl lg:text-2xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
                   >
                     Create Free Account
                   </button>
                   <button
                     onClick={() => onAuthRequired?.('login')}
-                    className="px-6 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 bg-white/95 backdrop-blur text-emerald-600 text-base sm:text-lg md:text-xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
+                    className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 py-3.5 sm:py-4 md:py-5 lg:py-6 xl:py-7 bg-white/95 backdrop-blur text-emerald-600 text-base sm:text-lg md:text-xl lg:text-2xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
                   >
                     Sign In
                   </button>
