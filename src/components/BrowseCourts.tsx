@@ -122,7 +122,7 @@ export function BrowseCourts() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 py-8 lg:py-12">
-      <div className="text-center mb-10">
+      <div className="text-center mb-10 pb-10 border-b-2 border-slate-200 dark:border-slate-700">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 mb-6 shadow-xl">
           <Building2 className="w-8 h-8 text-white" />
         </div>
