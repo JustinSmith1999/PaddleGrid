@@ -18,150 +18,113 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white">
-        {/* Hero Section */}
-        <div className="relative bg-white border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-6 py-20 lg:py-32">
-            <div className="lg:grid lg:grid-cols-2 gap-20 items-center">
-              {/* Mobile Logo */}
-              <div className="flex justify-center mb-12 lg:hidden">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50">
+        {/* Hero Section with Video Background */}
+        <div className="relative overflow-hidden">
+          {/* Video Background */}
+          <div className="absolute inset-0 w-full h-full">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              style={{
+                filter: 'grayscale(100%) contrast(1.1)',
+                opacity: 0.3
+              }}
+            >
+              <source src="https://videos.pexels.com/video-files/20219054/20219054-uhd_2560_1440_50fps.mp4" type="video/mp4" />
+              <source src="https://videos.pexels.com/video-files/17290112/17290112-hd_1920_1080_30fps.mp4" type="video/mp4" />
+            </video>
+            {/* Greenish grey overlay for better text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/50 via-slate-800/40 to-emerald-950/30"></div>
+          </div>
+
+          {/* Hero Content */}
+          <div className="relative z-10 container mx-auto px-4 pt-20 pb-16">
+            <div className="max-w-5xl mx-auto">
+              {/* Logo */}
+              <div className="mb-12 flex justify-center">
                 <img
-                  src="/screenshot_2025-12-05_150441-removebg-preview.png"
+                  src="/untitled_design__2_-removebg-preview.png"
                   alt="PaddleGrid Logo"
-                  className="h-32 w-auto"
+                  className="h-16 w-auto drop-shadow-2xl"
                 />
               </div>
 
-              {/* Content */}
-              <div className="space-y-8 text-center lg:text-left">
-                <div className="space-y-6">
-                  <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight">
-                    Court management
-                    <span className="block text-emerald-600">reimagined</span>
-                  </h1>
-
-                  <p className="text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                    The complete platform for modern sports facilities. Seamlessly manage courts, members, and events.
-                  </p>
+              {/* Hero Content */}
+              <div className="text-center mb-20">
+                <div className="text-4xl md:text-6xl text-white mb-12 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2">
+                  <div>Connect.</div>
+                  <div>Play.</div>
+                  <div>Discover.</div>
+                  <div className="text-emerald-300">Achieve.</div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                   <button
                     onClick={() => onAuthRequired?.('signup')}
-                    className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                    className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-lg font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
                   >
-                    Get started
+                    Create Free Account
                   </button>
                   <button
                     onClick={() => onAuthRequired?.('login')}
-                    className="border border-slate-300 bg-white text-slate-700 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-slate-50 transition-colors"
+                    className="px-8 py-4 bg-white/95 backdrop-blur text-emerald-600 text-lg font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
                   >
-                    Sign in
+                    Sign In
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div className="flex flex-wrap gap-6 text-sm text-slate-600 justify-center lg:justify-start">
-                  <span className="flex items-center">
-                    <Star className="w-4 h-4 text-emerald-600 mr-2 fill-current" />
-                    Free to join
-                  </span>
-                  <span className="flex items-center">
-                    <Users className="w-4 h-4 text-emerald-600 mr-2" />
-                    500+ facilities
-                  </span>
-                  <span className="flex items-center">
-                    <TrendingUp className="w-4 h-4 text-emerald-600 mr-2" />
-                    Growing fast
-                  </span>
+        {/* Feature Cards Section with Color Background */}
+        <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 py-20">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all hover:scale-105 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Connect with Players</h3>
+                  <p className="text-gray-600 leading-relaxed">Find playing partners, follow friends, and build your pickleball network.</p>
+                </div>
+
+                <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all hover:scale-105 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                    <Calendar className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Join Events & Series</h3>
+                  <p className="text-gray-600 leading-relaxed">Discover tournaments, leagues, and social play events near you.</p>
+                </div>
+
+                <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all hover:scale-105 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Track Your Progress</h3>
+                  <p className="text-gray-600 leading-relaxed">Log matches, track your rating, and celebrate your achievements.</p>
                 </div>
               </div>
-
-              {/* Desktop Logo */}
-              <div className="hidden lg:flex justify-center">
-                <img
-                  src="/screenshot_2025-12-05_150441-removebg-preview.png"
-                  alt="PaddleGrid Logo"
-                  className="h-96 w-auto"
-                />
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Features Section */}
-        <div className="py-24 bg-slate-50 border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16 max-w-3xl mx-auto">
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
-                Everything you need in one platform
-              </h2>
-              <p className="text-lg text-slate-600">
-                Connect with players, find courts, and join events in your community
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-8">
-                {[
-                  {
-                    icon: Users,
-                    title: "Connect with Players",
-                    description: "Find playing partners, follow friends, and build your network in your community"
-                  },
-                  {
-                    icon: Calendar,
-                    title: "Join Events & Series",
-                    description: "Discover tournaments, leagues, and social play events at your favorite facilities"
-                  },
-                  {
-                    icon: TrendingUp,
-                    title: "Track Your Progress",
-                    description: "Log matches, track your rating, and celebrate your achievements as you improve"
-                  }
-                ].map((feature, index) => (
-                  <div key={index} className="group">
-                    <div className="bg-white p-8 rounded-lg border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all">
-                      <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors">
-                        <feature.icon className="w-6 h-6 text-emerald-600 group-hover:text-white transition-colors" />
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 mb-2">
-                        {feature.title}
-                      </h3>
-                      <p className="text-slate-600 leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </div>
+        {/* Social Proof Section */}
+        <div className="bg-white py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto text-center">
+              <p className="text-gray-500 text-sm mb-4">Trusted by pickleball players everywhere</p>
+              <div className="flex items-center justify-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-yellow-400" />
                 ))}
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="py-24 bg-slate-900">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center">
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
-                Join the community
-              </h2>
-
-              <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-                Connect with thousands of players, find courts, and elevate your game
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={() => onAuthRequired?.('signup')}
-                  className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-emerald-700 transition-colors shadow-sm"
-                >
-                  Get started free
-                </button>
-
-                <button
-                  onClick={() => onAuthRequired?.('login')}
-                  className="border border-slate-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-slate-800 transition-colors"
-                >
-                  Sign in
-                </button>
+                <span className="ml-3 text-gray-700 font-semibold text-lg">4.9/5 rating</span>
               </div>
             </div>
           </div>
