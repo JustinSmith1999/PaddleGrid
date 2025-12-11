@@ -522,19 +522,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               </div>
             </div>
 
-            {/* Footer Links */}
-            <div className="px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 space-x-3">
-              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Terms</a>
-              <span>·</span>
-              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Privacy</a>
-              <span>·</span>
-              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Help</a>
-              <div className="mt-2 font-semibold">© 2025 PaddleGrid</div>
-            </div>
-
             {/* Post Button */}
             {user && (
-              <div className="px-4 mt-4 pb-6">
+              <div className="px-4 mt-4">
                 <button
                   onClick={onCreatePost}
                   className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
@@ -543,6 +533,20 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 </button>
               </div>
             )}
+
+            {/* Footer Links */}
+            <div className="px-4 py-4 pb-6">
+              <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 px-4 py-4 text-center shadow-sm">
+                <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
+                  <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Terms</a>
+                  <span className="mx-1.5">·</span>
+                  <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Privacy</a>
+                  <span className="mx-1.5">·</span>
+                  <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Help</a>
+                </div>
+                <div className="text-sm font-semibold text-slate-600 dark:text-slate-300">© 2025 PaddleGrid</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
