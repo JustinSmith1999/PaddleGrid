@@ -70,7 +70,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       setUserLiked(result.liked);
       setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
     } else {
-      alert('Failed to like post. Please try again.');
+      console.error('Failed to toggle like:', result.error);
+      alert(result.error || 'Failed to like post. Please try again.');
     }
   }
 

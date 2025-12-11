@@ -161,14 +161,15 @@ export async function getPostById(postId: string): Promise<SocialPost | null> {
   }
 }
 
-export async function toggleLike(postId: string): Promise<{ success: boolean; liked: boolean }> {
+export async function toggleLike(postId: string): Promise<{ success: boolean; liked: boolean; error?: string }> {
   try {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) {
-      return { success: false, liked: false };
+      console.error('No authenticated user');
+      return { success: false, liked: false, error: 'Not authenticated' };
     }
 
-    const { data: existing } = await supabase
+    const { data: existing, error: checkError } = await supabase
       .from('social_post_likes')
       .select('id')
       .eq('post_id', postId)
@@ -176,13 +177,21 @@ export async function toggleLike(postId: string): Promise<{ success: boolean; li
       .eq('reaction_type', 'like')
       .maybeSingle();
 
+    if (checkError) {
+      console.error('Error checking existing like:', checkError);
+      throw checkError;
+    }
+
     if (existing) {
       const { error } = await supabase
         .from('social_post_likes')
         .delete()
         .eq('id', existing.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting like:', error);
+        throw error;
+      }
       return { success: true, liked: false };
     } else {
       const { error } = await supabase
@@ -193,27 +202,32 @@ export async function toggleLike(postId: string): Promise<{ success: boolean; li
           reaction_type: 'like'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting like:', error);
+        throw error;
+      }
 
       const { data: post } = await supabase
         .from('social_posts')
         .select('author_id')
         .eq('id', postId)
-        .single();
+        .maybeSingle();
 
       if (post && post.author_id !== user.user.id) {
         await supabase.rpc('create_social_notification', {
           p_user_id: post.author_id,
           p_type: 'like',
           p_data: { post_id: postId, from_user_id: user.user.id }
+        }).catch(err => {
+          console.warn('Failed to create notification (non-critical):', err);
         });
       }
 
       return { success: true, liked: true };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error toggling like:', error);
-    return { success: false, liked: false };
+    return { success: false, liked: false, error: error.message || 'Unknown error' };
   }
 }
 
