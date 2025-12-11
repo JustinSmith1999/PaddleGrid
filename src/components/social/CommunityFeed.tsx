@@ -19,7 +19,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userFacilityId, setUserFacilityId] = useState<string | null>(null);
-  const [displayCount, setDisplayCount] = useState(10);
+  const [displayCount, setDisplayCount] = useState(25);
 
   useEffect(() => {
     if (user) {
@@ -28,7 +28,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   }, [user]);
 
   useEffect(() => {
-    setDisplayCount(3);
+    setDisplayCount(25);
     loadPosts();
   }, [activeTab, userFacilityId]);
 
@@ -61,7 +61,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       const feedPosts = await getFeedPosts({
         type: activeTab,
         facilityId: activeTab === 'my_club' ? userFacilityId || undefined : undefined,
-        limit: 50
+        limit: 100
       });
 
       setPosts(feedPosts);
@@ -88,7 +88,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         <div className="hidden xl:block flex-1 max-w-[275px]"></div>
 
         {/* Main Feed - Center Column */}
-        <div className="w-full max-w-[600px] border-x border-slate-200 dark:border-slate-800 min-h-screen">
+        <div className="w-full max-w-[700px] border-x border-slate-200 dark:border-slate-800 min-h-screen">
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
             <div className="px-4 py-3">
@@ -162,7 +162,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               {displayCount < posts.length && (
                 <div className="border-b border-slate-200 dark:border-slate-800 p-4">
                   <button
-                    onClick={() => setDisplayCount(prev => Math.min(prev + 10, posts.length))}
+                    onClick={() => setDisplayCount(prev => Math.min(prev + 25, posts.length))}
                     className="w-full py-3 text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
                   >
                     Show more posts
@@ -194,7 +194,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden lg:block w-full max-w-[350px] px-6 py-4 flex-1">
+        <div className="hidden lg:block w-full max-w-[380px] px-6 py-4 flex-1">
           <div className="sticky top-4 space-y-4">
             {/* Trending Topics */}
             <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">

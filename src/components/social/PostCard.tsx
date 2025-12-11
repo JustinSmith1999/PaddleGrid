@@ -182,9 +182,9 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
     <div
       onClick={onClick}
-      className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer px-4 py-3 border-b border-slate-200 dark:border-slate-800"
+      className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer px-4 py-2.5 border-b border-slate-200 dark:border-slate-800"
     >
-      <div className="flex gap-3">
+      <div className="flex gap-2.5">
         <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden ${
           (post.facilities?.logo_url || post.profiles?.profile_picture_url)
             ? 'bg-white'
@@ -247,8 +247,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
           </div>
 
           {post.post_type === 'match_invite' ? (
-            <div className="space-y-2.5">
-              <p className="text-slate-900 dark:text-white text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
+            <div className="space-y-2">
+              <p className="text-slate-900 dark:text-white text-[15px] leading-snug whitespace-pre-wrap">{post.content}</p>
 
               {post.media_urls && post.media_urls.length > 0 && (
                 <div className={`grid gap-0.5 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 ${
@@ -334,8 +334,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               </div>
             </div>
           ) : (
-            <div className="space-y-2.5">
-              <p className="text-slate-900 dark:text-white text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
+            <div className="space-y-2">
+              <p className="text-slate-900 dark:text-white text-[15px] leading-snug whitespace-pre-wrap">{post.content}</p>
 
               {post.media_urls && post.media_urls.length > 0 && (
                 <div className={`grid gap-0.5 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 ${
@@ -368,7 +368,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </div>
           )}
 
-          <div className="flex items-center justify-between mt-3 max-w-md">
+          <div className="flex items-center justify-between mt-2 max-w-md">
             <button
               onClick={(e) => {
                 e.stopPropagation();
