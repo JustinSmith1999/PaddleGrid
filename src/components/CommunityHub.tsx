@@ -21,6 +21,20 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700">
+          {/* Background Video */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="https://videos.pexels.com/video-files/8327739/8327739-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+          </video>
+
+          {/* Green Tint Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/90 via-teal-700/85 to-emerald-800/90"></div>
+
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-40">
             <div className="text-center space-y-10">
               {/* Headline */}
