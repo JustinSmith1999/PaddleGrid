@@ -55,9 +55,12 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
 
               {/* Hero Content */}
               <div className="text-center mb-20">
-                <p className="text-2xl md:text-3xl text-white mb-12 max-w-3xl mx-auto leading-relaxed font-extrabold drop-shadow-lg">
-                  Connect with players, share your best moments, and discover pickleball events in your community.
-                </p>
+                <div className="text-4xl md:text-6xl text-white mb-12 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2">
+                  <div>Connect.</div>
+                  <div>Play.</div>
+                  <div>Discover.</div>
+                  <div className="text-emerald-300">Achieve.</div>
+                </div>
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
