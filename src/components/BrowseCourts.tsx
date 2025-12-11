@@ -23,25 +23,10 @@ export function BrowseCourts() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
     fetchFacilities();
-    fetchUserCount();
   }, [user]);
-
-  const fetchUserCount = async () => {
-    try {
-      const { count, error } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-
-      if (error) throw error;
-      setUserCount(count || 0);
-    } catch (error) {
-      console.error('Error fetching user count:', error);
-    }
-  };
 
   const fetchFacilities = async () => {
     setLoading(true);
@@ -146,12 +131,6 @@ export function BrowseCourts() {
       </div>
 
       <div className="mb-8 space-y-5">
-        <div className="text-center mb-4">
-          <p className="text-2xl font-bold text-slate-800 dark:text-white">
-            <span className="text-emerald-600 dark:text-emerald-400">{userCount.toLocaleString()}</span> Pickleball Enthusiasts and counting
-          </p>
-        </div>
-
         <div className="relative">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
           <input
