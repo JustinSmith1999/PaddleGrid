@@ -378,13 +378,14 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   )}
                 </div>
                 {/* Tab Description */}
-                <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                  <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                    {activeTab === 'all_local' && '🌍 Posts from all clubs and players in your area'}
-                    {activeTab === 'my_clubs' && '🏢 Posts from members of your clubs'}
-                    {activeTab === 'following' && '👥 Posts only from players you follow'}
-                  </p>
-                </div>
+                {(activeTab === 'my_clubs' || activeTab === 'following') && (
+                  <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                      {activeTab === 'my_clubs' && '🏢 Posts from members of your clubs'}
+                      {activeTab === 'following' && '👥 Posts only from players you follow'}
+                    </p>
+                  </div>
+                )}
               </>
             )}
           </div>
