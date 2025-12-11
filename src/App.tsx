@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { SalesPage } from './components/SalesPage';
@@ -18,6 +18,16 @@ import PostDetail from './components/social/PostDetail';
 import ClubPage from './components/ClubPage';
 import PlayerDiscovery from './components/social/PlayerDiscovery';
 import { Loader2 } from 'lucide-react';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function AppContent() {
   const { loading, isAdmin, user } = useAuth();
@@ -71,6 +81,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ScrollToTop />
       <Navbar
         onAuthClick={() => {
           setAuthMode('login');
