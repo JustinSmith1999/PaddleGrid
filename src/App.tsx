@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
-import { BottomNav } from './components/BottomNav';
 import { SalesPage } from './components/SalesPage';
 import { BrowseCourts } from './components/BrowseCourts';
 import { UserBookings } from './components/UserBookings';
@@ -152,8 +151,6 @@ function AppContent() {
         onClose={() => setShowAuthModal(false)}
         mode={authMode}
       />
-
-      <BottomNav onViewChange={handleViewChange} />
     </div>
   );
 }
