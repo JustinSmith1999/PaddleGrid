@@ -214,13 +214,15 @@ export async function toggleLike(postId: string): Promise<{ success: boolean; li
         .maybeSingle();
 
       if (post && post.author_id !== user.user.id) {
-        await supabase.rpc('create_social_notification', {
-          p_user_id: post.author_id,
-          p_type: 'like',
-          p_data: { post_id: postId, from_user_id: user.user.id }
-        }).catch(err => {
+        try {
+          await supabase.rpc('create_social_notification', {
+            p_user_id: post.author_id,
+            p_type: 'like',
+            p_data: { post_id: postId, from_user_id: user.user.id }
+          });
+        } catch (err) {
           console.warn('Failed to create notification (non-critical):', err);
-        });
+        }
       }
 
       return { success: true, liked: true };
