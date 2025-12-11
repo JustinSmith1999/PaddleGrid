@@ -149,8 +149,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
         <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 pb-6 overflow-y-auto bg-white dark:bg-slate-900 pt-6">
-          {/* Navigation Links */}
-          <nav className="space-y-1 mb-4 p-3">
+          <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
+            {/* Navigation Links */}
+            <nav className="space-y-1 pt-2 pb-2 px-2">
             <button
               onClick={() => setActiveView('feed')}
               className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
@@ -226,18 +227,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           </nav>
 
           {/* Local Clubs */}
-          <div className="mt-6 mb-4">
+          <div className="mt-2 mb-2">
             <div>
-              <div className="px-4 py-3">
+              <div className="px-6 py-3 border-t border-slate-200/60 dark:border-slate-700/60">
                 <h2 className="font-black text-base text-slate-900 dark:text-white tracking-tight">Local Clubs</h2>
               </div>
               <div>
                 {facilities.map((facility, index) => {
                   const buttonClasses = [
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group',
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group',
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group',
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-slate-50/50 dark:hover:from-slate-900/10 dark:hover:to-slate-900/10 transition-all duration-200 text-left group'
+                    'w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group',
+                    'w-full px-6 py-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group',
+                    'w-full px-6 py-4 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group',
+                    'w-full px-6 py-4 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-slate-50/50 dark:hover:from-slate-900/10 dark:hover:to-slate-900/10 transition-all duration-200 text-left group'
                   ];
 
                   const bgClasses = [
@@ -290,7 +291,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   ];
 
                   return (
-                    <div key={`placeholder-${index}`} className="w-full px-4 py-3 opacity-50">
+                    <div key={`placeholder-${index}`} className="w-full px-6 py-4 opacity-50">
                       <div className="flex items-start gap-2.5">
                         <div className={bgClasses[facilities.length + index]}>
                           <img
@@ -309,6 +310,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 })}
               </div>
             </div>
+          </div>
           </div>
         </div>
 
