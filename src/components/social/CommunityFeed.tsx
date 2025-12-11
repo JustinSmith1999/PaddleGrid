@@ -131,7 +131,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-1/2 -translate-y-1/2 max-h-[90vh] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
           <nav className="space-y-1 mb-4">
             <button
@@ -223,11 +223,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-slate-50/50 dark:hover:from-slate-900/10 dark:hover:to-slate-900/10 transition-all duration-200 text-left group'
                   ];
 
-                  const iconClasses = [
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/30 group-hover:shadow-lg group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/30 group-hover:shadow-lg group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-orange-500/30 group-hover:shadow-lg group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-slate-500/30 group-hover:shadow-lg group-hover:shadow-slate-500/40 group-hover:scale-105 transition-all duration-200'
+                  const bgClasses = [
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/30 group-hover:shadow-lg group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200 p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/30 group-hover:shadow-lg group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200 p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-orange-500/30 group-hover:shadow-lg group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200 p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-slate-500/30 group-hover:shadow-lg group-hover:shadow-slate-500/40 group-hover:scale-105 transition-all duration-200 p-1'
                   ];
 
                   return (
@@ -237,8 +237,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                       className={buttonClasses[index]}
                     >
                       <div className="flex items-start gap-2.5">
-                        <div className={iconClasses[index]}>
-                          <Building2 className="w-5 h-5 text-white" />
+                        <div className={bgClasses[index]}>
+                          <img
+                            src="/untitled_design__2_-removebg-preview.png"
+                            alt={facility.name}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">{facility.name}</div>
@@ -252,18 +256,22 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   );
                 })}
                 {[...Array(Math.max(0, 4 - facilities.length))].map((_, index) => {
-                  const iconClasses = [
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md'
+                  const bgClasses = [
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
+                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md p-1'
                   ];
 
                   return (
                     <div key={`placeholder-${index}`} className="w-full px-4 py-3 opacity-50">
                       <div className="flex items-start gap-2.5">
-                        <div className={iconClasses[facilities.length + index]}>
-                          <Building2 className="w-5 h-5 text-white" />
+                        <div className={bgClasses[facilities.length + index]}>
+                          <img
+                            src="/untitled_design__2_-removebg-preview.png"
+                            alt="Coming Soon"
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Coming Soon</div>
@@ -295,9 +303,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Main Feed - Centered with fixed width */}
-        <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900">
+        <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900 mt-20">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="sticky top-20 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             {activeView !== 'feed' && (
               <div className="pt-6 pb-5 lg:pt-7 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -464,7 +472,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
         {/* Right Sidebar - Trending & Suggestions */}
         <div className="hidden xl:block w-[350px] flex-shrink-0">
-          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-1/2 -translate-y-1/2 w-[350px] space-y-6 pl-8 pr-4 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-20 w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
               <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
