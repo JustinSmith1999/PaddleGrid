@@ -42,20 +42,20 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           </div>
 
           {/* Hero Content */}
-          <div className="relative z-10 container mx-auto px-4 py-16 w-full">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 py-8 sm:py-16 w-full">
             <div className="max-w-5xl mx-auto">
               {/* Logo */}
-              <div className="mb-12 flex justify-center">
+              <div className="mb-8 sm:mb-12 flex justify-center">
                 <img
                   src="/untitled_design__2_-removebg-preview.png"
                   alt="PaddleGrid Logo"
-                  className="h-20 w-auto drop-shadow-2xl"
+                  className="h-12 sm:h-16 md:h-20 w-auto drop-shadow-2xl"
                 />
               </div>
 
               {/* Hero Content */}
               <div className="text-center">
-                <div className="text-5xl md:text-7xl text-white mb-16 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-3">
+                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white mb-10 sm:mb-14 md:mb-16 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2 sm:space-y-3">
                   <div>Connect.</div>
                   <div>Play.</div>
                   <div>Discover.</div>
@@ -63,16 +63,16 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
                   <button
                     onClick={() => onAuthRequired?.('signup')}
-                    className="px-10 py-5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
+                    className="px-6 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-base sm:text-lg md:text-xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
                   >
                     Create Free Account
                   </button>
                   <button
                     onClick={() => onAuthRequired?.('login')}
-                    className="px-10 py-5 bg-white/95 backdrop-blur text-emerald-600 text-xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
+                    className="px-6 sm:px-8 md:px-10 py-3.5 sm:py-4 md:py-5 bg-white/95 backdrop-blur text-emerald-600 text-base sm:text-lg md:text-xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
                   >
                     Sign In
                   </button>
