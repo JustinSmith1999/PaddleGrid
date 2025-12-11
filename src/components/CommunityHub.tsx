@@ -130,19 +130,20 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
     );
   }
 
+  const handleClubClick = (slug: string) => {
+    navigate(`/club/${slug}`);
+  };
+
   if (selectedPostId) {
     return (
       <PostDetail
         postId={selectedPostId}
         onBack={() => setSelectedPostId(null)}
         onProfileClick={(userId) => navigate(`/player/${userId}`)}
+        onClubClick={handleClubClick}
       />
     );
   }
-
-  const handleClubClick = (slug: string) => {
-    navigate(`/club/${slug}`);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

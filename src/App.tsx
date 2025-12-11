@@ -213,6 +213,7 @@ function PostDetailRoute() {
       postId={postId}
       onBack={() => navigate('/')}
       onProfileClick={(userId) => navigate(`/player/${userId}`)}
+      onClubClick={(slug) => navigate(`/club/${slug}`)}
     />
   );
 }

@@ -32,6 +32,7 @@ export interface SocialPost {
   facilities?: {
     id: string;
     name: string;
+    slug: string;
     logo_url?: string;
   };
   courts?: {

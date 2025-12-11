@@ -208,8 +208,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (post.facilities?.id) {
-                    onClubClick?.(post.facilities.id);
+                  if (post.facilities?.slug) {
+                    onClubClick?.(post.facilities.slug);
                   } else if (post.profiles?.id) {
                     onProfileClick?.(post.profiles.id);
                   }
