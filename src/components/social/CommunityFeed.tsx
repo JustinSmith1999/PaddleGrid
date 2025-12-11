@@ -284,50 +284,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               </div>
             </div>
           </div>
-
-          {/* Spacer to push content to bottom */}
-          <div className="flex-1"></div>
-
-          {/* Post Button */}
-          <button
-            onClick={() => {
-              setActiveView('feed');
-              const composer = document.querySelector('[data-post-composer]');
-              if (composer) composer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }}
-            className="w-full mb-4 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            Post
-          </button>
-
-          {/* User Profile */}
-          {user && profile && (
-            <div className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
-                {profile.full_name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm text-slate-900 dark:text-white truncate">{profile.full_name || 'User'}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 truncate">@{profile.full_name?.toLowerCase().replace(' ', '') || 'user'}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <div className="flex-shrink-0 mt-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="text-center space-y-2">
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <button className="hover:underline">Terms</button>
-                <span>·</span>
-                <button className="hover:underline">Privacy</button>
-                <span>·</span>
-                <button className="hover:underline">Help</button>
-              </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                © 2025 PaddleGrid
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Main Feed - Centered with fixed width */}
