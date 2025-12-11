@@ -14,6 +14,7 @@ interface CommunityFeedProps {
 
 export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick }: CommunityFeedProps) {
   const { user, profile } = useAuth();
+  const [activeView, setActiveView] = useState<'feed' | 'explore' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
   const [activeTab, setActiveTab] = useState<'my_club' | 'following' | 'all_local'>('all_local');
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,9 +84,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <div className="flex w-full max-w-[1600px] mx-auto">
+      <div className="flex w-full mx-auto">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[280px] xl:w-[300px] flex-shrink-0 flex-col fixed left-0 h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-4 xl:px-8 py-4">
+        <div className="hidden lg:flex w-[280px] xl:w-[300px] flex-shrink-0 flex-col fixed left-0 h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-4 xl:px-6 py-4 overflow-y-auto">
           {/* Logo */}
           <div className="mb-6">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
@@ -95,35 +96,63 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Navigation Links */}
           <nav className="flex-1 space-y-2">
-            <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group bg-emerald-50/50 dark:bg-emerald-900/10">
-              <Home className="w-6 h-6 text-slate-900 dark:text-white" />
-              <span className="text-lg font-bold text-slate-900 dark:text-white">Feed</span>
+            <button
+              onClick={() => setActiveView('feed')}
+              className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                activeView === 'feed' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+              }`}
+            >
+              <Home className={`w-6 h-6 ${activeView === 'feed' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+              <span className={`text-lg font-semibold ${activeView === 'feed' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Feed</span>
             </button>
 
-            <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
-              <Search className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-              <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Explore</span>
+            <button
+              onClick={() => setActiveView('explore')}
+              className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                activeView === 'explore' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+              }`}
+            >
+              <Search className={`w-6 h-6 ${activeView === 'explore' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+              <span className={`text-lg font-semibold ${activeView === 'explore' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Explore</span>
             </button>
 
             {user && (
               <>
-                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative">
-                  <Bell className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Notifications</span>
+                <button
+                  onClick={() => setActiveView('notifications')}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative ${
+                    activeView === 'notifications' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <Bell className={`w-6 h-6 ${activeView === 'notifications' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${activeView === 'notifications' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Notifications</span>
                   <span className="absolute top-2 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
                 </button>
 
-                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
-                  <MessageCircle className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Messages</span>
+                <button
+                  onClick={() => setActiveView('messages')}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                    activeView === 'messages' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <MessageCircle className={`w-6 h-6 ${activeView === 'messages' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${activeView === 'messages' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Messages</span>
                 </button>
 
-                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
-                  <Bookmark className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Bookmarks</span>
+                <button
+                  onClick={() => setActiveView('bookmarks')}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                    activeView === 'bookmarks' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <Bookmark className={`w-6 h-6 ${activeView === 'bookmarks' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${activeView === 'bookmarks' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Bookmarks</span>
                 </button>
 
-                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+                <button
+                  onClick={() => onProfileClick?.(user.id)}
+                  className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+                >
                   <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
                   <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
                 </button>
@@ -167,103 +196,164 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             <div className="py-5 lg:py-6 px-4">
-              <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Community</h1>
+              <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                {activeView === 'feed' && 'Community'}
+                {activeView === 'explore' && 'Explore'}
+                {activeView === 'notifications' && 'Notifications'}
+                {activeView === 'messages' && 'Messages'}
+                {activeView === 'bookmarks' && 'Bookmarks'}
+              </h1>
             </div>
 
-            {/* Twitter-style tabs */}
-            <div className="flex border-b border-slate-200 dark:border-slate-800">
-              <button
-                onClick={() => setActiveTab('all_local')}
-                className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
-                  activeTab === 'all_local'
-                    ? 'text-slate-900 dark:text-white'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                For You
-                {activeTab === 'all_local' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+            {/* Twitter-style tabs - Only show in feed view */}
+            {activeView === 'feed' && (
+              <div className="flex border-b border-slate-200 dark:border-slate-800">
+                <button
+                  onClick={() => setActiveTab('all_local')}
+                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                    activeTab === 'all_local'
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  }`}
+                >
+                  For You
+                  {activeTab === 'all_local' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                  )}
+                </button>
+
+                {user && userFacilityId && (
+                  <button
+                    onClick={() => setActiveTab('my_club')}
+                    className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                      activeTab === 'my_club'
+                        ? 'text-slate-900 dark:text-white'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    My Club
+                    {activeTab === 'my_club' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                    )}
+                  </button>
                 )}
-              </button>
 
-              {user && userFacilityId && (
-                <button
-                  onClick={() => setActiveTab('my_club')}
-                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
-                    activeTab === 'my_club'
-                      ? 'text-slate-900 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  My Club
-                  {activeTab === 'my_club' && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
-                  )}
-                </button>
-              )}
-
-              {user && (
-                <button
-                  onClick={() => setActiveTab('following')}
-                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
-                    activeTab === 'following'
-                      ? 'text-slate-900 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  Following
-                  {activeTab === 'following' && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
-                  )}
-                </button>
-              )}
-            </div>
+                {user && (
+                  <button
+                    onClick={() => setActiveTab('following')}
+                    className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                      activeTab === 'following'
+                        ? 'text-slate-900 dark:text-white'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    Following
+                    {activeTab === 'following' && (
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Posts Feed */}
-          {posts.length > 0 ? (
+          {/* Content Area */}
+          {activeView === 'feed' && (
             <>
-              {posts.slice(0, displayCount).map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onClick={() => onPostClick(post.id)}
-                  onUpdate={() => loadPosts(true)}
-                  onClubClick={onClubClick}
-                  onProfileClick={onProfileClick}
-                />
-              ))}
+              {/* Posts Feed */}
+              {posts.length > 0 ? (
+                <>
+                  {posts.slice(0, displayCount).map((post) => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      onClick={() => onPostClick(post.id)}
+                      onUpdate={() => loadPosts(true)}
+                      onClubClick={onClubClick}
+                      onProfileClick={onProfileClick}
+                    />
+                  ))}
 
-              {displayCount < posts.length && (
-                <div className="border-b border-slate-200 dark:border-slate-800 p-4">
-                  <button
-                    onClick={() => setDisplayCount(prev => Math.min(prev + 25, posts.length))}
-                    className="w-full py-3 text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
-                  >
-                    Show more posts
-                  </button>
+                  {displayCount < posts.length && (
+                    <div className="border-b border-slate-200 dark:border-slate-800 p-4">
+                      <button
+                        onClick={() => setDisplayCount(prev => Math.min(prev + 25, posts.length))}
+                        className="w-full py-3 text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
+                      >
+                        Show more posts
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-16 px-4 border-b border-slate-200 dark:border-slate-800">
+                  <div className="text-6xl mb-4">📣</div>
+                  <p className="text-slate-900 dark:text-white font-semibold text-lg mb-2">No posts yet</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+                    {activeTab === 'following'
+                      ? 'Follow some players to see their posts here'
+                      : user
+                      ? 'Be the first to share something!'
+                      : 'Sign in to create posts and join the conversation'}
+                  </p>
+                  {user && (
+                    <button
+                      onClick={onCreatePost}
+                      className="px-6 py-3 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors shadow-lg"
+                    >
+                      Create Post
+                    </button>
+                  )}
                 </div>
               )}
             </>
-          ) : (
-            <div className="text-center py-16 px-4 border-b border-slate-200 dark:border-slate-800">
-              <div className="text-6xl mb-4">📣</div>
-              <p className="text-slate-900 dark:text-white font-semibold text-lg mb-2">No posts yet</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-                {activeTab === 'following'
-                  ? 'Follow some players to see their posts here'
-                  : user
-                  ? 'Be the first to share something!'
-                  : 'Sign in to create posts and join the conversation'}
-              </p>
-              {user && (
-                <button
-                  onClick={onCreatePost}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors shadow-lg"
-                >
-                  Create Post
-                </button>
-              )}
+          )}
+
+          {/* Explore View */}
+          {activeView === 'explore' && (
+            <div className="p-8 text-center">
+              <div className="text-6xl mb-4">🔍</div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Explore Pickleball</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">Discover trending posts, top players, and popular clubs in your area</p>
+              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
+              </div>
+            </div>
+          )}
+
+          {/* Notifications View */}
+          {activeView === 'notifications' && user && (
+            <div className="p-8 text-center">
+              <div className="text-6xl mb-4">🔔</div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Stay Updated</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">Get notified about match invites, event updates, and social interactions</p>
+              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
+              </div>
+            </div>
+          )}
+
+          {/* Messages View */}
+          {activeView === 'messages' && user && (
+            <div className="p-8 text-center">
+              <div className="text-6xl mb-4">💬</div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Your Messages</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">Chat with players, coordinate matches, and stay connected</p>
+              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
+              </div>
+            </div>
+          )}
+
+          {/* Bookmarks View */}
+          {activeView === 'bookmarks' && user && (
+            <div className="p-8 text-center">
+              <div className="text-6xl mb-4">🔖</div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Saved Posts</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">View all the posts you've bookmarked for later</p>
+              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">No bookmarks yet</p>
+              </div>
             </div>
           )}
         </div>
