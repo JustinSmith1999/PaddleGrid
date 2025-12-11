@@ -382,29 +382,31 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </div>
           )}
 
-          <div className="flex items-center gap-2 mt-3 lg:mt-4">
-            <button
-              onClick={handleLike}
-              className={`flex-1 py-2.5 lg:py-3 px-4 rounded-lg border-2 font-semibold text-base lg:text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                userLiked
-                  ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700'
-                  : 'bg-white border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900 dark:text-emerald-400 dark:border-emerald-400 dark:hover:bg-emerald-950/30'
-              }`}
-            >
-              <Heart className={`w-5 h-5 ${userLiked ? 'fill-current' : ''}`} />
-              {userLiked ? 'Liked' : 'Like'}
-            </button>
+          <div className="flex items-center justify-center mt-3 lg:mt-4">
+            <div className="flex items-center gap-2 w-full max-w-md">
+              <button
+                onClick={handleLike}
+                className={`flex-1 py-2.5 lg:py-3 px-3 lg:px-4 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1.5 lg:gap-2 ${
+                  userLiked
+                    ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700'
+                    : 'bg-white border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900 dark:text-emerald-400 dark:border-emerald-400 dark:hover:bg-emerald-950/30'
+                }`}
+              >
+                <Heart className={`w-4 h-4 lg:w-5 lg:h-5 ${userLiked ? 'fill-current' : ''}`} />
+                <span className="whitespace-nowrap">{userLiked ? 'Liked' : 'Like'}</span>
+              </button>
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onClick();
-              }}
-              className="flex-1 py-2.5 lg:py-3 px-4 rounded-lg border-2 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold text-base lg:text-lg transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <MessageCircle className="w-5 h-5" />
-              {commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}
-            </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClick();
+                }}
+                className="flex-1 py-2.5 lg:py-3 px-3 lg:px-4 rounded-lg border-2 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1.5 lg:gap-2"
+              >
+                <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5" />
+                <span className="whitespace-nowrap">{commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
