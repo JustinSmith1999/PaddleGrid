@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield } from 'lucide-react';
-import { SocialPost, getFeedPosts, getNotifications, Notification } from '../../lib/socialUtils';
+import { SocialPost, getFeedPosts, getNotifications, Notification, getBookmarkedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import PostCard from './PostCard';
 import NotificationsPanel from './NotificationsPanel';
+import { BrowseCourts } from '../BrowseCourts';
+import Messages from './Messages';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -25,6 +27,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; logo_url: string | null; memberCount: number }>>([]);
   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<SocialPost[]>([]);
 
   useEffect(() => {
     fetchFacilities();
@@ -40,6 +43,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     setDisplayCount(25);
     loadPosts();
   }, [activeTab, userFacilityIds.join(',')]);
+
+  useEffect(() => {
+    if (activeView === 'bookmarks' && user) {
+      loadBookmarks();
+    }
+  }, [activeView, user]);
 
   async function fetchUserFacilities() {
     if (!user) return;
@@ -121,6 +130,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  }
+
+  async function loadBookmarks() {
+    setLoading(true);
+    try {
+      const bookmarks = await getBookmarkedPosts();
+      setBookmarkedPosts(bookmarks);
+    } catch (error) {
+      console.error('Error loading bookmarks:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -281,32 +302,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     </button>
                   );
                 })}
-                {[...Array(Math.max(0, 4 - facilities.length))].map((_, index) => {
-                  const bgClasses = [
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-md p-1',
-                    'w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0 shadow-md p-1'
-                  ];
-
-                  return (
-                    <div key={`placeholder-${index}`} className="w-full px-6 py-4 opacity-50">
-                      <div className="flex items-start gap-2.5">
-                        <div className={bgClasses[facilities.length + index]}>
-                          <img
-                            src="/untitled_design__2_-removebg-preview.png"
-                            alt="Coming Soon"
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Coming Soon</div>
-                          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">More clubs arriving</div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
             </div>
           </div>
@@ -454,38 +449,40 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Courts View */}
           {activeView === 'explore' && (
-            <div className="p-8 text-center">
-              <div className="text-6xl mb-4">🎾</div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Browse Courts</h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">Find and book courts at clubs in your area</p>
-              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
-                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
-              </div>
+            <div className="p-6">
+              <BrowseCourts />
             </div>
           )}
 
           {/* Messages View */}
           {activeView === 'messages' && user && (
-            <div className="p-8 text-center">
-              <div className="text-6xl mb-4">💬</div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Your Messages</h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">Chat with players, coordinate matches, and stay connected</p>
-              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
-                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
-              </div>
-            </div>
+            <Messages />
           )}
 
           {/* Bookmarks View */}
           {activeView === 'bookmarks' && user && (
-            <div className="p-8 text-center">
-              <div className="text-6xl mb-4">🔖</div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Saved Posts</h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">View all the posts you've bookmarked for later</p>
-              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
-                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">No bookmarks yet</p>
-              </div>
-            </div>
+            <>
+              {bookmarkedPosts.length > 0 ? (
+                bookmarkedPosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onClick={() => onPostClick(post.id)}
+                    onUpdate={() => loadBookmarks()}
+                    onClubClick={onClubClick}
+                    onProfileClick={onProfileClick}
+                  />
+                ))
+              ) : (
+                <div className="p-8 text-center">
+                  <div className="text-6xl mb-4">🔖</div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">No Bookmarks Yet</h2>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">
+                    Save posts you want to revisit later by clicking the bookmark icon
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
 

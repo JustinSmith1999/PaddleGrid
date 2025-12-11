@@ -782,3 +782,164 @@ export async function getFollowCounts(userId: string): Promise<{ followers: numb
     return { followers: 0, following: 0 };
   }
 }
+
+export async function bookmarkPost(postId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const { error } = await supabase
+      .from('bookmarks')
+      .insert({
+        user_id: user.user.id,
+        post_id: postId
+      });
+
+    if (error) {
+      if (error.code === '23505') {
+        return { success: false, error: 'Post already bookmarked' };
+      }
+      throw error;
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error bookmarking post:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function unbookmarkPost(postId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const { error } = await supabase
+      .from('bookmarks')
+      .delete()
+      .eq('user_id', user.user.id)
+      .eq('post_id', postId);
+
+    if (error) throw error;
+
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error unbookmarking post:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function isBookmarked(postId: string): Promise<boolean> {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return false;
+
+    const { data } = await supabase
+      .from('bookmarks')
+      .select('id')
+      .eq('user_id', user.user.id)
+      .eq('post_id', postId)
+      .maybeSingle();
+
+    return !!data;
+  } catch (error) {
+    console.error('Error checking bookmark status:', error);
+    return false;
+  }
+}
+
+export async function getBookmarkedPosts(): Promise<SocialPost[]> {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return [];
+
+    const { data: bookmarks, error } = await supabase
+      .from('bookmarks')
+      .select(`
+        post_id,
+        social_posts (
+          id,
+          author_id,
+          facility_id,
+          court_id,
+          post_type,
+          content,
+          media_urls,
+          sport,
+          skill_min,
+          skill_max,
+          play_date,
+          play_start_time,
+          play_end_time,
+          spots_needed,
+          spots_filled,
+          visibility,
+          created_at,
+          updated_at,
+          profiles:author_id (
+            id,
+            full_name,
+            email,
+            skill_level,
+            profile_picture_url
+          ),
+          facilities:facility_id (
+            id,
+            name,
+            slug,
+            logo_url
+          ),
+          courts:court_id (
+            id,
+            name
+          )
+        )
+      `)
+      .eq('user_id', user.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const posts = bookmarks
+      ?.map((bookmark: any) => bookmark.social_posts)
+      .filter(Boolean) || [];
+
+    const postsWithStats = await Promise.all(
+      posts.map(async (post: any) => {
+        const [{ count: likesCount }, { count: commentsCount }, { data: userLiked }] = await Promise.all([
+          supabase
+            .from('social_likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', post.id),
+          supabase
+            .from('social_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', post.id)
+            .eq('is_deleted', false),
+          supabase
+            .from('social_likes')
+            .select('id')
+            .eq('post_id', post.id)
+            .eq('user_id', user.user!.id)
+            .maybeSingle()
+        ]);
+
+        return {
+          ...post,
+          likes_count: likesCount || 0,
+          comments_count: commentsCount || 0,
+          user_liked: !!userLiked
+        };
+      })
+    );
+
+    return postsWithStats;
+  } catch (error) {
+    console.error('Error fetching bookmarked posts:', error);
+    return [];
+  }
+}

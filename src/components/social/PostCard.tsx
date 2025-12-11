@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost } from '../../lib/socialUtils';
+import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
+import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, isBookmarked } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface PostCardProps {
@@ -20,13 +20,21 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [loading, setLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
+  const [isPostBookmarked, setIsPostBookmarked] = useState(false);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
     setUserLiked(post.user_liked || false);
     setCommentsCount(post.comments_count || 0);
     checkJoinStatus();
+    checkBookmarkStatus();
   }, [post.id, post.likes_count, post.user_liked, post.comments_count]);
+
+  async function checkBookmarkStatus() {
+    if (!user) return;
+    const bookmarked = await isBookmarked(post.id);
+    setIsPostBookmarked(bookmarked);
+  }
 
   async function checkJoinStatus() {
     if (!user || post.post_type !== 'match_invite') return;
@@ -104,6 +112,27 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       alert(result.error || 'Failed to delete post');
     }
     setShowMenu(false);
+  }
+
+  async function handleBookmark(e: React.MouseEvent) {
+    e.stopPropagation();
+
+    if (!user) {
+      alert('Please log in to bookmark posts');
+      return;
+    }
+
+    if (isPostBookmarked) {
+      const result = await unbookmarkPost(post.id);
+      if (result.success) {
+        setIsPostBookmarked(false);
+      }
+    } else {
+      const result = await bookmarkPost(post.id);
+      if (result.success) {
+        setIsPostBookmarked(true);
+      }
+    }
   }
 
   const isFull = post.spots_needed && post.spots_filled >= post.spots_needed;
@@ -369,31 +398,42 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </div>
           )}
 
-          <div className="flex items-center justify-center mt-3 lg:mt-4">
-            <div className="flex items-center gap-2 w-full max-w-md">
-              <button
-                onClick={handleLike}
-                className={`flex-1 py-2.5 lg:py-3 px-3 lg:px-4 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1.5 lg:gap-2 ${
-                  userLiked
-                    ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700'
-                    : 'bg-white border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900 dark:text-emerald-400 dark:border-emerald-400 dark:hover:bg-emerald-950/30'
-                }`}
-              >
-                <Heart className={`w-4 h-4 lg:w-5 lg:h-5 ${userLiked ? 'fill-current' : ''}`} />
-                <span className="whitespace-nowrap">{userLiked ? 'Liked' : 'Like'}</span>
-              </button>
+          <div className="flex items-center justify-between mt-3 lg:mt-4 gap-2">
+            <button
+              onClick={handleLike}
+              className={`flex-1 py-2.5 lg:py-3 px-2 lg:px-3 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1 lg:gap-1.5 ${
+                userLiked
+                  ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700'
+                  : 'bg-white border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900 dark:text-emerald-400 dark:border-emerald-400 dark:hover:bg-emerald-950/30'
+              }`}
+            >
+              <Heart className={`w-4 h-4 lg:w-5 lg:h-5 ${userLiked ? 'fill-current' : ''}`} />
+              <span className="whitespace-nowrap hidden sm:inline">{userLiked ? 'Liked' : 'Like'}</span>
+              <span className="whitespace-nowrap sm:hidden">{likesCount}</span>
+            </button>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClick();
-                }}
-                className="flex-1 py-2.5 lg:py-3 px-3 lg:px-4 rounded-lg border-2 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1.5 lg:gap-2"
-              >
-                <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5" />
-                <span className="whitespace-nowrap">{commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}</span>
-              </button>
-            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+              }}
+              className="flex-1 py-2.5 lg:py-3 px-2 lg:px-3 rounded-lg border-2 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1 lg:gap-1.5"
+            >
+              <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5" />
+              <span className="whitespace-nowrap hidden sm:inline">{commentsCount}</span>
+              <span className="whitespace-nowrap sm:hidden">{commentsCount}</span>
+            </button>
+
+            <button
+              onClick={handleBookmark}
+              className={`py-2.5 lg:py-3 px-2.5 lg:px-3 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center ${
+                isPostBookmarked
+                  ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700'
+                  : 'bg-white border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900 dark:text-emerald-400 dark:border-emerald-400 dark:hover:bg-emerald-950/30'
+              }`}
+            >
+              <Bookmark className={`w-4 h-4 lg:w-5 lg:h-5 ${isPostBookmarked ? 'fill-current' : ''}`} />
+            </button>
           </div>
         </div>
       </div>
