@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Users, Calendar, TrendingUp, Star, Check, ArrowRight, Sparkles, Target, Zap, Shield, Bell, BarChart3, Trophy } from 'lucide-react';
+import { Plus, Users, Calendar, TrendingUp, Star, Check, ArrowRight, Sparkles, Target, Zap, Shield, Bell, BarChart3, Trophy, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CommunityFeed from './social/CommunityFeed';
@@ -83,6 +83,17 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                     <div className="text-white font-semibold">{feature.label}</div>
                   </div>
                 ))}
+              </div>
+
+              {/* Facility Manager Link - Mobile Only */}
+              <div className="md:hidden pt-8">
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl hover:bg-white/20 hover:border-white/50 transition-all duration-200"
+                >
+                  <Building2 className="w-5 h-5 mr-2" />
+                  Facility Manager
+                </button>
               </div>
             </div>
           </div>
