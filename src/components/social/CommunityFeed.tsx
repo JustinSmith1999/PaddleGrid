@@ -16,11 +16,11 @@ interface CommunityFeedProps {
 export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick }: CommunityFeedProps) {
   const { user, profile } = useAuth();
   const [activeView, setActiveView] = useState<'feed' | 'explore' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
-  const [activeTab, setActiveTab] = useState<'my_club' | 'following' | 'all_local'>('all_local');
+  const [activeTab, setActiveTab] = useState<'my_clubss' | 'following' | 'all_local'>('all_local');
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [userFacilityId, setUserFacilityId] = useState<string | null>(null);
+  const [userFacilityIds, setUserFacilityIds] = useState<string[]>([]);
   const [displayCount, setDisplayCount] = useState(25);
   const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; logo_url: string | null; memberCount: number }>>([]);
   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
@@ -29,7 +29,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   useEffect(() => {
     fetchFacilities();
     if (user) {
-      fetchUserFacility();
+      fetchUserFacilities();
       fetchUnreadCount();
       const interval = setInterval(fetchUnreadCount, 30000);
       return () => clearInterval(interval);
@@ -39,23 +39,22 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   useEffect(() => {
     setDisplayCount(25);
     loadPosts();
-  }, [activeTab, userFacilityId]);
+  }, [activeTab, userFacilityIds.join(',')]);
 
-  async function fetchUserFacility() {
+  async function fetchUserFacilities() {
     if (!user) return;
 
     try {
       const { data } = await supabase
         .from('facility_users')
         .select('facility_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('user_id', user.id);
 
-      if (data) {
-        setUserFacilityId(data.facility_id);
+      if (data && data.length > 0) {
+        setUserFacilityIds(data.map(f => f.facility_id));
       }
     } catch (error) {
-      console.error('Error fetching user facility:', error);
+      console.error('Error fetching user facilities:', error);
     }
   }
 
@@ -112,7 +111,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     try {
       const feedPosts = await getFeedPosts({
         type: activeTab,
-        facilityId: activeTab === 'my_club' ? userFacilityId || undefined : undefined,
+        facilityIds: activeTab === 'my_clubss' ? userFacilityIds : undefined,
         limit: 100
       });
 
@@ -346,17 +345,17 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     )}
                   </button>
 
-                  {user && userFacilityId && (
+                  {user && userFacilityIds.length > 0 && (
                     <button
-                      onClick={() => setActiveTab('my_club')}
+                      onClick={() => setActiveTab('my_clubs')}
                       className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
-                        activeTab === 'my_club'
+                        activeTab === 'my_clubs'
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                       }`}
                     >
-                      My Club
-                      {activeTab === 'my_club' && (
+                      My Clubs
+                      {activeTab === 'my_clubs' && (
                         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
                       )}
                     </button>
@@ -382,7 +381,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
                   <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
                     {activeTab === 'all_local' && '🌍 Posts from all clubs and players in your area'}
-                    {activeTab === 'my_club' && '🏢 Posts only from your club members'}
+                    {activeTab === 'my_clubs' && '🏢 Posts from members of your clubs'}
                     {activeTab === 'following' && '👥 Posts only from players you follow'}
                   </p>
                 </div>
@@ -421,18 +420,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               ) : (
                 <div className="text-center py-16 px-4 border-b border-slate-200 dark:border-slate-800">
                   <div className="text-6xl mb-4">
-                    {activeTab === 'my_club' ? '🏢' : activeTab === 'following' ? '👥' : '📣'}
+                    {activeTab === 'my_clubs' ? '🏢' : activeTab === 'following' ? '👥' : '📣'}
                   </div>
                   <p className="text-slate-900 dark:text-white font-semibold text-lg mb-2">
-                    {activeTab === 'my_club'
-                      ? 'No posts from your club yet'
+                    {activeTab === 'my_clubs'
+                      ? 'No posts from your clubs yet'
                       : activeTab === 'following'
                       ? 'No posts from followed players'
                       : 'No posts yet'}
                   </p>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-                    {activeTab === 'my_club'
-                      ? 'Be the first to share with your club members!'
+                    {activeTab === 'my_clubs'
+                      ? 'Be the first to share with members of your clubs!'
                       : activeTab === 'following'
                       ? 'Follow some players to see their posts here. Visit player profiles and click Follow.'
                       : user
