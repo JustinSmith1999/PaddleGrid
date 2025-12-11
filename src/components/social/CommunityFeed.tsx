@@ -201,7 +201,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             <div className="py-5 lg:py-6 px-4">
               <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                {activeView === 'feed' && 'Community'}
+                {activeView === 'feed' && 'Feed'}
                 {activeView === 'explore' && 'Explore'}
                 {activeView === 'notifications' && 'Notifications'}
                 {activeView === 'messages' && 'Messages'}
