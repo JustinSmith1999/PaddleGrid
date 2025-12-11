@@ -148,7 +148,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   <div>
                     <h3 className="font-semibold text-gray-900 text-lg">Player Account</h3>
                     <p className="text-sm text-gray-600 mt-1">Book courts, join matches, and track your progress</p>
-                    <p className="text-xs text-emerald-600 font-medium mt-2">Free Forever</p>
                   </div>
                 </div>
               </button>
