@@ -74,11 +74,11 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                   onClick={() => setShowAudienceMenu(!showAudienceMenu)}
                   className="flex items-center gap-1 text-sm text-emerald-300 hover:text-white transition-colors font-medium"
                 >
-                  {audienceType === 'players' ? 'For Players' : 'For Facilities'}
+                  {audienceType === 'players' ? 'Social' : 'Facility Manager'}
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 {showAudienceMenu && (
-                  <div className="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                     <button
                       onClick={() => {
                         setShowAudienceMenu(false);
@@ -92,7 +92,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                       }}
                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      {audienceType === 'players' ? 'For Facilities' : 'For Players'}
+                      {audienceType === 'players' ? 'Facility Manager' : 'Social'}
                     </button>
                   </div>
                 )}
