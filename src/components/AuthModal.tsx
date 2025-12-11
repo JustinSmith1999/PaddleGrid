@@ -165,7 +165,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   <div>
                     <h3 className="font-semibold text-gray-900 text-lg">Facility Account</h3>
                     <p className="text-sm text-gray-600 mt-1">Manage courts, bookings, and members</p>
-                    <p className="text-xs text-emerald-600 font-medium mt-2">$449/month</p>
                   </div>
                 </div>
               </button>
@@ -205,16 +204,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 <>
                   {isFacilitySignup && (
                     <>
-                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
-                        <div className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-emerald-600 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium text-emerald-900">Facility Subscription</p>
-                            <p className="text-xs text-emerald-700 mt-1">$449/month - Manage unlimited courts, bookings, and members</p>
-                          </div>
-                        </div>
-                      </div>
-
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -416,6 +405,18 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
               {error}
             </div>
           )}
+
+              {isFacilitySignup && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-emerald-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-emerald-900">Facility Subscription</p>
+                      <p className="text-xs text-emerald-700 mt-1">$449/month - Manage unlimited courts, bookings, and members</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <button
                 type="submit"
