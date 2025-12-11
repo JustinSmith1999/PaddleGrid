@@ -187,6 +187,8 @@ export async function getFeedPosts(filter: {
     } else {
       if (!user.user) {
         query = query.eq('visibility', 'public');
+      } else {
+        query = query.or(`visibility.eq.public,visibility.eq.facility,author_id.eq.${user.user.id}`);
       }
     }
 
