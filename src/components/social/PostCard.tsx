@@ -182,13 +182,13 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
     <div
       onClick={onClick}
-      className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer px-4 py-4 lg:py-5 border-b border-slate-200 dark:border-slate-800"
+      className="bg-white dark:bg-slate-900 hover:bg-gradient-to-br hover:from-slate-50/50 hover:to-white dark:hover:from-slate-800/50 dark:hover:to-slate-900 transition-all duration-200 cursor-pointer px-4 py-5 lg:py-6 border-b border-slate-200/80 dark:border-slate-800/80"
     >
       <div className="flex gap-3 lg:gap-4">
-        <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden ${
+        <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 overflow-hidden shadow-lg ${
           (post.facilities?.logo_url || post.profiles?.profile_picture_url)
             ? 'bg-white'
-            : 'bg-gradient-to-br from-emerald-500 to-teal-600'
+            : 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/30'
         }`}>
           {(post.facilities?.logo_url || post.profiles?.profile_picture_url) ? (
             <img
@@ -274,8 +274,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 </div>
               )}
 
-              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 to-transparent p-5 lg:p-6 space-y-4">
-                <div className="flex items-center gap-2 text-base lg:text-lg font-bold text-emerald-700 dark:text-emerald-400">
+              <div className="rounded-3xl border-2 border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-teal-50/30 dark:from-emerald-950/40 dark:via-emerald-950/20 dark:to-teal-950/20 p-5 lg:p-7 space-y-5 shadow-lg shadow-emerald-500/10">
+                <div className="flex items-center gap-2.5 text-base lg:text-xl font-black text-emerald-700 dark:text-emerald-400">
                   <Trophy className="w-5 h-5 lg:w-6 lg:h-6" />
                   {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
                 </div>
@@ -320,12 +320,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   <button
                     onClick={handleJoinMatch}
                     disabled={loading || (isFull && !hasJoined)}
-                    className={`w-full py-3 lg:py-4 px-5 rounded-full text-base lg:text-lg font-bold transition ${
+                    className={`w-full py-3.5 lg:py-4 px-6 rounded-2xl text-base lg:text-lg font-black transition-all duration-200 ${
                       hasJoined
-                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        ? 'bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-700 text-slate-700 dark:text-slate-300 hover:from-slate-200 hover:to-slate-100 dark:hover:from-slate-700 dark:hover:to-slate-600 shadow-md'
                         : isFull
                         ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
-                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:scale-[1.02]'
                     }`}
                   >
                     {hasJoined ? 'Leave Match' : isFull ? 'Match Full' : `Join Match (${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left)`}

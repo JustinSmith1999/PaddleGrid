@@ -82,44 +82,44 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
       <div className="flex w-full">
         {/* Main Feed - Takes most of the space */}
         <div className="flex-1 min-w-0 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-            <div className="py-4">
-              <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">Community</h1>
+          <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 shadow-sm">
+            <div className="py-5 lg:py-6">
+              <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Community</h1>
             </div>
 
             {/* Twitter-style tabs */}
             <div className="flex border-b border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setActiveTab('all_local')}
-                className={`flex-1 px-4 py-4 text-base lg:text-lg font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
                   activeTab === 'all_local'
                     ? 'text-slate-900 dark:text-white'
-                    : 'text-slate-600 dark:text-slate-400'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 For You
                 {activeTab === 'all_local' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
                 )}
               </button>
 
               {user && userFacilityId && (
                 <button
                   onClick={() => setActiveTab('my_club')}
-                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
                     activeTab === 'my_club'
                       ? 'text-slate-900 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   My Club
                   {activeTab === 'my_club' && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
                   )}
                 </button>
               )}
@@ -127,15 +127,15 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               {user && (
                 <button
                   onClick={() => setActiveTab('following')}
-                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                  className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
                     activeTab === 'following'
                       ? 'text-slate-900 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   Following
                   {activeTab === 'following' && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
                   )}
                 </button>
               )}
@@ -191,137 +191,137 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden lg:block w-[380px] xl:w-[420px] flex-shrink-0 pl-6 pr-8 py-4">
-          <div className="sticky top-4 space-y-5">
+        <div className="hidden lg:block w-[380px] xl:w-[420px] flex-shrink-0 pl-6 pr-8 py-6">
+          <div className="sticky top-4 space-y-6">
             {/* Trending Topics */}
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
-                <h2 className="font-bold text-xl text-slate-900 dark:text-white">Trending</h2>
+            <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
+              <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
+                <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">Trending</h2>
               </div>
-              <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                <button className="w-full px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1.5">
+              <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     <TrendingUp className="w-4 h-4" />
                     <span>Pickleball · Trending</span>
                   </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-base">DUPR Ratings</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">3.8K posts</div>
+                  <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-1">DUPR Ratings</div>
+                  <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">3.8K posts</div>
                 </button>
-                <button className="w-full px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1.5">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     <Calendar className="w-4 h-4" />
                     <span>Events · This Week</span>
                   </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-base">Weekend Tournaments</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">1.4K posts</div>
+                  <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-1">Weekend Tournaments</div>
+                  <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">1.4K posts</div>
                 </button>
-                <button className="w-full px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1.5">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     <Building2 className="w-4 h-4" />
                     <span>Local · Popular</span>
                   </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-base">New Courts Opening</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">2.1K posts</div>
+                  <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-1">New Courts Opening</div>
+                  <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">2.1K posts</div>
                 </button>
-                <button className="w-full px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1.5">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     <TrendingUp className="w-4 h-4" />
                     <span>Equipment · Trending</span>
                   </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-base">Best Paddles 2025</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">987 posts</div>
+                  <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-1">Best Paddles 2025</div>
+                  <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">987 posts</div>
                 </button>
-                <button className="w-full px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1.5">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     <Users className="w-4 h-4" />
                     <span>Community · Growing</span>
                   </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-base">Social Mixers</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">1.8K posts</div>
+                  <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-1">Social Mixers</div>
+                  <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">1.8K posts</div>
                 </button>
-                <button className="w-full px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1.5">
+                <button className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     <TrendingUp className="w-4 h-4" />
                     <span>Strategy · Hot</span>
                   </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-base">Third Shot Drop Tips</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">1.5K posts</div>
+                  <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-1">Third Shot Drop Tips</div>
+                  <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">1.5K posts</div>
                 </button>
               </div>
             </div>
 
             {/* Clubs Near You */}
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
-                <h2 className="font-bold text-xl text-slate-900 dark:text-white">Clubs Near You</h2>
+            <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
+              <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
+                <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">Clubs Near You</h2>
               </div>
-              <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                <div className="px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
-                  <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-7 h-7 text-white" />
+              <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
+                <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 cursor-pointer group">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/30 group-hover:shadow-xl group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-base">Pickleball Heaven</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+                      <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Pickleball Heaven</div>
+                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
                         <MapPin className="w-4 h-4" />
                         <span>Chicago, IL</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                         <Users className="w-4 h-4" />
                         <span>487 members</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
-                  <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-7 h-7 text-white" />
+                <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 cursor-pointer group">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-base">Metro Courts</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+                      <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Metro Courts</div>
+                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
                         <MapPin className="w-4 h-4" />
                         <span>Chicago, IL</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400">
                         <Users className="w-4 h-4" />
                         <span>832 members</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
-                  <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-7 h-7 text-white" />
+                <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 cursor-pointer group">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/30 group-hover:shadow-xl group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-base">Windy City Pickleball</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+                      <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Windy City Pickleball</div>
+                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
                         <MapPin className="w-4 h-4" />
                         <span>Chicago, IL</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-orange-600 dark:text-orange-400">
                         <Users className="w-4 h-4" />
                         <span>1.2K members</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="px-5 py-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
-                  <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-7 h-7 text-white" />
+                <div className="px-6 py-5 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 dark:hover:from-purple-900/10 dark:hover:to-pink-900/10 transition-all duration-200 cursor-pointer group">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30 group-hover:shadow-xl group-hover:shadow-purple-500/40 group-hover:scale-105 transition-all duration-200">
+                      <Building2 className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-white text-base">Lakeshore Athletic Club</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+                      <div className="font-black text-slate-900 dark:text-white text-base lg:text-lg mb-2">Lakeshore Athletic Club</div>
+                      <div className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-1.5">
                         <MapPin className="w-4 h-4" />
                         <span>Chicago, IL</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-purple-600 dark:text-purple-400">
                         <Users className="w-4 h-4" />
                         <span>654 members</span>
                       </div>
@@ -332,13 +332,13 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             </div>
 
             {/* Footer Links */}
-            <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 space-x-2">
-              <a href="#" className="hover:underline">Terms</a>
+            <div className="px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 space-x-3">
+              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Terms</a>
               <span>·</span>
-              <a href="#" className="hover:underline">Privacy</a>
+              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Privacy</a>
               <span>·</span>
-              <a href="#" className="hover:underline">Help</a>
-              <div className="mt-2">© 2025 PaddleGrid</div>
+              <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Help</a>
+              <div className="mt-2 font-semibold">© 2025 PaddleGrid</div>
             </div>
           </div>
         </div>
