@@ -588,44 +588,6 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               <EventCalendar facilityId={facilityId} />
             </div>
 
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-lg border border-slate-700">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="p-2 rounded-xl bg-white/10">
-                  <TrendingUp className="w-5 h-5 text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white">Club Stats</h3>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-emerald-500/20">
-                      <Activity className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <span className="text-sm font-semibold text-white/80">Courts</span>
-                  </div>
-                  <span className="text-2xl font-bold text-white">{courts.length}</span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-500/20">
-                      <Users className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <span className="text-sm font-semibold text-white/80">Members</span>
-                  </div>
-                  <span className="text-2xl font-bold text-white">{followerCount}</span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-500/20">
-                      <Calendar className="w-5 h-5 text-orange-400" />
-                    </div>
-                    <span className="text-sm font-semibold text-white/80">Events</span>
-                  </div>
-                  <span className="text-2xl font-bold text-white">{eventsCount}</span>
-                </div>
-              </div>
-            </div>
-
             {!isMember && user && (
               <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl p-6 text-white shadow-lg">
                 <div className="text-center">
