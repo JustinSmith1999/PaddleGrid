@@ -83,19 +83,14 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 {/* Headline */}
                 <div className="space-y-4">
                   <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight">
-                    The Court
-                    <br />
-                    Management
-                    <br />
-                    Platform That
-                    <br />
+                    Modern Court Management for{' '}
                     <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">
-                      Just Works
+                      Facilities That Demand Better.
                     </span>
                   </h1>
 
                   <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                    Transform your facility with the platform built for scale. Effortless booking, intelligent automation, and insights that drive revenue.
+                    Save time, increase revenue, and deliver a membership experience players love.
                   </p>
                 </div>
 
@@ -112,7 +107,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                     onClick={() => setShowDemo('checkout')}
                     className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-300"
                   >
-                    View Demo
+                    Watch Demo
                   </button>
                 </div>
 
@@ -524,7 +519,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 onClick={() => setShowDemo('checkout')}
                 className="inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-white border-2 border-white/40 rounded-xl hover:bg-white/10 transition-all duration-300"
               >
-                View Demo
+                Watch Demo
               </button>
             </div>
 
