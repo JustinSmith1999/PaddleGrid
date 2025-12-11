@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2 } from 'lucide-react';
+import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, MoreHorizontal, PlusCircle } from 'lucide-react';
 import { SocialPost, getFeedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -83,12 +83,90 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <div className="flex w-full">
-        {/* Main Feed - Takes most of the space */}
-        <div className="flex-1 min-w-0 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <div className="flex w-full max-w-[1600px] mx-auto">
+        {/* Left Sidebar Navigation */}
+        <div className="hidden lg:flex w-[280px] xl:w-[300px] flex-shrink-0 flex-col fixed left-0 h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-4 xl:px-8 py-4">
+          {/* Logo */}
+          <div className="mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <Building2 className="w-7 h-7 text-white" />
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex-1 space-y-2">
+            <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group bg-emerald-50/50 dark:bg-emerald-900/10">
+              <Home className="w-6 h-6 text-slate-900 dark:text-white" />
+              <span className="text-lg font-bold text-slate-900 dark:text-white">Feed</span>
+            </button>
+
+            <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+              <Search className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+              <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Explore</span>
+            </button>
+
+            {user && (
+              <>
+                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative">
+                  <Bell className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Notifications</span>
+                  <span className="absolute top-2 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                </button>
+
+                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+                  <MessageCircle className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Messages</span>
+                </button>
+
+                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+                  <Bookmark className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Bookmarks</span>
+                </button>
+
+                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+                  <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
+                </button>
+
+                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+                  <MoreHorizontal className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">More</span>
+                </button>
+              </>
+            )}
+          </nav>
+
+          {/* Post Button */}
+          {user && (
+            <button
+              onClick={onCreatePost}
+              className="w-full mb-4 py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-black text-lg shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
+            >
+              <PlusCircle className="w-6 h-6" />
+              <span>Post</span>
+            </button>
+          )}
+
+          {/* User Profile */}
+          {user && profile && (
+            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
+                {profile.full_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm text-slate-900 dark:text-white truncate">{profile.full_name || 'User'}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 truncate">@{profile.full_name?.toLowerCase().replace(' ', '') || 'user'}</div>
+              </div>
+              <MoreHorizontal className="w-5 h-5 text-slate-400" />
+            </div>
+          )}
+        </div>
+
+        {/* Main Feed - Centered with fixed width */}
+        <div className="flex-1 min-w-0 lg:ml-[280px] xl:ml-[300px] lg:max-w-[600px] xl:max-w-[650px] border-r border-slate-200/80 dark:border-slate-800/80">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 shadow-sm">
-            <div className="py-5 lg:py-6">
+          <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+            <div className="py-5 lg:py-6 px-4">
               <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Community</h1>
             </div>
 
@@ -191,7 +269,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden lg:block w-[380px] xl:w-[420px] flex-shrink-0 pl-6 pr-8 py-6">
+        <div className="hidden xl:block w-[380px] 2xl:w-[420px] flex-shrink-0 pl-8 pr-8 py-6">
           <div className="sticky top-4 space-y-6">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
