@@ -234,10 +234,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <div className="space-y-1">
                 {facilities.map((facility, index) => {
                   const buttonClasses = [
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group',
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group',
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group',
-                    'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-slate-50/50 dark:hover:from-slate-900/10 dark:hover:to-slate-900/10 transition-all duration-200 text-left group'
+                    'w-full px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group',
+                    'w-full px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 dark:hover:from-blue-900/10 dark:hover:to-cyan-900/10 transition-all duration-200 text-left group',
+                    'w-full px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-red-50/50 dark:hover:from-orange-900/10 dark:hover:to-red-900/10 transition-all duration-200 text-left group',
+                    'w-full px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-slate-50/50 dark:hover:from-slate-900/10 dark:hover:to-slate-900/10 transition-all duration-200 text-left group'
                   ];
 
                   const bgClasses = [
