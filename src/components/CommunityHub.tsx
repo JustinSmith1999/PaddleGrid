@@ -20,7 +20,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50">
         {/* Hero Section with Video Background */}
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden min-h-screen flex items-center">
           {/* Video Background */}
           <div className="absolute inset-0 w-full h-full">
             <video
@@ -42,20 +42,20 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           </div>
 
           {/* Hero Content */}
-          <div className="relative z-10 container mx-auto px-4 pt-20 pb-16">
+          <div className="relative z-10 container mx-auto px-4 py-16 w-full">
             <div className="max-w-5xl mx-auto">
               {/* Logo */}
               <div className="mb-12 flex justify-center">
                 <img
                   src="/untitled_design__2_-removebg-preview.png"
                   alt="PaddleGrid Logo"
-                  className="h-16 w-auto drop-shadow-2xl"
+                  className="h-20 w-auto drop-shadow-2xl"
                 />
               </div>
 
               {/* Hero Content */}
-              <div className="text-center mb-20">
-                <div className="text-4xl md:text-6xl text-white mb-12 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2">
+              <div className="text-center">
+                <div className="text-5xl md:text-7xl text-white mb-16 max-w-3xl mx-auto leading-tight font-extrabold drop-shadow-lg space-y-3">
                   <div>Connect.</div>
                   <div>Play.</div>
                   <div>Discover.</div>
@@ -63,16 +63,16 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     onClick={() => onAuthRequired?.('signup')}
-                    className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-lg font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
+                    className="px-10 py-5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
                   >
                     Create Free Account
                   </button>
                   <button
                     onClick={() => onAuthRequired?.('login')}
-                    className="px-8 py-4 bg-white/95 backdrop-blur text-emerald-600 text-lg font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
+                    className="px-10 py-5 bg-white/95 backdrop-blur text-emerald-600 text-xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
                   >
                     Sign In
                   </button>
