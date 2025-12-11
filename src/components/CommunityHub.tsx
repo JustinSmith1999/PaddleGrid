@@ -140,17 +140,8 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
     );
   }
 
-  const handleClubClick = async (clubId: string) => {
-    const { supabase } = await import('../lib/supabase');
-    const { data } = await supabase
-      .from('facilities')
-      .select('slug')
-      .eq('id', clubId)
-      .maybeSingle();
-
-    if (data?.slug) {
-      navigate(`/club/${data.slug}`);
-    }
+  const handleClubClick = (slug: string) => {
+    navigate(`/club/${slug}`);
   };
 
   return (
