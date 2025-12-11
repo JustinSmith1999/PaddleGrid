@@ -42,20 +42,20 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           </div>
 
           {/* Hero Content */}
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 py-8 sm:py-16 w-full">
-            <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 w-full px-6 sm:px-8 lg:px-12 xl:px-20 py-12 sm:py-16 lg:py-20">
+            <div className="w-full max-w-7xl mx-auto">
               {/* Logo */}
-              <div className="mb-8 sm:mb-12 lg:mb-16 flex justify-center">
+              <div className="mb-12 sm:mb-14 lg:mb-16 flex justify-center">
                 <img
                   src="/untitled_design__2_-removebg-preview.png"
                   alt="PaddleGrid Logo"
-                  className="h-12 sm:h-16 md:h-20 lg:h-24 xl:h-28 w-auto drop-shadow-2xl"
+                  className="h-20 sm:h-20 md:h-22 lg:h-24 xl:h-28 w-auto drop-shadow-2xl"
                 />
               </div>
 
               {/* Hero Content */}
               <div className="text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-white mb-10 sm:mb-14 md:mb-16 lg:mb-20 xl:mb-24 mx-auto leading-tight font-extrabold drop-shadow-lg space-y-2 sm:space-y-3 lg:space-y-4 xl:space-y-6">
+                <div className="text-6xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[10rem] text-white mb-16 sm:mb-18 md:mb-20 lg:mb-24 xl:mb-28 mx-auto leading-tight font-extrabold drop-shadow-lg space-y-3 sm:space-y-4 lg:space-y-5 xl:space-y-7">
                   <div>Connect.</div>
                   <div>Play.</div>
                   <div>Discover.</div>
@@ -63,16 +63,16 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 justify-center px-4 sm:px-0">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 lg:gap-6 justify-center max-w-2xl mx-auto">
                   <button
                     onClick={() => onAuthRequired?.('signup')}
-                    className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 py-3.5 sm:py-4 md:py-5 lg:py-6 xl:py-7 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-base sm:text-lg md:text-xl lg:text-2xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
+                    className="w-full sm:w-auto px-10 sm:px-10 md:px-12 lg:px-14 xl:px-16 py-5 sm:py-5 md:py-6 lg:py-7 xl:py-8 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all duration-200 shadow-2xl hover:shadow-xl hover:scale-105"
                   >
                     Create Free Account
                   </button>
                   <button
                     onClick={() => onAuthRequired?.('login')}
-                    className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 py-3.5 sm:py-4 md:py-5 lg:py-6 xl:py-7 bg-white/95 backdrop-blur text-emerald-600 text-base sm:text-lg md:text-xl lg:text-2xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
+                    className="w-full sm:w-auto px-10 sm:px-10 md:px-12 lg:px-14 xl:px-16 py-5 sm:py-5 md:py-6 lg:py-7 xl:py-8 bg-white/95 backdrop-blur text-emerald-600 text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold rounded-xl border-2 border-white hover:bg-white transition-all duration-200 hover:scale-105 shadow-xl"
                   >
                     Sign In
                   </button>
