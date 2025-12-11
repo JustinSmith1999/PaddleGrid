@@ -26,30 +26,21 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         <div className="bg-white">
           <div className="min-h-[50vh] flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-24 w-full">
-              <div className="lg:grid lg:grid-cols-2 gap-16 items-center">
-                {/* Mobile Logo - Above text on mobile only */}
-                <div className="flex justify-center mb-6 sm:mb-8 lg:hidden">
-                  <img
-                    src="/screenshot_2025-12-05_150441-removebg-preview.png"
-                    alt="PaddleGrid Logo"
-                    className="h-24 sm:h-32 md:h-40 w-auto"
-                  />
-                </div>
-
+              <div className="max-w-4xl mx-auto">
                 {/* Content */}
-                <div className="space-y-5 sm:space-y-6 lg:space-y-8 text-center lg:text-left">
+                <div className="space-y-5 sm:space-y-6 lg:space-y-8 text-center">
                   <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
                       Modern Court Management for{' '}
                       <span className="text-emerald-600">Facilities That Demand Better.</span>
                     </h1>
 
-                    <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal px-2 sm:px-0">
+                    <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto font-normal px-2 sm:px-0">
                       Save time, increase revenue, and deliver a membership experience players love.
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-2 sm:px-0">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-2 sm:px-0">
                     <button
                       onClick={() => onAuthRequired('facility')}
                       className="bg-emerald-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-emerald-700 transition-colors shadow-lg"
@@ -61,25 +52,16 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                     </button>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 text-sm text-gray-500 justify-center lg:justify-start px-2 sm:px-0">
-                    <span className="flex items-center justify-center lg:justify-start">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 text-sm text-gray-500 justify-center px-2 sm:px-0">
+                    <span className="flex items-center justify-center">
                       <Check className="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" />
                       14-day free trial
                     </span>
-                    <span className="flex items-center justify-center lg:justify-start">
+                    <span className="flex items-center justify-center">
                       <Check className="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" />
                       Cancel anytime
                     </span>
                   </div>
-                </div>
-
-                {/* Desktop Logo - Hidden on mobile */}
-                <div className="hidden lg:flex justify-center lg:justify-end">
-                  <img
-                    src="/screenshot_2025-12-05_150441-removebg-preview.png"
-                    alt="PaddleGrid Logo"
-                    className="h-72 xl:h-80 w-auto"
-                  />
                 </div>
               </div>
             </div>
