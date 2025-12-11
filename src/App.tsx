@@ -31,10 +31,17 @@ function ScrollToTop() {
 }
 
 function AppContent() {
-  const { loading, isAdmin, user } = useAuth();
+  const { loading, isAdmin, user, profile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'facility'>('login');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && profile && isAdmin && location.pathname === '/') {
+      navigate('/admin', { replace: true });
+    }
+  }, [loading, profile, isAdmin, location.pathname, navigate]);
 
   if (loading) {
     return (

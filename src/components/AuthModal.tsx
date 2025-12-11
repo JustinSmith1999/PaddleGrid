@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Loader2, Building2, User, Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -28,7 +29,8 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  const { signIn, signUp, signUpWithFacility, signInWithApple } = useAuth();
+  const { signIn, signUp, signUpWithFacility, signInWithApple, profile } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
@@ -38,6 +40,15 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
       setRegistrationSuccess(false);
     }
   }, [isOpen, mode]);
+
+  useEffect(() => {
+    if (profile && !loading && isOpen && !registrationSuccess) {
+      if (profile.role === 'owner' || profile.role === 'admin' || profile.role === 'desk' || profile.role === 'coach') {
+        onClose();
+        navigate('/admin');
+      }
+    }
+  }, [profile, loading, isOpen, registrationSuccess, navigate, onClose]);
 
   if (!isOpen) return null;
 
@@ -183,10 +194,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
             </div>
 
             <button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                navigate('/admin');
+              }}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
             >
-              Get Started
+              Go to Admin Dashboard
             </button>
           </div>
         ) : showAccountTypeSelection ? (
