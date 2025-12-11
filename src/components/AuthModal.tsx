@@ -27,6 +27,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [ownerPhone, setOwnerPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const { signIn, signUp, signUpWithFacility, signInWithApple } = useAuth();
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
       setIsLogin(mode === 'login');
       setAccountType(mode === 'facility' ? 'facility' : null);
       setError('');
+      setRegistrationSuccess(false);
     }
   }, [isOpen, mode]);
 
@@ -53,6 +55,15 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
         if (!facilityName.trim()) {
           throw new Error('Facility name is required');
         }
+        if (!facilityAddress.trim()) {
+          throw new Error('Facility address is required');
+        }
+        if (!facilityCity.trim()) {
+          throw new Error('City is required');
+        }
+        if (!facilityState.trim()) {
+          throw new Error('State is required');
+        }
         if (!ownerName.trim()) {
           throw new Error('Owner name is required');
         }
@@ -66,9 +77,9 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
         const { error } = await signUpWithFacility(
           email,
           password,
-          firstName,
-          lastName,
-          phone,
+          firstName || ownerName.split(' ')[0] || '',
+          lastName || ownerName.split(' ').slice(1).join(' ') || '',
+          phone || ownerPhone,
           facilityName,
           facilityAddress,
           facilityCity,
@@ -78,7 +89,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           ownerPhone
         );
         if (error) throw error;
-        onClose();
+        setRegistrationSuccess(true);
       } else {
         const { error } = await signUp(email, password, firstName, lastName, phone);
         if (error) throw error;
@@ -119,10 +130,14 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           </button>
 
           <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            {isLogin ? 'Welcome Back' : showAccountTypeSelection ? 'Join PaddleGrid' : isFacilitySignup ? 'Facility Registration' : 'Create Your Account'}
+            {registrationSuccess
+              ? 'Registration Complete!'
+              : isLogin ? 'Welcome Back' : showAccountTypeSelection ? 'Join PaddleGrid' : isFacilitySignup ? 'Facility Registration' : 'Create Your Account'}
           </h2>
           <p className="text-sm text-gray-600">
-            {isLogin
+            {registrationSuccess
+              ? 'Your facility has been successfully registered'
+              : isLogin
               ? 'Sign in to manage your bookings'
               : showAccountTypeSelection
               ? 'Choose your account type to get started'
@@ -132,7 +147,49 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           </p>
         </div>
 
-        {showAccountTypeSelection ? (
+        {registrationSuccess ? (
+          <div className="p-6 space-y-6">
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
+                <Check className="w-8 h-8 text-emerald-600" />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Welcome to PaddleGrid!</h3>
+                <p className="text-gray-600">Your facility "{facilityName}" has been created successfully.</p>
+              </div>
+            </div>
+
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
+              <h4 className="font-semibold text-emerald-900 text-lg mb-3">Facility Subscription</h4>
+              <div className="space-y-3 text-sm text-emerald-800">
+                <div className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <p><span className="font-semibold">$449/month</span> - Full access to all features</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <p>Manage unlimited courts, bookings, and members</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <p>Advanced analytics and reporting</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <p>Priority support and onboarding assistance</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+            >
+              Get Started
+            </button>
+          </div>
+        ) : showAccountTypeSelection ? (
           <div className="p-6 space-y-4">
             <p className="text-center text-sm text-gray-600 mb-4">Select the type of account you want to create</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -404,18 +461,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
               {error}
             </div>
           )}
-
-              {isFacilitySignup && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-emerald-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-emerald-900">Facility Subscription</p>
-                      <p className="text-xs text-emerald-700 mt-1">$449/month - Manage unlimited courts, bookings, and members</p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               <button
                 type="submit"
