@@ -86,16 +86,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
       <div className="flex justify-center w-full">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-4 overflow-y-auto">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-4 pb-6 overflow-y-auto">
           {/* Logo */}
-          <div className="mb-6">
+          <div className="mb-6 flex-shrink-0">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
               <Building2 className="w-7 h-7 text-white" />
             </div>
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 space-y-1">
+          <nav className="space-y-1 mb-4">
             <button
               onClick={() => setActiveView('feed')}
               className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
@@ -165,19 +165,24 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             )}
           </nav>
 
+          {/* Spacer to push content to bottom */}
+          <div className="flex-1"></div>
+
           {/* Post Button */}
           {user && (
-            <button
-              onClick={onCreatePost}
-              className="w-full mb-4 py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
-            >
-              <span>Post</span>
-            </button>
+            <div className="flex-shrink-0 mb-4">
+              <button
+                onClick={onCreatePost}
+                className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
+              >
+                <span>Post</span>
+              </button>
+            </div>
           )}
 
           {/* User Profile */}
           {user && profile && (
-            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
+            <div className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
                 {profile.full_name?.charAt(0).toUpperCase() || 'U'}
               </div>
