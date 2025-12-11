@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Loader2, Building2, User, Check } from 'lucide-react';
+import { X, Loader2, Building2, User, Check, AlertCircle, HelpCircle, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ type AccountType = 'user' | 'facility' | null;
 
 export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(mode === 'login');
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>(mode === 'facility' ? 'facility' : null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +30,9 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  const { signIn, signUp, signUpWithFacility, signInWithApple, profile } = useAuth();
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | null>(null);
+  const { signIn, signUp, signUpWithFacility, signInWithApple, profile, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,8 +41,42 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
       setAccountType(mode === 'facility' ? 'facility' : null);
       setError('');
       setRegistrationSuccess(false);
+      setIsForgotPassword(false);
+      setResetEmailSent(false);
     }
   }, [isOpen, mode]);
+
+  useEffect(() => {
+    if (!isLogin && password.length > 0) {
+      if (password.length < 8) {
+        setPasswordStrength('weak');
+      } else if (password.length < 12 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+        setPasswordStrength('medium');
+      } else {
+        setPasswordStrength('strong');
+      }
+    } else {
+      setPasswordStrength(null);
+    }
+  }, [password, isLogin]);
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateBusinessEmail = (email: string): boolean => {
+    const freeEmailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
+    const domain = email.split('@')[1]?.toLowerCase();
+    return !freeEmailDomains.includes(domain);
+  };
+
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 3) return cleaned;
+    if (cleaned.length <= 6) return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+  };
 
   useEffect(() => {
     if (profile && !loading && isOpen && !registrationSuccess) {
@@ -52,17 +89,54 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
 
   if (!isOpen) return null;
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      if (!validateEmail(email)) {
+        throw new Error('Please enter a valid email address');
+      }
+
+      if (!resetPassword) {
+        throw new Error('Password reset is not available');
+      }
+
+      const { error } = await resetPassword(email);
+      if (error) throw error;
+
+      setResetEmailSent(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      if (!validateEmail(email)) {
+        throw new Error('Please enter a valid email address');
+      }
+
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) throw error;
         onClose();
       } else if (accountType === 'facility') {
+        if (!validateBusinessEmail(email)) {
+          throw new Error('Please use a business email address (not Gmail, Yahoo, etc.)');
+        }
+
+        if (password.length < 8) {
+          throw new Error('Password must be at least 8 characters long');
+        }
+
         if (!facilityName.trim()) {
           throw new Error('Facility name is required');
         }
@@ -85,6 +159,11 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           throw new Error('Estimated patron base is required');
         }
 
+        const patronCount = parseInt(estimatedPatronBase);
+        if (isNaN(patronCount) || patronCount < 1) {
+          throw new Error('Please enter a valid number for patron base');
+        }
+
         const { error } = await signUpWithFacility(
           email,
           password,
@@ -95,13 +174,17 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           facilityAddress,
           facilityCity,
           facilityState,
-          parseInt(estimatedPatronBase),
+          patronCount,
           ownerName,
           ownerPhone
         );
         if (error) throw error;
         setRegistrationSuccess(true);
       } else {
+        if (password.length < 8) {
+          throw new Error('Password must be at least 8 characters long');
+        }
+
         const { error } = await signUp(email, password, firstName, lastName, phone);
         if (error) throw error;
         onClose();
@@ -141,13 +224,21 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           </button>
 
           <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            {registrationSuccess
+            {resetEmailSent
+              ? 'Check Your Email'
+              : registrationSuccess
               ? 'Registration Complete!'
+              : isForgotPassword
+              ? 'Reset Password'
               : isLogin ? 'Welcome Back' : showAccountTypeSelection ? 'Join PaddleGrid' : isFacilitySignup ? 'Facility Registration' : 'Create Your Account'}
           </h2>
           <p className="text-sm text-gray-600">
-            {registrationSuccess
+            {resetEmailSent
+              ? 'Password reset instructions have been sent to your email'
+              : registrationSuccess
               ? 'Your facility has been successfully registered'
+              : isForgotPassword
+              ? 'Enter your email to receive password reset instructions'
               : isLogin
               ? 'Sign in to manage your bookings'
               : showAccountTypeSelection
@@ -158,7 +249,36 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           </p>
         </div>
 
-        {registrationSuccess ? (
+        {resetEmailSent ? (
+          <div className="p-6 space-y-6">
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
+                <Mail className="w-8 h-8 text-emerald-600" />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Sent Successfully</h3>
+                <p className="text-gray-600">
+                  We've sent password reset instructions to <span className="font-medium">{email}</span>
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Please check your inbox and follow the instructions to reset your password.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setResetEmailSent(false);
+                setIsForgotPassword(false);
+                setEmail('');
+              }}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        ) : registrationSuccess ? (
           <div className="p-6 space-y-6">
             <div className="text-center space-y-4">
               <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -171,24 +291,44 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
               </div>
             </div>
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
-              <h4 className="font-semibold text-emerald-900 text-lg mb-3">Facility Subscription</h4>
-              <div className="space-y-3 text-sm text-emerald-800">
-                <div className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p><span className="font-semibold">$449/month</span> - Full access to all features</p>
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-6">
+              <h4 className="font-bold text-emerald-900 text-lg mb-4 flex items-center gap-2">
+                <Check className="w-5 h-5" />
+                Next Steps
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">Set Up Your Courts</p>
+                    <p className="text-sm text-gray-600">Add courts, configure availability, and set pricing</p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Manage unlimited courts, bookings, and members</p>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">Import Your Members</p>
+                    <p className="text-sm text-gray-600">Upload existing members or add them manually</p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Advanced analytics and reporting</p>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">Configure Settings</p>
+                    <p className="text-sm text-gray-600">Set operating hours, policies, and notifications</p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Priority support and onboarding assistance</p>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm text-blue-900 font-medium">Free Trial Active</p>
+                  <p className="text-sm text-blue-800 mt-1">
+                    You have 14 days to explore all features. No credit card required. Cancel anytime.
+                  </p>
                 </div>
               </div>
             </div>
@@ -198,7 +338,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 onClose();
                 navigate('/admin');
               }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Go to Admin Dashboard
             </button>
@@ -269,7 +409,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
               )}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 px-6 pb-4">
+            <form onSubmit={isForgotPassword ? handlePasswordReset : handleSubmit} className="space-y-4 px-6 pb-4">
               {!isLogin && (
                 <>
                   {isFacilitySignup && (
@@ -332,8 +472,14 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-2">
                             Estimated Patron Base *
+                            <div className="group relative">
+                              <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-900 text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                                Approximate number of active members or regular players at your facility
+                              </div>
+                            </div>
                           </label>
                           <input
                             type="number"
@@ -353,7 +499,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           <input
                             type="tel"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                             required
                             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
                             placeholder="(555) 123-4567"
@@ -381,7 +527,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           <input
                             type="tel"
                             value={ownerPhone}
-                            onChange={(e) => setOwnerPhone(e.target.value)}
+                            onChange={(e) => setOwnerPhone(formatPhoneNumber(e.target.value))}
                             required
                             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
                             placeholder="(555) 987-6543"
@@ -430,7 +576,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                       <input
                         type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                         className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
                         placeholder="(555) 123-4567"
                       />
@@ -439,7 +585,60 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 </>
               )}
 
-          <div className={`grid ${isFacilitySignup ? 'md:grid-cols-2' : 'grid-cols-1'} gap-3`}>
+          {!isForgotPassword && (
+            <div className={`grid ${isFacilitySignup ? 'md:grid-cols-2' : 'grid-cols-1'} gap-3`}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  placeholder={isFacilitySignup ? "yourname@yourbusiness.com" : "you@example.com"}
+                />
+                {isFacilitySignup && !isLogin && (
+                  <p className="mt-1.5 text-xs text-gray-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Use your business email (not Gmail, Yahoo, etc.)
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  placeholder="••••••••"
+                />
+                {!isLogin && passwordStrength && (
+                  <div className="mt-1.5">
+                    <div className="flex gap-1">
+                      <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'weak' ? 'bg-red-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
+                      <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'medium' || passwordStrength === 'strong' ? passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-green-500' : 'bg-gray-200'}`}></div>
+                      <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'strong' ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    </div>
+                    <p className="text-xs mt-1 text-gray-600">
+                      Password strength: <span className={`font-medium ${passwordStrength === 'weak' ? 'text-red-600' : passwordStrength === 'medium' ? 'text-yellow-600' : 'text-green-600'}`}>
+                        {passwordStrength === 'weak' ? 'Weak' : passwordStrength === 'medium' ? 'Medium' : 'Strong'}
+                      </span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {isForgotPassword && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Email Address
@@ -452,23 +651,11 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
                 placeholder="you@example.com"
               />
+              <p className="mt-1.5 text-xs text-gray-500">
+                We'll send you instructions to reset your password
+              </p>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
+          )}
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 rounded-lg text-sm">
@@ -484,16 +671,36 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    {isLogin ? 'Signing In...' : isFacilitySignup ? 'Creating Facility...' : 'Creating Account...'}
+                    {isForgotPassword ? 'Sending...' : isLogin ? 'Signing In...' : isFacilitySignup ? 'Creating Facility...' : 'Creating Account...'}
                   </>
                 ) : (
-                  <>{isLogin ? 'Sign In' : isFacilitySignup ? 'Complete Registration' : 'Create Account'}</>
+                  <>{isForgotPassword ? 'Send Reset Link' : isLogin ? 'Sign In' : isFacilitySignup ? 'Complete Registration' : 'Create Account'}</>
                 )}
               </button>
+
+              {isLogin && !isForgotPassword && (
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(true)}
+                  className="w-full text-center text-sm text-gray-600 hover:text-emerald-600 font-medium transition-colors mt-3"
+                >
+                  Forgot your password?
+                </button>
+              )}
             </form>
 
             <div className="px-6 pb-6 pt-4 text-center border-t border-gray-100">
-              {accountType !== null && !isLogin && (
+              {isForgotPassword ? (
+                <button
+                  onClick={() => {
+                    setIsForgotPassword(false);
+                    setError('');
+                  }}
+                  className="text-gray-600 hover:text-gray-800 font-medium transition-colors text-sm"
+                >
+                  ← Back to sign in
+                </button>
+              ) : accountType !== null && !isLogin ? (
                 <button
                   onClick={() => {
                     setAccountType(null);
@@ -503,17 +710,19 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 >
                   ← Back to account selection
                 </button>
+              ) : null}
+              {!isForgotPassword && (
+                <button
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setAccountType(null);
+                    setError('');
+                  }}
+                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors text-sm"
+                >
+                  {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                </button>
               )}
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setAccountType(null);
-                  setError('');
-                }}
-                className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors text-sm"
-              >
-                {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-              </button>
             </div>
           </>
         )}

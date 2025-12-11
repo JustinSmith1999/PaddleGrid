@@ -18,6 +18,7 @@ import CommunityHub from './components/CommunityHub';
 import PostDetail from './components/social/PostDetail';
 import ClubPage from './components/ClubPage';
 import PlayerDiscovery from './components/social/PlayerDiscovery';
+import { NotFound } from './components/NotFound';
 import { Loader2 } from 'lucide-react';
 
 function ScrollToTop() {
@@ -163,6 +164,8 @@ function AppContent() {
         <Route path="/series/:seriesId" element={<SeriesDetailRoute />} />
         <Route path="/series/:seriesId/register" element={<SeriesRegistrationRoute />} />
         <Route path="/my-series" element={<MySeriesRoute />} />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <BottomNav onViewChange={handleViewChange} />
