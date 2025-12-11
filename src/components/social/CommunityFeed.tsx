@@ -93,7 +93,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           backgroundSize: '400px',
           backgroundRepeat: 'repeat',
           filter: 'grayscale(100%)',
-          opacity: 0.5
+          opacity: 0.1
         }}
       />
       <div className="flex justify-center w-full relative z-10">
@@ -124,6 +124,37 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {user && (
               <>
                 <button
+                  onClick={() => setActiveView('notifications')}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative ${
+                    activeView === 'notifications' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <Bell className={`w-6 h-6 ${activeView === 'notifications' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${activeView === 'notifications' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Notifications</span>
+                  <span className="absolute top-2.5 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                </button>
+
+                <button
+                  onClick={() => setActiveView('messages')}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                    activeView === 'messages' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <MessageCircle className={`w-6 h-6 ${activeView === 'messages' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${activeView === 'messages' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Messages</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveView('bookmarks')}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                    activeView === 'bookmarks' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <Bookmark className={`w-6 h-6 ${activeView === 'bookmarks' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${activeView === 'bookmarks' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Bookmarks</span>
+                </button>
+
+                <button
                   onClick={() => onProfileClick?.(user.id)}
                   className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
                 >
@@ -140,6 +171,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
                   </button>
                 )}
+
+                <button
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                    showMoreMenu ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+                  }`}
+                >
+                  <MoreHorizontal className={`w-6 h-6 ${showMoreMenu ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+                  <span className={`text-lg font-semibold ${showMoreMenu ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>More</span>
+                </button>
               </>
             )}
           </nav>
