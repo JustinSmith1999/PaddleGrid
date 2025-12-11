@@ -134,3 +134,39 @@ export function loadStripe(publishableKey: string): Promise<any> {
     document.body.appendChild(script);
   });
 }
+
+export async function createFacilityCheckoutSession(
+  priceId: string,
+  metadata: Record<string, any> = {}
+): Promise<{ sessionId: string; url: string }> {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw new Error('Not authenticated');
+  }
+
+  const response = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        price_id: priceId,
+        mode: 'subscription',
+        success_url: `${window.location.origin}/facility-signup-complete`,
+        cancel_url: `${window.location.origin}/?signup=facility`,
+        metadata,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to create checkout session');
+  }
+
+  return response.json();
+}

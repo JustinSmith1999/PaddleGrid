@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Building2, User, Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface AuthModalProps {
@@ -8,9 +8,11 @@ interface AuthModalProps {
   mode?: 'login' | 'signup' | 'facility';
 }
 
+type AccountType = 'user' | 'facility' | null;
+
 export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(mode === 'login');
-  const [isFacilitySignup, setIsFacilitySignup] = useState(mode === 'facility');
+  const [accountType, setAccountType] = useState<AccountType>(mode === 'facility' ? 'facility' : null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -20,6 +22,9 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [facilityAddress, setFacilityAddress] = useState('');
   const [facilityCity, setFacilityCity] = useState('');
   const [facilityState, setFacilityState] = useState('');
+  const [estimatedPatronBase, setEstimatedPatronBase] = useState('');
+  const [ownerName, setOwnerName] = useState('');
+  const [ownerPhone, setOwnerPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { signIn, signUp, signUpWithFacility, signInWithApple } = useAuth();
@@ -27,7 +32,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   useEffect(() => {
     if (isOpen) {
       setIsLogin(mode === 'login');
-      setIsFacilitySignup(mode === 'facility');
+      setAccountType(mode === 'facility' ? 'facility' : null);
       setError('');
     }
   }, [isOpen, mode]);
@@ -44,10 +49,20 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
         const { error } = await signIn(email, password);
         if (error) throw error;
         onClose();
-      } else if (isFacilitySignup) {
+      } else if (accountType === 'facility') {
         if (!facilityName.trim()) {
           throw new Error('Facility name is required');
         }
+        if (!ownerName.trim()) {
+          throw new Error('Owner name is required');
+        }
+        if (!ownerPhone.trim()) {
+          throw new Error('Owner phone is required');
+        }
+        if (!estimatedPatronBase.trim()) {
+          throw new Error('Estimated patron base is required');
+        }
+
         const { error } = await signUpWithFacility(
           email,
           password,
@@ -57,7 +72,10 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           facilityName,
           facilityAddress,
           facilityCity,
-          facilityState
+          facilityState,
+          parseInt(estimatedPatronBase),
+          ownerName,
+          ownerPhone
         );
         if (error) throw error;
         onClose();
@@ -86,6 +104,9 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
     }
   };
 
+  const isFacilitySignup = accountType === 'facility';
+  const showAccountTypeSelection = !isLogin && accountType === null;
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className={`bg-white rounded-2xl shadow-2xl ${isFacilitySignup ? 'max-w-4xl' : 'max-w-md'} w-full max-h-[90vh] overflow-y-auto relative`}>
@@ -98,143 +119,266 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           </button>
 
           <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            {isLogin ? 'Welcome Back' : isFacilitySignup ? 'Start Your Free Trial' : 'Join PaddleGrid'}
+            {isLogin ? 'Welcome Back' : showAccountTypeSelection ? 'Join PaddleGrid' : isFacilitySignup ? 'Facility Registration' : 'Create Your Account'}
           </h2>
           <p className="text-sm text-gray-600">
             {isLogin
               ? 'Sign in to manage your bookings'
+              : showAccountTypeSelection
+              ? 'Choose your account type to get started'
               : isFacilitySignup
-              ? 'Create your facility account and start your 14-day free trial'
-              : 'Create an account to start booking'}
+              ? 'Complete your facility information'
+              : 'Create a personal account to start booking'}
           </p>
         </div>
 
-        <div className="p-6 pt-4 space-y-4">
-          {!isFacilitySignup && (
-            <>
+        {showAccountTypeSelection ? (
+          <div className="p-6 space-y-4">
+            <p className="text-center text-sm text-gray-600 mb-4">Select the type of account you want to create</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={handleAppleSignIn}
-                disabled={loading}
-                className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                onClick={() => setAccountType('user')}
+                className="group relative p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 transition-all duration-200 text-left"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                </svg>
-                {isLogin ? 'Sign in with Apple' : 'Sign up with Apple'}
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="p-3 bg-emerald-50 rounded-full group-hover:bg-emerald-100 transition-colors">
+                    <User className="w-8 h-8 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-lg">Player Account</h3>
+                    <p className="text-sm text-gray-600 mt-1">Book courts, join matches, and track your progress</p>
+                    <p className="text-xs text-emerald-600 font-medium mt-2">Free Forever</p>
+                  </div>
+                </div>
               </button>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
+              <button
+                type="button"
+                onClick={() => setAccountType('facility')}
+                className="group relative p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 transition-all duration-200 text-left"
+              >
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="p-3 bg-emerald-50 rounded-full group-hover:bg-emerald-100 transition-colors">
+                    <Building2 className="w-8 h-8 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-lg">Facility Account</h3>
+                    <p className="text-sm text-gray-600 mt-1">Manage courts, bookings, and members</p>
+                    <p className="text-xs text-emerald-600 font-medium mt-2">$449/month</p>
+                  </div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">or continue with email</span>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="p-6 pt-4 space-y-4">
+              {!isFacilitySignup && !isLogin && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleAppleSignIn}
+                    disabled={loading}
+                    className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                    </svg>
+                    Sign up with Apple
+                  </button>
 
-        <form onSubmit={handleSubmit} className="space-y-4 px-6 pb-4">
-          {!isLogin && (
-            <>
-              {isFacilitySignup && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Facility Name
-                    </label>
-                    <input
-                      type="text"
-                      value={facilityName}
-                      onChange={(e) => setFacilityName(e.target.value)}
-                      required
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                      placeholder="Elite Pickleball Club"
-                    />
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">or continue with email</span>
+                    </div>
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Facility Address
-                    </label>
-                    <input
-                      type="text"
-                      value={facilityAddress}
-                      onChange={(e) => setFacilityAddress(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                      placeholder="123 Main Street"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      value={facilityCity}
-                      onChange={(e) => setFacilityCity(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                      placeholder="New York"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      State
-                    </label>
-                    <input
-                      type="text"
-                      value={facilityState}
-                      onChange={(e) => setFacilityState(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                      placeholder="NY"
-                    />
-                  </div>
-                </div>
+                </>
               )}
-              <div className={`grid ${isFacilitySignup ? 'md:grid-cols-2' : 'grid-cols-2'} gap-3`}>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                    placeholder="John"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                    placeholder="Doe"
-                  />
-                </div>
-              </div>
-              <div className={isFacilitySignup ? 'md:col-span-2' : ''}>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  required={isFacilitySignup}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-            </>
-          )}
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 px-6 pb-4">
+              {!isLogin && (
+                <>
+                  {isFacilitySignup && (
+                    <>
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-start gap-3">
+                          <Check className="w-5 h-5 text-emerald-600 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-emerald-900">Facility Subscription</p>
+                            <p className="text-xs text-emerald-700 mt-1">$449/month - Manage unlimited courts, bookings, and members</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Facility Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={facilityName}
+                            onChange={(e) => setFacilityName(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="Elite Pickleball Club"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Facility Address *
+                          </label>
+                          <input
+                            type="text"
+                            value={facilityAddress}
+                            onChange={(e) => setFacilityAddress(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="123 Main Street"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            City *
+                          </label>
+                          <input
+                            type="text"
+                            value={facilityCity}
+                            onChange={(e) => setFacilityCity(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="New York"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            State *
+                          </label>
+                          <input
+                            type="text"
+                            value={facilityState}
+                            onChange={(e) => setFacilityState(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="NY"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Estimated Patron Base *
+                          </label>
+                          <input
+                            type="number"
+                            value={estimatedPatronBase}
+                            onChange={(e) => setEstimatedPatronBase(e.target.value)}
+                            required
+                            min="1"
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Phone Number *
+                          </label>
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="(555) 123-4567"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Owner Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={ownerName}
+                            onChange={(e) => setOwnerName(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="John Smith"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Owner Phone Number *
+                          </label>
+                          <input
+                            type="tel"
+                            value={ownerPhone}
+                            onChange={(e) => setOwnerPhone(e.target.value)}
+                            required
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            placeholder="(555) 987-6543"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {!isFacilitySignup && (
+                    <div className={`grid grid-cols-2 gap-3`}>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                          placeholder="John"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                          placeholder="Doe"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {!isFacilitySignup && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
+                  )}
+                </>
+              )}
 
           <div className={`grid ${isFacilitySignup ? 'md:grid-cols-2' : 'grid-cols-1'} gap-3`}>
             <div>
@@ -273,34 +417,47 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {isLogin ? 'Signing In...' : isFacilitySignup ? 'Creating Facility...' : 'Creating Account...'}
-              </>
-            ) : (
-              <>{isLogin ? 'Sign In' : isFacilitySignup ? 'Start Free Trial' : 'Create Account'}</>
-            )}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    {isLogin ? 'Signing In...' : isFacilitySignup ? 'Creating Facility...' : 'Creating Account...'}
+                  </>
+                ) : (
+                  <>{isLogin ? 'Sign In' : isFacilitySignup ? 'Complete Registration' : 'Create Account'}</>
+                )}
+              </button>
+            </form>
 
-        <div className="px-6 pb-6 pt-4 text-center border-t border-gray-100">
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setIsFacilitySignup(false);
-              setError('');
-            }}
-            className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors text-sm"
-          >
-            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-          </button>
-        </div>
+            <div className="px-6 pb-6 pt-4 text-center border-t border-gray-100">
+              {accountType !== null && !isLogin && (
+                <button
+                  onClick={() => {
+                    setAccountType(null);
+                    setError('');
+                  }}
+                  className="text-gray-600 hover:text-gray-800 font-medium transition-colors text-sm mb-3 block w-full"
+                >
+                  ← Back to account selection
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setAccountType(null);
+                  setError('');
+                }}
+                className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors text-sm"
+              >
+                {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -28,7 +28,10 @@ interface AuthContextType {
     facilityName: string,
     facilityAddress?: string,
     facilityCity?: string,
-    facilityState?: string
+    facilityState?: string,
+    estimatedPatronBase?: number,
+    ownerName?: string,
+    ownerPhone?: string
   ) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signInWithApple: () => Promise<{ error: Error | null }>;
@@ -165,7 +168,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     facilityName: string,
     facilityAddress?: string,
     facilityCity?: string,
-    facilityState?: string
+    facilityState?: string,
+    estimatedPatronBase?: number,
+    ownerName?: string,
+    ownerPhone?: string
   ) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -191,6 +197,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             address: facilityAddress,
             city: facilityCity,
             state: facilityState,
+            estimated_patron_base: estimatedPatronBase,
+            owner_name: ownerName,
+            owner_phone: ownerPhone,
             is_active: true,
             subscription_tier: 'trial',
             subscription_status: 'active',
