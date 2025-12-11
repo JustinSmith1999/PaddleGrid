@@ -328,7 +328,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
-              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-6">
+              <div className="flex border-b border-slate-200 dark:border-slate-800">
                 <button
                   onClick={() => setActiveTab('all_local')}
                   className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
