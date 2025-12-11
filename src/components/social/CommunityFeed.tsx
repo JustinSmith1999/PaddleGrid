@@ -174,18 +174,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Spacer to push content to bottom */}
           <div className="flex-1"></div>
 
-          {/* Post Button */}
-          {user && (
-            <div className="flex-shrink-0 mb-4">
-              <button
-                onClick={onCreatePost}
-                className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
-              >
-                <span>Post</span>
-              </button>
-            </div>
-          )}
-
           {/* User Profile */}
           {user && profile && (
             <div className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer">
@@ -438,6 +426,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <a href="#" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Help</a>
               <div className="mt-2 font-semibold">© 2025 PaddleGrid</div>
             </div>
+
+            {/* Post Button */}
+            {user && (
+              <div className="px-4 mt-4">
+                <button
+                  onClick={onCreatePost}
+                  className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                  <span>Post</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
