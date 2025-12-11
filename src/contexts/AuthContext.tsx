@@ -31,6 +31,7 @@ interface AuthContextType {
     facilityState?: string
   ) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithApple: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   isAdmin: boolean;
@@ -75,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -83,7 +84,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      // Fetch facility association
+      if (!data) {
+        const { data: userData } = await supabase.auth.getUser();
+        const userEmail = userData.user?.email || '';
+        const userName = userData.user?.user_metadata?.full_name || '';
+        const [firstName, ...lastNameParts] = userName.split(' ');
+        const lastName = lastNameParts.join(' ');
+
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: userId,
+            email: userEmail,
+            first_name: firstName || '',
+            last_name: lastName || '',
+            phone: null,
+            role: 'user',
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+        data = newProfile;
+      }
+
       const { data: facilityUser } = await supabase
         .from('facility_users')
         .select('facility_id, role')
@@ -220,6 +244,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithApple = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}`,
+        },
+      });
+
+      if (error) throw error;
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
@@ -241,6 +281,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signUpWithFacility,
     signIn,
+    signInWithApple,
     signOut,
     refreshProfile,
     isAdmin,
