@@ -31,7 +31,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 <div className="space-y-5 sm:space-y-6 lg:space-y-8 text-center">
                   <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
-                      Modern Court Management for{' '}
+                      Modern Court Management For<br />
                       <span className="text-emerald-600">Facilities That Demand Better.</span>
                     </h1>
 
