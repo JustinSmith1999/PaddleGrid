@@ -27,13 +27,13 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
+    fetchFacilities();
     if (user) {
       fetchUserFacility();
       fetchUnreadCount();
       const interval = setInterval(fetchUnreadCount, 30000);
       return () => clearInterval(interval);
     }
-    fetchFacilities();
   }, [user]);
 
   useEffect(() => {
