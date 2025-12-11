@@ -40,8 +40,10 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 <div className="space-y-5 sm:space-y-6 lg:space-y-8 text-center lg:text-left">
                   <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
-                      <div>Run Your Facility</div>
-                      <div className="text-emerald-600">The Right Way</div>
+                      <div>Connect.</div>
+                      <div>Play.</div>
+                      <div>Discover.</div>
+                      <div className="text-emerald-600">Achieve.</div>
                     </h1>
 
                     <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal px-2 sm:px-0">
@@ -101,6 +103,9 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-3 sm:mb-4 px-2">
                 Everything You Need to Manage Your Facility
               </h2>
+              <p className="text-lg sm:text-xl font-medium opacity-95 max-w-3xl mx-auto px-2 mb-4">
+                Connect with players, share your best moments, and discover pickleball events in your community.
+              </p>
               <p className="text-lg sm:text-xl font-medium opacity-95 max-w-3xl mx-auto px-2">
                 From court reservations to event management, PaddleGrid handles it all with
                 powerful features designed for modern sports facilities.
