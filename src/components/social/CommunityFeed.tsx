@@ -227,11 +227,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Local Clubs */}
           <div className="mt-6 mb-4">
-            <div className="rounded-3xl overflow-hidden">
+            <div>
               <div className="px-4 py-3">
                 <h2 className="font-black text-base text-slate-900 dark:text-white tracking-tight">Local Clubs</h2>
               </div>
-              <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
+              <div>
                 {facilities.map((facility, index) => {
                   const buttonClasses = [
                     'w-full px-4 py-3 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group',
