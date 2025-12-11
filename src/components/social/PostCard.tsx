@@ -382,37 +382,29 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </div>
           )}
 
-          <div className="flex items-center justify-between mt-3 lg:mt-4 max-w-md">
+          <div className="flex items-center gap-2 mt-3 lg:mt-4">
+            <button
+              onClick={handleLike}
+              className={`flex-1 py-2.5 lg:py-3 px-4 rounded-lg border-2 font-semibold text-base lg:text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                userLiked
+                  ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700'
+                  : 'bg-white border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900 dark:text-emerald-400 dark:border-emerald-400 dark:hover:bg-emerald-950/30'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${userLiked ? 'fill-current' : ''}`} />
+              {userLiked ? 'Liked' : 'Like'}
+            </button>
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onClick();
               }}
-              className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group -ml-2"
+              className="flex-1 py-2.5 lg:py-3 px-4 rounded-lg border-2 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold text-base lg:text-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
-              <div className="p-2 lg:p-2.5 rounded-full group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 transition-colors">
-                <MessageCircle className="w-5 h-5 lg:w-6 lg:h-6" />
-              </div>
-              {commentsCount > 0 && <span className="text-base lg:text-lg font-medium">{commentsCount}</span>}
+              <MessageCircle className="w-5 h-5" />
+              {commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}
             </button>
-
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-2 transition-colors group -ml-2 ${
-                userLiked
-                  ? 'text-red-600 dark:text-red-500'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500'
-              }`}
-            >
-              <div className={`p-2 lg:p-2.5 rounded-full transition-colors ${
-                userLiked ? 'bg-red-50 dark:bg-red-900/20' : 'group-hover:bg-red-50 dark:group-hover:bg-red-900/20'
-              }`}>
-                <Heart className={`w-5 h-5 lg:w-6 lg:h-6 ${userLiked ? 'fill-current' : ''}`} />
-              </div>
-              {likesCount > 0 && <span className="text-base lg:text-lg font-medium">{likesCount}</span>}
-            </button>
-
-            <div className="flex-1"></div>
           </div>
         </div>
       </div>
