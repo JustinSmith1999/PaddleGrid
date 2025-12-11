@@ -182,13 +182,13 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
     <div
       onClick={onClick}
-      className="bg-white hover:bg-gray-50 transition cursor-pointer p-4 border-b border-gray-200"
+      className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer px-4 py-3 border-b border-slate-200 dark:border-slate-800"
     >
       <div className="flex gap-3">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden ${
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden ${
           (post.facilities?.logo_url || post.profiles?.profile_picture_url)
             ? 'bg-white'
-            : 'bg-gradient-to-br from-blue-500 to-blue-600'
+            : 'bg-gradient-to-br from-emerald-500 to-teal-600'
         }`}>
           {(post.facilities?.logo_url || post.profiles?.profile_picture_url) ? (
             <img
@@ -197,13 +197,13 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               className="w-full h-full object-cover"
             />
           ) : (
-            <span>{(post.facilities?.name || post.profiles?.full_name)?.charAt(0).toUpperCase() || 'U'}</span>
+            <span className="text-lg">{(post.facilities?.name || post.profiles?.full_name)?.charAt(0).toUpperCase() || 'U'}</span>
           )}
         </div>
 
-        <div className="flex-1">
-          <div className="flex items-start justify-between mb-1">
-            <div className="flex-1 overflow-visible">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between mb-0.5">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -213,13 +213,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     onProfileClick?.(post.profiles.id);
                   }
                 }}
-                className="font-bold text-gray-900 hover:underline block text-left"
+                className="font-bold text-slate-900 dark:text-white hover:underline text-[15px] truncate"
               >
                 {post.facilities?.name || post.profiles?.full_name || 'Unknown User'}
               </button>
-              <div className="flex items-center gap-1.5 flex-wrap text-sm text-gray-500 mt-0.5">
-                <span className="whitespace-nowrap flex-shrink-0">{formatTimeAgo(post.created_at)}</span>
-              </div>
+              <span className="text-slate-500 dark:text-slate-400 text-[15px] flex-shrink-0">·</span>
+              <span className="text-slate-500 dark:text-slate-400 text-[15px] flex-shrink-0">{formatTimeAgo(post.created_at)}</span>
             </div>
             {user && user.id === post.author_id && (
               <div className="relative">
@@ -248,11 +247,11 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
           </div>
 
           {post.post_type === 'match_invite' ? (
-            <div className="space-y-3">
-              <p className="text-gray-900 text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
+            <div className="space-y-2.5">
+              <p className="text-slate-900 dark:text-white text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
 
               {post.media_urls && post.media_urls.length > 0 && (
-                <div className={`grid gap-1 rounded-xl overflow-hidden max-w-2xl ${
+                <div className={`grid gap-0.5 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 ${
                   post.media_urls.length === 1 ? 'grid-cols-1' :
                   post.media_urls.length === 2 ? 'grid-cols-2' :
                   'grid-cols-2'
@@ -262,7 +261,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                       key={idx}
                       className={`relative ${
                         post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
-                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-gray-100 overflow-hidden`}
+                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
                     >
                       <img
                         src={url}
@@ -275,15 +274,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 </div>
               )}
 
-              <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-transparent p-4 space-y-3">
-                <div className="flex items-center gap-2 text-sm font-semibold text-blue-700">
+              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 to-transparent p-4 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                   <Trophy className="w-4 h-4" />
                   {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                <div className="grid grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <Calendar className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">
                       {post.play_date ? new Date(post.play_date).toLocaleDateString('en-US', {
                         month: 'short',
@@ -293,26 +292,26 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   </div>
 
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">{post.play_start_time ? post.play_start_time.slice(0, 5) : 'TBD'}</span>
                   </div>
 
                   {post.courts && (
                     <div className="flex items-center gap-1.5 col-span-2">
-                      <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <MapPin className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                       <span className="break-words">{post.courts.name}</span>
                     </div>
                   )}
 
                   {post.skill_min !== null && post.skill_max !== null && (
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <Trophy className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <Trophy className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                       <span className="truncate">{post.skill_min}-{post.skill_max} level</span>
                     </div>
                   )}
 
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <Users className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <Users className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">{post.spots_filled}/{post.spots_needed} players</span>
                   </div>
                 </div>
@@ -321,12 +320,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   <button
                     onClick={handleJoinMatch}
                     disabled={loading || (isFull && !hasJoined)}
-                    className={`w-full py-2 px-4 rounded-lg text-sm font-semibold transition ${
+                    className={`w-full py-2.5 px-4 rounded-full text-sm font-bold transition ${
                       hasJoined
-                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                         : isFull
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
                     }`}
                   >
                     {hasJoined ? 'Leave Match' : isFull ? 'Match Full' : `Join Match (${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left)`}
@@ -335,11 +334,11 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              <p className="text-gray-900 text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
+            <div className="space-y-2.5">
+              <p className="text-slate-900 dark:text-white text-[15px] leading-normal whitespace-pre-wrap">{post.content}</p>
 
               {post.media_urls && post.media_urls.length > 0 && (
-                <div className={`grid gap-1 rounded-xl overflow-hidden max-w-2xl ${
+                <div className={`grid gap-0.5 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 ${
                   post.media_urls.length === 1 ? 'grid-cols-1' :
                   post.media_urls.length === 2 ? 'grid-cols-2' :
                   'grid-cols-2'
@@ -349,7 +348,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                       key={idx}
                       className={`relative ${
                         post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
-                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-gray-100 overflow-hidden`}
+                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
                     >
                       <img
                         src={url}
@@ -369,44 +368,37 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </div>
           )}
 
-          <div className="flex items-center gap-4 mt-3 max-w-2xl">
+          <div className="flex items-center justify-between mt-3 max-w-md">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onClick();
               }}
-              className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition group"
+              className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group -ml-2"
             >
-              <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
+              <div className="p-2 rounded-full group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 transition-colors">
                 <MessageCircle className="w-[18px] h-[18px]" />
               </div>
-              {commentsCount > 0 && <span className="text-sm">{commentsCount}</span>}
+              {commentsCount > 0 && <span className="text-sm font-medium">{commentsCount}</span>}
             </button>
 
             <button
               onClick={handleLike}
-              className={`flex items-center gap-2 transition group ${
+              className={`flex items-center gap-1.5 transition-colors group -ml-2 ${
                 userLiked
-                  ? 'text-red-600'
-                  : 'text-gray-500 hover:text-red-600'
+                  ? 'text-red-600 dark:text-red-500'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500'
               }`}
             >
-              <div className={`p-2 rounded-full transition ${
-                userLiked ? 'bg-red-50' : 'group-hover:bg-red-50'
+              <div className={`p-2 rounded-full transition-colors ${
+                userLiked ? 'bg-red-50 dark:bg-red-900/20' : 'group-hover:bg-red-50 dark:group-hover:bg-red-900/20'
               }`}>
                 <Heart className={`w-[18px] h-[18px] ${userLiked ? 'fill-current' : ''}`} />
               </div>
-              {likesCount > 0 && <span className="text-sm">{likesCount}</span>}
+              {likesCount > 0 && <span className="text-sm font-medium">{likesCount}</span>}
             </button>
 
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition group opacity-0 pointer-events-none"
-            >
-              <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
-                <MoreHorizontal className="w-[18px] h-[18px]" />
-              </div>
-            </button>
+            <div className="flex-1"></div>
           </div>
         </div>
       </div>

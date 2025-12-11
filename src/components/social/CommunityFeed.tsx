@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2 } from 'lucide-react';
 import { SocialPost, getFeedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -19,7 +19,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userFacilityId, setUserFacilityId] = useState<string | null>(null);
-  const [displayCount, setDisplayCount] = useState(3);
+  const [displayCount, setDisplayCount] = useState(10);
 
   useEffect(() => {
     if (user) {
@@ -76,113 +76,195 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   if (loading && posts.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50">
-      {/* Header with filters */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-800">Community</h1>
-          <button
-            onClick={() => loadPosts(true)}
-            disabled={refreshing}
-            className="text-sm text-blue-600 font-medium hover:text-blue-700 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
+    <div className="min-h-screen bg-white dark:bg-slate-900">
+      <div className="max-w-[1280px] mx-auto flex">
+        {/* Main Feed - Center Column */}
+        <div className="flex-1 max-w-[600px] border-x border-slate-200 dark:border-slate-800 min-h-screen">
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+            <div className="px-4 py-3">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Community</h1>
+            </div>
 
-        {/* Filter tabs */}
-        <div className="flex px-2 pb-3 gap-2">
-          <button
-            onClick={() => setActiveTab('all_local')}
-            className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeTab === 'all_local'
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            All Posts
-          </button>
-          {user && userFacilityId && (
-            <button
-              onClick={() => setActiveTab('my_club')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                activeTab === 'my_club'
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              My Club
-            </button>
-          )}
-          {user && (
-            <button
-              onClick={() => setActiveTab('following')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                activeTab === 'following'
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              Following
-            </button>
-          )}
-        </div>
-      </div>
+            {/* Twitter-style tabs */}
+            <div className="flex border-b border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => setActiveTab('all_local')}
+                className={`flex-1 px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                  activeTab === 'all_local'
+                    ? 'text-slate-900 dark:text-white'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                For You
+                {activeTab === 'all_local' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                )}
+              </button>
 
-      {/* Posts */}
-      {posts.length > 0 ? (
-        <div className="max-w-2xl mx-auto">
-          <div className="divide-y divide-gray-200">
-            {posts.slice(0, displayCount).map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                onClick={() => onPostClick(post.id)}
-                onUpdate={() => loadPosts(true)}
-                onClubClick={onClubClick}
-                onProfileClick={onProfileClick}
-              />
-            ))}
+              {user && userFacilityId && (
+                <button
+                  onClick={() => setActiveTab('my_club')}
+                  className={`flex-1 px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                    activeTab === 'my_club'
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  My Club
+                  {activeTab === 'my_club' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                  )}
+                </button>
+              )}
+
+              {user && (
+                <button
+                  onClick={() => setActiveTab('following')}
+                  className={`flex-1 px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                    activeTab === 'following'
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  Following
+                  {activeTab === 'following' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
-          {displayCount < posts.length && (
-            <div className="text-center py-8">
-              <button
-                onClick={() => setDisplayCount(prev => Math.min(prev + 5, posts.length))}
-                className="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition font-medium shadow-sm"
-              >
-                Show More ({posts.length - displayCount} remaining)
-              </button>
+          {/* Posts Feed */}
+          {posts.length > 0 ? (
+            <>
+              {posts.slice(0, displayCount).map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onClick={() => onPostClick(post.id)}
+                  onUpdate={() => loadPosts(true)}
+                  onClubClick={onClubClick}
+                  onProfileClick={onProfileClick}
+                />
+              ))}
+
+              {displayCount < posts.length && (
+                <div className="border-b border-slate-200 dark:border-slate-800 p-4">
+                  <button
+                    onClick={() => setDisplayCount(prev => Math.min(prev + 10, posts.length))}
+                    className="w-full py-3 text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
+                  >
+                    Show more posts
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-16 px-4 border-b border-slate-200 dark:border-slate-800">
+              <div className="text-6xl mb-4">📣</div>
+              <p className="text-slate-900 dark:text-white font-semibold text-lg mb-2">No posts yet</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+                {activeTab === 'following'
+                  ? 'Follow some players to see their posts here'
+                  : user
+                  ? 'Be the first to share something!'
+                  : 'Sign in to create posts and join the conversation'}
+              </p>
+              {user && (
+                <button
+                  onClick={onCreatePost}
+                  className="px-6 py-3 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors shadow-lg"
+                >
+                  Create Post
+                </button>
+              )}
             </div>
           )}
         </div>
-      ) : (
-        <div className="text-center py-16 px-4">
-          <div className="text-6xl mb-4">📣</div>
-          <p className="text-gray-600 font-medium mb-2">No posts yet</p>
-          <p className="text-sm text-gray-500 mb-4">
-            {activeTab === 'following'
-              ? 'Follow some players to see their posts here'
-              : user
-              ? 'Be the first to share something!'
-              : 'Sign in to create posts and join the conversation'}
-          </p>
-          {user && (
-            <button
-              onClick={onCreatePost}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Create Post
-            </button>
-          )}
+
+        {/* Right Sidebar - Trending & Suggestions */}
+        <div className="hidden lg:block w-[350px] px-6 py-4">
+          <div className="sticky top-4 space-y-4">
+            {/* Trending Topics */}
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Trending</h2>
+              </div>
+              <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                <button className="w-full px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>Pickleball · Trending</span>
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm">DUPR Ratings</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">2.5K posts</div>
+                </button>
+                <button className="w-full px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>Events · This Week</span>
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm">Weekend Tournaments</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">850 posts</div>
+                </button>
+                <button className="w-full px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <Building2 className="w-3 h-3" />
+                    <span>Local · Popular</span>
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm">New Courts Opening</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">1.2K posts</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Who to Follow */}
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Clubs Near You</h2>
+              </div>
+              <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                <div className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-slate-900 dark:text-white text-sm">Pickleball Heaven</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3" />
+                        <span>Chicago, IL</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        <Users className="w-3 h-3" />
+                        <span>234 members</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Links */}
+            <div className="px-4 py-2 text-xs text-slate-500 dark:text-slate-400 space-x-2">
+              <a href="#" className="hover:underline">Terms</a>
+              <span>·</span>
+              <a href="#" className="hover:underline">Privacy</a>
+              <span>·</span>
+              <a href="#" className="hover:underline">Help</a>
+              <div className="mt-2">© 2024 PaddleGrid</div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
