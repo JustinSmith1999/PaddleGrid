@@ -83,116 +83,188 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="w-full">
-        {/* Full Width Main Feed */}
-        <div className="w-full min-h-screen">
+      <div className="flex justify-center w-full">
+        {/* Left Spacer */}
+        <div className="hidden xl:block flex-1 max-w-[275px]"></div>
+
+        {/* Main Feed - Center Column */}
+        <div className="w-full max-w-[700px] border-x border-slate-200 dark:border-slate-800 min-h-screen">
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-            <div className="max-w-[2000px] mx-auto px-8 py-3">
+            <div className="px-4 py-3">
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">Community</h1>
             </div>
 
             {/* Twitter-style tabs */}
-            <div className="border-b border-slate-200 dark:border-slate-800">
-              <div className="max-w-[2000px] mx-auto px-8 flex">
+            <div className="flex border-b border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => setActiveTab('all_local')}
+                className={`flex-1 px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                  activeTab === 'all_local'
+                    ? 'text-slate-900 dark:text-white'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                For You
+                {activeTab === 'all_local' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                )}
+              </button>
+
+              {user && userFacilityId && (
                 <button
-                  onClick={() => setActiveTab('all_local')}
-                  className={`max-w-[200px] px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
-                    activeTab === 'all_local'
+                  onClick={() => setActiveTab('my_club')}
+                  className={`flex-1 px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                    activeTab === 'my_club'
                       ? 'text-slate-900 dark:text-white'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
-                  For You
-                  {activeTab === 'all_local' && (
+                  My Club
+                  {activeTab === 'my_club' && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
                   )}
                 </button>
+              )}
 
-                {user && userFacilityId && (
-                  <button
-                    onClick={() => setActiveTab('my_club')}
-                    className={`max-w-[200px] px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
-                      activeTab === 'my_club'
-                        ? 'text-slate-900 dark:text-white'
-                        : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    My Club
-                    {activeTab === 'my_club' && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
-                    )}
-                  </button>
-                )}
-
-                {user && (
-                  <button
-                    onClick={() => setActiveTab('following')}
-                    className={`max-w-[200px] px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
-                      activeTab === 'following'
-                        ? 'text-slate-900 dark:text-white'
-                        : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    Following
-                    {activeTab === 'following' && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
-                    )}
-                  </button>
-                )}
-              </div>
+              {user && (
+                <button
+                  onClick={() => setActiveTab('following')}
+                  className={`flex-1 px-4 py-4 text-[15px] font-semibold hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                    activeTab === 'following'
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  Following
+                  {activeTab === 'following' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-full" />
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Posts Grid - Full Width */}
-          <div className="max-w-[2000px] mx-auto px-8 py-6">
-            {posts.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-                  {posts.slice(0, displayCount).map((post) => (
-                    <PostCard
-                      key={post.id}
-                      post={post}
-                      onClick={() => onPostClick(post.id)}
-                      onUpdate={() => loadPosts(true)}
-                      onClubClick={onClubClick}
-                      onProfileClick={onProfileClick}
-                    />
-                  ))}
-                </div>
+          {/* Posts Feed */}
+          {posts.length > 0 ? (
+            <>
+              {posts.slice(0, displayCount).map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onClick={() => onPostClick(post.id)}
+                  onUpdate={() => loadPosts(true)}
+                  onClubClick={onClubClick}
+                  onProfileClick={onProfileClick}
+                />
+              ))}
 
-                {displayCount < posts.length && (
-                  <div className="mt-8 text-center">
-                    <button
-                      onClick={() => setDisplayCount(prev => Math.min(prev + 25, posts.length))}
-                      className="px-8 py-3 text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
-                    >
-                      Show more posts
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-16 px-4">
-                <div className="text-6xl mb-4">📣</div>
-                <p className="text-slate-900 dark:text-white font-semibold text-lg mb-2">No posts yet</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-                  {activeTab === 'following'
-                    ? 'Follow some players to see their posts here'
-                    : user
-                    ? 'Be the first to share something!'
-                    : 'Sign in to create posts and join the conversation'}
-                </p>
-                {user && (
+              {displayCount < posts.length && (
+                <div className="border-b border-slate-200 dark:border-slate-800 p-4">
                   <button
-                    onClick={onCreatePost}
-                    className="px-6 py-3 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors shadow-lg"
+                    onClick={() => setDisplayCount(prev => Math.min(prev + 25, posts.length))}
+                    className="w-full py-3 text-emerald-600 dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
                   >
-                    Create Post
+                    Show more posts
                   </button>
-                )}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-16 px-4 border-b border-slate-200 dark:border-slate-800">
+              <div className="text-6xl mb-4">📣</div>
+              <p className="text-slate-900 dark:text-white font-semibold text-lg mb-2">No posts yet</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+                {activeTab === 'following'
+                  ? 'Follow some players to see their posts here'
+                  : user
+                  ? 'Be the first to share something!'
+                  : 'Sign in to create posts and join the conversation'}
+              </p>
+              {user && (
+                <button
+                  onClick={onCreatePost}
+                  className="px-6 py-3 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors shadow-lg"
+                >
+                  Create Post
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Right Sidebar - Trending & Suggestions */}
+        <div className="hidden lg:block w-full max-w-[380px] px-6 py-4 flex-1">
+          <div className="sticky top-4 space-y-4">
+            {/* Trending Topics */}
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Trending</h2>
               </div>
-            )}
+              <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                <button className="w-full px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>Pickleball · Trending</span>
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm">DUPR Ratings</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">2.5K posts</div>
+                </button>
+                <button className="w-full px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>Events · This Week</span>
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm">Weekend Tournaments</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">850 posts</div>
+                </button>
+                <button className="w-full px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <Building2 className="w-3 h-3" />
+                    <span>Local · Popular</span>
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white text-sm">New Courts Opening</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">1.2K posts</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Who to Follow */}
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Clubs Near You</h2>
+              </div>
+              <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                <div className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-slate-900 dark:text-white text-sm">Pickleball Heaven</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3" />
+                        <span>Chicago, IL</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        <Users className="w-3 h-3" />
+                        <span>234 members</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Links */}
+            <div className="px-4 py-2 text-xs text-slate-500 dark:text-slate-400 space-x-2">
+              <a href="#" className="hover:underline">Terms</a>
+              <span>·</span>
+              <a href="#" className="hover:underline">Privacy</a>
+              <span>·</span>
+              <a href="#" className="hover:underline">Help</a>
+              <div className="mt-2">© 2024 PaddleGrid</div>
+            </div>
           </div>
         </div>
       </div>
