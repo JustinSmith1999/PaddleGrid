@@ -40,15 +40,12 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 <div className="space-y-5 sm:space-y-6 lg:space-y-8 text-center lg:text-left">
                   <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
-                      <div>Connect.</div>
-                      <div>Play.</div>
-                      <div>Discover.</div>
-                      <div className="text-emerald-600">Achieve.</div>
+                      Modern Court Management for{' '}
+                      <span className="text-emerald-600">Facilities That Demand Better.</span>
                     </h1>
 
                     <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal px-2 sm:px-0">
-                      The most advanced court management platform for racquet and paddle sports facilities.
-                      Built for clubs that demand excellence.
+                      Save time, increase revenue, and deliver a membership experience players love.
                     </p>
                   </div>
 
@@ -57,7 +54,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                       onClick={() => onAuthRequired('facility')}
                       className="bg-emerald-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-emerald-700 transition-colors shadow-lg"
                     >
-                      Start Free Trial
+                      Start Now
                     </button>
                     <button className="border-2 border-gray-300 text-gray-700 px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
                       Watch Demo
@@ -205,7 +202,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   description: "Perfect for small facilities",
                   features: ["Up to 5 courts", "Unlimited bookings", "Basic analytics", "Email support"],
                   popular: false,
-                  buttonText: "Start Free Trial"
+                  buttonText: "Start Now"
                 },
                 {
                   name: "Professional",
@@ -214,7 +211,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   description: "For growing facilities",
                   features: ["Up to 15 courts", "Advanced analytics", "Event management", "Priority support", "Custom branding"],
                   popular: true,
-                  buttonText: "Start Free Trial"
+                  buttonText: "Start Now"
                 },
                 {
                   name: "Enterprise",
@@ -260,7 +257,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
 
                   <button
                     onClick={() => {
-                      if (plan.buttonText === 'Start Free Trial') {
+                      if (plan.buttonText === 'Start Now') {
                         onAuthRequired('facility');
                       }
                     }}
@@ -485,14 +482,14 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 onClick={() => onAuthRequired('facility')}
                 className="bg-white text-emerald-700 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-extrabold text-base sm:text-lg hover:bg-gray-50 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg"
               >
-                Start Free Trial
+                Start Now
               </button>
 
               <button
                 onClick={() => setShowDemo('checkout')}
                 className="border-2 border-white/40 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-extrabold text-base sm:text-lg hover:bg-white/10 transition-all duration-300 md:transform md:hover:scale-105"
               >
-                Try Demo
+                Watch Demo
               </button>
             </div>
           </div>
