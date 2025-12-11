@@ -131,7 +131,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-6 overflow-y-auto bg-white dark:bg-slate-900">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-20 max-h-[calc(100vh-5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 pb-6 overflow-y-auto bg-white dark:bg-slate-900">
           {/* Navigation Links */}
           <nav className="space-y-1 mb-4">
             <button
@@ -291,7 +291,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Sticky Header */}
           <div className="sticky top-20 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             {activeView !== 'feed' && (
-              <div className="pt-6 pb-5 lg:pt-7 lg:pb-6 px-4">
+              <div className="pb-5 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
                   {activeView === 'notifications' && 'Notifications'}
@@ -303,7 +303,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
-              <div className="flex border-b border-slate-200 dark:border-slate-800 pt-4">
+              <div className="flex border-b border-slate-200 dark:border-slate-800">
                 <button
                   onClick={() => setActiveTab('all_local')}
                   className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
