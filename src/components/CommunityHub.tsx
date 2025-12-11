@@ -131,17 +131,61 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         </div>
 
         {/* Social Proof Section */}
-        <div className="bg-gradient-to-b from-white to-emerald-50 py-20">
-          <div className="container mx-auto px-6">
-            <div className="max-w-5xl mx-auto text-center">
-              <p className="text-emerald-600/70 text-sm uppercase tracking-wider font-semibold mb-4">Trusted by pickleball players everywhere</p>
-              <div className="flex items-center justify-center gap-1.5 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-8 h-8 text-yellow-500 fill-yellow-500 drop-shadow-sm" />
-                ))}
+        <div className="relative bg-gradient-to-b from-white via-emerald-50/50 to-white py-24 overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="relative container mx-auto px-6">
+            <div className="max-w-6xl mx-auto">
+              {/* Main rating display */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-lg border border-emerald-100 mb-6">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <p className="text-emerald-700 text-sm font-bold uppercase tracking-wide">Trusted by Pickleball Players Everywhere</p>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-12 h-12 text-yellow-400 fill-yellow-400 drop-shadow-lg animate-[pulse_2s_ease-in-out_infinite]"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                    />
+                  ))}
+                </div>
+
+                <div className="mb-4">
+                  <p className="text-6xl sm:text-7xl font-extrabold bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-600 bg-clip-text text-transparent mb-2">
+                    4.9
+                  </p>
+                  <p className="text-slate-600 text-xl font-medium">out of 5 stars</p>
+                </div>
+
+                <p className="text-slate-500 text-lg">
+                  Rated by <span className="font-bold text-emerald-600">thousands of players</span> across the country
+                </p>
               </div>
-              <p className="text-slate-700 font-bold text-2xl">4.9 out of 5 stars</p>
-              <p className="text-slate-500 mt-2">Rated by thousands of players</p>
+
+              {/* Stats grid */}
+              <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto">
+                <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <p className="text-3xl sm:text-4xl font-bold text-emerald-600 mb-2">10K+</p>
+                  <p className="text-slate-600 text-sm sm:text-base font-medium">Active Players</p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <p className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">500+</p>
+                  <p className="text-slate-600 text-sm sm:text-base font-medium">Facilities</p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <p className="text-3xl sm:text-4xl font-bold text-orange-600 mb-2">50K+</p>
+                  <p className="text-slate-600 text-sm sm:text-base font-medium">Matches Played</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
