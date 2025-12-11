@@ -83,11 +83,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="flex w-full max-w-[2000px] mx-auto">
+      <div className="flex w-full">
         {/* Main Feed - Takes most of the space */}
-        <div className="flex-1 min-w-0 px-4 lg:px-8 xl:px-12">
+        <div className="flex-1 min-w-0 px-4 lg:px-8 xl:px-12 2xl:px-16">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 -mx-4 lg:-mx-8 xl:-mx-12 px-4 lg:px-8 xl:px-12">
+          <div className="sticky top-0 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 -mx-4 lg:-mx-8 xl:-mx-12 2xl:-mx-16 px-4 lg:px-8 xl:px-12 2xl:px-16">
             <div className="py-3">
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">Community</h1>
             </div>
