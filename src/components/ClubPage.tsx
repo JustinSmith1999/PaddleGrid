@@ -336,16 +336,16 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 mb-6 border border-slate-200 dark:border-slate-700">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 mb-8 border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
             <div className="flex-1">
               {facility.description && (
-                <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed mb-4">
+                <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed mb-6">
                   {facility.description}
                 </p>
               )}
 
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-8">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                     <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -413,7 +413,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
         </div>
 
         {(facility.phone || facility.email || facility.website) && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
             {facility.phone && (
               <a
                 href={`tel:${facility.phone}`}
@@ -461,10 +461,10 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-28">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-28">
+          <div className="lg:col-span-2 space-y-10">
             <div>
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
                   <Activity className="w-6 h-6 text-white" />
                 </div>
@@ -475,20 +475,20 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               </div>
 
               {nextAvailableTime && availableCourtsAtTime.length > 0 && (
-                <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl p-6 mb-6 shadow-xl border-2 border-emerald-300">
-                  <div className="flex items-center gap-3 mb-4">
+                <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl p-8 mb-8 shadow-xl border-2 border-emerald-300">
+                  <div className="flex items-center gap-4 mb-6">
                     <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
-                      <Clock className="w-6 h-6 text-white" />
+                      <Clock className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-white/90 text-sm uppercase tracking-wide">Next Available</h3>
-                      <p className="text-3xl font-bold text-white drop-shadow-lg">{nextAvailableTime}</p>
+                      <h3 className="font-bold text-white/90 text-sm uppercase tracking-wide mb-1">Next Available</h3>
+                      <p className="text-4xl font-bold text-white drop-shadow-lg">{nextAvailableTime}</p>
                     </div>
                   </div>
-                  <p className="text-white/90 font-medium mb-4">
+                  <p className="text-white/90 font-medium mb-6 text-lg">
                     {availableCourtsAtTime.length} {availableCourtsAtTime.length === 1 ? 'court' : 'courts'} available right now
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {availableCourtsAtTime.map((court) => (
                       <button
                         key={court.id}
@@ -523,7 +523,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   <p className="text-slate-500 dark:text-slate-400 text-lg">No courts available</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
                   {courts.map((court) => (
                     <button
                       key={court.id}
@@ -556,7 +556,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
             </div>
 
             <div>
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
                   <MessageSquare className="w-6 h-6 text-white" />
                 </div>
@@ -573,7 +573,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 </div>
               ) : (
                 <>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {posts.slice(0, visiblePostsCount).map((post) => (
                       <PostCard
                         key={post.id}
@@ -597,9 +597,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
             </div>
           </div>
 
-          <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
+          <div className="space-y-8 lg:sticky lg:top-4 lg:self-start">
             <div>
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg">
                   <Calendar className="w-5 h-5 text-white" />
                 </div>
@@ -609,8 +609,8 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               <EventCalendar facilityId={facilityId} />
             </div>
 
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-xl border border-slate-700">
-              <div className="flex items-center gap-3 mb-5">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-7 shadow-xl border border-slate-700">
+              <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-xl bg-white/10">
                   <TrendingUp className="w-6 h-6 text-emerald-400" />
                 </div>
@@ -618,8 +618,8 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   Club Stats
                 </h3>
               </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+              <div className="space-y-5">
+                <div className="flex items-center justify-between p-5 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-lg bg-emerald-500/20">
                       <Activity className="w-5 h-5 text-emerald-400" />
@@ -628,7 +628,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   </div>
                   <span className="text-2xl font-bold text-white">{courts.length}</span>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                <div className="flex items-center justify-between p-5 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-lg bg-blue-500/20">
                       <Users className="w-5 h-5 text-blue-400" />
@@ -637,7 +637,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   </div>
                   <span className="text-2xl font-bold text-white">{followerCount}</span>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                <div className="flex items-center justify-between p-5 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-lg bg-orange-500/20">
                       <Calendar className="w-5 h-5 text-orange-400" />

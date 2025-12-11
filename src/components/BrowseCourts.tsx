@@ -122,15 +122,15 @@ export function BrowseCourts() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 mb-4 shadow-xl">
-          <Building2 className="w-8 h-8 text-white" />
+      <div className="mb-12 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 mb-6 shadow-xl">
+          <Building2 className="w-10 h-10 text-white" />
         </div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">Discover Clubs</h2>
-        <p className="text-lg text-slate-600 dark:text-slate-400">Find and explore pickleball clubs in your area</p>
+        <h2 className="text-5xl font-bold text-slate-900 dark:text-white mb-4">Discover Clubs</h2>
+        <p className="text-xl text-slate-600 dark:text-slate-400">Find and explore pickleball clubs in your area</p>
       </div>
 
-        <div className="mb-8 space-y-4">
+        <div className="mb-10 space-y-6">
           <div className="relative">
             <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
             <input
@@ -169,11 +169,11 @@ export function BrowseCourts() {
             <p className="text-slate-500 dark:text-slate-400 text-lg">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredFacilities.map((facility) => (
               <div
                 key={facility.id}
-                className="bg-white dark:bg-slate-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-400 dark:hover:border-emerald-500 group relative overflow-hidden"
+                className="bg-white dark:bg-slate-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-400 dark:hover:border-emerald-500 group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-bl-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
 
@@ -198,8 +198,8 @@ export function BrowseCourts() {
                   onClick={() => navigate(`/club/${facility.slug}`)}
                   className="w-full text-left relative"
                 >
-                  <div className="flex items-start gap-5">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex items-start gap-6">
+                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
                       {facility.logo_url ? (
                         <img
                           src={facility.logo_url}
@@ -207,16 +207,16 @@ export function BrowseCourts() {
                           className="w-full h-full object-cover rounded-2xl"
                         />
                       ) : (
-                        <Building2 className="w-10 h-10 text-white" />
+                        <Building2 className="w-12 h-12 text-white" />
                       )}
                     </div>
 
                     <div className="flex-1 min-w-0 pr-10">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                         {facility.name}
                       </h3>
                       {(facility.city || facility.state) && (
-                        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-3">
+                        <div className="flex items-center gap-2 text-base text-slate-600 dark:text-slate-400 mb-4">
                           <MapPin className="w-4 h-4" />
                           <span className="font-medium">
                             {[facility.city, facility.state].filter(Boolean).join(', ')}
@@ -224,11 +224,11 @@ export function BrowseCourts() {
                         </div>
                       )}
                       {facility.description && (
-                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">{facility.description}</p>
+                        <p className="text-base text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">{facility.description}</p>
                       )}
                     </div>
 
-                    <ArrowRight className="w-6 h-6 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-2 transition-all flex-shrink-0 mt-1" />
+                    <ArrowRight className="w-7 h-7 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-2 transition-all flex-shrink-0 mt-2" />
                   </div>
                 </button>
               </div>
