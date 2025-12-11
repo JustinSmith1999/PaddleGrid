@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, MoreHorizontal, PlusCircle, Shield } from 'lucide-react';
+import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield } from 'lucide-react';
 import { SocialPost, getFeedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -21,7 +21,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [refreshing, setRefreshing] = useState(false);
   const [userFacilityId, setUserFacilityId] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState(25);
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -155,67 +154,21 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 </button>
 
                 <button
-                  onClick={() => setShowMoreMenu(!showMoreMenu)}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
-                    showMoreMenu ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                  }`}
+                  onClick={() => onProfileClick?.(user.id)}
+                  className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
                 >
-                  <MoreHorizontal className={`w-6 h-6 ${showMoreMenu ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                  <span className={`text-lg font-semibold ${showMoreMenu ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>More</span>
+                  <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
                 </button>
 
-                {showMoreMenu && (
-                  <div className="ml-4 space-y-1 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
-                    <button
-                      onClick={() => {
-                        setActiveView('feed');
-                        setShowMoreMenu(false);
-                      }}
-                      className={`flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
-                        activeView === 'feed' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                      }`}
-                    >
-                      <Home className={`w-5 h-5 ${activeView === 'feed' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                      <span className={`text-base font-semibold ${activeView === 'feed' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Feed</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setActiveView('explore');
-                        setShowMoreMenu(false);
-                      }}
-                      className={`flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
-                        activeView === 'explore' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                      }`}
-                    >
-                      <Building2 className={`w-5 h-5 ${activeView === 'explore' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                      <span className={`text-base font-semibold ${activeView === 'explore' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Courts</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        onProfileClick?.(user.id);
-                        setShowMoreMenu(false);
-                      }}
-                      className="flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
-                    >
-                      <User className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                      <span className="text-base font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
-                    </button>
-
-                    {profile?.role === 'admin' && (
-                      <button
-                        onClick={() => {
-                          window.location.href = '/admin';
-                          setShowMoreMenu(false);
-                        }}
-                        className="flex items-center gap-4 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
-                      >
-                        <Shield className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                        <span className="text-base font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
-                      </button>
-                    )}
-                  </div>
+                {profile?.role === 'admin' && (
+                  <button
+                    onClick={() => window.location.href = '/admin'}
+                    className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+                  >
+                    <Shield className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                    <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Admin</span>
+                  </button>
                 )}
               </>
             )}
