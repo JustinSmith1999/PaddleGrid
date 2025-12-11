@@ -40,14 +40,15 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <button
                   onClick={() => onAuthRequired?.('signup')}
-                  className="group relative inline-flex items-center justify-center px-12 py-6 text-xl font-bold text-emerald-600 bg-white rounded-2xl shadow-2xl hover:shadow-emerald-900/50 transition-all duration-300 hover:scale-105"
+                  className="group relative inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-emerald-700 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
+                  <Sparkles className="w-5 h-5 mr-2 text-emerald-500" />
                   Get Started Free
-                  <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => onAuthRequired?.('login')}
-                  className="inline-flex items-center justify-center px-12 py-6 text-xl font-bold text-white border-3 border-white/40 rounded-2xl hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+                  className="inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-white border-2 border-white rounded-xl hover:bg-white hover:text-emerald-600 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
                   Sign In
                 </button>
