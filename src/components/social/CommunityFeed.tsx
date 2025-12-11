@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield } from 'lucide-react';
-import { SocialPost, getFeedPosts } from '../../lib/socialUtils';
+import { SocialPost, getFeedPosts, getNotifications, Notification } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import PostCard from './PostCard';
+import NotificationsPanel from './NotificationsPanel';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -21,11 +22,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [refreshing, setRefreshing] = useState(false);
   const [userFacilityId, setUserFacilityId] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState(25);
-  const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; memberCount: number }>>([]);
+  const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; logo_url: string | null; memberCount: number }>>([]);
+  const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     if (user) {
       fetchUserFacility();
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
     }
     fetchFacilities();
   }, [user]);
@@ -53,11 +59,22 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     }
   }
 
+  async function fetchUnreadCount() {
+    if (!user) return;
+    try {
+      const notifications = await getNotifications(50);
+      const unreadCount = notifications.filter(n => !n.is_read).length;
+      setUnreadNotifications(unreadCount);
+    } catch (error) {
+      console.error('Error fetching unread notifications:', error);
+    }
+  }
+
   async function fetchFacilities() {
     try {
       const { data: facilitiesData, error } = await supabase
         .from('facilities')
-        .select('id, name, slug')
+        .select('id, name, slug, logo_url')
         .order('created_at', { ascending: true })
         .limit(4);
 
@@ -175,14 +192,14 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {user && (
               <>
                 <button
-                  onClick={() => setActiveView('notifications')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative ${
-                    activeView === 'notifications' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
-                  }`}
+                  onClick={() => setShowNotificationsPanel(true)}
+                  className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative"
                 >
-                  <Bell className={`w-6 h-6 ${activeView === 'notifications' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
-                  <span className={`text-lg font-semibold ${activeView === 'notifications' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Notifications</span>
-                  <span className="absolute top-2.5 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                  <Bell className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Notifications</span>
+                  {unreadNotifications > 0 && (
+                    <span className="absolute top-2.5 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                  )}
                 </button>
 
                 <button
@@ -302,7 +319,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <div className="pt-6 pb-5 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
-                  {activeView === 'notifications' && 'Notifications'}
                   {activeView === 'messages' && 'Messages'}
                   {activeView === 'bookmarks' && 'Bookmarks'}
                 </h1>
@@ -425,18 +441,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             </div>
           )}
 
-          {/* Notifications View */}
-          {activeView === 'notifications' && user && (
-            <div className="p-8 text-center">
-              <div className="text-6xl mb-4">🔔</div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Stay Updated</h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">Get notified about match invites, event updates, and social interactions</p>
-              <div className="max-w-md mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
-                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Coming Soon</p>
-              </div>
-            </div>
-          )}
-
           {/* Messages View */}
           {activeView === 'messages' && user && (
             <div className="p-8 text-center">
@@ -551,6 +555,26 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
       </div>
 
+      {/* Notifications Panel */}
+      {showNotificationsPanel && (
+        <NotificationsPanel
+          onClose={() => {
+            setShowNotificationsPanel(false);
+            fetchUnreadCount();
+          }}
+          onNotificationClick={(notification) => {
+            if (notification.type === 'like' || notification.type === 'comment') {
+              if (notification.data.post_id) {
+                onPostClick(notification.data.post_id);
+              }
+            } else if (notification.type === 'follow') {
+              if (notification.data.actor_id) {
+                onProfileClick?.(notification.data.actor_id);
+              }
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
