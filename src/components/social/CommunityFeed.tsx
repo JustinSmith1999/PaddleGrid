@@ -84,9 +84,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <div className="flex w-full mx-auto">
+      <div className="flex justify-center w-full">
         {/* Left Sidebar Navigation */}
-        <div className="hidden lg:flex w-[280px] xl:w-[300px] flex-shrink-0 flex-col fixed left-0 h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-4 xl:px-6 py-4 overflow-y-auto">
+        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] h-screen border-r border-slate-200/80 dark:border-slate-800/80 px-6 py-4 overflow-y-auto">
           {/* Logo */}
           <div className="mb-6">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
@@ -95,10 +95,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-1">
             <button
               onClick={() => setActiveView('feed')}
-              className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+              className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
                 activeView === 'feed' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
               }`}
             >
@@ -108,7 +108,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
             <button
               onClick={() => setActiveView('explore')}
-              className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+              className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
                 activeView === 'explore' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
               }`}
             >
@@ -120,18 +120,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <>
                 <button
                   onClick={() => setActiveView('notifications')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative ${
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group relative ${
                     activeView === 'notifications' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
                   }`}
                 >
                   <Bell className={`w-6 h-6 ${activeView === 'notifications' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
                   <span className={`text-lg font-semibold ${activeView === 'notifications' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Notifications</span>
-                  <span className="absolute top-2 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                  <span className="absolute top-2.5 left-7 w-2 h-2 bg-emerald-500 rounded-full"></span>
                 </button>
 
                 <button
                   onClick={() => setActiveView('messages')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
                     activeView === 'messages' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
                   }`}
                 >
@@ -141,7 +141,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
                 <button
                   onClick={() => setActiveView('bookmarks')}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                  className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
                     activeView === 'bookmarks' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
                   }`}
                 >
@@ -151,13 +151,13 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
                 <button
                   onClick={() => onProfileClick?.(user.id)}
-                  className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
+                  className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
                 >
                   <User className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
                   <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Profile</span>
                 </button>
 
-                <button className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
+                <button className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group">
                   <MoreHorizontal className="w-6 h-6 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
                   <span className="text-lg font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">More</span>
                 </button>
@@ -169,9 +169,8 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {user && (
             <button
               onClick={onCreatePost}
-              className="w-full mb-4 py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-black text-lg shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full mb-4 py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
             >
-              <PlusCircle className="w-6 h-6" />
               <span>Post</span>
             </button>
           )}
@@ -192,7 +191,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Main Feed - Centered with fixed width */}
-        <div className="flex-1 min-w-0 lg:ml-[280px] xl:ml-[300px] lg:max-w-[600px] xl:max-w-[650px] border-r border-slate-200/80 dark:border-slate-800/80">
+        <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80">
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
             <div className="py-5 lg:py-6 px-4">
@@ -359,7 +358,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        <div className="hidden xl:block w-[380px] 2xl:w-[420px] flex-shrink-0 pl-8 pr-8 py-6">
+        <div className="hidden xl:block w-[350px] flex-shrink-0 pl-8 pr-4 py-6">
           <div className="sticky top-4 space-y-6">
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
