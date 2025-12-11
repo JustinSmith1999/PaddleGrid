@@ -304,10 +304,10 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           <span className="text-sm font-semibold">Back</span>
         </button>
 
-        <div className="absolute bottom-6 left-0 right-0 px-6">
-          <div className="max-w-7xl mx-auto flex items-end gap-5">
+        <div className="absolute bottom-6 left-0 right-0 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto flex items-end gap-4">
             {facility.logo_url && (
-              <div className="w-20 h-20 rounded-2xl bg-white dark:bg-slate-800 p-2.5 shadow-2xl flex-shrink-0 border-4 border-white/50">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white dark:bg-slate-800 p-2 sm:p-2.5 shadow-2xl flex-shrink-0 border-4 border-white/50">
                 <img
                   src={facility.logo_url}
                   alt={facility.name}
@@ -316,7 +316,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               </div>
             )}
             <div className="flex-1 pb-1 min-w-0">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-1.5 drop-shadow-lg truncate">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-1.5 drop-shadow-lg line-clamp-2">
                 {facility.name}
               </h1>
               <button
@@ -325,9 +325,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   const encodedAddress = encodeURIComponent(address);
                   window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
                 }}
-                className="flex items-center gap-2 text-white/90 hover:text-white text-base transition-colors group"
+                className="flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white text-sm sm:text-base transition-colors group"
               >
-                <MapPin className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
                 <span className="font-medium drop-shadow truncate">{facility.city}, {facility.state}</span>
               </button>
             </div>
