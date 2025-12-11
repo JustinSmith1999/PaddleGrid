@@ -62,479 +62,332 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-slate-50 via-white to-emerald-50">
-          <div className="min-h-[50vh] flex items-center">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-24 w-full">
-              <div className="lg:grid lg:grid-cols-2 gap-16 items-center">
-                {/* Mobile Logo - Above text on mobile only */}
-                <div className="flex justify-center mb-6 sm:mb-8 lg:hidden">
-                  <img
-                    src="/screenshot_2025-12-05_150441-removebg-preview.png"
-                    alt="PaddleGrid Logo"
-                    className="h-24 sm:h-32 md:h-40 w-auto"
-                  />
+        <div className="relative bg-white border-b border-slate-100">
+          <div className="max-w-7xl mx-auto px-6 py-20 lg:py-32">
+            <div className="lg:grid lg:grid-cols-2 gap-20 items-center">
+              {/* Mobile Logo */}
+              <div className="flex justify-center mb-12 lg:hidden">
+                <img
+                  src="/screenshot_2025-12-05_150441-removebg-preview.png"
+                  alt="PaddleGrid Logo"
+                  className="h-32 w-auto"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="space-y-8 text-center lg:text-left">
+                <div className="space-y-6">
+                  <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight">
+                    Court management
+                    <span className="block text-emerald-600">reimagined</span>
+                  </h1>
+
+                  <p className="text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    The complete platform for modern sports facilities. Seamlessly manage courts, members, and events.
+                  </p>
                 </div>
 
-                {/* Content */}
-                <div className="space-y-5 sm:space-y-6 lg:space-y-8 text-center lg:text-left">
-                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-                      <div>Connect.</div>
-                      <div>Play.</div>
-                      <div>Discover.</div>
-                      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Achieve.</div>
-                    </h1>
-
-                    <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 px-2 sm:px-0">
-                      The most advanced court management platform for racquet and paddle sports facilities.
-                      Built for clubs that demand excellence.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-2 sm:px-0">
-                    <button
-                      onClick={() => onAuthRequired('facility')}
-                      className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      Start Free Trial
-                    </button>
-                    <button className="border-2 border-slate-200 bg-white text-slate-700 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:border-emerald-200 hover:bg-emerald-50 transition-all duration-200 shadow-sm">
-                      Watch Demo
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 text-sm text-slate-600 justify-center lg:justify-start px-2 sm:px-0">
-                    <span className="flex items-center justify-center lg:justify-start">
-                      <Check className="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0" />
-                      14-day free trial
-                    </span>
-                    <span className="flex items-center justify-center lg:justify-start">
-                      <Check className="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0" />
-                      Cancel anytime
-                    </span>
-                  </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <button
+                    onClick={() => onAuthRequired('facility')}
+                    className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                  >
+                    Start free trial
+                  </button>
+                  <button className="border border-slate-300 bg-white text-slate-700 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-slate-50 transition-colors">
+                    View demo
+                  </button>
                 </div>
 
-                {/* Desktop Logo - Hidden on mobile */}
-                <div className="hidden lg:flex justify-center lg:justify-end">
-                  <img
-                    src="/screenshot_2025-12-05_150441-removebg-preview.png"
-                    alt="PaddleGrid Logo"
-                    className="h-72 xl:h-80 w-auto"
-                  />
+                <div className="flex flex-wrap gap-6 text-sm text-slate-600 justify-center lg:justify-start">
+                  <span className="flex items-center">
+                    <Check className="w-4 h-4 text-emerald-600 mr-2" />
+                    14-day trial
+                  </span>
+                  <span className="flex items-center">
+                    <Check className="w-4 h-4 text-emerald-600 mr-2" />
+                    No credit card
+                  </span>
+                  <span className="flex items-center">
+                    <Check className="w-4 h-4 text-emerald-600 mr-2" />
+                    Cancel anytime
+                  </span>
                 </div>
+              </div>
+
+              {/* Desktop Logo */}
+              <div className="hidden lg:flex justify-center">
+                <img
+                  src="/screenshot_2025-12-05_150441-removebg-preview.png"
+                  alt="PaddleGrid Logo"
+                  className="h-96 w-auto"
+                />
               </div>
             </div>
           </div>
         </div>
 
         {/* Features Section */}
-        <div className="py-12 sm:py-16 md:py-20 bg-white relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-10 sm:mb-12 md:mb-16">
-              <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
-                <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                <span className="text-emerald-600 font-semibold text-xs sm:text-sm uppercase tracking-wider">Platform Features</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 sm:mb-4 px-2">
-                Everything You Need to Manage Your Facility
+        <div className="py-24 bg-slate-50 border-b border-slate-100">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
+                Everything you need in one platform
               </h2>
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto px-2">
-                From court reservations to event management, PaddleGrid delivers powerful features designed for modern sports facilities.
+              <p className="text-lg text-slate-600">
+                Powerful tools that work together seamlessly to run your facility
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
                   icon: Calendar,
-                  title: "Court Reservations",
-                  description: "Visual booking calendar with real-time availability. Players book in seconds, you manage effortlessly.",
-                  features: ["Real-time availability", "Conflict prevention", "Flexible scheduling"]
+                  title: "Smart Scheduling",
+                  description: "Visual booking calendar with real-time availability and automated conflict prevention"
                 },
                 {
                   icon: Users,
-                  title: "Memberships",
-                  description: "Flexible membership tiers with automated billing and credits. Increase recurring revenue.",
-                  features: ["Multiple tier options", "Auto-renewal billing", "Member benefits tracking"]
+                  title: "Member Management",
+                  description: "Flexible membership tiers with automated billing and comprehensive tracking"
                 },
                 {
                   icon: Trophy,
-                  title: "Events & Programs",
-                  description: "Run tournaments, clinics, and leagues. Full registration and payment management.",
-                  features: ["Tournament brackets", "Online registration", "Capacity management"]
+                  title: "Events & Tournaments",
+                  description: "Run programs, clinics, and leagues with complete registration management"
                 },
                 {
                   icon: BarChart3,
-                  title: "Analytics & Reporting",
-                  description: "Real-time insights into revenue, utilization, and performance. Data-driven decisions.",
-                  features: ["Revenue tracking", "Court utilization", "Custom reports"]
+                  title: "Analytics",
+                  description: "Real-time revenue, utilization, and performance insights at your fingertips"
                 },
                 {
                   icon: Smartphone,
-                  title: "Mobile Experience",
-                  description: "Responsive design that works perfectly on any device. Your players book on the go.",
-                  features: ["Mobile-optimized", "Touch-friendly interface", "Works offline"]
+                  title: "Mobile Ready",
+                  description: "Fully responsive design that works beautifully on every device"
                 },
                 {
-                  icon: Globe,
-                  title: "Player Portal",
-                  description: "Comprehensive player profiles with statistics, achievements, and history tracking.",
-                  features: ["Activity tracking", "Achievement system", "Booking history"]
+                  icon: Shield,
+                  title: "Secure Payments",
+                  description: "PCI-compliant payment processing with transparent 1% fee structure"
                 }
               ].map((feature, index) => (
-                <div key={index} className="group bg-gradient-to-br from-slate-50 to-white p-6 sm:p-8 rounded-2xl border-2 border-slate-100 hover:border-emerald-200 hover:shadow-xl transition-all duration-300 text-center md:text-left">
-                  <div className="bg-gradient-to-br from-emerald-600 to-teal-600 text-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg mx-auto md:mx-0 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className="w-6 h-6" />
+                <div key={index} className="group">
+                  <div className="bg-white p-8 rounded-lg border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all">
+                    <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors">
+                      <feature.icon className="w-6 h-6 text-emerald-600 group-hover:text-white transition-colors" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
-
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4">
-                    {feature.title}
-                  </h3>
-
-                  <p className="text-slate-600 mb-4 sm:mb-6 text-sm sm:text-base">
-                    {feature.description}
-                  </p>
-
-                  <ul className="space-y-2">
-                    {feature.features.map((item, idx) => (
-                      <li key={idx} className="flex items-center justify-center md:justify-start text-sm text-slate-600">
-                        <Check className="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Testimonials Section */}
-
         {/* Pricing Section */}
-        <div className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-slate-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-10 sm:mb-12 md:mb-16">
-              <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
-                <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                <span className="text-emerald-600 font-semibold text-xs sm:text-sm uppercase tracking-wider">Pricing Plans</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 sm:mb-4 px-2">
-                Simple, Transparent Pricing
+        <div className="py-24 bg-white border-b border-slate-100">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
+                Simple, transparent pricing
               </h2>
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto px-2">
-                Choose the plan that fits your facility. All plans include full access to our platform.
+              <p className="text-lg text-slate-600">
+                Choose the plan that fits your facility. Scale as you grow.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {[
                 {
                   name: "Starter",
                   price: "$99",
-                  period: "/mo",
+                  period: "/month",
                   description: "Perfect for small facilities",
                   features: ["Up to 5 courts", "Unlimited bookings", "Basic analytics", "Email support"],
-                  popular: false,
-                  buttonText: "Start Free Trial"
+                  popular: false
                 },
                 {
                   name: "Professional",
                   price: "$199",
-                  period: "/mo",
+                  period: "/month",
                   description: "For growing facilities",
                   features: ["Up to 15 courts", "Advanced analytics", "Event management", "Priority support", "Custom branding"],
-                  popular: true,
-                  buttonText: "Start Free Trial"
+                  popular: true
                 },
                 {
                   name: "Enterprise",
                   price: "Custom",
                   period: "",
                   description: "For large operations",
-                  features: ["Unlimited courts", "Multi-location support", "Dedicated support", "Custom integrations"],
-                  popular: false,
-                  buttonText: "Contact Sales"
+                  features: ["Unlimited courts", "Multi-location", "Dedicated support", "Custom integrations", "API access"],
+                  popular: false
                 }
               ].map((plan, index) => (
                 <div
                   key={index}
-                  className={`bg-white rounded-2xl shadow-lg border-2 p-6 sm:p-8 relative transition-all duration-300 hover:shadow-2xl ${
-                    plan.popular ? 'border-emerald-600 scale-105' : 'border-slate-200'
+                  className={`bg-white rounded-lg p-8 relative border-2 transition-all ${
+                    plan.popular ? 'border-emerald-600 shadow-lg' : 'border-slate-200'
                   }`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="bg-emerald-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
                         Most Popular
                       </span>
                     </div>
                   )}
 
-                  <div className="text-center mb-6 sm:mb-8">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">{plan.name}</h3>
-                    <div className="mb-3 sm:mb-4">
-                      <span className="text-3xl sm:text-4xl font-bold text-slate-900">{plan.price}</span>
-                      <span className="text-slate-600">{plan.period}</span>
+                  <div className="mb-8">
+                    <h3 className="text-xl font-bold text-slate-900 mb-1">{plan.name}</h3>
+                    <p className="text-slate-600 text-sm mb-4">{plan.description}</p>
+                    <div className="flex items-baseline">
+                      <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
+                      <span className="text-slate-600 ml-1">{plan.period}</span>
                     </div>
-                    <p className="text-sm sm:text-base text-slate-600">{plan.description}</p>
                   </div>
 
-                  <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                  <ul className="space-y-3 mb-8">
                     {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center text-sm sm:text-base">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 mr-2 sm:mr-3 flex-shrink-0" />
+                      <li key={idx} className="flex items-start">
+                        <Check className="w-5 h-5 text-emerald-600 mr-2 flex-shrink-0 mt-0.5" />
                         <span className="text-slate-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <button
-                    onClick={() => {
-                      if (plan.buttonText === 'Start Free Trial') {
-                        onAuthRequired('facility');
-                      }
-                    }}
-                    className={`w-full py-3 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 ${
+                    onClick={() => onAuthRequired('facility')}
+                    className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                       plan.popular
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 shadow-lg'
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                         : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
                     }`}
                   >
-                    {plan.buttonText}
+                    {plan.name === 'Enterprise' ? 'Contact sales' : 'Start free trial'}
                   </button>
                 </div>
               ))}
             </div>
 
-            <div className="text-center mt-6 sm:mt-8 px-2">
-              <p className="text-sm sm:text-base text-slate-600">All plans include a 14-day free trial.</p>
-            </div>
+            <p className="text-center text-slate-600 mt-8">All plans include 14-day free trial • No credit card required</p>
           </div>
         </div>
 
-        {/* Premium Capabilities Section */}
-        <div className="py-16 sm:py-20 md:py-24 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }} />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-            {/* Section Header */}
-            <div className="mb-12 sm:mb-16 md:mb-20 max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 mb-6 sm:mb-8">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                <span className="text-emerald-400 font-semibold text-xs sm:text-sm uppercase tracking-wider">Platform Excellence</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
-                Built for Scale. Designed for Excellence.
+        {/* Why PaddleGrid Section */}
+        <div className="py-24 bg-slate-900 border-b border-slate-800">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
+                Built for performance
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto px-2">
-                Every capability engineered to deliver exceptional performance, reliability, and member experience.
+              <p className="text-lg text-slate-400">
+                Every feature engineered for speed, reliability, and exceptional user experience
               </p>
             </div>
 
-            {/* Capabilities Grid */}
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+            <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
-                  title: "Instant Booking Experience",
-                  description: "Members complete reservations in 14 seconds. Three clicks from login to confirmation. Zero friction, maximum conversion.",
+                  title: "Lightning-fast bookings",
+                  description: "Members complete reservations in 14 seconds. Three clicks from login to confirmation.",
                   metric: "14s",
-                  label: "Average booking time",
                   demo: 'checkout',
                 },
                 {
-                  title: "Complete Transparency",
-                  description: "1% processing fee, clearly displayed on every transaction. No surprises, no fine print. Your members trust you because we earn theirs.",
+                  title: "Complete transparency",
+                  description: "1% processing fee displayed on every transaction. No hidden costs, no surprises.",
                   metric: "1%",
-                  label: "Transparent fee cap",
                   demo: 'pricing',
                 },
                 {
-                  title: "Intelligent Waitlist",
-                  description: "When a court opens up, we instantly text members on the waitlist. Spots refill in 30 seconds without any staff involvement.",
+                  title: "Intelligent waitlist",
+                  description: "When a court opens up, we instantly notify waitlisted members. Spots refill in seconds.",
                   metric: "30s",
-                  label: "Average refill time",
                   demo: 'waitlist',
                 },
                 {
-                  title: "Uninterrupted Operations",
-                  description: "Full offline capability ensures zero downtime during network issues. All transactions sync seamlessly when connectivity returns.",
-                  metric: "100%",
-                  label: "Guaranteed uptime",
-                  demo: null,
-                },
-                {
-                  title: "Unified Family Accounts",
-                  description: "Parents manage entire family bookings, payments, and schedules from one dashboard. Simplified administration, happier members.",
-                  metric: "Single",
-                  label: "Household dashboard",
+                  title: "Unified family accounts",
+                  description: "Parents manage entire family's bookings, payments, and schedules from one dashboard.",
+                  metric: "1 account",
                   demo: 'family',
                 },
                 {
-                  title: "Conflict-Free Scheduling",
-                  description: "AI-powered allocation prevents double bookings and optimizes court utilization. Smart suggestions maximize revenue per hour.",
-                  metric: "Zero",
-                  label: "Booking conflicts",
+                  title: "Conflict-free scheduling",
+                  description: "Smart allocation prevents double bookings and optimizes court utilization automatically.",
+                  metric: "Zero conflicts",
                   demo: 'scheduling',
                 },
                 {
-                  title: "Live Performance Data",
-                  description: "Real-time revenue tracking, occupancy rates, and member analytics. Make data-driven decisions with up-to-the-second insights.",
-                  metric: "Live",
-                  label: "Dashboard updates",
+                  title: "Real-time analytics",
+                  description: "Live revenue tracking, occupancy rates, and performance insights at your fingertips.",
+                  metric: "Live data",
                   demo: 'analytics',
-                },
-                {
-                  title: "Enterprise-Grade Security",
-                  description: "SOC 2 Type II certified infrastructure with end-to-end encryption. Multi-factor authentication standard. Your data is fortress-level protected.",
-                  metric: "SOC 2",
-                  label: "Security certification",
-                  demo: null,
-                },
-                {
-                  title: "Global Performance",
-                  description: "Sub-second page loads worldwide. CDN-optimized delivery ensures instant responsiveness regardless of location or device.",
-                  metric: "<1s",
-                  label: "Global page load",
-                  demo: null,
-                },
-                {
-                  title: "Dedicated Success Partner",
-                  description: "Every client receives a personal success manager. Direct phone, email, and chat support included. Your growth is our mission.",
-                  metric: "Included",
-                  label: "Success management",
-                  demo: null,
                 }
               ].map((item, index) => (
-                <div key={index} className="group">
-                  <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-800/70 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300">
-                    <div className="flex items-start justify-between mb-4 sm:mb-6">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white leading-tight flex-1 pr-3 sm:pr-4">
-                        {item.title}
-                      </h3>
-                      <div className="text-right flex-shrink-0">
-                        <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">{item.metric}</div>
-                        <div className="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider mt-1">{item.label}</div>
-                      </div>
-                    </div>
-
-                    <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-4 sm:mb-6">
-                      {item.description}
-                    </p>
-
-                    {item.demo && (
-                      <button
-                        onClick={() => setShowDemo(item.demo as any)}
-                        className="text-emerald-400 text-sm sm:text-base font-semibold hover:text-emerald-300 transition-colors inline-flex items-center group"
-                      >
-                        View Interactive Demo
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                      </button>
-                    )}
+                <div key={index} className="group bg-slate-800 border border-slate-700 rounded-lg p-8 hover:border-emerald-600 transition-all">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-xl font-bold text-white flex-1">
+                      {item.title}
+                    </h3>
+                    <span className="text-2xl font-bold text-emerald-400">{item.metric}</span>
                   </div>
+
+                  <p className="text-slate-400 leading-relaxed mb-4">
+                    {item.description}
+                  </p>
+
+                  {item.demo && (
+                    <button
+                      onClick={() => setShowDemo(item.demo as any)}
+                      className="text-emerald-400 font-semibold hover:text-emerald-300 transition-colors inline-flex items-center text-sm"
+                    >
+                      View demo
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Transform Your Facility Section */}
-        <div className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 md:gap-16 items-center">
-              <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
-                  <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                  <span className="text-emerald-600 font-semibold text-xs sm:text-sm uppercase tracking-wider">Trusted by Industry Leaders</span>
-                </div>
-                <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4 sm:mb-6 leading-tight px-2 lg:px-0">
-                  Transform Your Facility Operations
-                </h3>
-                <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 sm:mb-8 px-2 lg:px-0">
-                  Join 500+ elite facilities delivering exceptional member experiences with PaddleGrid.
-                </p>
-                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0">
-                  <div className="flex items-center gap-3 text-sm sm:text-base text-slate-700 justify-center lg:justify-start">
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0" />
-                    <span>Full implementation support and training</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm sm:text-base text-slate-700 justify-center lg:justify-start">
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0" />
-                    <span>Seamless data migration from any system</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm sm:text-base text-slate-700 justify-center lg:justify-start">
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0" />
-                    <span>Zero risk with 14-day trial period</span>
-                  </div>
-                </div>
+        {/* CTA Section */}
+        <div className="py-24 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="bg-emerald-600 rounded-2xl p-12 lg:p-16 text-center">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+                Ready to get started?
+              </h2>
+
+              <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                Join hundreds of facilities using PaddleGrid to streamline operations and grow revenue.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => onAuthRequired('facility')}
+                  className="bg-white text-emerald-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-slate-50 transition-colors shadow-sm"
+                >
+                  Start free trial
+                </button>
+
+                <button
+                  onClick={() => setShowDemo('checkout')}
+                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white/10 transition-colors"
+                >
+                  View demo
+                </button>
               </div>
 
-              <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-8 sm:p-10 lg:p-12 shadow-2xl">
-                <div className="mb-6 sm:mb-8">
-                  <div className="text-white text-lg sm:text-xl font-bold mb-2">Start Your Free Trial</div>
-                  <div className="text-white/90 text-sm">Cancel anytime during your 14-day trial.</div>
-                </div>
-
-                <div className="space-y-3 sm:space-y-4">
-                  <button
-                    onClick={() => !user && onAuthRequired('facility')}
-                    className="w-full bg-white text-emerald-700 px-6 sm:px-8 py-4 sm:py-5 rounded-xl font-semibold hover:bg-slate-50 transition-all inline-flex items-center justify-center text-base sm:text-lg shadow-xl"
-                  >
-                    Get Started Now
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                  </button>
-
-                  <button
-                    onClick={() => setShowDemo('checkout')}
-                    className="w-full border-2 border-white/30 text-white px-6 sm:px-8 py-4 sm:py-5 rounded-xl font-semibold hover:bg-white/10 transition-all text-base sm:text-lg"
-                  >
-                    Schedule Demo
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Final CTA */}
-        <div className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-emerald-600 to-teal-600 relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }} />
-          </div>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white px-2">
-              Ready to Transform Your Facility?
-            </h2>
-
-            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-white/90 px-2">
-              Join hundreds of facilities using PaddleGrid to streamline operations and grow revenue.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8">
-              <button
-                onClick={() => onAuthRequired('facility')}
-                className="bg-white text-emerald-700 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-slate-50 transition-all duration-200 shadow-xl hover:shadow-2xl"
-              >
-                Start Free Trial
-              </button>
-
-              <button
-                onClick={() => setShowDemo('checkout')}
-                className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-white/20 transition-all duration-200"
-              >
-                Try Demo
-              </button>
+              <p className="text-white/80 mt-6">14-day trial • No credit card required</p>
             </div>
           </div>
         </div>
