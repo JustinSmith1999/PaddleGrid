@@ -304,7 +304,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
         {!facility.hero_image_url && (
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200')] bg-cover bg-center opacity-20"></div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+        <div className={`absolute inset-0 ${facility.hero_image_url ? 'bg-gradient-to-t from-black/40 via-transparent to-transparent' : 'bg-gradient-to-t from-black/60 via-black/20 to-transparent'}`}></div>
 
         <button
           onClick={onBack}
