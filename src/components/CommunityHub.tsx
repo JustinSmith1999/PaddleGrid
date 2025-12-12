@@ -15,6 +15,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
   const navigate = useNavigate();
   const [showComposer, setShowComposer] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   if (!user) {
     return (
@@ -120,6 +121,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <CommunityFeed
+        key={refreshTrigger}
         onCreatePost={() => setShowComposer(true)}
         onPostClick={(postId) => navigate(`/post/${postId}`)}
         onProfileClick={(userId) => navigate(`/player/${userId}`)}
@@ -139,8 +141,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         <PostComposer
           onClose={() => setShowComposer(false)}
           onSuccess={() => {
-            setShowComposer(false);
-            window.location.reload();
+            setRefreshTrigger(prev => prev + 1);
           }}
         />
       )}
