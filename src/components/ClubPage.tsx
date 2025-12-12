@@ -293,16 +293,17 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <div className="relative h-64 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: facility.hero_image_url
-              ? `url(${facility.hero_image_url})`
-              : `url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200')`,
-            opacity: facility.hero_image_url ? 1 : 0.2
-          }}
-        ></div>
+      <div
+        className={`relative h-64 overflow-hidden ${!facility.hero_image_url ? 'bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600' : 'bg-slate-900'}`}
+        style={facility.hero_image_url ? {
+          backgroundImage: `url(${facility.hero_image_url})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        } : undefined}
+      >
+        {!facility.hero_image_url && (
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200')] bg-cover bg-center opacity-20"></div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
         <button
