@@ -1,4 +1,4 @@
-import { Home, Search, Calendar, User, Shield, TrendingUp } from 'lucide-react';
+import { Home, Search, Calendar, User, Shield, TrendingUp, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
 
@@ -33,8 +33,8 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
 
   const navItems = [
     { view: 'community' as ViewType, icon: Home, label: 'Feed' },
-    { view: 'browse' as ViewType, icon: Search, label: 'Courts' },
-    { view: 'profile' as ViewType, icon: User, label: 'Profile' },
+    { view: 'browse' as ViewType, icon: Search, label: 'Clubs' },
+    { view: 'discover' as ViewType, icon: Users, label: 'Search' },
   ];
 
   if (isAdmin) {
