@@ -278,8 +278,8 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const showAccountTypeSelection = !isLogin && accountType === null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className={`bg-white rounded-2xl shadow-2xl ${isFacilitySignup ? 'max-w-4xl' : 'max-w-md'} w-full my-4 relative`}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+      <div className={`bg-white rounded-2xl shadow-2xl ${isFacilitySignup ? 'max-w-3xl' : 'max-w-md'} w-full my-2 sm:my-4 relative max-h-[95vh] overflow-y-auto`}>
         <div className="bg-white p-4 pb-3 border-b border-gray-100 rounded-t-2xl">
           <button
             onClick={onClose}
