@@ -519,15 +519,19 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                       className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md transition-all text-left group"
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-bold text-slate-900 dark:text-white text-base truncate pr-2">
-                          {court.name}
-                        </h3>
-                        <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-slate-900 dark:text-white text-base truncate">
+                            {court.name}
+                          </h3>
+                          {facility && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                              {facility.city}, {facility.state}
+                            </p>
+                          )}
+                        </div>
+                        <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform ml-2" />
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-2 leading-relaxed">
-                        {court.description}
-                      </p>
-                      <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                      <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-2">
                         View Schedule
                       </div>
                     </button>

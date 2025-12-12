@@ -7,6 +7,7 @@ interface Court {
   hourly_rate: number;
   image_url: string | null;
   is_active: boolean;
+  location?: string;
 }
 
 interface AvailabilityBlock {
@@ -96,12 +97,14 @@ export function CourtCard({ court, onBook, availabilityBlocks }: CourtCardProps)
       </div>
 
       <div className="p-5">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
           {court.name}
         </h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
-          {court.description || 'Professional pickleball court available for booking'}
-        </p>
+        {court.location && (
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            {court.location}
+          </p>
+        )}
 
         <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2">
