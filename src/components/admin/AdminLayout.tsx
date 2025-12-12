@@ -1,10 +1,11 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import {
   LayoutDashboard, Calendar, Users, Settings, LogOut, Menu, X, Sun, Moon, Bell,
   BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { supabase } from '../../lib/supabase';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -38,10 +39,33 @@ const navigationItems: NavItem[] = [
 export default function AdminLayout({ children, currentView, onViewChange }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [facility, setFacility] = useState<{ name: string; logo_url: string | null } | null>(null);
 
   const userRole = (user as any)?.role || 'user';
+
+  useEffect(() => {
+    const fetchFacility = async () => {
+      if (!profile?.facility_id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('facilities')
+          .select('name, logo_url')
+          .eq('id', profile.facility_id)
+          .single();
+
+        if (!error && data) {
+          setFacility(data);
+        }
+      } catch (error) {
+        console.error('Error fetching facility:', error);
+      }
+    };
+
+    fetchFacility();
+  }, [profile?.facility_id]);
 
   const filteredNav = navigationItems.filter(item =>
     !item.roles || item.roles.includes(userRole)
@@ -61,13 +85,21 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
         <div className="flex items-center justify-between p-6 border-b border-stone-200 bg-gradient-to-r from-emerald-50 to-green-50">
           {isSidebarOpen && (
             <div className="flex items-center space-x-2">
-              <img
-                src="/screenshot_2025-12-05_150441-removebg-preview.png"
-                alt="PaddleGrid Logo"
-                className="h-10 w-auto"
-              />
+              {facility?.logo_url ? (
+                <img
+                  src={facility.logo_url}
+                  alt={`${facility.name} Logo`}
+                  className="h-10 w-auto"
+                />
+              ) : (
+                <img
+                  src="/screenshot_2025-12-05_150441-removebg-preview.png"
+                  alt="Logo"
+                  className="h-10 w-auto"
+                />
+              )}
               <div>
-                <span className="font-bold text-xl text-emerald-800">PaddleGrid</span>
+                <span className="font-bold text-xl text-emerald-800">{facility?.name || 'PaddleGrid'}</span>
                 <div className="text-xs text-emerald-600 font-medium">Club Management</div>
               </div>
             </div>
@@ -129,13 +161,21 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
       >
         <div className="flex items-center justify-between p-6 border-b border-stone-200 bg-gradient-to-r from-emerald-50 to-green-50">
           <div className="flex items-center space-x-2">
-            <img
-              src="/screenshot_2025-12-05_150441-removebg-preview.png"
-              alt="PaddleGrid Logo"
-              className="h-10 w-auto"
-            />
+            {facility?.logo_url ? (
+              <img
+                src={facility.logo_url}
+                alt={`${facility.name} Logo`}
+                className="h-10 w-auto"
+              />
+            ) : (
+              <img
+                src="/screenshot_2025-12-05_150441-removebg-preview.png"
+                alt="Logo"
+                className="h-10 w-auto"
+              />
+            )}
             <div>
-              <span className="font-bold text-xl text-emerald-800">PaddleGrid</span>
+              <span className="font-bold text-xl text-emerald-800">{facility?.name || 'PaddleGrid'}</span>
               <div className="text-xs text-emerald-600 font-medium">Club Management</div>
             </div>
           </div>
