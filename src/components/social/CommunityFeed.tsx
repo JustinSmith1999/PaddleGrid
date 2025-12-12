@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import PostCard from './PostCard';
 import NotificationsPanel from './NotificationsPanel';
+import NotificationsInlineFeed from './NotificationsInlineFeed';
 import { BrowseCourts } from '../BrowseCourts';
 import Messages from './Messages';
 import UserSearch from './UserSearch';
@@ -329,6 +330,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
                   {activeView === 'search' && 'Search Players'}
+                  {activeView === 'notifications' && 'Notifications'}
                   {activeView === 'messages' && 'Messages'}
                   {activeView === 'bookmarks' && 'Bookmarks'}
                 </h1>
@@ -470,6 +472,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Search View */}
           {activeView === 'search' && (
             <UserSearch onProfileClick={onProfileClick} />
+          )}
+
+          {/* Notifications View */}
+          {activeView === 'notifications' && user && (
+            <NotificationsInlineFeed onPostClick={onPostClick} onProfileClick={onProfileClick} />
           )}
 
           {/* Messages View */}
