@@ -7,23 +7,25 @@ const corsHeaders = {
 };
 
 interface CourtReserveTransaction {
-  id: string;
-  transactionDate: string;
-  transactionType: string;
-  amount: number;
-  paymentType?: string;
-  paymentStatus?: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerId?: string;
-  reservationId?: string;
-  reservationStartDate?: string;
-  reservationEndDate?: string;
-  eventName?: string;
-  eventId?: string;
-  instructorName?: string;
-  revenueCategory?: string;
-  description?: string;
+  TransactionId: number;
+  TransactionType: string;
+  TransactionDate: string;
+  Subtotal: number;
+  TaxTotal: number;
+  Total: number;
+  UnpaidAmount: number;
+  PainOn?: string;
+  PaymentType?: string;
+  Category?: string;
+  ReservationStart?: string;
+  ReservationEnd?: string;
+  Instructors?: string;
+  OrganizationMemberId?: number;
+  OrganizationFirstName?: string;
+  OrganizationLastName?: string;
+  OrganizationMemberEmail?: string;
+  OrganizationMemberPhone?: string;
+  AccountCreationDate?: string;
 }
 
 interface SyncFilters {
@@ -109,38 +111,52 @@ async function syncFacilityTransactions(facility: any, filters: SyncFilters, sup
     }
 
     const responseData = await courtReserveResponse.json();
-    console.log('CourtReserve full response:', JSON.stringify(responseData, null, 2));
-    console.log('Response type:', typeof responseData);
-    console.log('Is array:', Array.isArray(responseData));
-    if (typeof responseData === 'object' && responseData !== null) {
-      console.log('Response keys:', Object.keys(responseData));
+    console.log('CourtReserve response keys:', typeof responseData === 'object' ? Object.keys(responseData) : 'not an object');
+    console.log('IsSuccessStatusCode:', responseData.IsSuccessStatusCode);
+
+    if (responseData.ErrorMessage) {
+      throw new Error(`CourtReserve API error: ${responseData.ErrorMessage}`);
     }
 
-    const transactions: CourtReserveTransaction[] = Array.isArray(responseData)
-      ? responseData
-      : (responseData.transactions || responseData.data || responseData.items || []);
+    if (!responseData.IsSuccessStatusCode) {
+      throw new Error('CourtReserve API returned unsuccessful status');
+    }
 
-    const transactionsData = transactions.map(transaction => ({
-      facility_id: facility.id,
-      courtreserve_transaction_id: transaction.id,
-      transaction_date: transaction.transactionDate,
-      transaction_type: transaction.transactionType,
-      amount: transaction.amount,
-      payment_type: transaction.paymentType,
-      payment_status: transaction.paymentStatus || 'unpaid',
-      customer_name: transaction.customerName,
-      customer_email: transaction.customerEmail,
-      customer_id: transaction.customerId,
-      reservation_id: transaction.reservationId,
-      reservation_start_date: transaction.reservationStartDate,
-      reservation_end_date: transaction.reservationEndDate,
-      event_name: transaction.eventName,
-      event_id: transaction.eventId,
-      instructor_name: transaction.instructorName,
-      revenue_category: transaction.revenueCategory,
-      description: transaction.description,
-      raw_data: transaction,
-    }));
+    const transactions: CourtReserveTransaction[] = Array.isArray(responseData.Data)
+      ? responseData.Data
+      : [];
+
+    const transactionsData = transactions.map(transaction => {
+      const customerName = transaction.OrganizationFirstName && transaction.OrganizationLastName
+        ? `${transaction.OrganizationFirstName} ${transaction.OrganizationLastName}`
+        : (transaction.OrganizationFirstName || transaction.OrganizationLastName || '');
+
+      const paymentStatus = transaction.UnpaidAmount > 0
+        ? (transaction.UnpaidAmount < Math.abs(transaction.Total) ? 'partial' : 'unpaid')
+        : 'paid';
+
+      return {
+        facility_id: facility.id,
+        courtreserve_transaction_id: transaction.TransactionId.toString(),
+        transaction_date: transaction.TransactionDate,
+        transaction_type: transaction.TransactionType,
+        amount: Math.abs(transaction.Total),
+        payment_type: transaction.PaymentType || '',
+        payment_status: paymentStatus,
+        customer_name: customerName,
+        customer_email: transaction.OrganizationMemberEmail || '',
+        customer_id: transaction.OrganizationMemberId?.toString(),
+        reservation_id: null,
+        reservation_start_date: transaction.ReservationStart,
+        reservation_end_date: transaction.ReservationEnd,
+        event_name: transaction.Category,
+        event_id: null,
+        instructor_name: transaction.Instructors,
+        revenue_category: transaction.Category,
+        description: transaction.Category,
+        raw_data: transaction,
+      };
+    });
 
     const BATCH_SIZE = 100;
     let transactionsSynced = 0;
