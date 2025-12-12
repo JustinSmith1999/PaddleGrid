@@ -81,8 +81,14 @@ export default function UserSearch({ onProfileClick }: UserSearchProps) {
       }
 
       if (profiles) {
+        const filteredProfiles = profiles.filter(profile => {
+          const name = profile.full_name?.toLowerCase() || '';
+          const facilityPatterns = ['pickleball heaven', 'pickle n par', 'patchogue ymca', 'pickleheads'];
+          return !facilityPatterns.some(pattern => name.includes(pattern));
+        });
+
         const profilesWithFollowCount = await Promise.all(
-          profiles.map(async (profile) => {
+          filteredProfiles.map(async (profile) => {
             const { count } = await supabase
               .from('social_follows')
               .select('*', { count: 'exact', head: true })

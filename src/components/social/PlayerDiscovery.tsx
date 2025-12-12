@@ -66,7 +66,11 @@ export default function PlayerDiscovery({ onProfileClick }: PlayerDiscoveryProps
 
       if (error) throw error;
 
-      const playersData = data || [];
+      const playersData = (data || []).filter(player => {
+        const name = player.full_name?.toLowerCase() || '';
+        const facilityPatterns = ['pickleball heaven', 'pickle n par', 'patchogue ymca', 'pickleheads'];
+        return !facilityPatterns.some(pattern => name.includes(pattern));
+      });
       setPlayers(playersData);
 
       const statusPromises = playersData.map(p =>
