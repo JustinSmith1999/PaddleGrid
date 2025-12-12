@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
-import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
+import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants, getPostLikedByUsers } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface PostCardProps {
@@ -32,6 +32,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [isPostBookmarked, setIsPostBookmarked] = useState(post.user_bookmarked || false);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [likedByUsers, setLikedByUsers] = useState<Array<{ id: string; full_name: string; profile_picture_url?: string }>>([]);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
@@ -39,6 +40,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     setCommentsCount(post.comments_count || 0);
     setIsPostBookmarked(post.user_bookmarked || false);
     checkJoinStatus();
+    loadLikes();
     if (post.post_type === 'match_invite') {
       loadParticipants();
     }
@@ -48,7 +50,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     if (likesCount < (post.likes_count || 0)) {
       setLikesCount(post.likes_count || 0);
     }
-  }, [post.likes_count]);
+    loadLikes();
+  }, [post.likes_count, likesCount]);
 
   useEffect(() => {
     if (commentsCount < (post.comments_count || 0)) {
@@ -65,6 +68,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   async function loadParticipants() {
     const data = await getMatchParticipants(post.id);
     setParticipants(data);
+  }
+
+  async function loadLikes() {
+    if (likesCount > 0) {
+      const likes = await getPostLikedByUsers(post.id);
+      setLikedByUsers(likes);
+    } else {
+      setLikedByUsers([]);
+    }
   }
 
   async function checkJoinStatus() {
@@ -94,6 +106,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     if (result.success) {
       setUserLiked(result.liked);
       setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+      loadLikes();
     } else {
       console.error('Failed to toggle like:', result.error);
       alert(result.error || 'Failed to like post. Please try again.');
@@ -622,6 +635,41 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               <Bookmark className={`w-4 h-4 lg:w-5 lg:h-5 ${isPostBookmarked ? 'fill-current' : ''}`} />
             </button>
           </div>
+
+          {likedByUsers.length > 0 && (
+            <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Liked by{' '}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onProfileClick?.(likedByUsers[0].id);
+                }}
+                className="font-semibold text-slate-900 dark:text-white hover:underline"
+              >
+                {likedByUsers[0].full_name}
+              </button>
+              {likedByUsers.length > 1 && (
+                <>
+                  {' '}and{' '}
+                  {likedByUsers.length === 2 ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onProfileClick?.(likedByUsers[1].id);
+                      }}
+                      className="font-semibold text-slate-900 dark:text-white hover:underline"
+                    >
+                      {likedByUsers[1].full_name}
+                    </button>
+                  ) : (
+                    <span className="font-semibold text-slate-900 dark:text-white">
+                      {likesCount - 1} {likesCount - 1 === 1 ? 'other' : 'others'}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

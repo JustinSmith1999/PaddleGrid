@@ -962,3 +962,33 @@ export async function getBookmarkedPosts(): Promise<SocialPost[]> {
     return [];
   }
 }
+
+export async function getPostLikedByUsers(postId: string): Promise<Array<{ id: string; full_name: string; profile_picture_url?: string }>> {
+  try {
+    const { data, error } = await supabase
+      .from('social_post_likes')
+      .select(`
+        user_id,
+        profiles (
+          id,
+          full_name,
+          profile_picture_url
+        )
+      `)
+      .eq('post_id', postId)
+      .eq('reaction_type', 'like')
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+
+    return (data || []).map((like: any) => ({
+      id: like.profiles.id,
+      full_name: like.profiles.full_name,
+      profile_picture_url: like.profiles.profile_picture_url
+    }));
+  } catch (error) {
+    console.error('Error fetching post likes:', error);
+    return [];
+  }
+}
