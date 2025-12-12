@@ -48,7 +48,8 @@ async function syncFacility(facility: any, supabase: any) {
 
   try {
     const today = new Date();
-    const fromDate = today.toISOString();
+    const yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+    const fromDate = yesterday.toISOString();
     const toDate = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000)).toISOString();
 
     const courtReserveUrl = `https://api.courtreserve.com/api/v1/reservationreport/listactive?reservationsFromDate=${encodeURIComponent(fromDate)}&reservationsToDate=${encodeURIComponent(toDate)}`;
