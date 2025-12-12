@@ -913,7 +913,7 @@ export async function getBookmarkedPosts(): Promise<SocialPost[]> {
       posts.map(async (post: any) => {
         const [{ count: likesCount }, { count: commentsCount }, { data: userLiked }] = await Promise.all([
           supabase
-            .from('social_likes')
+            .from('social_post_likes')
             .select('*', { count: 'exact', head: true })
             .eq('post_id', post.id),
           supabase
@@ -922,7 +922,7 @@ export async function getBookmarkedPosts(): Promise<SocialPost[]> {
             .eq('post_id', post.id)
             .eq('is_deleted', false),
           supabase
-            .from('social_likes')
+            .from('social_post_likes')
             .select('id')
             .eq('post_id', post.id)
             .eq('user_id', user.user!.id)
