@@ -15,7 +15,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   const [postType, setPostType] = useState<'general' | 'match_invite'>('general');
   const [content, setContent] = useState('');
   const [facilityId, setFacilityId] = useState('');
-  const [visibility, setVisibility] = useState<'facility' | 'friends' | 'public'>('facility');
+  const visibility = 'public';
 
   const [sport, setSport] = useState('pickleball');
   const [skillMin, setSkillMin] = useState<number>(2.5);
@@ -312,27 +312,37 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
           )}
 
           <div className="border-t border-gray-200 pt-4 space-y-4">
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                accept="image/*,video/*"
-                multiple
-                className="hidden"
-              />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*,video/*"
+              multiple
+              className="hidden"
+            />
+
+            {selectedFiles.length < 4 && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                disabled={selectedFiles.length >= 4 || loading}
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Add photos or videos"
+                disabled={loading}
+                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ImageIcon className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-2">
+                  <div className="p-3 bg-blue-100 rounded-full group-hover:bg-blue-200 transition">
+                    <ImageIcon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-gray-700">Add Photos or Videos</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {selectedFiles.length > 0
+                        ? `${selectedFiles.length}/4 files selected`
+                        : 'Up to 4 files, max 10MB each'}
+                    </p>
+                  </div>
+                </div>
               </button>
-              <span className="text-xs text-gray-500">
-                {selectedFiles.length}/4 media files
-              </span>
-            </div>
+            )}
+
             <div>
               <label className="block text-sm font-semibold text-black mb-2">
                 Post Type
@@ -512,21 +522,6 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                 </div>
               </div>
             )}
-
-            <div>
-              <label className="block text-sm font-medium text-black mb-1.5">
-                Who can see this?
-              </label>
-              <select
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
-              >
-                <option value="facility">Facility Members</option>
-                <option value="friends">Friends Only</option>
-                <option value="public">Everyone</option>
-              </select>
-            </div>
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
