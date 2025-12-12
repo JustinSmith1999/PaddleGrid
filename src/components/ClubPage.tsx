@@ -22,6 +22,7 @@ interface Facility {
   city: string;
   state: string;
   logo_url: string;
+  hero_image_url: string;
   phone: string;
   email: string;
   website: string;
@@ -293,7 +294,14 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="relative h-64 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200')] bg-cover bg-center opacity-20"></div>
+        {facility.hero_image_url ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${facility.hero_image_url})` }}
+          ></div>
+        ) : (
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200')] bg-cover bg-center opacity-20"></div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
         <button
