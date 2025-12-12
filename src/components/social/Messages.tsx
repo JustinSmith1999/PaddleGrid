@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft } from 'lucide-react';
+import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft, Plus, Users } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import UserSearch from './UserSearch';
 
 interface Conversation {
   id: string;
@@ -51,6 +52,7 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -84,6 +86,11 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleUserSelected = async (userId: string) => {
+    setShowNewMessageModal(false);
+    await startConversationWithUser(userId);
   };
 
   async function startConversationWithUser(otherUserId: string) {
@@ -398,6 +405,16 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
     <div className="flex h-[calc(100vh-8rem)] bg-white dark:bg-slate-900">
       <div className={`w-full md:w-1/3 border-r border-slate-200 dark:border-slate-800 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Messages</h2>
+            <button
+              onClick={() => setShowNewMessageModal(true)}
+              className="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors"
+              title="New Message"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -614,6 +631,34 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
           </div>
         )}
       </div>
+
+      {/* New Message Modal */}
+      {showNewMessageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-emerald-500" />
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Start New Conversation
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowNewMessageModal(false)}
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(80vh-5rem)]">
+              <UserSearch
+                onUserSelect={handleUserSelected}
+                excludeCurrentUser={true}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

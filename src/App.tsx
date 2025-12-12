@@ -18,6 +18,7 @@ import CommunityHub from './components/CommunityHub';
 import PostDetail from './components/social/PostDetail';
 import ClubPage from './components/ClubPage';
 import PlayerDiscovery from './components/social/PlayerDiscovery';
+import Messages from './components/social/Messages';
 import { NotFound } from './components/NotFound';
 import { Loader2 } from 'lucide-react';
 
@@ -76,6 +77,9 @@ function AppContent() {
       case 'discover':
         navigate('/discover');
         break;
+      case 'messages':
+        navigate('/messages');
+        break;
       case 'community':
       default:
         navigate('/');
@@ -124,6 +128,16 @@ function AppContent() {
                 <PlayerDiscovery
                   onProfileClick={(userId) => navigate(`/player/${userId}`)}
                 />
+              </div>
+            </div>
+          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
+
+        <Route path="/messages" element={
+          user ? (
+            <div className="min-h-screen bg-gray-50 pb-20">
+              <div className="max-w-4xl mx-auto">
+                <Messages />
               </div>
             </div>
           ) : <div className="min-h-screen bg-gray-50 pb-20" />
