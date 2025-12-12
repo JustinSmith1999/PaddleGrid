@@ -42,7 +42,25 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     if (post.post_type === 'match_invite') {
       loadParticipants();
     }
-  }, [post.id, post.likes_count, post.user_liked, post.comments_count, post.user_bookmarked, post.spots_filled]);
+  }, [post.id]);
+
+  useEffect(() => {
+    if (likesCount < (post.likes_count || 0)) {
+      setLikesCount(post.likes_count || 0);
+    }
+  }, [post.likes_count]);
+
+  useEffect(() => {
+    if (commentsCount < (post.comments_count || 0)) {
+      setCommentsCount(post.comments_count || 0);
+    }
+  }, [post.comments_count]);
+
+  useEffect(() => {
+    if (post.spots_filled !== undefined) {
+      loadParticipants();
+    }
+  }, [post.spots_filled]);
 
   async function loadParticipants() {
     const data = await getMatchParticipants(post.id);
