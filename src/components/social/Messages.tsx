@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2 } from 'lucide-react';
+import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -383,7 +383,7 @@ export default function Messages() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] bg-white dark:bg-slate-900">
-      <div className="w-1/3 border-r border-slate-200 dark:border-slate-800 flex flex-col">
+      <div className={`w-full md:w-1/3 border-r border-slate-200 dark:border-slate-800 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 dark:border-slate-800">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -444,10 +444,16 @@ export default function Messages() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 flex flex-col ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
         {selectedConversation ? (
           <>
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+              <button
+                onClick={() => setSelectedConversation(null)}
+                className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
                 {conversations.find(c => c.id === selectedConversation)?.other_user_avatar ? (
                   <img
