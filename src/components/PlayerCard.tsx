@@ -18,19 +18,66 @@ interface Achievement {
   unlocked_at: string;
 }
 
+interface PlayerStats {
+  matches_won: number;
+  total_matches: number;
+  current_streak: number;
+  skill_level: number | null;
+}
+
 export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
   const { profile } = useAuth();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [stats, setStats] = useState<PlayerStats>({
+    matches_won: 0,
+    total_matches: 0,
+    current_streak: 0,
+    skill_level: null,
+  });
 
   const player = playerData || profile;
   const profileUrl = `${window.location.origin}/players/${playerId || player?.id}`;
 
   useEffect(() => {
-    const fetchAchievements = async () => {
+    const fetchPlayerData = async () => {
       if (!player?.id) return;
 
       try {
-        const { data, error } = await supabase
+        let { data: playerStatsData, error: statsError } = await supabase
+          .from('player_stats')
+          .select('matches_won, total_matches, skill_level')
+          .eq('user_id', player.id)
+          .maybeSingle();
+
+        if (!playerStatsData && !statsError) {
+          const { data: newStats, error: insertError } = await supabase
+            .from('player_stats')
+            .insert({
+              user_id: player.id,
+              total_bookings: 0,
+              total_hours_played: 0,
+              total_spent: 0,
+              matches_won: 0,
+              total_matches: 0,
+            })
+            .select('matches_won, total_matches, skill_level')
+            .single();
+
+          if (!insertError && newStats) {
+            playerStatsData = newStats;
+          }
+        }
+
+        if (playerStatsData) {
+          setStats({
+            matches_won: playerStatsData.matches_won || 0,
+            total_matches: playerStatsData.total_matches || 0,
+            current_streak: 0,
+            skill_level: playerStatsData.skill_level ? parseFloat(playerStatsData.skill_level) : null,
+          });
+        }
+
+        const { data: achievementsData, error: achievementsError } = await supabase
           .from('user_achievements')
           .select(`
             id,
@@ -46,24 +93,24 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
           .eq('user_id', player.id)
           .order('unlocked_at', { ascending: false });
 
-        if (error) throw error;
+        if (!achievementsError && achievementsData) {
+          const formattedAchievements = achievementsData.map(item => ({
+            id: item.achievements.id,
+            name: item.achievements.name,
+            description: item.achievements.description,
+            icon: item.achievements.icon,
+            rarity: item.achievements.rarity,
+            unlocked_at: item.unlocked_at
+          }));
 
-        const formattedAchievements = data?.map(item => ({
-          id: item.achievements.id,
-          name: item.achievements.name,
-          description: item.achievements.description,
-          icon: item.achievements.icon,
-          rarity: item.achievements.rarity,
-          unlocked_at: item.unlocked_at
-        })) || [];
-
-        setAchievements(formattedAchievements);
+          setAchievements(formattedAchievements);
+        }
       } catch (error) {
-        console.error('Error fetching achievements:', error);
+        console.error('Error fetching player data:', error);
       }
     };
 
-    fetchAchievements();
+    fetchPlayerData();
   }, [player?.id]);
 
   if (!player) {
@@ -99,7 +146,7 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
       try {
         await navigator.share({
           title: `${player.full_name}'s Player Card`,
-          text: `Check out my pickleball stats! Skill Level: ${player.skill_level?.toFixed(1) || 'N/A'}`,
+          text: `Check out my pickleball stats! ${stats.skill_level ? `Skill Level: ${stats.skill_level.toFixed(1)}` : `${stats.matches_won} wins`}`,
           url: profileUrl,
         });
       } catch (error) {
@@ -182,9 +229,9 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
             </div>
           </div>
 
-          {player.skill_level && (
+          {stats.skill_level && (
             <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-2 sm:py-3 text-center self-start">
-              <div className="text-3xl sm:text-4xl font-bold">{player.skill_level.toFixed(1)}</div>
+              <div className="text-3xl sm:text-4xl font-bold">{stats.skill_level.toFixed(1)}</div>
               <div className="text-xs sm:text-sm text-emerald-100 whitespace-nowrap">Skill Level</div>
             </div>
           )}
@@ -193,15 +240,15 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
         <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-6">
           <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2.5 sm:p-4 text-center">
             <Trophy className="w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
-            <div className="text-lg sm:text-2xl font-bold">{player.matches_won || 0}</div>
+            <div className="text-lg sm:text-2xl font-bold">{stats.matches_won}</div>
             <div className="text-[10px] sm:text-xs text-emerald-100">Wins</div>
           </div>
 
           <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2.5 sm:p-4 text-center">
             <Target className="w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
             <div className="text-lg sm:text-2xl font-bold">
-              {player.matches_won && player.matches_played
-                ? Math.round((player.matches_won / player.matches_played) * 100)
+              {stats.total_matches > 0
+                ? Math.round((stats.matches_won / stats.total_matches) * 100)
                 : 0}%
             </div>
             <div className="text-[10px] sm:text-xs text-emerald-100">Win Rate</div>
@@ -209,7 +256,7 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
 
           <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2.5 sm:p-4 text-center">
             <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2" />
-            <div className="text-lg sm:text-2xl font-bold">{player.current_streak || 0}</div>
+            <div className="text-lg sm:text-2xl font-bold">{stats.current_streak}</div>
             <div className="text-[10px] sm:text-xs text-emerald-100">Streak</div>
           </div>
         </div>
