@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Calendar, Trophy, MapPin, Users, Clock, Image as ImageIcon, Video, Loader2 } from 'lucide-react';
+import { X, Calendar, Trophy, MapPin, Users, Clock, Image as ImageIcon, Video, Loader2, AlertTriangle } from 'lucide-react';
 import { createPost } from '../../lib/socialUtils';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { sortCourtsByNumber } from '../../lib/courtUtils';
+import { moderateContent } from '../../lib/contentModeration';
 
 interface PostComposerProps {
   onClose: () => void;
@@ -149,6 +150,12 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
 
     if (!content.trim() && selectedFiles.length === 0) {
       setError('Please enter some content or add media');
+      return;
+    }
+
+    const moderationResult = moderateContent(content);
+    if (!moderationResult.isClean) {
+      setError(moderationResult.reason || 'Your post contains inappropriate content.');
       return;
     }
 
@@ -527,8 +534,12 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
             )}
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                {error}
+              <div className="p-4 bg-red-50 border-2 border-red-300 rounded-lg text-red-800 text-sm flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold mb-1">Content Policy Violation</p>
+                  <p>{error}</p>
+                </div>
               </div>
             )}
           </div>

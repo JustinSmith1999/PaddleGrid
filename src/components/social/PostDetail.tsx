@@ -14,6 +14,7 @@ import {
   Comment
 } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
+import { moderateContent } from '../../lib/contentModeration';
 
 interface PostDetailProps {
   postId: string;
@@ -84,6 +85,12 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
 
     if (!user) {
       alert('Please log in to comment');
+      return;
+    }
+
+    const moderationResult = moderateContent(newComment);
+    if (!moderationResult.isClean) {
+      alert(moderationResult.reason || 'Your comment contains inappropriate content.');
       return;
     }
 
