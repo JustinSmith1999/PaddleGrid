@@ -278,9 +278,9 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const showAccountTypeSelection = !isLogin && accountType === null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className={`bg-white rounded-2xl shadow-2xl ${isFacilitySignup ? 'max-w-4xl' : 'max-w-md'} w-full max-h-[90vh] overflow-y-auto relative`}>
-        <div className="sticky top-0 bg-white p-6 pb-4 border-b border-gray-100 rounded-t-2xl z-10">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className={`bg-white rounded-2xl shadow-2xl ${isFacilitySignup ? 'max-w-4xl' : 'max-w-md'} w-full my-4 relative`}>
+        <div className="bg-white p-4 pb-3 border-b border-gray-100 rounded-t-2xl">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
@@ -288,7 +288,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
             <X className="w-6 h-6" />
           </button>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">
+          <h2 className="text-xl font-bold text-gray-800 mb-0.5">
             {resetEmailSent
               ? 'Check Your Email'
               : registrationSuccess
@@ -297,7 +297,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
               ? 'Reset Password'
               : isLogin ? 'Welcome Back' : showAccountTypeSelection ? 'Join PaddleGrid' : isFacilitySignup ? 'Facility Registration' : 'Create Your Account'}
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-600">
             {resetEmailSent
               ? 'Password reset instructions have been sent to your email'
               : registrationSuccess
@@ -315,19 +315,16 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
         </div>
 
         {resetEmailSent ? (
-          <div className="p-6 space-y-6">
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
-                <Mail className="w-8 h-8 text-emerald-600" />
+          <div className="p-4 space-y-4">
+            <div className="text-center space-y-3">
+              <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                <Mail className="w-6 h-6 text-emerald-600" />
               </div>
 
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Sent Successfully</h3>
-                <p className="text-gray-600">
-                  We've sent password reset instructions to <span className="font-medium">{email}</span>
-                </p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Please check your inbox and follow the instructions to reset your password.
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Email Sent</h3>
+                <p className="text-sm text-gray-600">
+                  Check <span className="font-medium">{email}</span> for reset instructions
                 </p>
               </div>
             </div>
@@ -338,61 +335,61 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 setIsForgotPassword(false);
                 setEmail('');
               }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm"
             >
               Back to Sign In
             </button>
           </div>
         ) : registrationSuccess ? (
-          <div className="p-6 space-y-6">
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
-                <Check className="w-8 h-8 text-emerald-600" />
+          <div className="p-4 space-y-3">
+            <div className="text-center space-y-3">
+              <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                <Check className="w-6 h-6 text-emerald-600" />
               </div>
 
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Welcome to PaddleGrid!</h3>
-                <p className="text-gray-600">Your facility "{facilityName}" has been created successfully.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Welcome to PaddleGrid!</h3>
+                <p className="text-sm text-gray-600">Your facility "{facilityName}" has been created.</p>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-6">
-              <h4 className="font-bold text-emerald-900 text-lg mb-4 flex items-center gap-2">
-                <Check className="w-5 h-5" />
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-3">
+              <h4 className="font-bold text-emerald-900 text-sm mb-2 flex items-center gap-1.5">
+                <Check className="w-4 h-4" />
                 Next Steps
               </h4>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <div className="flex-shrink-0 w-5 h-5 bg-emerald-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900">Set Up Your Courts</p>
-                    <p className="text-sm text-gray-600">Add courts, configure availability, and set pricing</p>
+                    <p className="font-semibold text-gray-900 text-xs">Set Up Your Courts</p>
+                    <p className="text-xs text-gray-600">Add courts and configure pricing</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                <div className="flex items-start gap-2">
+                  <div className="flex-shrink-0 w-5 h-5 bg-emerald-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900">Import Your Members</p>
-                    <p className="text-sm text-gray-600">Upload existing members or add them manually</p>
+                    <p className="font-semibold text-gray-900 text-xs">Import Your Members</p>
+                    <p className="text-xs text-gray-600">Upload or add members manually</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                <div className="flex items-start gap-2">
+                  <div className="flex-shrink-0 w-5 h-5 bg-emerald-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900">Configure Settings</p>
-                    <p className="text-sm text-gray-600">Set operating hours, policies, and notifications</p>
+                    <p className="font-semibold text-gray-900 text-xs">Configure Settings</p>
+                    <p className="text-xs text-gray-600">Set operating hours and policies</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-blue-900 font-medium">Free Trial Active</p>
-                  <p className="text-sm text-blue-800 mt-1">
-                    You have 14 days to explore all features. No credit card required. Cancel anytime.
+                  <p className="text-xs text-blue-900 font-medium">14-Day Free Trial</p>
+                  <p className="text-xs text-blue-800 mt-0.5">
+                    No credit card required. Cancel anytime.
                   </p>
                 </div>
               </div>
@@ -403,7 +400,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 onClose();
                 navigate('/admin');
               }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm"
             >
               Go to Admin Dashboard
             </button>
@@ -447,34 +444,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           </div>
         ) : (
           <>
-            <div className="p-6 pt-4 space-y-4">
-              {!isFacilitySignup && !isLogin && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleAppleSignIn}
-                    disabled={loading}
-                    className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                    Sign up with Apple
-                  </button>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">or continue with email</span>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <form onSubmit={isForgotPassword ? handlePasswordReset : handleSubmit} className="space-y-4 px-6 pb-4">
+            <form onSubmit={isForgotPassword ? handlePasswordReset : handleSubmit} className="space-y-3 px-4 py-3">
               <input
                 type="text"
                 name="website"
@@ -489,9 +459,9 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 <>
                   {isFacilitySignup && (
                     <>
-                      <div className="grid md:grid-cols-2 gap-4">
+                      <div className="grid md:grid-cols-2 gap-3">
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             Facility Name *
                           </label>
                           <input
@@ -499,13 +469,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={facilityName}
                             onChange={(e) => setFacilityName(e.target.value)}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="Elite Pickleball Club"
                           />
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             Facility Address *
                           </label>
                           <input
@@ -513,13 +483,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={facilityAddress}
                             onChange={(e) => setFacilityAddress(e.target.value)}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="123 Main Street"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             City *
                           </label>
                           <input
@@ -527,13 +497,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={facilityCity}
                             onChange={(e) => setFacilityCity(e.target.value)}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="New York"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             State *
                           </label>
                           <input
@@ -541,16 +511,16 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={facilityState}
                             onChange={(e) => setFacilityState(e.target.value)}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="NY"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-2">
+                          <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
                             Estimated Patron Base *
                             <div className="group relative">
-                              <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                              <HelpCircle className="w-3 h-3 text-gray-400 cursor-help" />
                               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-900 text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
                                 Approximate number of active members or regular players at your facility
                               </div>
@@ -562,13 +532,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             onChange={(e) => setEstimatedPatronBase(e.target.value)}
                             required
                             min="1"
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="500"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             Phone Number *
                           </label>
                           <input
@@ -576,13 +546,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={phone}
                             onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="(555) 123-4567"
                           />
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             Owner Name *
                           </label>
                           <input
@@ -590,13 +560,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={ownerName}
                             onChange={(e) => setOwnerName(e.target.value)}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="John Smith"
                           />
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
                             Owner Phone Number *
                           </label>
                           <input
@@ -604,7 +574,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={ownerPhone}
                             onChange={(e) => setOwnerPhone(formatPhoneNumber(e.target.value))}
                             required
-                            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                             placeholder="(555) 987-6543"
                           />
                         </div>
@@ -615,7 +585,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   {!isFacilitySignup && (
                     <div className={`grid grid-cols-2 gap-3`}>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                           First Name
                         </label>
                         <input
@@ -623,12 +593,12 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           required
-                          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                           placeholder="John"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                           Last Name
                         </label>
                         <input
@@ -636,7 +606,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           required
-                          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                           placeholder="Doe"
                         />
                       </div>
@@ -645,14 +615,14 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
 
                   {!isFacilitySignup && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Phone Number
                       </label>
                       <input
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                         placeholder="(555) 123-4567"
                       />
                     </div>
@@ -663,7 +633,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           {!isForgotPassword && (
             <div className={`grid ${isFacilitySignup ? 'md:grid-cols-2' : 'grid-cols-1'} gap-3`}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Email Address
                 </label>
                 <input
@@ -671,19 +641,19 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                   placeholder={isFacilitySignup ? "yourname@yourbusiness.com" : "you@example.com"}
                 />
                 {isFacilitySignup && !isLogin && (
-                  <p className="mt-1.5 text-xs text-gray-500 flex items-center gap-1">
+                  <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    Use your business email (not Gmail, Yahoo, etc.)
+                    Use your business email
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Password
                 </label>
                 <input
@@ -692,18 +662,18 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                   placeholder="••••••••"
                 />
                 {!isLogin && passwordStrength && (
-                  <div className="mt-1.5">
+                  <div className="mt-1">
                     <div className="flex gap-1">
                       <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'weak' ? 'bg-red-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
                       <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'medium' || passwordStrength === 'strong' ? passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-green-500' : 'bg-gray-200'}`}></div>
                       <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'strong' ? 'bg-green-500' : 'bg-gray-200'}`}></div>
                     </div>
-                    <p className="text-xs mt-1 text-gray-600">
-                      Password strength: <span className={`font-medium ${passwordStrength === 'weak' ? 'text-red-600' : passwordStrength === 'medium' ? 'text-yellow-600' : 'text-green-600'}`}>
+                    <p className="text-xs mt-0.5 text-gray-600">
+                      Strength: <span className={`font-medium ${passwordStrength === 'weak' ? 'text-red-600' : passwordStrength === 'medium' ? 'text-yellow-600' : 'text-green-600'}`}>
                         {passwordStrength === 'weak' ? 'Weak' : passwordStrength === 'medium' ? 'Medium' : 'Strong'}
                       </span>
                     </p>
@@ -715,7 +685,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
 
           {isForgotPassword && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Email Address
               </label>
               <input
@@ -723,17 +693,17 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-900 text-sm"
                 placeholder="you@example.com"
               />
-              <p className="mt-1.5 text-xs text-gray-500">
-                We'll send you instructions to reset your password
+              <p className="mt-1 text-xs text-gray-500">
+                We'll send you reset instructions
               </p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 rounded-lg text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-xs">
               {error}
             </div>
           )}
@@ -741,11 +711,11 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     {isForgotPassword ? 'Sending...' : isLogin ? 'Signing In...' : isFacilitySignup ? 'Creating Facility...' : 'Creating Account...'}
                   </>
                 ) : (
@@ -757,21 +727,21 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                 <button
                   type="button"
                   onClick={() => setIsForgotPassword(true)}
-                  className="w-full text-center text-sm text-gray-600 hover:text-emerald-600 font-medium transition-colors mt-3"
+                  className="w-full text-center text-xs text-gray-600 hover:text-emerald-600 font-medium transition-colors"
                 >
                   Forgot your password?
                 </button>
               )}
             </form>
 
-            <div className="px-6 pb-6 pt-4 text-center border-t border-gray-100">
+            <div className="px-4 pb-3 pt-2 text-center border-t border-gray-100">
               {isForgotPassword ? (
                 <button
                   onClick={() => {
                     setIsForgotPassword(false);
                     setError('');
                   }}
-                  className="text-gray-600 hover:text-gray-800 font-medium transition-colors text-sm"
+                  className="text-gray-600 hover:text-gray-800 font-medium transition-colors text-xs"
                 >
                   ← Back to sign in
                 </button>
@@ -781,7 +751,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                     setAccountType(null);
                     setError('');
                   }}
-                  className="text-gray-600 hover:text-gray-800 font-medium transition-colors text-sm mb-3 block w-full"
+                  className="text-gray-600 hover:text-gray-800 font-medium transition-colors text-xs mb-2 block w-full"
                 >
                   ← Back to account selection
                 </button>
@@ -793,7 +763,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                     setAccountType(null);
                     setError('');
                   }}
-                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors text-sm"
+                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors text-xs"
                 >
                   {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
                 </button>
