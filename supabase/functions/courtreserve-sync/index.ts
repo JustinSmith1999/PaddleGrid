@@ -20,6 +20,16 @@ interface CourtReserveReservation {
   }>;
 }
 
+interface CourtReserveEventRegistration {
+  EventId: number;
+  EventName: string;
+  EventCategoryName: string;
+  EventDateId: number;
+  StartTime: string;
+  EndTime: string;
+  Courts: string;
+}
+
 async function syncFacility(facility: any, supabase: any) {
   const orgId = facility.settings?.courtreserve_org_id;
   const apiKey = facility.settings?.courtreserve_api_key;
@@ -78,6 +88,37 @@ async function syncFacility(facility: any, supabase: any) {
 
     const reservations: CourtReserveReservation[] = responseData.Data || [];
     console.log(`Fetched ${reservations.length} reservations from CourtReserve`);
+
+    // Also fetch events
+    const eventsUrl = `https://api.courtreserve.com/api/v1/eventregistrationreport/listactive?eventDateFrom=${encodeURIComponent(fromDate)}&eventDateTo=${encodeURIComponent(toDate)}`;
+
+    console.log('Fetching events from CourtReserve API...');
+    const eventsResponse = await fetch(eventsUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${authToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    let events: CourtReserveEventRegistration[] = [];
+    if (eventsResponse.ok) {
+      const eventsData = await eventsResponse.json();
+      if (eventsData.IsSuccessStatusCode) {
+        events = eventsData.Data || [];
+        console.log(`Fetched ${events.length} event registrations from CourtReserve`);
+      }
+    }
+
+    // Group events by occurrence to avoid duplicate blocks
+    const uniqueEvents = new Map<string, CourtReserveEventRegistration>();
+    for (const event of events) {
+      const key = `${event.EventId}-${event.EventDateId}-${event.StartTime}-${event.Courts}`;
+      if (!uniqueEvents.has(key)) {
+        uniqueEvents.set(key, event);
+      }
+    }
+    console.log(`${uniqueEvents.size} unique event occurrences after deduplication`);
 
     const { data: courts } = await supabase
       .from('courts')
@@ -154,6 +195,77 @@ async function syncFacility(facility: any, supabase: any) {
       }
     }
 
+    // Process events and create blocks
+    for (const [_, event] of uniqueEvents) {
+      const startTime = new Date(event.StartTime);
+      const endTime = new Date(event.EndTime);
+
+      const blockDate = startTime.toISOString().split('T')[0];
+      const startTimeStr = startTime.toTimeString().split(' ')[0];
+      const endTimeStr = endTime.toTimeString().split(' ')[0];
+
+      if (!event.Courts || typeof event.Courts !== 'string') {
+        console.log(`Skipping event with no court info: ${event.EventName}`);
+        continue;
+      }
+
+      const courtNames = event.Courts.split(',').map(c => c.trim()).filter(c => c);
+
+      for (const courtName of courtNames) {
+        let courtId = courtNameMap.get(courtName.toLowerCase());
+
+        if (!courtId) {
+          for (const [name, id] of courtNameMap.entries()) {
+            if (name.includes(courtName.toLowerCase()) ||
+                courtName.toLowerCase().includes(name)) {
+              courtId = id;
+              break;
+            }
+          }
+        }
+
+        if (!courtId) {
+          console.log(`Court not found for event: ${courtName}`);
+          blocksSkipped++;
+          continue;
+        }
+
+        const { data: existing } = await supabase
+          .from('court_availability_blocks')
+          .select('id')
+          .eq('court_id', courtId)
+          .eq('block_date', blockDate)
+          .eq('start_time', startTimeStr)
+          .eq('end_time', endTimeStr)
+          .maybeSingle();
+
+        if (existing) {
+          blocksSkipped++;
+          continue;
+        }
+
+        const { error: insertError } = await supabase
+          .from('court_availability_blocks')
+          .insert({
+            court_id: courtId,
+            facility_id: facility.id,
+            block_date: blockDate,
+            start_time: startTimeStr,
+            end_time: endTimeStr,
+            block_type: 'private_event',
+            notes: event.EventName || event.EventCategoryName || 'Event',
+            player_count: 0,
+          });
+
+        if (insertError) {
+          console.error('Error inserting event block:', insertError);
+          blocksSkipped++;
+        } else {
+          blocksCreated++;
+        }
+      }
+    }
+
     if (logId) {
       await supabase
         .from('courtreserve_sync_logs')
@@ -173,6 +285,7 @@ async function syncFacility(facility: any, supabase: any) {
       success: true,
       stats: {
         total_reservations: reservations.length,
+        total_events: uniqueEvents.size,
         blocks_created: blocksCreated,
         blocks_skipped: blocksSkipped,
       },
