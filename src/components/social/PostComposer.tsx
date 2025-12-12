@@ -273,7 +273,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={4}
-                className="w-full px-0 py-2 border-0 focus:ring-0 text-lg text-black placeholder-black/60 resize-none"
+                className="w-full px-0 py-2 border-0 focus:ring-0 focus:outline-none text-lg text-black placeholder-black/60 resize-none"
                 placeholder="What's happening?"
                 autoFocus
               />
@@ -510,27 +510,6 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {postType === 'general' && facilities.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-black mb-1.5 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" />
-                  Facility (optional)
-                </label>
-                <select
-                  value={facilityId}
-                  onChange={(e) => setFacilityId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
-                >
-                  <option value="">None</option>
-                  {facilities.map((facility) => (
-                    <option key={facility.id} value={facility.id}>
-                      {facility.name}
-                    </option>
-                  ))}
-                </select>
               </div>
             )}
 
