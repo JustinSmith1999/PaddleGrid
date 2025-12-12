@@ -288,8 +288,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
           </div>
 
           {post.post_type === 'match_invite' ? (
-            <div className="space-y-3">
-              <p className="text-slate-900 dark:text-white text-base lg:text-lg leading-relaxed whitespace-pre-wrap">{post.content}</p>
+            <div className="space-y-2 sm:space-y-3">
+              <p className="text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg leading-relaxed whitespace-pre-wrap line-clamp-3">{post.content}</p>
 
               {post.media_urls && post.media_urls.length > 0 && (
                 <div className={`grid gap-0.5 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 ${
@@ -304,7 +304,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                         key={idx}
                         className={`relative ${
                           post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
-                        } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
+                        } ${post.media_urls!.length === 1 ? 'h-56 sm:h-80 lg:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
                       >
                         {isVideo ? (
                           <video
@@ -327,15 +327,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 </div>
               )}
 
-              <div className="rounded-3xl border-2 border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-teal-50/30 dark:from-emerald-950/40 dark:via-emerald-950/20 dark:to-teal-950/20 p-5 lg:p-7 space-y-5 shadow-lg shadow-emerald-500/10">
-                <div className="flex items-center gap-2.5 text-base lg:text-xl font-black text-emerald-700 dark:text-emerald-400">
-                  <Trophy className="w-5 h-5 lg:w-6 lg:h-6" />
+              <div className="rounded-2xl lg:rounded-3xl border-2 border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-teal-50/30 dark:from-emerald-950/40 dark:via-emerald-950/20 dark:to-teal-950/20 p-3 sm:p-4 lg:p-7 space-y-3 sm:space-y-4 lg:space-y-5 shadow-lg shadow-emerald-500/10">
+                <div className="flex items-center gap-2 text-sm sm:text-base lg:text-xl font-black text-emerald-700 dark:text-emerald-400">
+                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
                   {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-base lg:text-lg text-slate-700 dark:text-slate-300">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Calendar className="w-5 h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 text-sm sm:text-base lg:text-lg text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">
                       {post.play_date ? new Date(post.play_date).toLocaleDateString('en-US', {
                         month: 'short',
@@ -344,27 +344,27 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <Clock className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">{post.play_start_time ? post.play_start_time.slice(0, 5) : 'TBD'}</span>
                   </div>
 
                   {post.courts && (
-                    <div className="flex items-center gap-2 col-span-2">
-                      <MapPin className="w-5 h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
-                      <span className="break-words">{post.courts.name}</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2 col-span-2">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+                      <span className="break-words line-clamp-1">{post.courts.name}</span>
                     </div>
                   )}
 
                   {post.skill_min !== null && post.skill_max !== null && (
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Trophy className="w-5 h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                      <Trophy className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                       <span className="truncate">{post.skill_min}-{post.skill_max} level</span>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Users className="w-5 h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <Users className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">{post.spots_filled}/{post.spots_needed} players</span>
                   </div>
                 </div>
@@ -373,7 +373,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   <button
                     onClick={handleJoinMatch}
                     disabled={loading || (isFull && !hasJoined)}
-                    className={`w-full py-3.5 lg:py-4 px-6 rounded-2xl text-base lg:text-lg font-black transition-all duration-200 ${
+                    className={`w-full py-2.5 sm:py-3 lg:py-4 px-4 sm:px-5 lg:px-6 rounded-xl lg:rounded-2xl text-sm sm:text-base lg:text-lg font-black transition-all duration-200 ${
                       hasJoined
                         ? 'bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-700 text-slate-700 dark:text-slate-300 hover:from-slate-200 hover:to-slate-100 dark:hover:from-slate-700 dark:hover:to-slate-600 shadow-md'
                         : isFull
@@ -403,7 +403,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                         key={idx}
                         className={`relative ${
                           post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
-                        } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
+                        } ${post.media_urls!.length === 1 ? 'h-56 sm:h-80 lg:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
                       >
                         {isVideo ? (
                           <video
