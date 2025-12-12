@@ -121,12 +121,18 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       if (result.success) {
         setIsPostBookmarked(false);
         onUpdate?.();
+      } else {
+        console.error('Failed to unbookmark:', result.error);
+        alert(result.error || 'Failed to remove bookmark');
       }
     } else {
       const result = await bookmarkPost(post.id);
       if (result.success) {
         setIsPostBookmarked(true);
         onUpdate?.();
+      } else {
+        console.error('Failed to bookmark:', result.error);
+        alert(result.error || 'Failed to bookmark post');
       }
     }
   }

@@ -803,8 +803,11 @@ export async function bookmarkPost(postId: string): Promise<{ success: boolean; 
   try {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) {
+      console.error('Bookmark failed: No authenticated user');
       return { success: false, error: 'Not authenticated' };
     }
+
+    console.log('Bookmarking post:', postId, 'for user:', user.user.id);
 
     const { error } = await supabase
       .from('bookmarks')
@@ -814,12 +817,14 @@ export async function bookmarkPost(postId: string): Promise<{ success: boolean; 
       });
 
     if (error) {
+      console.error('Bookmark insert error:', error);
       if (error.code === '23505') {
-        return { success: false, error: 'Post already bookmarked' };
+        return { success: true };
       }
       throw error;
     }
 
+    console.log('Bookmark created successfully');
     return { success: true };
   } catch (error: any) {
     console.error('Error bookmarking post:', error);
@@ -831,8 +836,11 @@ export async function unbookmarkPost(postId: string): Promise<{ success: boolean
   try {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) {
+      console.error('Unbookmark failed: No authenticated user');
       return { success: false, error: 'Not authenticated' };
     }
+
+    console.log('Unbookmarking post:', postId, 'for user:', user.user.id);
 
     const { error } = await supabase
       .from('bookmarks')
@@ -840,8 +848,12 @@ export async function unbookmarkPost(postId: string): Promise<{ success: boolean
       .eq('user_id', user.user.id)
       .eq('post_id', postId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Unbookmark delete error:', error);
+      throw error;
+    }
 
+    console.log('Bookmark removed successfully');
     return { success: true };
   } catch (error: any) {
     console.error('Error unbookmarking post:', error);
@@ -871,7 +883,12 @@ export async function isBookmarked(postId: string): Promise<boolean> {
 export async function getBookmarkedPosts(): Promise<SocialPost[]> {
   try {
     const { data: user } = await supabase.auth.getUser();
-    if (!user.user) return [];
+    if (!user.user) {
+      console.log('No authenticated user for bookmarks');
+      return [];
+    }
+
+    console.log('Fetching bookmarks for user:', user.user.id);
 
     const { data: bookmarks, error } = await supabase
       .from('bookmarks')
@@ -918,42 +935,20 @@ export async function getBookmarkedPosts(): Promise<SocialPost[]> {
       .eq('user_id', user.user.id)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching bookmarks from DB:', error);
+      throw error;
+    }
+
+    console.log('Bookmarks fetched:', bookmarks?.length || 0);
 
     const posts = bookmarks
       ?.map((bookmark: any) => bookmark.social_posts)
       .filter(Boolean) || [];
 
-    const postsWithStats = await Promise.all(
-      posts.map(async (post: any) => {
-        const [{ count: likesCount }, { count: commentsCount }, { data: userLiked }] = await Promise.all([
-          supabase
-            .from('social_post_likes')
-            .select('*', { count: 'exact', head: true })
-            .eq('post_id', post.id),
-          supabase
-            .from('social_comments')
-            .select('*', { count: 'exact', head: true })
-            .eq('post_id', post.id)
-            .eq('is_deleted', false),
-          supabase
-            .from('social_post_likes')
-            .select('id')
-            .eq('post_id', post.id)
-            .eq('user_id', user.user!.id)
-            .maybeSingle()
-        ]);
+    console.log('Posts from bookmarks:', posts.length);
 
-        return {
-          ...post,
-          likes_count: likesCount || 0,
-          comments_count: commentsCount || 0,
-          user_liked: !!userLiked
-        };
-      })
-    );
-
-    return postsWithStats;
+    return await enrichPostsWithInteractions(posts);
   } catch (error) {
     console.error('Error fetching bookmarked posts:', error);
     return [];
