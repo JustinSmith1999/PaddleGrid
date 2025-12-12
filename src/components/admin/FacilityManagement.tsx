@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Building2, MapPin, Settings, CreditCard, Users, Plus, Save, X } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { Building2, MapPin, Settings, CreditCard, Users, Save, X } from 'lucide-react';
 
 interface Facility {
   id: string;
@@ -39,11 +40,11 @@ interface FacilityUser {
 }
 
 export default function FacilityManagement() {
+  const { profile } = useAuth();
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
   const [facilityUsers, setFacilityUsers] = useState<FacilityUser[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -76,15 +77,21 @@ export default function FacilityManagement() {
 
   const loadFacilities = async () => {
     try {
+      if (!profile?.facility_id) {
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('facilities')
         .select('*')
-        .order('created_at', { ascending: false });
+        .eq('id', profile.facility_id)
+        .single();
 
       if (error) throw error;
-      setFacilities(data || []);
-      if (data && data.length > 0 && !selectedFacility) {
-        setSelectedFacility(data[0]);
+      if (data) {
+        setFacilities([data]);
+        setSelectedFacility(data);
       }
     } catch (error) {
       console.error('Error loading facilities:', error);
@@ -107,32 +114,9 @@ export default function FacilityManagement() {
     }
   };
 
-  const handleCreateNew = () => {
-    setIsCreating(true);
-    setIsEditing(true);
-    setSelectedFacility(null);
-    setFormData({
-      name: '',
-      slug: '',
-      description: '',
-      address: '',
-      city: '',
-      state: '',
-      zip_code: '',
-      country: 'US',
-      phone: '',
-      email: '',
-      website: '',
-      timezone: 'America/New_York',
-      currency: 'usd',
-      subscription_tier: 'trial',
-    });
-  };
-
   const handleEdit = () => {
     if (selectedFacility) {
       setIsEditing(true);
-      setIsCreating(false);
       setFormData({
         name: selectedFacility.name,
         slug: selectedFacility.slug,
@@ -154,35 +138,12 @@ export default function FacilityManagement() {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setIsCreating(false);
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      if (isCreating) {
-        const { data, error } = await supabase
-          .from('facilities')
-          .insert([formData])
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase
-            .from('facility_users')
-            .insert([{
-              facility_id: data.id,
-              user_id: user.id,
-              role: 'owner'
-            }]);
-        }
-
-        setFacilities([data, ...facilities]);
-        setSelectedFacility(data);
-      } else if (selectedFacility) {
+      if (selectedFacility) {
         const { data, error } = await supabase
           .from('facilities')
           .update(formData)
@@ -192,12 +153,11 @@ export default function FacilityManagement() {
 
         if (error) throw error;
 
-        setFacilities(facilities.map(f => f.id === data.id ? data : f));
+        setFacilities([data]);
         setSelectedFacility(data);
       }
 
       setIsEditing(false);
-      setIsCreating(false);
     } catch (error) {
       console.error('Error saving facility:', error);
       alert('Failed to save facility');
@@ -220,72 +180,17 @@ export default function FacilityManagement() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Facility Management</h1>
-            <p className="mt-1 text-sm text-gray-600">Manage your facilities and locations</p>
-          </div>
-          <button
-            onClick={handleCreateNew}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-          >
-            <Plus className="h-5 w-5" />
-            New Facility
-          </button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Facility Management</h1>
+          <p className="mt-1 text-sm text-gray-600">Manage your facility settings and information</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 space-y-4">
-            <div className="bg-white rounded-lg shadow-sm p-4">
-              <h2 className="text-lg font-semibold mb-4">Facilities</h2>
-              <div className="space-y-2">
-                {facilities.map((facility) => (
-                  <div
-                    key={facility.id}
-                    onClick={() => {
-                      setSelectedFacility(facility);
-                      setIsEditing(false);
-                      setIsCreating(false);
-                    }}
-                    className={`p-4 rounded-lg cursor-pointer transition-colors ${
-                      selectedFacility?.id === facility.id
-                        ? 'bg-blue-50 border-2 border-blue-600'
-                        : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{facility.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{facility.city}, {facility.state}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            facility.is_active
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {facility.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                          <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800">
-                            {facility.subscription_tier}
-                          </span>
-                        </div>
-                      </div>
-                      <Building2 className="h-5 w-5 text-gray-400" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-2">
-            {selectedFacility || isCreating ? (
+        <div className="max-w-4xl">
+          {selectedFacility ? (
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold">
-                    {isCreating ? 'Create New Facility' : 'Facility Details'}
-                  </h2>
-                  {!isEditing && !isCreating && (
+                  <h2 className="text-xl font-semibold">Facility Details</h2>
+                  {!isEditing && (
                     <button
                       onClick={handleEdit}
                       className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg flex items-center gap-2"
@@ -294,7 +199,7 @@ export default function FacilityManagement() {
                       Edit
                     </button>
                   )}
-                  {(isEditing || isCreating) && (
+                  {isEditing && (
                     <div className="flex gap-2">
                       <button
                         onClick={handleCancel}
@@ -315,7 +220,7 @@ export default function FacilityManagement() {
                   )}
                 </div>
 
-                {isEditing || isCreating ? (
+                {isEditing ? (
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -568,10 +473,9 @@ export default function FacilityManagement() {
               <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                 <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Facility Selected</h3>
-                <p className="text-gray-600">Select a facility from the list or create a new one</p>
+                <p className="text-gray-600">No facility found for your account</p>
               </div>
             )}
-          </div>
         </div>
       </div>
     </div>
