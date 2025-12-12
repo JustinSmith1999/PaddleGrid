@@ -227,18 +227,18 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     >
       <div className="flex gap-3 lg:gap-4">
         <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 overflow-hidden shadow-lg ${
-          (post.facilities?.logo_url || post.profiles?.profile_picture_url)
+          (post.profiles?.profile_picture_url || post.facilities?.logo_url)
             ? 'bg-white'
             : 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/30'
         }`}>
-          {(post.facilities?.logo_url || post.profiles?.profile_picture_url) ? (
+          {(post.profiles?.profile_picture_url || post.facilities?.logo_url) ? (
             <img
-              src={post.facilities?.logo_url || post.profiles.profile_picture_url}
-              alt={(post.facilities?.name || post.profiles?.full_name) || 'User'}
+              src={post.profiles?.profile_picture_url || post.facilities?.logo_url}
+              alt={(post.profiles?.full_name || post.facilities?.name) || 'User'}
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-lg lg:text-xl">{(post.facilities?.name || post.profiles?.full_name)?.charAt(0).toUpperCase() || 'U'}</span>
+            <span className="text-lg lg:text-xl">{(post.profiles?.full_name || post.facilities?.name)?.charAt(0).toUpperCase() || 'U'}</span>
           )}
         </div>
 
@@ -248,15 +248,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (post.facilities?.slug) {
-                    onClubClick?.(post.facilities.slug);
-                  } else if (post.profiles?.id) {
+                  if (post.profiles?.id) {
                     onProfileClick?.(post.profiles.id);
+                  } else if (post.facilities?.slug) {
+                    onClubClick?.(post.facilities.slug);
                   }
                 }}
                 className="font-bold text-slate-900 dark:text-white hover:underline text-base lg:text-lg truncate"
               >
-                {post.facilities?.name || post.profiles?.full_name || 'Unknown User'}
+                {post.profiles?.full_name || post.facilities?.name || 'Unknown User'}
               </button>
               <span className="text-slate-500 dark:text-slate-400 text-base lg:text-lg flex-shrink-0">·</span>
               <span className="text-slate-500 dark:text-slate-400 text-base lg:text-lg flex-shrink-0">{formatTimeAgo(post.created_at)}</span>

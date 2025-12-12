@@ -197,18 +197,18 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
         <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
           <div className="flex items-start gap-3 mb-4">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 overflow-hidden ${
-              (post.facilities?.logo_url || post.profiles?.profile_picture_url)
+              (post.profiles?.profile_picture_url || post.facilities?.logo_url)
                 ? 'bg-white'
                 : 'bg-gradient-to-br from-emerald-600 to-green-700'
             }`}>
-              {(post.facilities?.logo_url || post.profiles?.profile_picture_url) ? (
+              {(post.profiles?.profile_picture_url || post.facilities?.logo_url) ? (
                 <img
-                  src={post.facilities?.logo_url || post.profiles.profile_picture_url}
-                  alt={(post.facilities?.name || post.profiles?.full_name) || 'User'}
+                  src={post.profiles?.profile_picture_url || post.facilities?.logo_url}
+                  alt={(post.profiles?.full_name || post.facilities?.name) || 'User'}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span>{(post.facilities?.name || post.profiles?.full_name)?.charAt(0).toUpperCase() || 'U'}</span>
+                <span>{(post.profiles?.full_name || post.facilities?.name)?.charAt(0).toUpperCase() || 'U'}</span>
               )}
             </div>
 
@@ -217,15 +217,15 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                 <div className="flex items-center gap-2 flex-wrap">
                   <button
                     onClick={() => {
-                      if (post.facilities?.slug) {
-                        onClubClick?.(post.facilities.slug);
-                      } else if (post.profiles?.id) {
+                      if (post.profiles?.id) {
                         onProfileClick?.(post.profiles.id);
+                      } else if (post.facilities?.slug) {
+                        onClubClick?.(post.facilities.slug);
                       }
                     }}
                     className="font-semibold text-lg text-gray-900 hover:underline text-left"
                   >
-                    {post.facilities?.name || post.profiles?.full_name || 'Unknown User'}
+                    {post.profiles?.full_name || post.facilities?.name || 'Unknown User'}
                   </button>
                   {post.post_type === 'match_invite' && (
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded">
