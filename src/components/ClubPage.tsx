@@ -186,7 +186,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
         return slots;
       };
 
-      const timeSlots = generateTimeSlots(1);
+      const timeSlots = generateTimeSlots(0.25);
 
       const isSlotAvailable = (courtId: string, time: string, slotDuration: number) => {
         const timeNum = parseInt(time.replace(':', ''));
