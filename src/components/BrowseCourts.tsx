@@ -213,21 +213,16 @@ export function BrowseCourts() {
                 </div>
 
                 <div className="flex-1 min-w-0 pr-2 sm:pr-8">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
-                      {facility.name}
-                    </h2>
-                    {(facility.city || facility.state) && (
-                      <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 flex-shrink-0">
-                        <MapPin className="w-3 h-3" />
-                        <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
-                          {[facility.city, facility.state].filter(Boolean).join(', ')}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  {facility.description && (
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1 leading-relaxed">{facility.description}</p>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    {facility.name}
+                  </h2>
+                  {(facility.city || facility.state) && (
+                    <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 mt-1">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span className="text-xs sm:text-sm font-medium">
+                        {[facility.city, facility.state].filter(Boolean).join(', ')}
+                      </span>
+                    </div>
                   )}
                 </div>
               </button>
