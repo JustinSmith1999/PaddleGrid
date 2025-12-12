@@ -8,7 +8,6 @@ interface UserProfile {
   id: string;
   full_name: string;
   email: string;
-  skill_level?: number;
   profile_picture_url?: string;
   isFollowing?: boolean;
   followerCount?: number;
@@ -66,14 +65,20 @@ export default function UserSearch({ onProfileClick }: UserSearchProps) {
 
     setLoading(true);
     try {
+      const searchTerm = searchQuery.trim();
+
       const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, full_name, email, skill_level, profile_picture_url')
+        .select('id, full_name, email, profile_picture_url')
         .neq('id', user.id)
-        .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
-        .limit(20);
+        .or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`)
+        .order('full_name', { ascending: true })
+        .limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Search error:', error);
+        throw error;
+      }
 
       if (profiles) {
         const profilesWithFollowCount = await Promise.all(
@@ -95,6 +100,7 @@ export default function UserSearch({ onProfileClick }: UserSearchProps) {
       }
     } catch (error) {
       console.error('Error searching users:', error);
+      setSearchResults([]);
     } finally {
       setLoading(false);
     }
@@ -210,14 +216,8 @@ export default function UserSearch({ onProfileClick }: UserSearchProps) {
                     <div className="font-bold text-slate-900 dark:text-white truncate">
                       {profile.full_name || 'Unknown User'}
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                      <span className="truncate">{profile.email}</span>
-                      {profile.skill_level && (
-                        <>
-                          <span>•</span>
-                          <span>{profile.skill_level.toFixed(1)} DUPR</span>
-                        </>
-                      )}
+                    <div className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                      {profile.email}
                     </div>
                     <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                       {profile.followerCount || 0} {profile.followerCount === 1 ? 'follower' : 'followers'}
