@@ -36,6 +36,16 @@ const navigationItems: NavItem[] = [
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
 ];
 
+const mobileNavigationItems: NavItem[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+  { id: 'facilities', label: 'Courts', icon: <Building2 className="w-5 h-5" /> },
+  { id: 'schedule', label: 'Schedule', icon: <Calendar className="w-5 h-5" /> },
+  { id: 'bookings', label: 'Bookings', icon: <ClipboardList className="w-5 h-5" /> },
+  { id: 'series', label: 'Event Series', icon: <CalendarRange className="w-5 h-5" /> },
+  { id: 'members', label: 'Members', icon: <Users className="w-5 h-5" /> },
+  { id: 'notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" /> },
+];
+
 export default function AdminLayout({ children, currentView, onViewChange }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -159,68 +169,60 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
           isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-6 border-b border-stone-200 bg-gradient-to-r from-emerald-50 to-green-50">
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between p-4 border-b border-stone-200 bg-gradient-to-r from-emerald-50 to-green-50">
+          <div className="flex items-center gap-2">
             {facility?.logo_url ? (
               <img
                 src={facility.logo_url}
                 alt={`${facility.name} Logo`}
-                className="h-10 w-auto"
+                className="h-8 w-auto"
               />
             ) : (
               <img
                 src="/screenshot_2025-12-05_150441-removebg-preview.png"
                 alt="Logo"
-                className="h-10 w-auto"
+                className="h-8 w-auto"
               />
             )}
             <div>
-              <span className="font-bold text-xl text-emerald-800">{facility?.name || 'PaddleGrid'}</span>
-              <div className="text-xs text-emerald-600 font-medium">Club Management</div>
+              <span className="font-bold text-base text-emerald-800">{facility?.name || 'PaddleGrid'}</span>
             </div>
           </div>
           <button
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-emerald-700"
+            className="p-1.5 rounded-lg hover:bg-white transition-all text-emerald-700"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-2">
-          {filteredNav.map(item => (
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+          {mobileNavigationItems.map(item => (
             <button
               key={item.id}
               onClick={() => {
                 onViewChange(item.id);
                 setIsMobileSidebarOpen(false);
               }}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all font-medium ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
                 currentView === item.id
-                  ? 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 shadow-sm border border-emerald-200'
-                  : 'text-stone-700 hover:bg-stone-50 hover:text-emerald-700'
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : 'text-stone-700 hover:bg-stone-50'
               }`}
             >
               {item.icon}
-              <span className="font-medium">{item.label}</span>
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="border-t border-stone-200 p-4 space-y-2 bg-stone-25">
-          <button
-            onClick={toggleTheme}
-            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-stone-100 hover:text-emerald-700 transition-all font-medium"
-          >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            <span className="font-medium">{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
-          </button>
+        <div className="border-t border-stone-200 p-3 space-y-1 bg-stone-25">
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all font-medium"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm font-medium"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Sign Out</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
