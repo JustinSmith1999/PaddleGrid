@@ -8,6 +8,7 @@ import NotificationsPanel from './NotificationsPanel';
 import { BrowseCourts } from '../BrowseCourts';
 import Messages from './Messages';
 import UserSearch from './UserSearch';
+import MobileMenu from '../MobileMenu';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -591,6 +592,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        activeView={activeView}
+        onViewChange={(view) => setActiveView(view)}
+        onNotificationsClick={() => setShowNotificationsPanel(true)}
+        onProfileClick={() => onProfileClick?.(user?.id || '')}
+        onClubClick={onClubClick}
+        unreadNotifications={unreadNotifications}
+      />
 
       {/* Notifications Panel */}
       {showNotificationsPanel && (
