@@ -408,8 +408,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               }`}
             >
               <Heart className={`w-4 h-4 lg:w-5 lg:h-5 ${userLiked ? 'fill-current' : ''}`} />
-              <span className="whitespace-nowrap hidden sm:inline">{userLiked ? 'Liked' : 'Like'}</span>
-              <span className="whitespace-nowrap sm:hidden">{likesCount}</span>
+              <span className="whitespace-nowrap">{likesCount}</span>
             </button>
 
             <button
@@ -420,8 +419,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               className="flex-1 py-2.5 lg:py-3 px-2 lg:px-3 rounded-lg border-2 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-1 lg:gap-1.5"
             >
               <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5" />
-              <span className="whitespace-nowrap hidden sm:inline">{commentsCount}</span>
-              <span className="whitespace-nowrap sm:hidden">{commentsCount}</span>
+              <span className="whitespace-nowrap">{commentsCount}</span>
             </button>
 
             <button
