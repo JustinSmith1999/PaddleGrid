@@ -11,6 +11,7 @@ import {
   formatTimeAgo,
   deletePost,
   deleteComment,
+  getPostLikedByUsers,
   Comment
 } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
@@ -36,6 +37,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
   const [submitting, setSubmitting] = useState(false);
   const [showPostMenu, setShowPostMenu] = useState(false);
   const [showCommentMenu, setShowCommentMenu] = useState<string | null>(null);
+  const [likedByUsers, setLikedByUsers] = useState<Array<{ id: string; full_name: string; profile_picture_url?: string }>>([]);
 
   useEffect(() => {
     loadPostData();
@@ -62,7 +64,18 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
       setHasJoined(!!userParticipant);
     }
 
+    await loadLikes(postData?.likes_count || 0);
+
     setLoading(false);
+  }
+
+  async function loadLikes(count: number) {
+    if (count > 0) {
+      const likes = await getPostLikedByUsers(postId);
+      setLikedByUsers(likes);
+    } else {
+      setLikedByUsers([]);
+    }
   }
 
   async function handleLike() {
@@ -74,7 +87,9 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
     const result = await toggleLike(postId);
     if (result.success) {
       setUserLiked(result.liked);
-      setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+      const newCount = result.liked ? likesCount + 1 : likesCount - 1;
+      setLikesCount(newCount);
+      await loadLikes(newCount);
     } else {
       alert('Failed to like post. Please try again.');
     }
@@ -387,6 +402,35 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
               <span className="font-medium">{comments.length}</span>
             </div>
           </div>
+
+          {likedByUsers.length > 0 && (
+            <div className="mt-3 text-sm text-gray-600">
+              Liked by{' '}
+              <button
+                onClick={() => onProfileClick?.(likedByUsers[0].id)}
+                className="font-semibold text-gray-900 hover:underline"
+              >
+                {likedByUsers[0].full_name}
+              </button>
+              {likedByUsers.length > 1 && (
+                <>
+                  {' '}and{' '}
+                  {likedByUsers.length === 2 ? (
+                    <button
+                      onClick={() => onProfileClick?.(likedByUsers[1].id)}
+                      className="font-semibold text-gray-900 hover:underline"
+                    >
+                      {likedByUsers[1].full_name}
+                    </button>
+                  ) : (
+                    <span className="font-semibold text-gray-900">
+                      {likesCount - 1} {likesCount - 1 === 1 ? 'other' : 'others'}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
