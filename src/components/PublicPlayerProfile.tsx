@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, Calendar, Clock, Trophy, Star, Target, Loader2, ArrowLeft, UserPlus, UserMinus, MessageSquare, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { RatingGraph } from './RatingGraph';
@@ -59,6 +60,7 @@ interface PublicPlayerProfileProps {
 
 export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<PlayerStats | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -189,6 +191,14 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
     setFollowLoading(false);
   };
 
+  const handleStartMessage = () => {
+    if (!user) {
+      alert('Please sign in to send messages');
+      return;
+    }
+    navigate(`/messages?user=${userId}`);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'long',
@@ -262,29 +272,38 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                 </div>
 
                 {user && user.id !== userId && (
-                  <button
-                    onClick={handleFollowToggle}
-                    disabled={followLoading}
-                    className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
-                      following
-                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600'
-                        : 'bg-emerald-500 text-white hover:bg-emerald-600'
-                    }`}
-                  >
-                    {followLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : following ? (
-                      <>
-                        <UserMinus className="w-5 h-5" />
-                        Unfollow
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="w-5 h-5" />
-                        Follow
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleStartMessage}
+                      className="px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      <MessageSquare className="w-5 h-5" />
+                      Message
+                    </button>
+                    <button
+                      onClick={handleFollowToggle}
+                      disabled={followLoading}
+                      className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
+                        following
+                          ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600'
+                          : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                      }`}
+                    >
+                      {followLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : following ? (
+                        <>
+                          <UserMinus className="w-5 h-5" />
+                          Unfollow
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="w-5 h-5" />
+                          Follow
+                        </>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -452,29 +471,38 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                     </div>
                   </div>
                   {!isOwnProfile && user && (
-                    <button
-                      onClick={handleFollowToggle}
-                      disabled={followLoading}
-                      className={`px-4 sm:px-6 py-2 rounded-full font-semibold transition flex items-center gap-2 flex-shrink-0 text-sm sm:text-base ${
-                        following
-                          ? 'bg-white text-emerald-600 hover:bg-gray-100'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                    >
-                      {followLoading ? (
-                        <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                      ) : following ? (
-                        <>
-                          <UserMinus className="w-4 h-4 sm:w-5 sm:h-5" />
-                          <span className="hidden sm:inline">Unfollow</span>
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
-                          <span className="hidden sm:inline">Follow</span>
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleStartMessage}
+                        className="px-4 sm:px-6 py-2 rounded-full font-semibold transition flex items-center gap-2 flex-shrink-0 text-sm sm:text-base bg-blue-600 text-white hover:bg-blue-700"
+                      >
+                        <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="hidden sm:inline">Message</span>
+                      </button>
+                      <button
+                        onClick={handleFollowToggle}
+                        disabled={followLoading}
+                        className={`px-4 sm:px-6 py-2 rounded-full font-semibold transition flex items-center gap-2 flex-shrink-0 text-sm sm:text-base ${
+                          following
+                            ? 'bg-white text-emerald-600 hover:bg-gray-100'
+                            : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        }`}
+                      >
+                        {followLoading ? (
+                          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                        ) : following ? (
+                          <>
+                            <UserMinus className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Unfollow</span>
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Follow</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
