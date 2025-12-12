@@ -96,10 +96,6 @@ async function syncFacility(facility: any, supabase: any) {
       const startTimeStr = startTime.toTimeString().split(' ')[0];
       const endTimeStr = endTime.toTimeString().split(' ')[0];
 
-      const customerName = reservation.Players?.length > 0
-        ? `${reservation.Players[0].FirstName} ${reservation.Players[0].LastName}`
-        : 'Unknown';
-
       const courtNames = reservation.Courts.split(',').map(c => c.trim());
 
       for (const courtName of courtNames) {
@@ -144,8 +140,8 @@ async function syncFacility(facility: any, supabase: any) {
             start_time: startTimeStr,
             end_time: endTimeStr,
             block_type: 'reservation',
-            reason: `CourtReserve: ${customerName} (${reservation.ReservationTypeName})`,
-            is_recurring: false,
+            notes: reservation.ReservationTypeName || 'Court Reserved',
+            player_count: reservation.Players?.length || 0,
           });
 
         if (insertError) {
