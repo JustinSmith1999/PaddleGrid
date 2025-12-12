@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import {
   LayoutDashboard, Calendar, Users, Settings, LogOut, Menu, X, Sun, Moon, Bell,
-  BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign
+  BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign, ArrowLeft
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -141,6 +141,13 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
 
         <div className="border-t border-stone-200 p-4 space-y-2 bg-stone-25">
           <button
+            onClick={() => window.location.href = '/'}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-emerald-600 hover:bg-emerald-50 transition-all font-medium"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            {isSidebarOpen && <span className="font-medium">Back to Social</span>}
+          </button>
+          <button
             onClick={toggleTheme}
             className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-stone-100 hover:text-emerald-700 transition-all font-medium"
           >
@@ -217,6 +224,13 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
         </nav>
 
         <div className="border-t border-stone-200 p-3 space-y-1 bg-stone-25">
+          <button
+            onClick={() => window.location.href = '/'}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-all text-sm font-medium"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Social</span>
+          </button>
           <button
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm font-medium"
