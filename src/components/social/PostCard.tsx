@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
-import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost } from '../../lib/socialUtils';
+import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface PostCardProps {
@@ -9,6 +9,16 @@ interface PostCardProps {
   onUpdate?: () => void;
   onClubClick?: (facilityId: string) => void;
   onProfileClick?: (userId: string) => void;
+}
+
+interface Participant {
+  id: string;
+  user_id: string;
+  profiles: {
+    id: string;
+    full_name: string;
+    profile_picture_url?: string;
+  };
 }
 
 export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfileClick }: PostCardProps) {
@@ -21,6 +31,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [showMenu, setShowMenu] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [isPostBookmarked, setIsPostBookmarked] = useState(post.user_bookmarked || false);
+  const [participants, setParticipants] = useState<Participant[]>([]);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
@@ -28,7 +39,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     setCommentsCount(post.comments_count || 0);
     setIsPostBookmarked(post.user_bookmarked || false);
     checkJoinStatus();
-  }, [post.id, post.likes_count, post.user_liked, post.comments_count, post.user_bookmarked]);
+    if (post.post_type === 'match_invite') {
+      loadParticipants();
+    }
+  }, [post.id, post.likes_count, post.user_liked, post.comments_count, post.user_bookmarked, post.spots_filled]);
+
+  async function loadParticipants() {
+    const data = await getMatchParticipants(post.id);
+    setParticipants(data);
+  }
 
   async function checkJoinStatus() {
     if (!user || post.post_type !== 'match_invite') return;
@@ -77,12 +96,14 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       const result = await leaveMatch(post.id);
       if (result.success) {
         setHasJoined(false);
+        await loadParticipants();
         onUpdate?.();
       }
     } else {
       const result = await joinMatch(post.id);
       if (result.success) {
         setHasJoined(true);
+        await loadParticipants();
         onUpdate?.();
       } else if (result.error) {
         alert(result.error);
@@ -368,6 +389,41 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     <span className="truncate">{post.spots_filled}/{post.spots_needed} players</span>
                   </div>
                 </div>
+
+                {participants.length > 0 && (
+                  <div className="mt-3 sm:mt-4">
+                    <div className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                      Joined Players:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {participants.map((participant) => (
+                        <button
+                          key={participant.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onProfileClick?.(participant.profiles.id);
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
+                        >
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden">
+                            {participant.profiles.profile_picture_url ? (
+                              <img
+                                src={participant.profiles.profile_picture_url}
+                                alt={participant.profiles.full_name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              participant.profiles.full_name.charAt(0).toUpperCase()
+                            )}
+                          </div>
+                          <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            {participant.profiles.full_name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {user && (
                   <button
