@@ -25,9 +25,22 @@ interface Message {
   sender_avatar: string | null;
 }
 
-export default function Messages() {
+interface MessagesProps {
+  startWithUserId?: string;
+}
+
+export default function Messages({ startWithUserId }: MessagesProps = {}) {
   const { user } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
+  let searchParams: URLSearchParams | null = null;
+  let setSearchParams: ((params: URLSearchParams) => void) | null = null;
+
+  try {
+    const result = useSearchParams();
+    searchParams = result[0];
+    setSearchParams = result[1];
+  } catch (error) {
+    console.log('useSearchParams not available - using props instead');
+  }
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -63,11 +76,11 @@ export default function Messages() {
   }, [messages]);
 
   useEffect(() => {
-    const userId = searchParams.get('user');
+    const userId = searchParams?.get('user') || startWithUserId;
     if (userId && user) {
       startConversationWithUser(userId);
     }
-  }, [searchParams, user]);
+  }, [searchParams, startWithUserId, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
