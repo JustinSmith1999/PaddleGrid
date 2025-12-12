@@ -8,6 +8,14 @@ export interface SocialPost {
   post_type: 'general' | 'match_invite';
   content: string;
   media_urls?: string[];
+  link_preview?: {
+    url: string;
+    title?: string;
+    description?: string;
+    image?: string;
+    siteName?: string;
+    videoId?: string;
+  };
   sport?: string;
   skill_min?: number;
   skill_max?: number;

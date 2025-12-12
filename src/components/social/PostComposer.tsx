@@ -37,9 +37,26 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [linkPreview, setLinkPreview] = useState<any>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [detectedUrl, setDetectedUrl] = useState<string | null>(null);
+
   useEffect(() => {
     loadFacilities();
   }, []);
+
+  useEffect(() => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = content.match(urlRegex);
+
+    if (urls && urls.length > 0 && urls[0] !== detectedUrl) {
+      setDetectedUrl(urls[0]);
+      fetchLinkPreview(urls[0]);
+    } else if (!urls) {
+      setDetectedUrl(null);
+      setLinkPreview(null);
+    }
+  }, [content]);
 
   useEffect(() => {
     if (postType === 'match_invite' && facilities.length > 0 && !facilityId) {
@@ -78,6 +95,36 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       setCourtId(sortedCourts[0].id);
     } else {
       setCourtId('');
+    }
+  }
+
+  async function fetchLinkPreview(url: string) {
+    setLoadingPreview(true);
+    setLinkPreview(null);
+
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/extract-link-preview`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.title || data.image) {
+          setLinkPreview(data);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching link preview:', error);
+    } finally {
+      setLoadingPreview(false);
     }
   }
 
@@ -199,6 +246,10 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       media_urls: mediaUrls
     };
 
+    if (linkPreview) {
+      postData.link_preview = linkPreview;
+    }
+
     if (facilityId) {
       postData.facility_id = facilityId;
     }
@@ -318,6 +369,55 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {loadingPreview && (
+            <div className="border border-gray-200 rounded-xl p-4 flex items-center gap-3 bg-gray-50">
+              <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+              <span className="text-sm text-gray-600">Loading preview...</span>
+            </div>
+          )}
+
+          {linkPreview && !loadingPreview && (
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:bg-gray-50 transition group relative">
+              <button
+                onClick={() => setLinkPreview(null)}
+                className="absolute top-2 right-2 z-10 bg-black/70 text-white rounded-full p-1.5 hover:bg-black transition opacity-0 group-hover:opacity-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {linkPreview.image && (
+                <div className="w-full h-48 bg-gray-100 overflow-hidden">
+                  <img
+                    src={linkPreview.image}
+                    alt={linkPreview.title || 'Link preview'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <div className="p-4">
+                {linkPreview.siteName && (
+                  <div className="text-xs text-gray-500 mb-1 font-medium uppercase">
+                    {linkPreview.siteName}
+                  </div>
+                )}
+                {linkPreview.title && (
+                  <div className="font-bold text-black mb-1 line-clamp-2">
+                    {linkPreview.title}
+                  </div>
+                )}
+                {linkPreview.description && (
+                  <div className="text-sm text-gray-600 line-clamp-2 mb-2">
+                    {linkPreview.description}
+                  </div>
+                )}
+                <div className="text-xs text-gray-400 truncate">
+                  {linkPreview.url}
+                </div>
+              </div>
             </div>
           )}
 

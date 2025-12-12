@@ -366,6 +366,46 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 </div>
               )}
 
+              {post.link_preview && (
+                <a
+                  href={post.link_preview.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="block border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                >
+                  {post.link_preview.image && (
+                    <div className="w-full h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                      <img
+                        src={post.link_preview.image}
+                        alt={post.link_preview.title || 'Link preview'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-3">
+                    {post.link_preview.siteName && (
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium uppercase">
+                        {post.link_preview.siteName}
+                      </div>
+                    )}
+                    {post.link_preview.title && (
+                      <div className="font-bold text-slate-900 dark:text-white mb-1 line-clamp-2 text-sm">
+                        {post.link_preview.title}
+                      </div>
+                    )}
+                    {post.link_preview.description && (
+                      <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
+                        {post.link_preview.description}
+                      </div>
+                    )}
+                    <div className="text-xs text-slate-400 dark:text-slate-500 truncate">
+                      {post.link_preview.url}
+                    </div>
+                  </div>
+                </a>
+              )}
+
               <div className="rounded-2xl lg:rounded-3xl border-2 border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-teal-50/30 dark:from-emerald-950/40 dark:via-emerald-950/20 dark:to-teal-950/20 p-3 sm:p-4 lg:p-7 space-y-3 sm:space-y-4 lg:space-y-5 shadow-lg shadow-emerald-500/10">
                 <div className="flex items-center gap-2 text-sm sm:text-base lg:text-xl font-black text-emerald-700 dark:text-emerald-400">
                   <Trophy className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
@@ -503,6 +543,46 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     );
                   })}
                 </div>
+              )}
+
+              {post.link_preview && (
+                <a
+                  href={post.link_preview.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="block border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                >
+                  {post.link_preview.image && (
+                    <div className="w-full h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                      <img
+                        src={post.link_preview.image}
+                        alt={post.link_preview.title || 'Link preview'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-3">
+                    {post.link_preview.siteName && (
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium uppercase">
+                        {post.link_preview.siteName}
+                      </div>
+                    )}
+                    {post.link_preview.title && (
+                      <div className="font-bold text-slate-900 dark:text-white mb-1 line-clamp-2 text-sm">
+                        {post.link_preview.title}
+                      </div>
+                    )}
+                    {post.link_preview.description && (
+                      <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
+                        {post.link_preview.description}
+                      </div>
+                    )}
+                    <div className="text-xs text-slate-400 dark:text-slate-500 truncate">
+                      {post.link_preview.url}
+                    </div>
+                  </div>
+                </a>
               )}
             </div>
           )}
