@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
-import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, isBookmarked } from '../../lib/socialUtils';
+import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface PostCardProps {
@@ -20,21 +20,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [loading, setLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
-  const [isPostBookmarked, setIsPostBookmarked] = useState(false);
+  const [isPostBookmarked, setIsPostBookmarked] = useState(post.user_bookmarked || false);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
     setUserLiked(post.user_liked || false);
     setCommentsCount(post.comments_count || 0);
+    setIsPostBookmarked(post.user_bookmarked || false);
     checkJoinStatus();
-    checkBookmarkStatus();
-  }, [post.id, post.likes_count, post.user_liked, post.comments_count]);
-
-  async function checkBookmarkStatus() {
-    if (!user) return;
-    const bookmarked = await isBookmarked(post.id);
-    setIsPostBookmarked(bookmarked);
-  }
+  }, [post.id, post.likes_count, post.user_liked, post.comments_count, post.user_bookmarked]);
 
   async function checkJoinStatus() {
     if (!user || post.post_type !== 'match_invite') return;

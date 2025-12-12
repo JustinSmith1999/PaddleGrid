@@ -22,6 +22,7 @@ export interface SocialPost {
   likes_count?: number;
   comments_count?: number;
   user_liked?: boolean;
+  user_bookmarked?: boolean;
   profiles?: {
     id: string;
     full_name: string;
@@ -108,7 +109,7 @@ async function enrichPostsWithInteractions(posts: SocialPost[]): Promise<SocialP
   const postIds = posts.map(p => p.id);
   const { data: user } = await supabase.auth.getUser();
 
-  const [likesData, commentsData, userLikesData] = await Promise.all([
+  const [likesData, commentsData, userLikesData, userBookmarksData] = await Promise.all([
     supabase
       .from('social_post_likes')
       .select('post_id')
@@ -126,12 +127,21 @@ async function enrichPostsWithInteractions(posts: SocialPost[]): Promise<SocialP
           .select('post_id')
           .in('post_id', postIds)
           .eq('user_id', user.user.id)
+      : Promise.resolve({ data: [] }),
+
+    user.user
+      ? supabase
+          .from('bookmarks')
+          .select('post_id')
+          .in('post_id', postIds)
+          .eq('user_id', user.user.id)
       : Promise.resolve({ data: [] })
   ]);
 
   const likesCounts = new Map<string, number>();
   const commentsCounts = new Map<string, number>();
   const userLikedSet = new Set<string>();
+  const userBookmarkedSet = new Set<string>();
 
   likesData.data?.forEach(like => {
     likesCounts.set(like.post_id, (likesCounts.get(like.post_id) || 0) + 1);
@@ -145,11 +155,16 @@ async function enrichPostsWithInteractions(posts: SocialPost[]): Promise<SocialP
     userLikedSet.add(like.post_id);
   });
 
+  userBookmarksData.data?.forEach(bookmark => {
+    userBookmarkedSet.add(bookmark.post_id);
+  });
+
   return posts.map(post => ({
     ...post,
     likes_count: likesCounts.get(post.id) || 0,
     comments_count: commentsCounts.get(post.id) || 0,
-    user_liked: userLikedSet.has(post.id)
+    user_liked: userLikedSet.has(post.id),
+    user_bookmarked: userBookmarkedSet.has(post.id)
   }));
 }
 
