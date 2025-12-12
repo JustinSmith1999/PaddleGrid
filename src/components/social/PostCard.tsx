@@ -197,12 +197,21 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </>
           )}
 
-          <img
-            src={post.media_urls[expandedImage]}
-            alt={`Post media ${expandedImage + 1}`}
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {post.media_urls[expandedImage].match(/\.(mp4|webm|mov)(\?|$)/i) ? (
+            <video
+              src={post.media_urls[expandedImage]}
+              controls
+              className="max-w-full max-h-full"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img
+              src={post.media_urls[expandedImage]}
+              alt={`Post media ${expandedImage + 1}`}
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
 
           {post.media_urls.length > 1 && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
@@ -288,21 +297,33 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   post.media_urls.length === 2 ? 'grid-cols-2' :
                   'grid-cols-2'
                 }`}>
-                  {post.media_urls.slice(0, 4).map((url, idx) => (
-                    <div
-                      key={idx}
-                      className={`relative ${
-                        post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
-                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
-                    >
-                      <img
-                        src={url}
-                        alt={`Post media ${idx + 1}`}
-                        className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer"
-                        onClick={(e) => handleImageClick(e, idx)}
-                      />
-                    </div>
-                  ))}
+                  {post.media_urls.slice(0, 4).map((url, idx) => {
+                    const isVideo = url.match(/\.(mp4|webm|mov)(\?|$)/i);
+                    return (
+                      <div
+                        key={idx}
+                        className={`relative ${
+                          post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
+                        } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
+                      >
+                        {isVideo ? (
+                          <video
+                            src={url}
+                            controls
+                            className="w-full h-full object-cover"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        ) : (
+                          <img
+                            src={url}
+                            alt={`Post media ${idx + 1}`}
+                            className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer"
+                            onClick={(e) => handleImageClick(e, idx)}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -375,26 +396,38 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   post.media_urls.length === 2 ? 'grid-cols-2' :
                   'grid-cols-2'
                 }`}>
-                  {post.media_urls.slice(0, 4).map((url, idx) => (
-                    <div
-                      key={idx}
-                      className={`relative ${
-                        post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
-                      } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
-                    >
-                      <img
-                        src={url}
-                        alt={`Post media ${idx + 1}`}
-                        className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer"
-                        onClick={(e) => handleImageClick(e, idx)}
-                      />
-                      {post.media_urls!.length > 4 && idx === 3 && (
-                        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center pointer-events-none">
-                          <span className="text-white text-2xl font-bold">+{post.media_urls!.length - 4}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {post.media_urls.slice(0, 4).map((url, idx) => {
+                    const isVideo = url.match(/\.(mp4|webm|mov)(\?|$)/i);
+                    return (
+                      <div
+                        key={idx}
+                        className={`relative ${
+                          post.media_urls!.length === 3 && idx === 0 ? 'col-span-2' : ''
+                        } ${post.media_urls!.length === 1 ? 'h-80 sm:h-96' : 'aspect-square'} bg-slate-100 dark:bg-slate-800 overflow-hidden`}
+                      >
+                        {isVideo ? (
+                          <video
+                            src={url}
+                            controls
+                            className="w-full h-full object-cover"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        ) : (
+                          <img
+                            src={url}
+                            alt={`Post media ${idx + 1}`}
+                            className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer"
+                            onClick={(e) => handleImageClick(e, idx)}
+                          />
+                        )}
+                        {post.media_urls!.length > 4 && idx === 3 && !isVideo && (
+                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center pointer-events-none">
+                            <span className="text-white text-2xl font-bold">+{post.media_urls!.length - 4}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

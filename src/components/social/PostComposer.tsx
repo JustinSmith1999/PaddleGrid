@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { X, Calendar, Trophy, MapPin, Users, Clock } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Calendar, Trophy, MapPin, Users, Clock, Image as ImageIcon, Video, Loader2 } from 'lucide-react';
 import { createPost } from '../../lib/socialUtils';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,7 +11,7 @@ interface PostComposerProps {
 }
 
 export default function PostComposer({ onClose, onSuccess }: PostComposerProps) {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [postType, setPostType] = useState<'general' | 'match_invite'>('general');
   const [content, setContent] = useState('');
   const [facilityId, setFacilityId] = useState('');
@@ -30,6 +30,11 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   const [courts, setCourts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadFacilities();
@@ -72,11 +77,75 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     }
   }
 
+  function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    const validFiles = files.filter(file => {
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        return false;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length !== files.length) {
+      setError('Some files were skipped. Only images and videos under 10MB are allowed.');
+    }
+
+    if (selectedFiles.length + validFiles.length > 4) {
+      setError('Maximum 4 media files allowed per post');
+      return;
+    }
+
+    setSelectedFiles(prev => [...prev, ...validFiles]);
+
+    validFiles.forEach(file => {
+      const url = URL.createObjectURL(file);
+      setPreviewUrls(prev => [...prev, url]);
+    });
+  }
+
+  function removeFile(index: number) {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    URL.revokeObjectURL(previewUrls[index]);
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
+  async function uploadMedia(file: File): Promise<string | null> {
+    if (!user) return null;
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('social-posts')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('social-posts')
+        .getPublicUrl(fileName);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading media:', error);
+      return null;
+    }
+  }
+
   async function handleSubmit() {
     setError('');
 
-    if (!content.trim()) {
-      setError('Please enter some content');
+    if (!content.trim() && selectedFiles.length === 0) {
+      setError('Please enter some content or add media');
       return;
     }
 
@@ -93,10 +162,31 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
 
     setLoading(true);
 
+    let mediaUrls: string[] = [];
+
+    if (selectedFiles.length > 0) {
+      setUploadingMedia(true);
+
+      const uploadPromises = selectedFiles.map(file => uploadMedia(file));
+      const uploadedUrls = await Promise.all(uploadPromises);
+
+      mediaUrls = uploadedUrls.filter((url): url is string => url !== null);
+
+      if (mediaUrls.length !== selectedFiles.length) {
+        setError('Some media files failed to upload');
+        setLoading(false);
+        setUploadingMedia(false);
+        return;
+      }
+
+      setUploadingMedia(false);
+    }
+
     const postData: any = {
       post_type: postType,
       content,
-      visibility
+      visibility,
+      media_urls: mediaUrls
     };
 
     if (facilityId) {
@@ -119,6 +209,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     const result = await createPost(postData);
 
     if (result.success) {
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
       onSuccess();
       onClose();
     } else {
@@ -129,8 +220,8 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   }
 
   const canSubmit = postType === 'general'
-    ? content.trim().length > 0
-    : content.trim().length > 0 && playDate && facilityId;
+    ? content.trim().length > 0 || selectedFiles.length > 0
+    : (content.trim().length > 0 || selectedFiles.length > 0) && playDate && facilityId;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-start justify-center p-2 sm:p-4 z-50 pt-4 sm:pt-12 overflow-y-auto">
@@ -145,10 +236,22 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
           <h2 className="text-base sm:text-lg font-bold text-black">Create Post</h2>
           <button
             onClick={handleSubmit}
-            disabled={!canSubmit || loading}
-            className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            disabled={!canSubmit || loading || uploadingMedia}
+            className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2"
           >
-            {loading ? 'Posting...' : 'Post'}
+            {uploadingMedia ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Uploading...
+              </>
+            ) : loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Posting...
+              </>
+            ) : (
+              'Post'
+            )}
           </button>
         </div>
 
@@ -177,7 +280,59 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
             </div>
           </div>
 
+          {previewUrls.length > 0 && (
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {previewUrls.map((url, index) => {
+                const file = selectedFiles[index];
+                const isVideo = file?.type.startsWith('video/');
+
+                return (
+                  <div key={index} className="relative group">
+                    {isVideo ? (
+                      <video src={url} className="w-full h-40 object-cover rounded-lg" />
+                    ) : (
+                      <img src={url} alt={`Preview ${index + 1}`} className="w-full h-40 object-cover rounded-lg" />
+                    )}
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1.5 hover:bg-black transition opacity-0 group-hover:opacity-100"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    {isVideo && (
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white rounded px-2 py-1 text-xs flex items-center gap-1">
+                        <Video className="w-3 h-3" />
+                        Video
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           <div className="border-t border-gray-200 pt-4 space-y-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                accept="image/*,video/*"
+                multiple
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={selectedFiles.length >= 4 || loading}
+                className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Add photos or videos"
+              >
+                <ImageIcon className="w-5 h-5" />
+              </button>
+              <span className="text-xs text-gray-500">
+                {selectedFiles.length}/4 media files
+              </span>
+            </div>
             <div>
               <label className="block text-sm font-semibold text-black mb-2">
                 Post Type

@@ -76,6 +76,7 @@ export async function createPost(post: {
   play_start_time?: string;
   play_end_time?: string;
   spots_needed?: number;
+  media_urls?: string[];
 }): Promise<{ success: boolean; post?: SocialPost; error?: string }> {
   try {
     const { data: user } = await supabase.auth.getUser();
