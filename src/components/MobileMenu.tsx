@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Home, Search, Building2, User, Shield, Bell, MessageCircle, Bookmark } from 'lucide-react';
+import { Menu, X, Home, Search, Building2, User, Shield, Bell, MessageCircle, Bookmark, MapPin } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -22,7 +22,7 @@ export default function MobileMenu({
 }: MobileMenuProps) {
   const { user, profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; logo_url: string | null }>>([]);
+  const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; logo_url: string | null; city: string | null }>>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,7 +40,7 @@ export default function MobileMenu({
     try {
       const { data: facilitiesData } = await supabase
         .from('facilities')
-        .select('id, name, slug, logo_url')
+        .select('id, name, slug, logo_url, city')
         .order('created_at', { ascending: true })
         .limit(4);
 
@@ -81,7 +81,7 @@ export default function MobileMenu({
       {/* Hamburger Button - Bottom Left */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-slate-800 dark:bg-slate-700 text-white rounded-full flex items-center justify-center hover:bg-slate-900 dark:hover:bg-slate-600 transition-all shadow-lg hover:scale-110 z-40"
+        className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all shadow-lg hover:scale-110 z-40"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -215,17 +215,17 @@ export default function MobileMenu({
                 <div className="space-y-1">
                   {facilities.map((facility, index) => {
                     const bgClasses = [
-                      'w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-sm p-1',
-                      'w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-sm p-1',
-                      'w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-sm p-1',
-                      'w-9 h-9 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center shadow-sm p-1'
+                      'w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-sm p-1',
+                      'w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-sm p-1',
+                      'w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-sm p-1',
+                      'w-10 h-10 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center shadow-sm p-1'
                     ];
 
                     return (
                       <button
                         key={facility.id}
                         onClick={() => handleClubClick(facility.slug)}
-                        className="w-full px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 text-left flex items-center gap-3"
+                        className="w-full px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 text-left flex items-start gap-3"
                       >
                         <div className={bgClasses[index]}>
                           {facility.logo_url ? (
@@ -239,9 +239,17 @@ export default function MobileMenu({
                             <Building2 className="w-5 h-5 text-white" />
                           )}
                         </div>
-                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 line-clamp-1">
-                          {facility.name}
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-bold text-slate-900 dark:text-white">
+                            {facility.name}
+                          </div>
+                          {facility.city && (
+                            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                              <MapPin className="w-3 h-3" />
+                              {facility.city}
+                            </div>
+                          )}
+                        </div>
                       </button>
                     );
                   })}
