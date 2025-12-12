@@ -227,9 +227,9 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     : (content.trim().length > 0 || selectedFiles.length > 0) && playDate && facilityId;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-start justify-center p-0 sm:p-4 z-50 sm:pt-12 overflow-y-auto">
-      <div className="bg-white rounded-2xl sm:rounded-2xl rounded-t-2xl max-w-2xl w-full h-full sm:h-auto sm:max-h-[85vh] flex flex-col shadow-2xl sm:my-auto mt-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-3 sm:px-4 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+    <div className="fixed inset-0 bg-black/40 flex items-start justify-center p-2 sm:p-4 z-50 pt-4 sm:pt-12 overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[85vh] overflow-y-auto shadow-2xl my-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-3 sm:px-4 py-3 flex items-center justify-between rounded-t-2xl">
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition"
@@ -258,7 +258,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
           </button>
         </div>
 
-        <div className="p-3 sm:p-4 space-y-4 overflow-y-auto flex-1">
+        <div className="p-3 sm:p-4 space-y-4">
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
               {profile?.profile_picture_url ? (
