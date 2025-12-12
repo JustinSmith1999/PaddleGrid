@@ -228,38 +228,45 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-stone-200 px-4 lg:px-8 py-5 shadow-sm">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center space-x-4">
+        <header className="bg-white border-b border-stone-200 px-4 lg:px-8 py-4 lg:py-5 shadow-sm">
+          <div className="flex items-center justify-between w-full gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={() => setIsMobileSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg hover:bg-stone-100 text-emerald-700"
+                className="lg:hidden p-2 rounded-lg hover:bg-stone-100 text-emerald-700 flex-shrink-0"
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               </button>
-              <div>
-                <h1 className="text-2xl font-bold text-stone-800">
-                  Welcome back, {((user as any)?.full_name || (user as any)?.first_name || 'Admin').split(' ')[0]}
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-lg lg:text-2xl font-bold text-stone-800 truncate">
+                  Welcome back, {profile?.full_name?.split(' ')[0] || profile?.first_name || 'Admin'}
                 </h1>
-                <p className="text-sm text-stone-600 font-medium">
+                <p className="text-xs sm:text-sm text-stone-600 font-medium truncate">
                   {filteredNav.find(item => item.id === currentView)?.label || 'Dashboard'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <button className="relative p-2 rounded-lg hover:bg-stone-100 transition-colors">
                 <Bell className="w-5 h-5 text-stone-600" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full"></span>
               </button>
 
-              <div className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
-                <div className="hidden md:block">
-                  <p className="text-sm font-semibold text-emerald-800">
-                    {(user as any)?.full_name || 'Admin'}
+              <button
+                onClick={toggleTheme}
+                className="lg:hidden p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-600"
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
+                <div>
+                  <p className="text-sm font-semibold text-emerald-800 leading-tight">
+                    {profile?.full_name || profile?.first_name || 'Admin'}
                   </p>
                   <p className="text-xs text-emerald-600 capitalize font-medium">
-                    {userRole}
+                    {profile?.role || 'admin'}
                   </p>
                 </div>
               </div>
