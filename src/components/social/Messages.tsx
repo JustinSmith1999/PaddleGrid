@@ -53,7 +53,6 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -74,19 +73,11 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
   }, [selectedConversation]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
     const userId = searchParams?.get('user') || startWithUserId;
     if (userId && user) {
       startConversationWithUser(userId);
     }
   }, [searchParams, startWithUserId, user]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const handleUserSelected = async (userId: string) => {
     setShowNewMessageModal(false);
@@ -558,7 +549,6 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
                   </div>
                 </div>
               )}
-              <div ref={messagesEndRef} />
             </div>
 
             <div className="p-4 border-t border-slate-200 dark:border-slate-800">
