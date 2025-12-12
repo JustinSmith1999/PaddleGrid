@@ -38,11 +38,6 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    if (!loading && profile && isAdmin && location.pathname === '/') {
-      navigate('/admin', { replace: true });
-    }
-  }, [loading, profile, isAdmin, location.pathname, navigate]);
 
   if (loading) {
     return (
