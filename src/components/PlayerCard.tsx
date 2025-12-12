@@ -1,7 +1,8 @@
-import { Award, TrendingUp, Trophy, Target, Share2, Download, Medal, Star, Sparkles } from 'lucide-react';
+import { Award, TrendingUp, Trophy, Target, Share2, Download, Medal, Star, Sparkles, Send } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { createPost } from '../lib/socialUtils';
 
 interface PlayerCardProps {
   playerId?: string;
@@ -110,6 +111,54 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
     }
   };
 
+  const handleShareToFeed = async () => {
+    const cardElement = document.getElementById('player-card');
+    if (!cardElement) return;
+
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(cardElement, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+
+        const file = new File([blob], 'player-card.png', { type: 'image/png' });
+
+        const fileExt = 'png';
+        const fileName = `${profile?.id}/${Date.now()}_player_card.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('social-posts')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('social-posts')
+          .getPublicUrl(fileName);
+
+        const result = await createPost({
+          post_type: 'general',
+          content: `Check out my player card! 🎾`,
+          visibility: 'public',
+          media_urls: [urlData.publicUrl]
+        });
+
+        if (result.success) {
+          alert('Player card shared to feed!');
+        } else {
+          alert('Failed to share to feed. Please try again.');
+        }
+      }, 'image/png');
+    } catch (error) {
+      console.error('Error sharing to feed:', error);
+      alert('Could not share to feed. Please try again.');
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div id="player-card" className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 rounded-2xl shadow-2xl p-5 sm:p-8 text-white">
@@ -177,13 +226,21 @@ export default function PlayerCard({ playerId, playerData }: PlayerCardProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button
+          onClick={handleShareToFeed}
+          className="w-full px-4 sm:px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
+        >
+          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+          Share to Feed
+        </button>
+
         <button
           onClick={handleShare}
           className="w-full px-4 sm:px-6 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
         >
           <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
-          Share Card
+          Share Link
         </button>
 
         <button

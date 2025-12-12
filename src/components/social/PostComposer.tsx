@@ -41,6 +41,12 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   }, []);
 
   useEffect(() => {
+    if (postType === 'match_invite' && facilities.length > 0 && !facilityId) {
+      setFacilityId(facilities[0].id);
+    }
+  }, [postType, facilities]);
+
+  useEffect(() => {
     if (facilityId) {
       loadCourts(facilityId);
     } else {
@@ -56,9 +62,6 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       .order('name');
 
     setFacilities(data || []);
-    if (data && data.length > 0) {
-      setFacilityId(data[0].id);
-    }
   }
 
   async function loadCourts(facilityId: string) {
