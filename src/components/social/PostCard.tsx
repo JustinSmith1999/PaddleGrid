@@ -126,11 +126,13 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       const result = await unbookmarkPost(post.id);
       if (result.success) {
         setIsPostBookmarked(false);
+        onUpdate?.();
       }
     } else {
       const result = await bookmarkPost(post.id);
       if (result.success) {
         setIsPostBookmarked(true);
+        onUpdate?.();
       }
     }
   }

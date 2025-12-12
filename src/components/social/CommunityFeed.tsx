@@ -7,6 +7,7 @@ import PostCard from './PostCard';
 import NotificationsPanel from './NotificationsPanel';
 import { BrowseCourts } from '../BrowseCourts';
 import Messages from './Messages';
+import UserSearch from './UserSearch';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -17,7 +18,7 @@ interface CommunityFeedProps {
 
 export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick }: CommunityFeedProps) {
   const { user, profile } = useAuth();
-  const [activeView, setActiveView] = useState<'feed' | 'explore' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
+  const [activeView, setActiveView] = useState<'feed' | 'explore' | 'search' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
   const [activeTab, setActiveTab] = useState<'my_clubss' | 'following' | 'all_local'>('all_local');
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -193,6 +194,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             </button>
 
             <button
+              onClick={() => setActiveView('search')}
+              className={`flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group ${
+                activeView === 'search' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
+              }`}
+            >
+              <Search className={`w-6 h-6 ${activeView === 'search' ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`} />
+              <span className={`text-lg font-semibold ${activeView === 'search' ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'} transition-colors`}>Search</span>
+            </button>
+
+            <button
               onClick={() => user ? onProfileClick?.(user.id) : null}
               className="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 w-full text-left group"
             >
@@ -316,6 +327,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <div className="pt-6 pb-5 lg:pb-6 px-4">
                 <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {activeView === 'explore' && 'Courts'}
+                  {activeView === 'search' && 'Search Players'}
                   {activeView === 'messages' && 'Messages'}
                   {activeView === 'bookmarks' && 'Bookmarks'}
                 </h1>
@@ -452,6 +464,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             <div className="p-6">
               <BrowseCourts />
             </div>
+          )}
+
+          {/* Search View */}
+          {activeView === 'search' && (
+            <UserSearch onProfileClick={onProfileClick} />
           )}
 
           {/* Messages View */}
