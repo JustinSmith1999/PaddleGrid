@@ -121,7 +121,22 @@ export default function BookingsScreen() {
           <View style={styles.emptyContainer}>
             <Ionicons name="calendar-outline" size={64} color="#d1d5db" />
             <Text style={styles.emptyText}>No bookings yet</Text>
+            <Text style={styles.infoText}>
+              Court bookings are for physical court time at real pickleball facilities.
+              Payment is processed securely outside the app.
+            </Text>
           </View>
+        }
+        ListHeaderComponent={
+          bookings.length > 0 ? (
+            <View style={styles.infoCard}>
+              <Ionicons name="information-circle-outline" size={20} color="#10b981" />
+              <Text style={styles.infoCardText}>
+                All bookings are for physical court time at real facilities.
+                Payments are processed securely via our website.
+              </Text>
+            </View>
+          ) : null
         }
       />
     </View>
@@ -198,5 +213,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#9ca3af',
     marginTop: 16,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 12,
+    paddingHorizontal: 32,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  infoCard: {
+    flexDirection: 'row',
+    backgroundColor: '#d1fae5',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    alignItems: 'flex-start',
+  },
+  infoCardText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#047857',
+    marginLeft: 12,
+    lineHeight: 20,
   },
 });

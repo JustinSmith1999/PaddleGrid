@@ -23,6 +23,9 @@ const PostDetail = lazy(() => import('./components/social/PostDetail'));
 const ClubPage = lazy(() => import('./components/ClubPage'));
 const PlayerDiscovery = lazy(() => import('./components/social/PlayerDiscovery'));
 const Messages = lazy(() => import('./components/social/Messages'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
+const Support = lazy(() => import('./components/Support'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -182,6 +185,10 @@ function AppContent() {
         <Route path="/series/:seriesId" element={<SeriesDetailRoute />} />
         <Route path="/series/:seriesId/register" element={<SeriesRegistrationRoute />} />
         <Route path="/my-series" element={<MySeriesRoute />} />
+
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/support" element={<Support />} />
 
         <Route path="*" element={<NotFound />} />
         </Routes>

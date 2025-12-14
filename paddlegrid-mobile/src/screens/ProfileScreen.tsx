@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }: any) {
   const { profile, signOut } = useAuth();
 
   const handleSignOut = () => {
@@ -51,7 +51,10 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('EditProfile')}
+        >
           <View style={styles.menuItemLeft}>
             <Ionicons name="person-outline" size={24} color="#6b7280" />
             <Text style={styles.menuItemText}>Edit Profile</Text>
@@ -59,7 +62,10 @@ export default function ProfileScreen() {
           <Ionicons name="chevron-forward" size={24} color="#d1d5db" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => Alert.alert('Coming Soon', 'Notification settings will be available in a future update')}
+        >
           <View style={styles.menuItemLeft}>
             <Ionicons name="notifications-outline" size={24} color="#6b7280" />
             <Text style={styles.menuItemText}>Notifications</Text>
@@ -67,7 +73,10 @@ export default function ProfileScreen() {
           <Ionicons name="chevron-forward" size={24} color="#d1d5db" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => Alert.alert('Coming Soon', 'Additional settings will be available in a future update')}
+        >
           <View style={styles.menuItemLeft}>
             <Ionicons name="settings-outline" size={24} color="#6b7280" />
             <Text style={styles.menuItemText}>Settings</Text>
@@ -77,7 +86,10 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('Help')}
+        >
           <View style={styles.menuItemLeft}>
             <Ionicons name="help-circle-outline" size={24} color="#6b7280" />
             <Text style={styles.menuItemText}>Help & Support</Text>
@@ -85,7 +97,10 @@ export default function ProfileScreen() {
           <Ionicons name="chevron-forward" size={24} color="#d1d5db" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('TermsPrivacy')}
+        >
           <View style={styles.menuItemLeft}>
             <Ionicons name="document-text-outline" size={24} color="#6b7280" />
             <Text style={styles.menuItemText}>Terms & Privacy</Text>

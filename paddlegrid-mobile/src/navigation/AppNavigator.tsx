@@ -7,6 +7,9 @@ import { ActivityIndicator, View } from 'react-native';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import MainTabNavigator from './MainTabNavigator';
+import EditProfileScreen from '../screens/EditProfileScreen';
+import HelpScreen from '../screens/HelpScreen';
+import TermsPrivacyScreen from '../screens/TermsPrivacyScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +28,12 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={MainTabNavigator} />
+          <>
+            <Stack.Screen name="Main" component={MainTabNavigator} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Help" component={HelpScreen} />
+            <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />

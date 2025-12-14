@@ -7,6 +7,9 @@ import {
   RefreshControl,
   TouchableOpacity,
   Image,
+  Alert,
+  ActionSheetIOS,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getFeedPosts, toggleLike, SocialPost, formatTimeAgo } from '@shared/api';
@@ -46,6 +49,80 @@ export default function FeedScreen() {
     }
   };
 
+  const handleReportPost = (postId: string) => {
+    const reportOptions = [
+      { label: 'Spam', value: 'spam' },
+      { label: 'Harassment', value: 'harassment' },
+      { label: 'Inappropriate Content', value: 'inappropriate' },
+      { label: 'Misinformation', value: 'misinformation' },
+      { label: 'Other', value: 'other' },
+    ];
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: [...reportOptions.map(o => o.label), 'Cancel'],
+          cancelButtonIndex: reportOptions.length,
+          title: 'Report Post',
+          message: 'Why are you reporting this post?',
+        },
+        (buttonIndex) => {
+          if (buttonIndex < reportOptions.length) {
+            submitReport(postId, reportOptions[buttonIndex].value);
+          }
+        }
+      );
+    } else {
+      Alert.alert(
+        'Report Post',
+        'Why are you reporting this post?',
+        [
+          ...reportOptions.map(option => ({
+            text: option.label,
+            onPress: () => submitReport(postId, option.value),
+          })),
+          { text: 'Cancel', style: 'cancel' },
+        ]
+      );
+    }
+  };
+
+  const submitReport = async (postId: string, reason: string) => {
+    try {
+      const { supabase } = await import('@shared/lib/supabase');
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        Alert.alert('Error', 'You must be logged in to report content');
+        return;
+      }
+
+      const { error } = await supabase.from('content_reports').insert({
+        reporter_id: user.id,
+        post_id: postId,
+        reason: reason,
+        status: 'pending',
+      });
+
+      if (error) {
+        if (error.code === '23505') {
+          Alert.alert('Already Reported', 'You have already reported this post.');
+        } else {
+          throw error;
+        }
+      } else {
+        Alert.alert(
+          'Report Submitted',
+          'Thank you for helping keep our community safe. We will review this content shortly.',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      console.error('Error reporting post:', error);
+      Alert.alert('Error', 'Failed to submit report. Please try again.');
+    }
+  };
+
   const renderPost = ({ item }: { item: SocialPost }) => (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
@@ -65,6 +142,9 @@ export default function FeedScreen() {
             <Text style={styles.postTime}>{formatTimeAgo(item.created_at)}</Text>
           </View>
         </View>
+        <TouchableOpacity onPress={() => handleReportPost(item.id)}>
+          <Ionicons name="flag-outline" size={20} color="#9ca3af" />
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.postContent}>{item.content}</Text>

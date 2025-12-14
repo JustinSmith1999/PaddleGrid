@@ -155,7 +155,11 @@ Answer these questions in App Store Connect:
 - Unrestricted Web Access: **No**
 - User Generated Content: **Yes** (players can post to community feed)
 
-**Expected Rating**: 4+ or 12+ (depending on user-generated content)
+**IMPORTANT**: Due to user-generated content, this app MUST be rated 12+ or higher.
+- Select "Infrequent/Mild" for "User Generated Content"
+- This app includes content reporting and moderation systems
+
+**Expected Rating**: 12+
 
 ---
 
