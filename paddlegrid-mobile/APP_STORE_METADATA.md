@@ -105,22 +105,35 @@ https://paddlegrid.com/privacy
 - **Phone Number**: [Your phone number]
 
 ### Demo Account Credentials
-**IMPORTANT**: Create a test account with full access and provide credentials
 
 ```
 Email: demo@paddlegrid.com
 Password: DemoPass123!
 
 Notes for Reviewer:
-"This is a fully functional test account with access to all features. The account is pre-populated with sample data including courts, bookings, and player profiles. Please feel free to:
-- Browse and book courts
-- Join sample matches
-- View player profiles
-- Test the messaging system
-- Explore the community feed
+"This is a fully functional test account with access to all player features. The account is pre-populated with sample data including:
 
-For facility features, this account also has facility owner access to demonstrate the admin dashboard and court management tools."
+• Upcoming court bookings at Pickleball Heaven facility
+• Access to the community social feed with real posts and interactions
+• Sample event series available for registration
+• Direct messaging capabilities with other players
+• Complete profile with stats and activity history
+
+Please feel free to:
+- Browse facilities and view court availability
+- Make test bookings (Stripe test mode enabled - use card 4242 4242 4242 4242)
+- Post to the community feed, like, and comment
+- Send messages to other players
+- Join the Beginner Pickleball Clinic event
+- Update your profile and upload pictures
+
+For facility admin features (court management, event creation, member management), an additional admin account is available:
+Email: justin@j20solutions.com
+
+The app connects to a live development environment with real-time updates. All features are fully functional and ready for testing."
 ```
+
+**Setup Reference**: See `DEMO_ACCOUNT_SETUP.md` in project root for complete setup instructions
 
 ### Review Notes (optional but recommended)
 ```
