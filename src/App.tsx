@@ -6,6 +6,7 @@ import { BottomNav } from './components/BottomNav';
 import { AuthModal } from './components/AuthModal';
 import { NotFound } from './components/NotFound';
 import { Loader2 } from 'lucide-react';
+import InstallPWA from './components/InstallPWA';
 
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
@@ -193,6 +194,8 @@ function AppContent() {
         onClose={() => setShowAuthModal(false)}
         mode={authMode}
       />
+
+      <InstallPWA />
     </div>
   );
 }
