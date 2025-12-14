@@ -266,11 +266,11 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     >
       <div className="flex gap-2 lg:gap-2.5">
         <div className={`w-9 h-9 lg:w-10 lg:h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 overflow-hidden ${
-          (post.posted_as_facility && post.facilities?.logo_url) || post.profiles?.profile_picture_url
+          (post.posted_as_facility === true && post.facilities?.logo_url) || (!post.posted_as_facility && post.profiles?.profile_picture_url)
             ? 'bg-white'
             : 'bg-gradient-to-br from-emerald-500 to-teal-600'
         }`}>
-          {post.posted_as_facility && post.facilities?.logo_url ? (
+          {post.posted_as_facility === true && post.facilities?.logo_url ? (
             <img
               src={post.facilities.logo_url}
               alt={post.facilities.name || 'Facility'}
@@ -284,7 +284,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             />
           ) : (
             <span className="text-sm lg:text-base">
-              {post.posted_as_facility && post.facilities?.name
+              {post.posted_as_facility === true && post.facilities?.name
                 ? post.facilities.name.charAt(0).toUpperCase()
                 : (post.profiles?.full_name?.charAt(0).toUpperCase() || 'U')}
             </span>
@@ -297,7 +297,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (post.posted_as_facility && post.facilities?.slug) {
+                  if (post.posted_as_facility === true && post.facilities?.slug) {
                     onClubClick?.(post.facilities.slug);
                   } else if (post.profiles?.id) {
                     onProfileClick?.(post.profiles.id);
@@ -305,7 +305,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 }}
                 className="font-bold text-slate-900 dark:text-white hover:underline text-[15px] truncate"
               >
-                {post.posted_as_facility && post.facilities?.name
+                {post.posted_as_facility === true && post.facilities?.name
                   ? post.facilities.name
                   : (post.profiles?.full_name || 'Unknown User')}
               </button>
