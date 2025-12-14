@@ -343,7 +343,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <div className="flex border-b border-slate-200 dark:border-slate-800">
                   <button
                     onClick={() => setActiveTab('all_local')}
-                    className={`flex-1 px-2 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                    className={`flex-1 px-4 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
                       activeTab === 'all_local'
                         ? 'text-slate-900 dark:text-white'
                         : 'text-slate-600 dark:text-slate-400'
@@ -358,7 +358,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && userFacilityIds.length > 0 && (
                     <button
                       onClick={() => setActiveTab('my_clubs')}
-                      className={`flex-1 px-2 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                      className={`flex-1 px-4 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
                         activeTab === 'my_clubs'
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-600 dark:text-slate-400'
@@ -374,7 +374,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && (
                     <button
                       onClick={() => setActiveTab('following')}
-                      className={`flex-1 px-2 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
+                      className={`flex-1 px-4 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
                         activeTab === 'following'
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-600 dark:text-slate-400'

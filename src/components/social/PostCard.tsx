@@ -262,7 +262,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
     <div
       onClick={onClick}
-      className="bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer px-4 py-2.5 lg:py-3 border-b border-slate-200/80 dark:border-slate-800/80"
+      className="bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer px-6 py-2.5 lg:py-3 border-b border-slate-200/80 dark:border-slate-800/80"
     >
       <div className="flex gap-2 lg:gap-2.5">
         <div className={`w-9 h-9 lg:w-10 lg:h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 overflow-hidden ${
