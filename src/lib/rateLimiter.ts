@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { getRedisClient } from './redis';
 
 interface RateLimitConfig {
   maxRequests: number;
@@ -10,10 +11,50 @@ const defaultConfig: RateLimitConfig = {
   windowMs: 60000,
 };
 
-export async function checkRateLimit(
+async function checkRateLimitRedis(
   identifier: string,
   endpoint: string,
-  config: RateLimitConfig = defaultConfig
+  config: RateLimitConfig
+): Promise<{ allowed: boolean; remaining: number; resetAt: Date } | null> {
+  const redis = getRedisClient();
+  if (!redis) return null;
+
+  try {
+    const key = `ratelimit:${endpoint}:${identifier}`;
+    const windowSeconds = Math.ceil(config.windowMs / 1000);
+
+    const count = await redis.incr(key);
+
+    if (count === 1) {
+      await redis.expire(key, windowSeconds);
+    }
+
+    const ttl = await redis.ttl(key);
+    const resetAt = new Date(Date.now() + ttl * 1000);
+
+    if (count > config.maxRequests) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetAt,
+      };
+    }
+
+    return {
+      allowed: true,
+      remaining: config.maxRequests - count,
+      resetAt,
+    };
+  } catch (error) {
+    console.error('Redis rate limit check failed:', error);
+    return null;
+  }
+}
+
+async function checkRateLimitDatabase(
+  identifier: string,
+  endpoint: string,
+  config: RateLimitConfig
 ): Promise<{ allowed: boolean; remaining: number; resetAt: Date }> {
   try {
     const windowStart = new Date(Date.now() - config.windowMs);
@@ -78,6 +119,20 @@ export async function checkRateLimit(
       resetAt: new Date(Date.now() + config.windowMs),
     };
   }
+}
+
+export async function checkRateLimit(
+  identifier: string,
+  endpoint: string,
+  config: RateLimitConfig = defaultConfig
+): Promise<{ allowed: boolean; remaining: number; resetAt: Date }> {
+  const redisResult = await checkRateLimitRedis(identifier, endpoint, config);
+
+  if (redisResult !== null) {
+    return redisResult;
+  }
+
+  return checkRateLimitDatabase(identifier, endpoint, config);
 }
 
 export const RATE_LIMIT_CONFIGS = {
