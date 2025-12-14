@@ -343,30 +343,30 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <div className="flex border-b border-slate-200 dark:border-slate-800">
                   <button
                     onClick={() => setActiveTab('all_local')}
-                    className={`flex-1 px-3 py-3 text-sm lg:text-base font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                    className={`flex-1 px-2 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
                       activeTab === 'all_local'
                         ? 'text-slate-900 dark:text-white'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                        : 'text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     For You
                     {activeTab === 'all_local' && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600" />
                     )}
                   </button>
 
                   {user && userFacilityIds.length > 0 && (
                     <button
                       onClick={() => setActiveTab('my_clubs')}
-                      className={`flex-1 px-3 py-3 text-sm lg:text-base font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                      className={`flex-1 px-2 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
                         activeTab === 'my_clubs'
                           ? 'text-slate-900 dark:text-white'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                          : 'text-slate-600 dark:text-slate-400'
                       }`}
                     >
                       My Clubs
                       {activeTab === 'my_clubs' && (
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600" />
                       )}
                     </button>
                   )}
@@ -374,15 +374,15 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && (
                     <button
                       onClick={() => setActiveTab('following')}
-                      className={`flex-1 px-3 py-3 text-sm lg:text-base font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                      className={`flex-1 px-2 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
                         activeTab === 'following'
                           ? 'text-slate-900 dark:text-white'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                          : 'text-slate-600 dark:text-slate-400'
                       }`}
                     >
                       Following
                       {activeTab === 'following' && (
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600" />
                       )}
                     </button>
                   )}
