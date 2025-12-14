@@ -6,6 +6,16 @@ Copy and paste these into App Store Connect when setting up your app listing.
 
 ## App Information
 
+### Apple ID
+```
+6756371597
+```
+
+### SKU
+```
+20251999
+```
+
 ### App Name
 ```
 PaddleGrid
