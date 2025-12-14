@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Calendar, Trophy, MapPin, Users, Clock, Image as ImageIcon, Video, Loader2, AlertTriangle } from 'lucide-react';
+import { X, Calendar, Trophy, MapPin, Users, Clock, Image as ImageIcon, Video, Loader2, AlertTriangle, Building2 } from 'lucide-react';
 import { createPost } from '../../lib/socialUtils';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,12 +11,21 @@ interface PostComposerProps {
   onSuccess: () => void;
 }
 
+interface ManagedFacility {
+  id: string;
+  name: string;
+  logo_url?: string;
+}
+
 export default function PostComposer({ onClose, onSuccess }: PostComposerProps) {
   const { profile, user } = useAuth();
   const [postType, setPostType] = useState<'general' | 'match_invite'>('general');
   const [content, setContent] = useState('');
   const [facilityId, setFacilityId] = useState('');
   const visibility = 'public';
+  const [postAsType, setPostAsType] = useState<'personal' | 'facility'>('personal');
+  const [selectedFacilityForPosting, setSelectedFacilityForPosting] = useState<string>('');
+  const [managedFacilities, setManagedFacilities] = useState<ManagedFacility[]>([]);
 
   const [sport, setSport] = useState('pickleball');
   const [skillMin, setSkillMin] = useState<number>(2.5);
@@ -43,6 +52,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
 
   useEffect(() => {
     loadFacilities();
+    loadManagedFacilities();
   }, []);
 
   useEffect(() => {
@@ -80,6 +90,25 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       .order('name');
 
     setFacilities(data || []);
+  }
+
+  async function loadManagedFacilities() {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('facility_users')
+      .select('facility_id, role, facilities(id, name, logo_url)')
+      .eq('user_id', user.id)
+      .in('role', ['owner', 'admin']);
+
+    const managed = (data || [])
+      .map(fu => fu.facilities)
+      .filter(f => f !== null) as ManagedFacility[];
+
+    setManagedFacilities(managed);
+    if (managed.length > 0) {
+      setSelectedFacilityForPosting(managed[0].id);
+    }
   }
 
   async function loadCourts(facilityId: string) {
@@ -250,7 +279,10 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       postData.link_preview = linkPreview;
     }
 
-    if (facilityId) {
+    if (postAsType === 'facility' && selectedFacilityForPosting) {
+      postData.posted_as_facility = true;
+      postData.facility_id = selectedFacilityForPosting;
+    } else if (facilityId) {
       postData.facility_id = facilityId;
     }
 
@@ -317,9 +349,87 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
         </div>
 
         <div className="p-3 sm:p-4 space-y-4">
+          {managedFacilities.length > 0 && (
+            <div className="border-b border-gray-200 pb-4">
+              <label className="block text-sm font-semibold text-black mb-2">
+                Post As
+              </label>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setPostAsType('personal')}
+                  className={`w-full p-3 rounded-lg border-2 transition flex items-center gap-3 ${
+                    postAsType === 'personal'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
+                    {profile?.profile_picture_url ? (
+                      <img
+                        src={profile.profile_picture_url}
+                        alt={profile.full_name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm">{profile?.full_name?.charAt(0).toUpperCase() || 'U'}</span>
+                    )}
+                  </div>
+                  <div className="text-left flex-1">
+                    <div className="font-semibold text-black text-sm">{profile?.full_name || 'Personal'}</div>
+                    <div className="text-xs text-gray-500">Post as yourself</div>
+                  </div>
+                </button>
+
+                {managedFacilities.map((facility) => (
+                  <button
+                    key={facility.id}
+                    onClick={() => {
+                      setPostAsType('facility');
+                      setSelectedFacilityForPosting(facility.id);
+                    }}
+                    className={`w-full p-3 rounded-lg border-2 transition flex items-center gap-3 ${
+                      postAsType === 'facility' && selectedFacilityForPosting === facility.id
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600">
+                      {facility.logo_url ? (
+                        <img
+                          src={facility.logo_url}
+                          alt={facility.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Building2 className="w-4 h-4" />
+                      )}
+                    </div>
+                    <div className="text-left flex-1">
+                      <div className="font-semibold text-black text-sm">{facility.name}</div>
+                      <div className="text-xs text-gray-500">Post as facility</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
-              {profile?.profile_picture_url ? (
+              {postAsType === 'facility' && selectedFacilityForPosting ? (
+                (() => {
+                  const facility = managedFacilities.find(f => f.id === selectedFacilityForPosting);
+                  return facility?.logo_url ? (
+                    <img
+                      src={facility.logo_url}
+                      alt={facility.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Building2 className="w-5 h-5" />
+                  );
+                })()
+              ) : profile?.profile_picture_url ? (
                 <img
                   src={profile.profile_picture_url}
                   alt={profile.full_name || 'User'}

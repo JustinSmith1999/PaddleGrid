@@ -7,6 +7,7 @@ export interface SocialPost {
   court_id?: string;
   post_type: 'general' | 'match_invite';
   content: string;
+  posted_as_facility?: boolean;
   media_urls?: string[];
   link_preview?: {
     url: string;
@@ -77,6 +78,7 @@ export async function createPost(post: {
   post_type: 'general' | 'match_invite';
   content: string;
   facility_id?: string;
+  posted_as_facility?: boolean;
   visibility?: 'facility' | 'friends' | 'public';
   sport?: string;
   skill_min?: number;
