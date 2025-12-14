@@ -613,7 +613,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
             <button
               onClick={handleBookmark}
-              className={`group flex items-center transition-colors ml-auto ${
+              className={`group flex items-center transition-colors ${
                 isPostBookmarked
                   ? 'text-emerald-600 dark:text-emerald-400'
                   : 'text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
