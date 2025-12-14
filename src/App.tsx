@@ -1,6 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
@@ -358,32 +357,11 @@ function MySeriesRoute() {
 
 function App() {
   return (
-    <Sentry.ErrorBoundary
-      fallback={({ error, resetError }) => (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h2>
-            <p className="text-gray-600 mb-4">We've been notified and are working on a fix.</p>
-            <div className="bg-gray-100 rounded p-3 mb-4 text-sm text-gray-700 overflow-auto max-h-40">
-              {error?.message}
-            </div>
-            <button
-              onClick={resetError}
-              className="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700 transition"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      )}
-      showDialog
-    >
-      <BrowserRouter>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </BrowserRouter>
-    </Sentry.ErrorBoundary>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
