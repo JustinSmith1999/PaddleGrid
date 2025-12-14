@@ -343,7 +343,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 <div className="flex border-b border-slate-200 dark:border-slate-800">
                   <button
                     onClick={() => setActiveTab('all_local')}
-                    className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                    className={`flex-1 px-3 py-3 text-sm lg:text-base font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
                       activeTab === 'all_local'
                         ? 'text-slate-900 dark:text-white'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -358,7 +358,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && userFacilityIds.length > 0 && (
                     <button
                       onClick={() => setActiveTab('my_clubs')}
-                      className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                      className={`flex-1 px-3 py-3 text-sm lg:text-base font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
                         activeTab === 'my_clubs'
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -374,7 +374,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && (
                     <button
                       onClick={() => setActiveTab('following')}
-                      className={`flex-1 px-4 py-4 text-base lg:text-lg font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
+                      className={`flex-1 px-3 py-3 text-sm lg:text-base font-bold hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative ${
                         activeTab === 'following'
                           ? 'text-slate-900 dark:text-white'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -387,15 +387,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     </button>
                   )}
                 </div>
-                {/* Tab Description */}
-                {(activeTab === 'my_clubs' || activeTab === 'following') && (
-                  <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                    <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                      {activeTab === 'my_clubs' && '🏢 Posts from members of your clubs'}
-                      {activeTab === 'following' && '👥 Posts only from players you follow'}
-                    </p>
-                  </div>
-                )}
               </>
             )}
           </div>
