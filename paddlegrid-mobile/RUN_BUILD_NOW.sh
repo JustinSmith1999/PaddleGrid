@@ -24,12 +24,18 @@ fi
 echo "✅ Logged in to EAS"
 echo ""
 
-# Start build
+# Start build - INTERACTIVE MODE for credentials setup
 echo "🏗️  Starting production builds for iOS and Android..."
-echo "This will take approximately 20-25 minutes."
+echo ""
+echo "⚠️  IMPORTANT: You will be prompted to set up iOS credentials"
+echo "   - Choose 'Expo will handle it' for certificates"
+echo "   - Follow the prompts to generate certificates and profiles"
+echo ""
+echo "This will take approximately 20-25 minutes after setup."
 echo ""
 
-EAS_NO_VCS=1 npx eas-cli build --platform all --profile production --non-interactive
+# Run in interactive mode to allow credentials setup
+EAS_NO_VCS=1 npx eas-cli build --platform all --profile production
 
 echo ""
 echo "✅ Build submitted successfully!"
