@@ -1,26 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
-import { SalesPage } from './components/SalesPage';
-import { BrowseCourts } from './components/BrowseCourts';
-import { UserBookings } from './components/UserBookings';
 import { AuthModal } from './components/AuthModal';
-import { AdminPanel } from './components/admin/AdminPanel';
-import { PlayerProfile } from './components/PlayerProfile';
-import { PublicPlayerProfile } from './components/PublicPlayerProfile';
-import SeriesBrowser from './components/SeriesBrowser';
-import SeriesDetail from './components/SeriesDetail';
-import SeriesRegistration from './components/SeriesRegistration';
-import MySeries from './components/MySeries';
-import CommunityHub from './components/CommunityHub';
-import PostDetail from './components/social/PostDetail';
-import ClubPage from './components/ClubPage';
-import PlayerDiscovery from './components/social/PlayerDiscovery';
-import Messages from './components/social/Messages';
 import { NotFound } from './components/NotFound';
 import { Loader2 } from 'lucide-react';
+
+const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
+const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
+const UserBookings = lazy(() => import('./components/UserBookings').then(m => ({ default: m.UserBookings })));
+const AdminPanel = lazy(() => import('./components/admin/AdminPanel').then(m => ({ default: m.AdminPanel })));
+const PlayerProfile = lazy(() => import('./components/PlayerProfile').then(m => ({ default: m.PlayerProfile })));
+const PublicPlayerProfile = lazy(() => import('./components/PublicPlayerProfile').then(m => ({ default: m.PublicPlayerProfile })));
+const SeriesBrowser = lazy(() => import('./components/SeriesBrowser'));
+const SeriesDetail = lazy(() => import('./components/SeriesDetail'));
+const SeriesRegistration = lazy(() => import('./components/SeriesRegistration'));
+const MySeries = lazy(() => import('./components/MySeries'));
+const CommunityHub = lazy(() => import('./components/CommunityHub'));
+const PostDetail = lazy(() => import('./components/social/PostDetail'));
+const ClubPage = lazy(() => import('./components/ClubPage'));
+const PlayerDiscovery = lazy(() => import('./components/social/PlayerDiscovery'));
+const Messages = lazy(() => import('./components/social/Messages'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -87,6 +89,12 @@ function AppContent() {
     }
   };
 
+  const LoadingFallback = () => (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <ScrollToTop />
@@ -98,7 +106,8 @@ function AppContent() {
         onViewChange={handleViewChange}
       />
 
-      <Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
         <Route path="/" element={
           <CommunityHub
             onAuthRequired={(mode = 'login') => {
@@ -175,7 +184,8 @@ function AppContent() {
         <Route path="/my-series" element={<MySeriesRoute />} />
 
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </Suspense>
 
       <BottomNav onViewChange={handleViewChange} />
 
@@ -348,11 +358,32 @@ function MySeriesRoute() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </BrowserRouter>
+    <Sentry.ErrorBoundary
+      fallback={({ error, resetError }) => (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h2>
+            <p className="text-gray-600 mb-4">We've been notified and are working on a fix.</p>
+            <div className="bg-gray-100 rounded p-3 mb-4 text-sm text-gray-700 overflow-auto max-h-40">
+              {error?.message}
+            </div>
+            <button
+              onClick={resetError}
+              className="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700 transition"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+      showDialog
+    >
+      <BrowserRouter>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   );
 }
 
