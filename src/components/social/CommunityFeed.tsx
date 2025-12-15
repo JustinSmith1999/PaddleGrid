@@ -43,6 +43,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
+  const [hideStories, setHideStories] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHideStories(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     fetchFacilities();
@@ -439,17 +449,23 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Stories Highlights - Only in feed view */}
           {activeView === 'feed' && (
-            <StoriesHighlights
-              key={storiesKey}
-              onStoryClick={(id, type) => {
-                if (type === 'facility') {
-                  onClubClick?.(id);
-                } else {
-                  onProfileClick?.(id);
-                }
-              }}
-              onCreateStory={() => setShowStoryComposer(true)}
-            />
+            <div
+              className={`transition-all duration-300 overflow-hidden ${
+                hideStories ? 'max-h-0 opacity-0' : 'max-h-[200px] opacity-100'
+              }`}
+            >
+              <StoriesHighlights
+                key={storiesKey}
+                onStoryClick={(id, type) => {
+                  if (type === 'facility') {
+                    onClubClick?.(id);
+                  } else {
+                    onProfileClick?.(id);
+                  }
+                }}
+                onCreateStory={() => setShowStoryComposer(true)}
+              />
+            </div>
           )}
 
           {/* Content Area */}
