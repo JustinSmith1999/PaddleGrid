@@ -500,7 +500,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Messages View */}
           {activeView === 'messages' && user && (
-            <div className="fixed inset-0 top-[56px] pb-24 lg:pb-0 lg:left-[275px] lg:right-0">
+            <div className="absolute inset-0 pb-20 lg:pb-0">
               <Messages />
             </div>
           )}
@@ -533,6 +533,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
+        {activeView !== 'messages' && (
         <div className="hidden xl:block w-[350px] flex-shrink-0">
           <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-[56px] w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent pt-6">
             {/* Weather Widget */}
@@ -628,6 +629,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Mobile Menu */}
