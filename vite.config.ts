@@ -21,5 +21,21 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'supabase': ['@supabase/supabase-js'],
+          'ui-vendor': ['lucide-react', 'recharts']
+        }
+      }
+    }
   },
+  server: {
+    port: 5173,
+    strictPort: true,
+    host: true
+  }
 });

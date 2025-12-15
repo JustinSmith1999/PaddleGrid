@@ -7,6 +7,9 @@ import { AuthModal } from './components/AuthModal';
 import { NotFound } from './components/NotFound';
 import { Loader2 } from 'lucide-react';
 import InstallPWA from './components/InstallPWA';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { App as CapacitorApp } from '@capacitor/app';
 
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
@@ -43,7 +46,26 @@ function AppContent() {
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'facility'>('login');
   const navigate = useNavigate();
   const location = useLocation();
+  const isNative = Capacitor.isNativePlatform();
 
+  useEffect(() => {
+    if (isNative) {
+      StatusBar.setStyle({ style: Style.Light });
+      StatusBar.setBackgroundColor({ color: '#10B981' });
+
+      CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+        if (canGoBack) {
+          window.history.back();
+        } else {
+          CapacitorApp.exitApp();
+        }
+      });
+
+      return () => {
+        CapacitorApp.removeAllListeners();
+      };
+    }
+  }, [isNative]);
 
   if (loading) {
     return (
@@ -202,7 +224,7 @@ function AppContent() {
         mode={authMode}
       />
 
-      <InstallPWA />
+      {!isNative && <InstallPWA />}
     </div>
   );
 }
