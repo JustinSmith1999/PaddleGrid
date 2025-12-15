@@ -11,7 +11,6 @@ import Messages from './Messages';
 import UserSearch from './UserSearch';
 import MobileMenu from '../MobileMenu';
 import StoriesHighlights from './StoriesHighlights';
-import WeeklyHighlights from './WeeklyHighlights';
 import WhosPlayingNow from './WhosPlayingNow';
 import SuggestedPlayers from './SuggestedPlayers';
 import WeatherWidget from './WeatherWidget';
@@ -413,9 +412,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Content Area */}
           {activeView === 'feed' && (
             <>
-              {/* Weekly Highlights */}
-              {user && <WeeklyHighlights />}
-
               {/* Posts Feed */}
               {posts.length > 0 ? (
                 <>
