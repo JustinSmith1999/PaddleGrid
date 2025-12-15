@@ -415,7 +415,17 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
         )
       );
 
-      await fetchConversations();
+      setConversations((prev) =>
+        prev.map(conv =>
+          conv.id === selectedConversation
+            ? {
+                ...conv,
+                last_message: messageContent || (mediaType === 'image' ? 'Sent a photo' : mediaType === 'video' ? 'Sent a video' : 'New message'),
+                last_message_time: new Date().toISOString()
+              }
+            : conv
+        ).sort((a, b) => new Date(b.last_message_time).getTime() - new Date(a.last_message_time).getTime())
+      );
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Failed to send message');
