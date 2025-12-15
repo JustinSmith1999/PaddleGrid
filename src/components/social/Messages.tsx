@@ -466,160 +466,161 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
       </div>
 
       <div className={`flex-1 flex flex-col ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
-        {selectedConversation ? (
-          <>
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
-              <button
-                onClick={() => setSelectedConversation(null)}
-                className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                {conversations.find(c => c.id === selectedConversation)?.other_user_avatar ? (
-                  <img
-                    src={conversations.find(c => c.id === selectedConversation)?.other_user_avatar || ''}
-                    alt="User"
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-5 h-5 text-white" />
-                )}
-              </div>
-              <span className="font-semibold text-slate-900 dark:text-white">
-                {conversations.find(c => c.id === selectedConversation)?.other_user_name}
-              </span>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.length > 0 ? (
-                messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-[70%] ${msg.sender_id === user?.id ? '' : 'flex items-start gap-2'}`}>
-                      {msg.sender_id !== user?.id && (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
-                          {msg.sender_avatar ? (
-                            <img src={msg.sender_avatar} alt={msg.sender_name} className="w-full h-full rounded-full object-cover" />
-                          ) : (
-                            <User className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                      )}
-                      <div>
-                        <div
-                          className={`rounded-2xl overflow-hidden ${
-                            msg.sender_id === user?.id
-                              ? 'bg-emerald-500 text-white'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                          }`}
-                        >
-                          {msg.media_url && (
-                            <div className="max-w-sm">
-                              {msg.media_type === 'image' ? (
-                                <img src={msg.media_url} alt="Shared image" className="w-full h-auto" />
-                              ) : msg.media_type === 'video' ? (
-                                <video src={msg.media_url} controls className="w-full h-auto" />
-                              ) : null}
-                            </div>
-                          )}
-                          {msg.content && (
-                            <p className="text-sm px-4 py-2">{msg.content}</p>
-                          )}
-                        </div>
-                        <p className={`text-xs mt-1 ${
-                          msg.sender_id === user?.id ? 'text-right text-slate-500' : 'text-slate-500 dark:text-slate-400'
-                        }`}>
-                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))
+        {selectedConversation && (
+          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+            <button
+              onClick={() => setSelectedConversation(null)}
+              className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+              {conversations.find(c => c.id === selectedConversation)?.other_user_avatar ? (
+                <img
+                  src={conversations.find(c => c.id === selectedConversation)?.other_user_avatar || ''}
+                  alt="User"
+                  className="w-full h-full rounded-full object-cover"
+                />
               ) : (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <MessageCircle className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
-                    <p className="text-slate-600 dark:text-slate-400">Start the conversation</p>
-                    <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
-                      Send a message to begin chatting
-                    </p>
-                  </div>
-                </div>
+                <User className="w-5 h-5 text-white" />
               )}
             </div>
-
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-              {previewUrl && (
-                <div className="mb-3 relative inline-block">
-                  <div className="relative">
-                    {selectedFile?.type.startsWith('image/') ? (
-                      <img src={previewUrl} alt="Preview" className="h-20 rounded-lg" />
-                    ) : (
-                      <video src={previewUrl} className="h-20 rounded-lg" />
-                    )}
-                    <button
-                      onClick={clearSelectedFile}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
-              <div className="flex gap-2">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileSelect}
-                  accept="image/*,video/*"
-                  className="hidden"
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                  title="Attach image or video"
-                >
-                  <ImageIcon className="w-5 h-5" />
-                </button>
-                <input
-                  type="text"
-                  placeholder="Type a message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && !sendingMessage && sendMessage()}
-                  className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  disabled={sendingMessage || uploadingMedia}
-                />
-                <button
-                  onClick={sendMessage}
-                  disabled={(!newMessage.trim() && !selectedFile) || sendingMessage || uploadingMedia}
-                  className="p-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {sendingMessage || uploadingMedia ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Send className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <MessageCircle className="w-20 h-20 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                Select a conversation
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Choose a conversation from the list to start chatting
-              </p>
-            </div>
+            <span className="font-semibold text-slate-900 dark:text-white">
+              {conversations.find(c => c.id === selectedConversation)?.other_user_name}
+            </span>
           </div>
         )}
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {selectedConversation ? (
+            messages.length > 0 ? (
+              messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[70%] ${msg.sender_id === user?.id ? '' : 'flex items-start gap-2'}`}>
+                    {msg.sender_id !== user?.id && (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        {msg.sender_avatar ? (
+                          <img src={msg.sender_avatar} alt={msg.sender_name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <User className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                    )}
+                    <div>
+                      <div
+                        className={`rounded-2xl overflow-hidden ${
+                          msg.sender_id === user?.id
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                        }`}
+                      >
+                        {msg.media_url && (
+                          <div className="max-w-sm">
+                            {msg.media_type === 'image' ? (
+                              <img src={msg.media_url} alt="Shared image" className="w-full h-auto" />
+                            ) : msg.media_type === 'video' ? (
+                              <video src={msg.media_url} controls className="w-full h-auto" />
+                            ) : null}
+                          </div>
+                        )}
+                        {msg.content && (
+                          <p className="text-sm px-4 py-2">{msg.content}</p>
+                        )}
+                      </div>
+                      <p className={`text-xs mt-1 ${
+                        msg.sender_id === user?.id ? 'text-right text-slate-500' : 'text-slate-500 dark:text-slate-400'
+                      }`}>
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <MessageCircle className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
+                  <p className="text-slate-600 dark:text-slate-400">Start the conversation</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
+                    Send a message to begin chatting
+                  </p>
+                </div>
+              </div>
+            )
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <MessageCircle className="w-20 h-20 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+                  Select a conversation
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Choose a conversation from the list to start chatting
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+          {previewUrl && (
+            <div className="mb-3 relative inline-block">
+              <div className="relative">
+                {selectedFile?.type.startsWith('image/') ? (
+                  <img src={previewUrl} alt="Preview" className="h-20 rounded-lg" />
+                ) : (
+                  <video src={previewUrl} className="h-20 rounded-lg" />
+                )}
+                <button
+                  onClick={clearSelectedFile}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*,video/*"
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={!selectedConversation}
+              className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Attach image or video"
+            >
+              <ImageIcon className="w-5 h-5" />
+            </button>
+            <input
+              type="text"
+              placeholder={selectedConversation ? "Type a message..." : "Select a conversation to start messaging"}
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && !sendingMessage && selectedConversation && sendMessage()}
+              className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!selectedConversation || sendingMessage || uploadingMedia}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!selectedConversation || (!newMessage.trim() && !selectedFile) || sendingMessage || uploadingMedia}
+              className="p-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {sendingMessage || uploadingMedia ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* New Message Modal */}
