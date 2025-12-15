@@ -59,8 +59,8 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
       }
 
       const fileExt = fileToUpload.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const filePath = `stories/${fileName}`;
+      const fileName = `stories/${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('social-posts')
