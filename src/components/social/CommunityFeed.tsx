@@ -37,6 +37,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [bookmarkedPosts, setBookmarkedPosts] = useState<SocialPost[]>([]);
   const [showStoryComposer, setShowStoryComposer] = useState(false);
+  const [storiesKey, setStoriesKey] = useState(0);
 
   useEffect(() => {
     fetchFacilities();
@@ -400,6 +401,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Stories Highlights - Only in feed view */}
           {activeView === 'feed' && (
             <StoriesHighlights
+              key={storiesKey}
               onStoryClick={(id, type) => {
                 if (type === 'facility') {
                   onClubClick?.(id);
@@ -657,6 +659,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           onClose={() => setShowStoryComposer(false)}
           onSuccess={() => {
             setShowStoryComposer(false);
+            setStoriesKey(prev => prev + 1);
           }}
         />
       )}
