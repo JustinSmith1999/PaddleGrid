@@ -73,6 +73,15 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
+  useEffect(() => {
+    if (activeView !== 'feed') {
+      setSidebarCollapsed(true);
+    } else {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      setSidebarCollapsed(saved ? JSON.parse(saved) : false);
+    }
+  }, [activeView]);
+
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
@@ -560,7 +569,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         </div>
 
         {/* Right Sidebar - Trending & Suggestions */}
-        {activeView !== 'messages' && (
+        {activeView === 'feed' && (
         <div className="hidden xl:block w-[350px] flex-shrink-0">
           <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-[56px] w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent pt-6">
             {/* Weather Widget */}
