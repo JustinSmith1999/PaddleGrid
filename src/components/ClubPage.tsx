@@ -447,7 +447,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Website</div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">Visit Site</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">See Website</div>
                 </div>
               </a>
             )}
