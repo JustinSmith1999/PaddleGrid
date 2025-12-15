@@ -183,6 +183,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
+        {activeView !== 'messages' && (
         <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 pb-6 overflow-y-auto pt-6">
           <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
             {/* Navigation Links */}
@@ -332,9 +333,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           </div>
           </div>
         </div>
+        )}
 
         {/* Main Feed - Centered with fixed width */}
-        <div className={`w-full ${activeView === 'messages' ? 'max-w-none' : 'max-w-[600px]'} lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900 relative`}>
+        <div className={`w-full ${activeView === 'messages' ? 'max-w-none' : 'max-w-[600px]'} ${activeView === 'messages' ? '' : 'lg:ml-[275px]'} ${activeView === 'messages' ? '' : 'border-r border-slate-200/80 dark:border-slate-800/80'} min-h-screen bg-white dark:bg-slate-900 relative`}>
           {/* Sticky Header */}
           {activeView !== 'messages' && (
             <div className="sticky top-[56px] z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
@@ -500,7 +502,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Messages View */}
           {activeView === 'messages' && user && (
-            <div className="absolute inset-0 pb-20 lg:pb-0">
+            <div className="fixed inset-0 top-[56px] pb-20 lg:pb-0">
               <Messages />
             </div>
           )}
