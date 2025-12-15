@@ -440,9 +440,9 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
         </button>
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 sm:px-8 pt-8 pb-24 sm:pb-20">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0">
+          <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 sm:px-6 pt-5 pb-14 sm:pb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0">
                 {profile.profile_picture_url ? (
                   <img
                     src={profile.profile_picture_url}
@@ -456,48 +456,48 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                 )}
               </div>
               <div className="flex-1 w-full sm:w-auto">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">{profile.full_name}</h1>
-                    <div className="flex items-center gap-4 mt-2">
+                    <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">{profile.full_name}</h1>
+                    <div className="flex items-center gap-3 mt-1">
                       <div className="text-white">
-                        <span className="font-bold">{followCounts.followers}</span>
-                        <span className="text-emerald-100 ml-1 text-sm">followers</span>
+                        <span className="font-bold text-sm">{followCounts.followers}</span>
+                        <span className="text-emerald-100 ml-1 text-xs">followers</span>
                       </div>
                       <div className="text-white">
-                        <span className="font-bold">{followCounts.following}</span>
-                        <span className="text-emerald-100 ml-1 text-sm">following</span>
+                        <span className="font-bold text-sm">{followCounts.following}</span>
+                        <span className="text-emerald-100 ml-1 text-xs">following</span>
                       </div>
                     </div>
                   </div>
                   {!isOwnProfile && user && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         onClick={handleStartMessage}
-                        className="px-4 sm:px-6 py-2 rounded-full font-semibold transition flex items-center gap-2 flex-shrink-0 text-sm sm:text-base bg-blue-600 text-white hover:bg-blue-700"
+                        className="px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 flex-shrink-0 text-xs sm:text-sm bg-blue-600 text-white hover:bg-blue-700"
                       >
-                        <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <MessageSquare className="w-4 h-4" />
                         <span className="hidden sm:inline">Message</span>
                       </button>
                       <button
                         onClick={handleFollowToggle}
                         disabled={followLoading}
-                        className={`px-4 sm:px-6 py-2 rounded-full font-semibold transition flex items-center gap-2 flex-shrink-0 text-sm sm:text-base ${
+                        className={`px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 flex-shrink-0 text-xs sm:text-sm ${
                           following
                             ? 'bg-white text-emerald-600 hover:bg-gray-100'
-                            : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                            : 'bg-white text-emerald-600 hover:bg-gray-100'
                         }`}
                       >
                         {followLoading ? (
-                          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         ) : following ? (
                           <>
-                            <UserMinus className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <UserMinus className="w-4 h-4" />
                             <span className="hidden sm:inline">Unfollow</span>
                           </>
                         ) : (
                           <>
-                            <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <UserPlus className="w-4 h-4" />
                             <span className="hidden sm:inline">Follow</span>
                           </>
                         )}
@@ -509,18 +509,18 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
             </div>
           </div>
 
-          <div className="px-6 sm:px-8 -mt-12 pb-6">
-            <div className="flex flex-wrap gap-3">
-              <div className="bg-white rounded-xl px-4 py-2 shadow-md border border-gray-200">
-                <span className="text-xs text-gray-600">Member since</span>
-                <p className="font-semibold text-gray-800">{formatDate(profile.created_at)}</p>
+          <div className="px-4 sm:px-6 -mt-8 pb-4">
+            <div className="flex flex-wrap gap-2">
+              <div className="bg-white rounded-lg px-3 py-1.5 shadow-md border border-gray-200">
+                <span className="text-xs text-gray-500">Member since</span>
+                <p className="font-semibold text-gray-800 text-sm">{formatDate(profile.created_at)}</p>
               </div>
               {stats.skill_level && (
-                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl px-4 py-2 shadow-md flex items-center gap-2">
+                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg px-3 py-1.5 shadow-md flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-900" />
                   <div>
                     <span className="text-xs text-yellow-900">Skill Level</span>
-                    <p className="font-semibold text-yellow-900">
+                    <p className="font-semibold text-yellow-900 text-sm">
                       {stats.skill_level.charAt(0).toUpperCase() + stats.skill_level.slice(1)}
                     </p>
                   </div>
