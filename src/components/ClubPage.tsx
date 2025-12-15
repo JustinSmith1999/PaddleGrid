@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -351,10 +351,11 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-4">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-slate-200 dark:border-slate-700">
           {facility.description && (
-            <div className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8 mt-4 whitespace-pre-line">
+            <div className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8 mt-4">
               {facility.description.split('\n').map((line, index) => {
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
                 const parts = line.split(urlRegex);
+                const hasUrl = line.match(urlRegex);
 
                 return (
                   <React.Fragment key={index}>
@@ -366,9 +367,11 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                             href={part}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-semibold underline transition-colors"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors shadow-sm hover:shadow-md"
                           >
-                            {part}
+                            <Globe className="w-4 h-4" />
+                            See Website
+                            <ExternalLink className="w-3.5 h-3.5" />
                           </a>
                         );
                       }
