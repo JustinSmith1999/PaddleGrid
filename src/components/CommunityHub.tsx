@@ -47,10 +47,6 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
     }
   };
 
-  const handleSwipeIndicatorClick = () => {
-    setShowFeatures(true);
-  };
-
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
@@ -124,14 +120,10 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
 
               {/* Swipe indicator - Mobile only when features hidden */}
               {isMobile && !showFeatures && (
-                <button
-                  onClick={handleSwipeIndicatorClick}
-                  className="pt-12 flex flex-col items-center gap-2 mx-auto"
-                  aria-label="Swipe down to see more"
-                >
+                <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 flex flex-col items-center gap-2 pointer-events-none">
                   <span className="text-white/80 text-sm font-medium">Swipe down for more</span>
                   <ChevronDown className="w-6 h-6 text-white/80" />
-                </button>
+                </div>
               )}
 
               {/* Simple Features */}
