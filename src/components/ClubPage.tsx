@@ -351,9 +351,34 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-4">
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-slate-200 dark:border-slate-700">
           {facility.description && (
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8 mt-4">
-              {facility.description}
-            </p>
+            <div className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-8 mt-4 whitespace-pre-line">
+              {facility.description.split('\n').map((line, index) => {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const parts = line.split(urlRegex);
+
+                return (
+                  <React.Fragment key={index}>
+                    {parts.map((part, partIndex) => {
+                      if (part.match(urlRegex)) {
+                        return (
+                          <a
+                            key={partIndex}
+                            href={part}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-semibold underline transition-colors"
+                          >
+                            {part}
+                          </a>
+                        );
+                      }
+                      return part;
+                    })}
+                    {index < facility.description.split('\n').length - 1 && <br />}
+                  </React.Fragment>
+                );
+              })}
+            </div>
           )}
 
           <div className="grid grid-cols-2 gap-3 mb-4">
