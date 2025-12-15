@@ -126,7 +126,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
               {isMobile && !showFeatures && (
                 <button
                   onClick={handleSwipeIndicatorClick}
-                  className="pt-12 animate-bounce flex flex-col items-center gap-2 mx-auto"
+                  className="pt-12 flex flex-col items-center gap-2 mx-auto"
                   aria-label="Swipe down to see more"
                 >
                   <span className="text-white/80 text-sm font-medium">Swipe down for more</span>
