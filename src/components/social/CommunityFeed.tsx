@@ -78,6 +78,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   };
 
   const isFullWidthView = ['messages', 'explore', 'search', 'notifications', 'bookmarks'].includes(activeView);
+  const shouldShowSidebar = activeView === 'feed' || !sidebarCollapsed;
 
   async function fetchUserFacilities() {
     if (!user) return;
@@ -197,7 +198,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       />
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
-        {!sidebarCollapsed && (
+        {shouldShowSidebar && (
         <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/80 dark:border-slate-800/80 px-6 pb-6 overflow-y-auto pt-6">
           <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
             {/* Navigation Links */}
@@ -350,18 +351,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         )}
 
         {/* Main Feed - Centered with fixed width */}
-        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[600px]'} ${!sidebarCollapsed ? 'lg:ml-[275px]' : ''} ${!isFullWidthView && !sidebarCollapsed ? 'border-r border-slate-200/80 dark:border-slate-800/80' : ''} min-h-screen bg-white dark:bg-slate-900 relative`}>
+        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[600px]'} ${shouldShowSidebar ? 'lg:ml-[275px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/80 dark:border-slate-800/80' : ''} min-h-screen bg-white dark:bg-slate-900 relative`}>
           {/* Sticky Header */}
           {activeView !== 'messages' && (
             <div className="sticky top-[56px] z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
               {activeView !== 'feed' && (
-                <div className="pt-6 pb-5 lg:pb-6 px-4 flex items-center gap-3">
+                <div className="pt-4 pb-4 lg:pb-5 px-4 flex items-center gap-3">
                   <button
                     onClick={toggleSidebar}
                     className="hidden lg:flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                    title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+                    title={sidebarCollapsed ? 'Show menu' : 'Hide menu'}
                   >
-                    {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
+                    <Menu className="w-6 h-6 text-slate-700 dark:text-slate-300" />
                   </button>
                   <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                     {activeView === 'explore' && 'Courts'}
@@ -375,14 +376,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
               <>
-                <div className="flex items-center border-b border-slate-200 dark:border-slate-800">
-                  <button
-                    onClick={toggleSidebar}
-                    className="hidden lg:flex p-2 ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                    title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
-                  >
-                    {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
-                  </button>
+                <div className="flex border-b border-slate-200 dark:border-slate-800">
                   <button
                     onClick={() => setActiveTab('all_local')}
                     className={`flex-1 px-4 py-2.5 text-[15px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative ${
