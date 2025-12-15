@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical, Eye } from 'lucide-react';
+import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical, Eye, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -31,8 +32,16 @@ interface StoryViewerProps {
   onClose: () => void;
 }
 
+interface StoryViewer {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  viewed_at: string;
+}
+
 export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups, onClose }: StoryViewerProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -40,10 +49,13 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const [isMuted, setIsMuted] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [viewerCount, setViewerCount] = useState(0);
+  const [showViewers, setShowViewers] = useState(false);
+  const [viewers, setViewers] = useState<StoryViewer[]>([]);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const viewersPanelRef = useRef<HTMLDivElement>(null);
   const storyDuration = 5000;
 
   useEffect(() => {
@@ -54,6 +66,28 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
       setCurrentGroupIndex(initialIndex);
     }
   }, [initialOwnerId, ownerType, allStoryGroups]);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.id = 'hide-nav-for-stories';
+    style.innerHTML = `
+      nav, .bottom-nav, [data-bottom-nav] {
+        display: none !important;
+      }
+      body {
+        overflow: hidden;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      const styleElement = document.getElementById('hide-nav-for-stories');
+      if (styleElement) {
+        styleElement.remove();
+      }
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -191,6 +225,37 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     }
   }
 
+  async function fetchViewers(storyId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('story_views')
+        .select(`
+          viewer_id,
+          viewed_at,
+          profiles:viewer_id (
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('story_id', storyId)
+        .order('viewed_at', { ascending: false });
+
+      if (error) throw error;
+
+      const viewersList = data?.map(v => ({
+        id: v.profiles?.id || v.viewer_id,
+        full_name: v.profiles?.full_name || 'Anonymous',
+        avatar_url: v.profiles?.avatar_url || null,
+        viewed_at: v.viewed_at
+      })) || [];
+
+      setViewers(viewersList);
+    } catch (error) {
+      console.error('Error fetching viewers:', error);
+    }
+  }
+
   function goToNext() {
     if (currentStoryIndex < currentGroup.stories.length - 1) {
       setCurrentStoryIndex(prev => prev + 1);
@@ -227,10 +292,20 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     const deltaX = touch.clientX - touchStartRef.current.x;
     const deltaY = touch.clientY - touchStartRef.current.y;
     const deltaTime = Date.now() - touchStartRef.current.time;
+    const isOwnStory = user && currentStory.userId === user.id;
 
-    if (Math.abs(deltaY) > 100 && deltaY > Math.abs(deltaX)) {
-      onClose();
-      return;
+    if (Math.abs(deltaY) > 100 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      if (deltaY < 0 && isOwnStory && viewerCount > 0) {
+        setShowViewers(true);
+        fetchViewers(currentStory.id);
+        return;
+      } else if (deltaY > 0 && !showViewers) {
+        onClose();
+        return;
+      } else if (deltaY > 0 && showViewers) {
+        setShowViewers(false);
+        return;
+      }
     }
 
     if (Math.abs(deltaX) > 50) {
@@ -362,10 +437,19 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
             <div className="flex items-center gap-2">
               {isOwnStory && viewerCount > 0 && (
-                <div className="flex items-center gap-1 px-3 py-1.5 bg-black/50 rounded-full backdrop-blur-sm">
+                <button
+                  onClick={() => {
+                    setShowViewers(!showViewers);
+                    if (!showViewers) {
+                      fetchViewers(currentStory.id);
+                    }
+                  }}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-sm transition-colors cursor-pointer"
+                >
                   <Eye className="w-4 h-4 text-white" />
                   <span className="text-white text-sm font-semibold">{viewerCount}</span>
-                </div>
+                  <ChevronDown className={`w-3 h-3 text-white transition-transform ${showViewers ? 'rotate-180' : ''}`} />
+                </button>
               )}
 
               {currentStory.mediaType === 'video' && (
@@ -441,9 +525,71 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           )}
         </div>
 
-        {currentStory.caption && (
+        {currentStory.caption && !showViewers && (
           <div className="absolute bottom-0 left-0 right-0 z-40 p-6 bg-gradient-to-t from-black/80 to-transparent">
             <p className="text-white text-sm">{currentStory.caption}</p>
+          </div>
+        )}
+
+        {showViewers && (
+          <div
+            ref={viewersPanelRef}
+            className="absolute bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-800 rounded-t-3xl max-h-[50vh] overflow-y-auto animate-slide-up"
+          >
+            <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Eye className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <h3 className="font-semibold text-slate-900 dark:text-white">
+                  Viewed by {viewerCount}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowViewers(false)}
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              {viewers.length === 0 ? (
+                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                  Loading viewers...
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {viewers.map(viewer => (
+                    <button
+                      key={viewer.id}
+                      onClick={() => {
+                        navigate(`/player/${viewer.id}`);
+                        onClose();
+                      }}
+                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        {viewer.avatar_url ? (
+                          <img
+                            src={viewer.avatar_url}
+                            alt={viewer.full_name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Users className="w-5 h-5 text-white" />
+                        )}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="font-medium text-slate-900 dark:text-white">
+                          {viewer.full_name}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                          {getTimeAgo(viewer.viewed_at)}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
