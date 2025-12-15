@@ -75,16 +75,26 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
         .from('social-posts')
         .getPublicUrl(filePath);
 
-      const { error: insertError } = await supabase
+      const { error: insertError, data: insertData } = await supabase
         .from('stories')
         .insert({
           user_id: user.id,
           media_url: publicUrl,
           media_type: selectedFile.type.startsWith('video/') ? 'video' : 'image',
           caption: caption.trim() || null
-        });
+        })
+        .select();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Insert error details:', {
+          error: insertError,
+          userId: user.id,
+          message: insertError.message,
+          code: insertError.code,
+          details: insertError.details
+        });
+        throw insertError;
+      }
 
       onSuccess?.();
       onClose();
