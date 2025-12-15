@@ -71,11 +71,14 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     const style = document.createElement('style');
     style.id = 'hide-nav-for-stories';
     style.innerHTML = `
-      nav, .bottom-nav, [data-bottom-nav] {
+      nav {
+        display: none !important;
+      }
+      button[class*="fixed bottom-24"] {
         display: none !important;
       }
       body {
-        overflow: hidden;
+        overflow: hidden !important;
       }
     `;
     document.head.appendChild(style);
@@ -390,8 +393,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
   return (
-    <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center p-4">
-      <div className="relative w-full h-full max-w-md max-h-[85vh] bg-black rounded-lg overflow-hidden">
+    <div className="fixed inset-0 bg-black z-[9999] flex justify-center">
+      <div className="relative w-full h-full max-w-md bg-black overflow-hidden">
         <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
