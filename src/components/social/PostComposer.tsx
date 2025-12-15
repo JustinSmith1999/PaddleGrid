@@ -339,9 +339,9 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     : (content.trim().length > 0 || selectedFiles.length > 0) && playDate && facilityId;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-start justify-center p-2 sm:p-4 z-50 pt-4 sm:pt-12 overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[85vh] overflow-y-auto shadow-2xl my-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-3 sm:px-4 py-3 flex items-center justify-between rounded-t-2xl">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-0 sm:p-4 z-50 overflow-hidden">
+      <div className="bg-white rounded-none sm:rounded-2xl max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-3 sm:px-4 py-3 flex items-center justify-between sm:rounded-t-2xl flex-shrink-0 z-10">
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition"
@@ -370,7 +370,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
           </button>
         </div>
 
-        <div className="p-3 sm:p-4 space-y-4">
+        <div className="p-3 sm:p-4 space-y-4 overflow-y-auto flex-1">
           {managedFacilities.length > 0 && (
             <div className="border-b border-gray-200 pb-4">
               <label className="block text-sm font-semibold text-black mb-2">
@@ -462,20 +462,6 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
               )}
             </div>
             <div className="flex-1">
-              <div className="flex flex-wrap gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const timeOptions = ['30 minutes', '1 hour', '2 hours'];
-                    const time = timeOptions[Math.floor(Math.random() * timeOptions.length)];
-                    setContent(`Looking for a doubles partner! 🎾 Available in ${time}. Who's in?`);
-                    setPostType('general');
-                  }}
-                  className="px-3 py-1.5 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition"
-                >
-                  Looking for Game
-                </button>
-              </div>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
