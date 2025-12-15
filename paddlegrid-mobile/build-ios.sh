@@ -6,6 +6,8 @@ set -e
 
 cd "$(dirname "$0")"
 
+export EAS_NO_VCS=1
+
 echo "🚀 PaddleGrid iOS - Build and Submit"
 echo "====================================="
 echo ""

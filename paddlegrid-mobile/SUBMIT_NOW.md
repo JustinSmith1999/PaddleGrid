@@ -11,6 +11,7 @@
 ### iOS Build and Submit
 ```bash
 cd paddlegrid-mobile
+export EAS_NO_VCS=1
 npx eas-cli login
 npx eas-cli build --platform ios --profile production-ios
 npx eas-cli submit --platform ios --latest
@@ -19,6 +20,7 @@ npx eas-cli submit --platform ios --latest
 ### Android Build and Submit
 ```bash
 cd paddlegrid-mobile
+export EAS_NO_VCS=1
 npx eas-cli login
 npx eas-cli build --platform android --profile production
 npx eas-cli submit --platform android --latest
@@ -27,10 +29,17 @@ npx eas-cli submit --platform android --latest
 ### Both Platforms at Once
 ```bash
 cd paddlegrid-mobile
+export EAS_NO_VCS=1
 npx eas-cli login
 npx eas-cli build --platform all --profile production
 npx eas-cli submit --platform ios --latest
 npx eas-cli submit --platform android --latest
+```
+
+### Or Use the Build Scripts
+```bash
+cd paddlegrid-mobile
+./build-ios.sh
 ```
 
 ## What Happens
