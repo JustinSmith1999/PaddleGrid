@@ -57,16 +57,84 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
       const previews: StoryPreview[] = [];
       const groups: StoryGroup[] = [];
 
+      let userHasOwnStories = false;
       if (user) {
-        previews.push({
-          id: 'create',
-          ownerId: 'create',
-          name: 'Your Story',
-          avatarUrl: null,
-          hasUnread: false,
-          type: 'user',
-          storyCount: 0
-        });
+        const { data: ownStories } = await supabase
+          .from('stories')
+          .select('id')
+          .eq('user_id', user.id)
+          .is('facility_id', null)
+          .gt('expires_at', now);
+
+        userHasOwnStories = (ownStories?.length || 0) > 0;
+
+        if (userHasOwnStories) {
+          const { data: ownStoriesData } = await supabase
+            .from('stories')
+            .select(`
+              id,
+              facility_id,
+              user_id,
+              media_url,
+              media_type,
+              caption,
+              created_at,
+              expires_at
+            `)
+            .eq('user_id', user.id)
+            .is('facility_id', null)
+            .gt('expires_at', now)
+            .order('created_at', { ascending: false });
+
+          if (ownStoriesData && ownStoriesData.length > 0) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id, full_name, profile_picture_url')
+              .eq('id', user.id)
+              .single();
+
+            const userStories: Story[] = ownStoriesData.map((story: any) => ({
+              id: story.id,
+              userId: story.user_id,
+              facilityId: story.facility_id,
+              mediaUrl: story.media_url,
+              mediaType: story.media_type,
+              caption: story.caption,
+              createdAt: story.created_at,
+              expiresAt: story.expires_at,
+              ownerName: profile?.full_name || 'You',
+              ownerAvatar: profile?.profile_picture_url || null
+            }));
+
+            previews.push({
+              id: user.id,
+              ownerId: user.id,
+              name: 'Your Story',
+              avatarUrl: profile?.profile_picture_url || null,
+              hasUnread: false,
+              type: 'user',
+              storyCount: userStories.length
+            });
+
+            groups.push({
+              ownerId: user.id,
+              ownerName: profile?.full_name || 'You',
+              ownerAvatar: profile?.profile_picture_url || null,
+              ownerType: 'user',
+              stories: userStories
+            });
+          }
+        } else {
+          previews.push({
+            id: 'create',
+            ownerId: 'create',
+            name: 'Your Story',
+            avatarUrl: null,
+            hasUnread: false,
+            type: 'user',
+            storyCount: 0
+          });
+        }
       }
 
       const { data: facilityStories } = await supabase
@@ -244,6 +312,8 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
   function handleStoryClick(ownerId: string, type: 'user' | 'facility') {
     if (ownerId === 'create') {
       onCreateStory?.();
+    } else if (user && ownerId === user.id) {
+      setSelectedOwner({ id: ownerId, type });
     } else {
       setSelectedOwner({ id: ownerId, type });
     }
@@ -264,14 +334,22 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
                 className="flex flex-col items-center gap-2 group flex-shrink-0"
               >
                 <div className="relative">
-                  {preview.hasUnread && preview.id !== 'create' && (
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 p-[3px] animate-pulse">
-                      <div className="w-full h-full rounded-full bg-white dark:bg-slate-900" />
+                  {preview.id !== 'create' && (
+                    <div className={`absolute -inset-[3px] rounded-full ${
+                      preview.hasUnread
+                        ? 'bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500'
+                        : 'bg-slate-300 dark:bg-slate-700'
+                    }`}>
+                      <div className="w-full h-full rounded-full bg-white dark:bg-slate-900 m-[3px]" />
                     </div>
                   )}
 
-                  <div className={`relative ${preview.hasUnread && preview.id !== 'create' ? 'p-[3px]' : ''}`}>
-                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center border-2 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
+                  <div className="relative">
+                    <div className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center ${
+                      preview.id === 'create'
+                        ? 'bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 border-2 border-slate-300 dark:border-slate-600'
+                        : 'bg-white dark:bg-slate-900'
+                    } group-hover:scale-105 transition-transform`}>
                       {preview.id === 'create' ? (
                         <Plus className="w-8 h-8 text-slate-600 dark:text-slate-400" />
                       ) : preview.avatarUrl ? (
@@ -290,9 +368,15 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
                         </div>
                       )}
                     </div>
+
+                    {preview.name === 'Your Story' && preview.id !== 'create' && (
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                        <Plus className="w-4 h-4 text-white" />
+                      </div>
+                    )}
                   </div>
 
-                  {preview.type === 'facility' && preview.id !== 'create' && (
+                  {preview.type === 'facility' && preview.id !== 'create' && preview.name !== 'Your Story' && (
                     <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
                       <MapPin className="w-3 h-3 text-white" />
                     </div>

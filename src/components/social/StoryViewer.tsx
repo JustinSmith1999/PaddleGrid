@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ChevronLeft, ChevronRight, Users, MapPin } from 'lucide-react';
+import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -36,7 +36,13 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const storyDuration = 5000;
 
   useEffect(() => {
@@ -48,6 +54,24 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     }
   }, [initialOwnerId, ownerType, allStoryGroups]);
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'ArrowRight') {
+        goToNext();
+      } else if (e.key === 'ArrowLeft') {
+        goToPrevious();
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        setIsPaused(prev => !prev);
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentGroupIndex, currentStoryIndex]);
+
   const currentGroup = allStoryGroups[currentGroupIndex];
   const currentStory = currentGroup?.stories[currentStoryIndex];
 
@@ -55,8 +79,68 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     if (!currentStory) return;
 
     markStoryAsViewed(currentStory.id);
-
     setProgress(0);
+    setIsPaused(false);
+
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+
+    let duration = storyDuration;
+
+    if (currentStory.mediaType === 'video' && videoRef.current) {
+      const video = videoRef.current;
+      video.muted = isMuted;
+
+      const handleLoadedMetadata = () => {
+        duration = video.duration * 1000;
+        startProgress(duration);
+      };
+
+      if (video.readyState >= 1) {
+        duration = video.duration * 1000;
+        startProgress(duration);
+      } else {
+        video.addEventListener('loadedmetadata', handleLoadedMetadata);
+        return () => video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      }
+    } else {
+      startProgress(duration);
+    }
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, [currentStory?.id]);
+
+  useEffect(() => {
+    if (isPaused) {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    } else if (currentStory) {
+      if (currentStory.mediaType === 'video' && videoRef.current) {
+        videoRef.current.play();
+      }
+      const duration = currentStory.mediaType === 'video' && videoRef.current
+        ? videoRef.current.duration * 1000
+        : storyDuration;
+      startProgress(duration);
+    }
+  }, [isPaused]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  function startProgress(duration: number) {
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
     }
@@ -67,18 +151,12 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           goToNext();
           return 0;
         }
-        return prev + (100 / (storyDuration / 100));
+        return prev + (100 / (duration / 100));
       });
     }, 100);
 
     progressIntervalRef.current = interval;
-
-    return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
-    };
-  }, [currentStory?.id]);
+  }
 
   async function markStoryAsViewed(storyId: string) {
     if (!user) return;
@@ -117,6 +195,60 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     }
   }
 
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    const touch = e.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    };
+  }
+
+  function handleTouchEnd(e: React.TouchEvent<HTMLDivElement>) {
+    if (!touchStartRef.current) return;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    const deltaTime = Date.now() - touchStartRef.current.time;
+
+    if (Math.abs(deltaY) > 100 && deltaY > Math.abs(deltaX)) {
+      onClose();
+      return;
+    }
+
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        goToPrevious();
+      } else {
+        goToNext();
+      }
+      return;
+    }
+
+    if (deltaTime < 300) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = touch.clientX - rect.left;
+      const width = rect.width;
+
+      if (clickX < width / 3) {
+        goToPrevious();
+      } else {
+        goToNext();
+      }
+    }
+
+    touchStartRef.current = null;
+  }
+
+  function handleMouseDown() {
+    setIsPaused(true);
+  }
+
+  function handleMouseUp() {
+    setIsPaused(false);
+  }
+
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -129,9 +261,40 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     }
   }
 
+  async function handleDeleteStory() {
+    if (!currentStory || !user) return;
+    if (currentStory.userId !== user.id) return;
+
+    if (!confirm('Delete this story?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .delete()
+        .eq('id', currentStory.id);
+
+      if (error) throw error;
+
+      if (currentGroup.stories.length === 1) {
+        onClose();
+      } else {
+        if (currentStoryIndex < currentGroup.stories.length - 1) {
+          goToNext();
+        } else {
+          goToPrevious();
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      alert('Failed to delete story');
+    }
+  }
+
   if (!currentGroup || !currentStory) {
     return null;
   }
+
+  const isOwnStory = user && currentStory.userId === user.id;
 
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
@@ -144,25 +307,42 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
         <X className="w-6 h-6 text-white" />
       </button>
 
-      {currentGroupIndex > 0 && (
+      {currentStory.mediaType === 'video' && (
         <button
-          onClick={goToPrevious}
-          className="absolute left-4 z-50 w-12 h-12 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+          onClick={() => setIsMuted(!isMuted)}
+          className={`absolute top-4 ${isOwnStory ? 'right-28' : 'right-16'} z-50 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors`}
         >
-          <ChevronLeft className="w-8 h-8 text-white" />
+          {isMuted ? (
+            <VolumeX className="w-5 h-5 text-white" />
+          ) : (
+            <Volume2 className="w-5 h-5 text-white" />
+          )}
         </button>
       )}
 
-      {currentGroupIndex < allStoryGroups.length - 1 && (
-        <button
-          onClick={goToNext}
-          className="absolute right-4 z-50 w-12 h-12 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
-        >
-          <ChevronRight className="w-8 h-8 text-white" />
-        </button>
+      {isOwnStory && (
+        <div className="absolute top-4 right-16 z-50">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+          >
+            <MoreVertical className="w-5 h-5 text-white" />
+          </button>
+          {showMenu && (
+            <div className="absolute top-12 right-0 bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden min-w-[150px]">
+              <button
+                onClick={handleDeleteStory}
+                className="w-full px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Story
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
-      <div className="relative w-full max-w-lg h-full max-h-[90vh] bg-slate-900 rounded-lg overflow-hidden">
+      <div className="relative w-full max-w-lg h-full md:max-h-[90vh] bg-black md:rounded-lg overflow-hidden">
         <div className="absolute top-0 left-0 right-0 z-40 p-4">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
@@ -208,21 +388,28 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
         <div
           onClick={handleClick}
-          className="w-full h-full flex items-center justify-center cursor-pointer"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          className="w-full h-full flex items-center justify-center cursor-pointer select-none"
         >
           {currentStory.mediaType === 'image' ? (
             <img
               src={currentStory.mediaUrl}
               alt="Story"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain pointer-events-none"
+              draggable={false}
             />
           ) : (
             <video
+              ref={videoRef}
               src={currentStory.mediaUrl}
               autoPlay
-              muted
+              muted={isMuted}
               playsInline
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain pointer-events-none"
             />
           )}
         </div>
