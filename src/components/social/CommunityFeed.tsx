@@ -44,15 +44,24 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     return saved ? JSON.parse(saved) : false;
   });
   const [hideStories, setHideStories] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setHideStories(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setHideStories(true);
+      } else if (currentScrollY < lastScrollY) {
+        setHideStories(false);
+      }
+
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   useEffect(() => {
     fetchFacilities();
@@ -450,9 +459,11 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Stories Highlights - Only in feed view */}
           {activeView === 'feed' && (
             <div
-              className={`transition-all duration-300 overflow-hidden ${
-                hideStories ? 'max-h-0 opacity-0' : 'max-h-[200px] opacity-100'
-              }`}
+              className={`transition-all duration-300 ease-in-out ${
+                hideStories
+                  ? 'max-h-0 opacity-0 -translate-y-4'
+                  : 'max-h-[200px] opacity-100 translate-y-0'
+              } overflow-hidden`}
             >
               <StoriesHighlights
                 key={storiesKey}
