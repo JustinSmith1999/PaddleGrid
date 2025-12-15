@@ -440,12 +440,12 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
                   )}
                 </div>
                 <div className="flex-1 text-left min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-slate-900 dark:text-white truncate">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="font-semibold text-slate-900 dark:text-white flex-1">
                       {conv.other_user_name}
                     </span>
                     {conv.unread_count > 0 && (
-                      <span className="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      <span className="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full flex-shrink-0">
                         {conv.unread_count}
                       </span>
                     )}
