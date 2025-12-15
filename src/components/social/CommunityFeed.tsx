@@ -500,7 +500,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Messages View */}
           {activeView === 'messages' && user && (
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 pb-20 lg:pb-0">
               <Messages />
             </div>
           )}
