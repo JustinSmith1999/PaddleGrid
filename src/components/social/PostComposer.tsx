@@ -48,6 +48,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
 
   const [linkPreview, setLinkPreview] = useState<any>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [detectedUrl, setDetectedUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -179,6 +180,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
         const moderationResult = moderateImageFile(file);
         if (!moderationResult.isClean) {
           setError(moderationResult.reason || 'Image contains inappropriate content');
+          setShowBlockedModal(true);
           if (fileInputRef.current) {
             fileInputRef.current.value = '';
           }
@@ -254,6 +256,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     const moderationResult = moderateContent(content);
     if (!moderationResult.isClean) {
       setError(moderationResult.reason || 'Your post contains inappropriate content.');
+      setShowBlockedModal(true);
       return;
     }
 
@@ -339,7 +342,35 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     : (content.trim().length > 0 || selectedFiles.length > 0) && playDate && facilityId;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-0 sm:p-4 z-50 overflow-hidden">
+    <>
+      {showBlockedModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Content Blocked</h3>
+                <p className="text-sm text-gray-700 mb-3">{error}</p>
+                <p className="text-xs text-gray-600">
+                  Our community guidelines prohibit profanity, slurs, hate speech, and explicit content.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowBlockedModal(false);
+                setError('');
+              }}
+              className="w-full py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+            >
+              Got It
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-0 sm:p-4 z-50 overflow-hidden">
       <div className="bg-white rounded-none sm:rounded-2xl max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-3 sm:px-4 py-3 flex items-center justify-between sm:rounded-t-2xl flex-shrink-0 z-10">
           <button
@@ -765,21 +796,10 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
               </div>
             )}
 
-            {error && (
-              <div className="p-4 bg-red-50 border-2 border-red-300 rounded-lg text-red-800 text-sm flex items-start gap-3 animate-pulse">
-                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
-                <div>
-                  <p className="font-bold mb-1 text-red-900">Content Blocked</p>
-                  <p className="font-medium">{error}</p>
-                  <p className="text-xs mt-2 text-red-700">
-                    Our community guidelines prohibit profanity, slurs, hate speech, and explicit content.
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 }

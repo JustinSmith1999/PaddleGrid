@@ -46,6 +46,7 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
   const [draggingTextId, setDraggingTextId] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showTextOptions, setShowTextOptions] = useState(false);
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -65,6 +66,7 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
       const moderationResult = moderateImageFile(file);
       if (!moderationResult.isClean) {
         setError(moderationResult.reason || 'Image contains inappropriate content');
+        setShowBlockedModal(true);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -172,6 +174,7 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
       const moderationResult = moderateContent(allText);
       if (!moderationResult.isClean) {
         setError(moderationResult.reason || 'Your story contains inappropriate content');
+        setShowBlockedModal(true);
         return;
       }
     }
@@ -277,7 +280,35 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
   const editingText = editingTextId ? textElements.find(el => el.id === editingTextId) : null;
 
   return (
-    <div className="fixed inset-0 bg-black z-50">
+    <>
+      {showBlockedModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[60]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Content Blocked</h3>
+                <p className="text-sm text-gray-700 mb-3">{error}</p>
+                <p className="text-xs text-gray-600">
+                  Our community guidelines prohibit profanity, slurs, hate speech, and explicit content.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowBlockedModal(false);
+                setError('');
+              }}
+              className="w-full py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+            >
+              Got It
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="fixed inset-0 bg-black z-50">
       <input
         ref={fileInputRef}
         type="file"
@@ -487,22 +518,9 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
             </button>
           </div>
 
-          {error && (
-            <div className="absolute top-20 left-4 right-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl shadow-lg animate-pulse">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-600" />
-                <div>
-                  <p className="text-sm font-bold text-red-900 mb-1">Content Blocked</p>
-                  <p className="text-sm font-medium text-red-800">{error}</p>
-                  <p className="text-xs text-red-700 mt-2">
-                    Our community guidelines prohibit profanity, slurs, hate speech, and explicit content.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
+    </>
   );
 }
