@@ -14,6 +14,7 @@ import StoriesHighlights from './StoriesHighlights';
 import WhosPlayingNow from './WhosPlayingNow';
 import SuggestedPlayers from './SuggestedPlayers';
 import WeatherWidget from './WeatherWidget';
+import StoryComposer from './StoryComposer';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -35,6 +36,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [bookmarkedPosts, setBookmarkedPosts] = useState<SocialPost[]>([]);
+  const [showStoryComposer, setShowStoryComposer] = useState(false);
 
   useEffect(() => {
     fetchFacilities();
@@ -405,7 +407,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   onProfileClick?.(id);
                 }
               }}
-              onCreateStory={onCreatePost}
+              onCreateStory={() => setShowStoryComposer(true)}
             />
           )}
 
@@ -645,6 +647,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 onProfileClick?.(notification.data.actor_id);
               }
             }
+          }}
+        />
+      )}
+
+      {/* Story Composer */}
+      {showStoryComposer && (
+        <StoryComposer
+          onClose={() => setShowStoryComposer(false)}
+          onSuccess={() => {
+            setShowStoryComposer(false);
           }}
         />
       )}

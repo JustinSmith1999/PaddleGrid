@@ -1,30 +1,51 @@
 import { useState, useEffect } from 'react';
-import { Plus, Users, Trophy, Calendar, MapPin } from 'lucide-react';
+import { Plus, Users, MapPin } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import StoryViewer from './StoryViewer';
 
-interface Story {
+interface StoryPreview {
   id: string;
-  userId?: string;
-  facilityId?: string;
+  ownerId: string;
   name: string;
   avatarUrl: string | null;
   hasUnread: boolean;
-  timestamp: string;
   type: 'user' | 'facility';
-  previewText?: string;
-  color: string;
+  storyCount: number;
+}
+
+interface Story {
+  id: string;
+  userId: string | null;
+  facilityId: string | null;
+  mediaUrl: string;
+  mediaType: 'image' | 'video';
+  caption: string | null;
+  createdAt: string;
+  expiresAt: string;
+  ownerName: string;
+  ownerAvatar: string | null;
+}
+
+interface StoryGroup {
+  ownerId: string;
+  ownerName: string;
+  ownerAvatar: string | null;
+  ownerType: 'user' | 'facility';
+  stories: Story[];
 }
 
 interface StoriesHighlightsProps {
-  onStoryClick: (storyId: string, type: 'user' | 'facility') => void;
+  onStoryClick?: (storyId: string, type: 'user' | 'facility') => void;
   onCreateStory?: () => void;
 }
 
-export default function StoriesHighlights({ onStoryClick, onCreateStory }: StoriesHighlightsProps) {
+export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsProps) {
   const { user } = useAuth();
-  const [stories, setStories] = useState<Story[]>([]);
+  const [storyPreviews, setStoryPreviews] = useState<StoryPreview[]>([]);
+  const [allStoryGroups, setAllStoryGroups] = useState<StoryGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOwner, setSelectedOwner] = useState<{ id: string; type: 'user' | 'facility' } | null>(null);
 
   useEffect(() => {
     loadStories();
@@ -32,86 +53,187 @@ export default function StoriesHighlights({ onStoryClick, onCreateStory }: Stori
 
   async function loadStories() {
     try {
-      const storiesData: Story[] = [];
+      const now = new Date().toISOString();
+      const previews: StoryPreview[] = [];
+      const groups: StoryGroup[] = [];
 
       if (user) {
-        storiesData.push({
+        previews.push({
           id: 'create',
+          ownerId: 'create',
           name: 'Your Story',
           avatarUrl: null,
           hasUnread: false,
-          timestamp: new Date().toISOString(),
           type: 'user',
-          previewText: 'Create',
-          color: 'from-slate-400 to-slate-500'
+          storyCount: 0
         });
       }
 
-      const { data: facilities } = await supabase
-        .from('facilities')
-        .select('id, name, logo_url, created_at')
-        .order('created_at', { ascending: true })
-        .limit(5);
+      const { data: facilityStories } = await supabase
+        .from('stories')
+        .select(`
+          id,
+          facility_id,
+          user_id,
+          media_url,
+          media_type,
+          caption,
+          created_at,
+          expires_at,
+          facilities (
+            id,
+            name,
+            logo_url
+          )
+        `)
+        .not('facility_id', 'is', null)
+        .gt('expires_at', now)
+        .order('created_at', { ascending: false });
 
-      if (facilities) {
-        const colors = [
-          'from-emerald-500 to-teal-500',
-          'from-blue-500 to-cyan-500',
-          'from-orange-500 to-red-500',
-          'from-purple-500 to-pink-500',
-          'from-yellow-500 to-orange-500'
-        ];
+      const facilityGroups = new Map<string, Story[]>();
 
-        facilities.forEach((facility, index) => {
-          storiesData.push({
-            id: facility.id,
-            facilityId: facility.id,
-            name: facility.name,
-            avatarUrl: facility.logo_url,
-            hasUnread: true,
-            timestamp: facility.created_at,
-            type: 'facility',
-            previewText: 'New updates',
-            color: colors[index % colors.length]
-          });
+      facilityStories?.forEach((story: any) => {
+        if (!story.facilities) return;
+
+        const facility = Array.isArray(story.facilities) ? story.facilities[0] : story.facilities;
+
+        const storyData: Story = {
+          id: story.id,
+          userId: story.user_id,
+          facilityId: story.facility_id,
+          mediaUrl: story.media_url,
+          mediaType: story.media_type,
+          caption: story.caption,
+          createdAt: story.created_at,
+          expiresAt: story.expires_at,
+          ownerName: facility.name,
+          ownerAvatar: facility.logo_url
+        };
+
+        if (!facilityGroups.has(facility.id)) {
+          facilityGroups.set(facility.id, []);
+        }
+        facilityGroups.get(facility.id)!.push(storyData);
+      });
+
+      facilityGroups.forEach((stories, facilityId) => {
+        const firstStory = stories[0];
+
+        const hasUnread = user ? !stories.every(story =>
+          story.userId === user.id
+        ) : true;
+
+        previews.push({
+          id: facilityId,
+          ownerId: facilityId,
+          name: firstStory.ownerName,
+          avatarUrl: firstStory.ownerAvatar,
+          hasUnread,
+          type: 'facility',
+          storyCount: stories.length
         });
-      }
+
+        groups.push({
+          ownerId: facilityId,
+          ownerName: firstStory.ownerName,
+          ownerAvatar: firstStory.ownerAvatar,
+          ownerType: 'facility',
+          stories
+        });
+      });
 
       if (user) {
-        const { data: following } = await supabase
-          .from('user_follows')
-          .select(`
-            followed_id,
-            profiles!user_follows_followed_id_fkey (
-              id,
-              full_name,
-              profile_picture_url,
-              updated_at
-            )
-          `)
-          .eq('follower_id', user.id)
-          .limit(8);
+        const { data: followingIds } = await supabase
+          .from('social_follows')
+          .select('following_id')
+          .eq('follower_id', user.id);
 
-        if (following) {
-          following.forEach((follow: any) => {
-            if (follow.profiles) {
-              storiesData.push({
-                id: follow.profiles.id,
-                userId: follow.profiles.id,
-                name: follow.profiles.full_name || 'Player',
-                avatarUrl: follow.profiles.profile_picture_url,
-                hasUnread: Math.random() > 0.5,
-                timestamp: follow.profiles.updated_at,
-                type: 'user',
-                previewText: 'Recent activity',
-                color: 'from-slate-400 to-slate-500'
-              });
+        const followingUserIds = followingIds?.map(f => f.following_id) || [];
+
+        if (followingUserIds.length > 0) {
+          const { data: userStories } = await supabase
+            .from('stories')
+            .select(`
+              id,
+              facility_id,
+              user_id,
+              media_url,
+              media_type,
+              caption,
+              created_at,
+              expires_at,
+              profiles (
+                id,
+                full_name,
+                profile_picture_url
+              )
+            `)
+            .in('user_id', followingUserIds)
+            .is('facility_id', null)
+            .gt('expires_at', now)
+            .order('created_at', { ascending: false });
+
+          const userGroups = new Map<string, Story[]>();
+
+          userStories?.forEach((story: any) => {
+            if (!story.profiles) return;
+
+            const profile = Array.isArray(story.profiles) ? story.profiles[0] : story.profiles;
+
+            const storyData: Story = {
+              id: story.id,
+              userId: story.user_id,
+              facilityId: story.facility_id,
+              mediaUrl: story.media_url,
+              mediaType: story.media_type,
+              caption: story.caption,
+              createdAt: story.created_at,
+              expiresAt: story.expires_at,
+              ownerName: profile.full_name || 'Player',
+              ownerAvatar: profile.profile_picture_url
+            };
+
+            if (!userGroups.has(profile.id)) {
+              userGroups.set(profile.id, []);
             }
+            userGroups.get(profile.id)!.push(storyData);
           });
+
+          for (const [userId, stories] of userGroups.entries()) {
+            const firstStory = stories[0];
+
+            const { data: viewData } = await supabase
+              .from('story_views')
+              .select('story_id')
+              .eq('viewer_id', user.id)
+              .in('story_id', stories.map(s => s.id));
+
+            const viewedStoryIds = new Set(viewData?.map(v => v.story_id) || []);
+            const hasUnread = stories.some(s => !viewedStoryIds.has(s.id));
+
+            previews.push({
+              id: userId,
+              ownerId: userId,
+              name: firstStory.ownerName,
+              avatarUrl: firstStory.ownerAvatar,
+              hasUnread,
+              type: 'user',
+              storyCount: stories.length
+            });
+
+            groups.push({
+              ownerId: userId,
+              ownerName: firstStory.ownerName,
+              ownerAvatar: firstStory.ownerAvatar,
+              ownerType: 'user',
+              stories
+            });
+          }
         }
       }
 
-      setStories(storiesData);
+      setStoryPreviews(previews);
+      setAllStoryGroups(groups);
     } catch (error) {
       console.error('Error loading stories:', error);
     } finally {
@@ -119,75 +241,92 @@ export default function StoriesHighlights({ onStoryClick, onCreateStory }: Stori
     }
   }
 
+  function handleStoryClick(ownerId: string, type: 'user' | 'facility') {
+    if (ownerId === 'create') {
+      onCreateStory?.();
+    } else {
+      setSelectedOwner({ id: ownerId, type });
+    }
+  }
+
   if (loading) return null;
-  if (stories.length === 0) return null;
+  if (storyPreviews.length === 0) return null;
 
   return (
-    <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-[56px] z-10">
-      <div className="overflow-x-auto scrollbar-hide">
-        <div className="flex gap-4 px-4 py-4 min-w-max">
-          {stories.map((story) => (
-            <button
-              key={story.id}
-              onClick={() => story.id === 'create' ? onCreateStory?.() : onStoryClick(story.id, story.type)}
-              className="flex flex-col items-center gap-2 group flex-shrink-0"
-            >
-              <div className="relative">
-                {story.hasUnread && story.id !== 'create' && (
-                  <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${story.color} p-[3px] animate-pulse`}>
-                    <div className="w-full h-full rounded-full bg-white dark:bg-slate-900" />
-                  </div>
-                )}
+    <>
+      <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-[56px] z-10">
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-4 px-4 py-4 min-w-max">
+            {storyPreviews.map((preview) => (
+              <button
+                key={preview.id}
+                onClick={() => handleStoryClick(preview.ownerId, preview.type)}
+                className="flex flex-col items-center gap-2 group flex-shrink-0"
+              >
+                <div className="relative">
+                  {preview.hasUnread && preview.id !== 'create' && (
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 p-[3px] animate-pulse">
+                      <div className="w-full h-full rounded-full bg-white dark:bg-slate-900" />
+                    </div>
+                  )}
 
-                <div className={`relative ${story.hasUnread && story.id !== 'create' ? 'p-[3px]' : ''}`}>
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center border-2 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
-                    {story.id === 'create' ? (
-                      <Plus className="w-8 h-8 text-slate-600 dark:text-slate-400" />
-                    ) : story.avatarUrl ? (
-                      <img
-                        src={story.avatarUrl}
-                        alt={story.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                        {story.type === 'facility' ? (
-                          <MapPin className="w-8 h-8 text-white" />
-                        ) : (
-                          <Users className="w-8 h-8 text-white" />
-                        )}
-                      </div>
-                    )}
+                  <div className={`relative ${preview.hasUnread && preview.id !== 'create' ? 'p-[3px]' : ''}`}>
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center border-2 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
+                      {preview.id === 'create' ? (
+                        <Plus className="w-8 h-8 text-slate-600 dark:text-slate-400" />
+                      ) : preview.avatarUrl ? (
+                        <img
+                          src={preview.avatarUrl}
+                          alt={preview.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                          {preview.type === 'facility' ? (
+                            <MapPin className="w-8 h-8 text-white" />
+                          ) : (
+                            <Users className="w-8 h-8 text-white" />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {preview.type === 'facility' && preview.id !== 'create' && (
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                      <MapPin className="w-3 h-3 text-white" />
+                    </div>
+                  )}
                 </div>
 
-                {story.type === 'facility' && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
-                    <MapPin className="w-3 h-3 text-white" />
-                  </div>
-                )}
-              </div>
-
-              <div className="text-center max-w-[72px]">
-                <span className={`text-xs font-medium truncate block ${
-                  story.id === 'create'
-                    ? 'text-slate-600 dark:text-slate-400'
-                    : story.hasUnread
-                    ? 'text-slate-900 dark:text-white font-semibold'
-                    : 'text-slate-500 dark:text-slate-500'
-                }`}>
-                  {story.name}
-                </span>
-                {story.previewText && story.id !== 'create' && (
-                  <span className="text-[10px] text-slate-400 dark:text-slate-600">
-                    {story.previewText}
+                <div className="text-center max-w-[72px]">
+                  <span className={`text-xs font-medium truncate block ${
+                    preview.id === 'create'
+                      ? 'text-slate-600 dark:text-slate-400'
+                      : preview.hasUnread
+                      ? 'text-slate-900 dark:text-white font-semibold'
+                      : 'text-slate-500 dark:text-slate-500'
+                  }`}>
+                    {preview.name}
                   </span>
-                )}
-              </div>
-            </button>
-          ))}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
+      {selectedOwner && (
+        <StoryViewer
+          initialOwnerId={selectedOwner.id}
+          ownerType={selectedOwner.type}
+          allStoryGroups={allStoryGroups}
+          onClose={() => {
+            setSelectedOwner(null);
+            loadStories();
+          }}
+        />
+      )}
+    </>
   );
 }
