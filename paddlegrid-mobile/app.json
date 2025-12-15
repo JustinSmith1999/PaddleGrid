@@ -14,7 +14,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "sdkVersion": "51.0.0",
     "description": "PaddleGrid - The all-in-one platform for pickleball facilities and players. Book courts, join matches, track your stats, and connect with the pickleball community.",
     "privacy": "public",
     "platforms": ["ios", "android"],
