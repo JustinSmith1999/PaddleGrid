@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical } from 'lucide-react';
+import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -39,6 +39,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [viewerCount, setViewerCount] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -170,8 +171,23 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
         })
         .select()
         .single();
+
+      await fetchViewerCount(storyId);
     } catch (error) {
       console.error('Error marking story as viewed:', error);
+    }
+  }
+
+  async function fetchViewerCount(storyId: string) {
+    try {
+      const { count } = await supabase
+        .from('story_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('story_id', storyId);
+
+      setViewerCount(count || 0);
+    } catch (error) {
+      console.error('Error fetching viewer count:', error);
     }
   }
 
@@ -299,51 +315,9 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
   return (
-    <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
-      >
-        <X className="w-6 h-6 text-white" />
-      </button>
-
-      {currentStory.mediaType === 'video' && (
-        <button
-          onClick={() => setIsMuted(!isMuted)}
-          className={`absolute top-4 ${isOwnStory ? 'right-28' : 'right-16'} z-50 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors`}
-        >
-          {isMuted ? (
-            <VolumeX className="w-5 h-5 text-white" />
-          ) : (
-            <Volume2 className="w-5 h-5 text-white" />
-          )}
-        </button>
-      )}
-
-      {isOwnStory && (
-        <div className="absolute top-4 right-16 z-50">
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
-          >
-            <MoreVertical className="w-5 h-5 text-white" />
-          </button>
-          {showMenu && (
-            <div className="absolute top-12 right-0 bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden min-w-[150px]">
-              <button
-                onClick={handleDeleteStory}
-                className="w-full px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete Story
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="relative w-full max-w-lg h-full md:max-h-[90vh] bg-black md:rounded-lg overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 z-40 p-4">
+    <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center">
+      <div className="relative w-full h-full max-w-lg bg-black overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
               <div
@@ -363,25 +337,78 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-              {currentGroup.ownerAvatar ? (
-                <img
-                  src={currentGroup.ownerAvatar}
-                  alt={currentGroup.ownerName}
-                  className="w-full h-full object-cover"
-                />
-              ) : currentGroup.ownerType === 'facility' ? (
-                <MapPin className="w-5 h-5 text-white" />
-              ) : (
-                <Users className="w-5 h-5 text-white" />
-              )}
-            </div>
-            <div className="flex-1">
-              <div className="font-bold text-white text-sm">
-                {currentGroup.ownerName}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                {currentGroup.ownerAvatar ? (
+                  <img
+                    src={currentGroup.ownerAvatar}
+                    alt={currentGroup.ownerName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : currentGroup.ownerType === 'facility' ? (
+                  <MapPin className="w-5 h-5 text-white" />
+                ) : (
+                  <Users className="w-5 h-5 text-white" />
+                )}
               </div>
-              <div className="text-xs text-white/70">{timeAgo}</div>
+              <div className="flex-1">
+                <div className="font-bold text-white text-sm">
+                  {currentGroup.ownerName}
+                </div>
+                <div className="text-xs text-white/70">{timeAgo}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {isOwnStory && viewerCount > 0 && (
+                <div className="flex items-center gap-1 px-3 py-1.5 bg-black/50 rounded-full backdrop-blur-sm">
+                  <Eye className="w-4 h-4 text-white" />
+                  <span className="text-white text-sm font-semibold">{viewerCount}</span>
+                </div>
+              )}
+
+              {currentStory.mediaType === 'video' && (
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-5 h-5 text-white" />
+                  ) : (
+                    <Volume2 className="w-5 h-5 text-white" />
+                  )}
+                </button>
+              )}
+
+              {isOwnStory && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+                  >
+                    <MoreVertical className="w-5 h-5 text-white" />
+                  </button>
+                  {showMenu && (
+                    <div className="absolute top-12 right-0 bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden min-w-[150px]">
+                      <button
+                        onClick={handleDeleteStory}
+                        className="w-full px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete Story
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <button
+                onClick={onClose}
+                className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
             </div>
           </div>
         </div>
@@ -399,7 +426,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
             <img
               src={currentStory.mediaUrl}
               alt="Story"
-              className="w-full h-full object-contain pointer-events-none"
+              className="w-full h-full object-cover pointer-events-none"
               draggable={false}
             />
           ) : (
@@ -409,7 +436,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               autoPlay
               muted={isMuted}
               playsInline
-              className="w-full h-full object-contain pointer-events-none"
+              className="w-full h-full object-cover pointer-events-none"
             />
           )}
         </div>
