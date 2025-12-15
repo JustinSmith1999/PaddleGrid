@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark, Flame, Zap, Target, Laugh } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark, Flame, Laugh } from 'lucide-react';
 import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -45,6 +45,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [reactions, setReactions] = useState<ReactionCounts>({});
   const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
@@ -75,6 +76,17 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       loadParticipants();
     }
   }, [post.spots_filled]);
+
+  useEffect(() => {
+    function handleClickOutside() {
+      setShowReactionPicker(false);
+    }
+
+    if (showReactionPicker) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showReactionPicker]);
 
   async function loadParticipants() {
     const data = await getMatchParticipants(post.id);
@@ -121,13 +133,13 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     setUserReaction(myReaction);
   }
 
-  async function handleReaction(e: React.MouseEvent, reactionType: ReactionType) {
-    e.stopPropagation();
-
+  async function handleReaction(reactionType: ReactionType) {
     if (!user) {
       alert('Please log in to react to posts');
       return;
     }
+
+    setShowReactionPicker(false);
 
     if (userReaction === reactionType) {
       const { error } = await supabase
@@ -686,65 +698,62 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
           )}
 
           <div className="flex items-center gap-1 mt-2 lg:mt-2.5 flex-wrap">
-            <button
-              onClick={(e) => handleReaction(e, 'like')}
-              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-                userReaction === 'like'
-                  ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-              }`}
-            >
-              <Heart className={`w-4 h-4 ${userReaction === 'like' ? 'fill-current' : ''}`} />
-              {reactions.like ? <span className="text-xs font-medium">{reactions.like}</span> : null}
-            </button>
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!user) {
+                    alert('Please log in to react to posts');
+                    return;
+                  }
+                  setShowReactionPicker(!showReactionPicker);
+                }}
+                className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                  userReaction
+                    ? userReaction === 'fire'
+                      ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                      : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
+                    : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+                }`}
+              >
+                {userReaction === 'fire' ? (
+                  <Flame className="w-4 h-4 fill-current" />
+                ) : userReaction === 'funny' ? (
+                  <Laugh className="w-4 h-4 fill-current" />
+                ) : (
+                  <Heart className="w-4 h-4" />
+                )}
+                {((reactions.fire || 0) + (reactions.funny || 0)) > 0 && (
+                  <span className="text-xs font-medium">
+                    {(reactions.fire || 0) + (reactions.funny || 0)}
+                  </span>
+                )}
+              </button>
 
-            <button
-              onClick={(e) => handleReaction(e, 'fire')}
-              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-                userReaction === 'fire'
-                  ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-              }`}
-            >
-              <Flame className={`w-4 h-4 ${userReaction === 'fire' ? 'fill-current' : ''}`} />
-              {reactions.fire ? <span className="text-xs font-medium">{reactions.fire}</span> : null}
-            </button>
-
-            <button
-              onClick={(e) => handleReaction(e, 'strong')}
-              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-                userReaction === 'strong'
-                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-              }`}
-            >
-              <Zap className={`w-4 h-4 ${userReaction === 'strong' ? 'fill-current' : ''}`} />
-              {reactions.strong ? <span className="text-xs font-medium">{reactions.strong}</span> : null}
-            </button>
-
-            <button
-              onClick={(e) => handleReaction(e, 'ace')}
-              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-                userReaction === 'ace'
-                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-              }`}
-            >
-              <Target className={`w-4 h-4 ${userReaction === 'ace' ? 'fill-current' : ''}`} />
-              {reactions.ace ? <span className="text-xs font-medium">{reactions.ace}</span> : null}
-            </button>
-
-            <button
-              onClick={(e) => handleReaction(e, 'funny')}
-              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-                userReaction === 'funny'
-                  ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-              }`}
-            >
-              <Laugh className={`w-4 h-4 ${userReaction === 'funny' ? 'fill-current' : ''}`} />
-              {reactions.funny ? <span className="text-xs font-medium">{reactions.funny}</span> : null}
-            </button>
+              {showReactionPicker && (
+                <div
+                  className="absolute bottom-full left-0 mb-2 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-2 flex gap-1 z-10"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={() => handleReaction('fire')}
+                    className={`p-2 rounded-lg transition-all hover:bg-orange-50 dark:hover:bg-orange-900/20 ${
+                      userReaction === 'fire' ? 'bg-orange-50 dark:bg-orange-900/20' : ''
+                    }`}
+                  >
+                    <Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                  </button>
+                  <button
+                    onClick={() => handleReaction('funny')}
+                    className={`p-2 rounded-lg transition-all hover:bg-yellow-50 dark:hover:bg-yellow-900/20 ${
+                      userReaction === 'funny' ? 'bg-yellow-50 dark:bg-yellow-900/20' : ''
+                    }`}
+                  >
+                    <Laugh className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
