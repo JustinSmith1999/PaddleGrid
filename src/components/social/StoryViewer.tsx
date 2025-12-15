@@ -235,7 +235,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
         .select(`
           viewer_id,
           viewed_at,
-          profiles:viewer_id (
+          profiles!viewer_id (
             id,
             full_name,
             avatar_url
@@ -246,7 +246,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
       if (error) throw error;
 
-      const viewersList = data?.map(v => ({
+      const viewersList = data?.map((v: any) => ({
         id: v.profiles?.id || v.viewer_id,
         full_name: v.profiles?.full_name || 'Anonymous',
         avatar_url: v.profiles?.avatar_url || null,
@@ -256,6 +256,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
       setViewers(viewersList);
     } catch (error) {
       console.error('Error fetching viewers:', error);
+      setViewers([]);
     }
   }
 
