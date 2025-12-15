@@ -14,8 +14,8 @@ import {
   getPostLikedByUsers,
   Comment
 } from '../../lib/socialUtils';
-import { useAuth } from '../../contexts/AuthContext';
 import { moderateContent } from '../../lib/contentModeration';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface PostDetailProps {
   postId: string;
@@ -105,7 +105,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
 
     const moderationResult = moderateContent(newComment);
     if (!moderationResult.isClean) {
-      alert(moderationResult.reason || 'Your comment contains inappropriate content.');
+      alert(moderationResult.reason || 'Your comment contains inappropriate content');
       return;
     }
 

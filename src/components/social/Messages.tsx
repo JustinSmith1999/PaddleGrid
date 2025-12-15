@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft, Plus, Users, Menu } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { moderateContent, moderateImageFile } from '../../lib/contentModeration';
 import UserSearch from './UserSearch';
 
 interface Conversation {
@@ -308,6 +309,22 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
 
   async function sendMessage() {
     if ((!newMessage.trim() && !selectedFile) || !selectedConversation || !user) return;
+
+    if (newMessage.trim()) {
+      const moderationResult = moderateContent(newMessage);
+      if (!moderationResult.isClean) {
+        alert(moderationResult.reason || 'Your message contains inappropriate content');
+        return;
+      }
+    }
+
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      const imageModerationResult = moderateImageFile(selectedFile);
+      if (!imageModerationResult.isClean) {
+        alert(imageModerationResult.reason || 'Your image contains inappropriate content');
+        return;
+      }
+    }
 
     setSendingMessage(true);
 

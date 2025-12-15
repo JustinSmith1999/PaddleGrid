@@ -4,7 +4,7 @@ import { createPost } from '../../lib/socialUtils';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { sortCourtsByNumber } from '../../lib/courtUtils';
-import { moderateContent } from '../../lib/contentModeration';
+import { moderateContent, moderateImageFile } from '../../lib/contentModeration';
 
 interface PostComposerProps {
   onClose: () => void;
@@ -161,18 +161,36 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    const validFiles = files.filter(file => {
-      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-        return false;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        return false;
-      }
-      return true;
-    });
+    const validFiles: File[] = [];
+    const errors: string[] = [];
 
-    if (validFiles.length !== files.length) {
-      setError('Some files were skipped. Only images and videos under 10MB are allowed.');
+    for (const file of files) {
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        errors.push(`${file.name}: Invalid file type. Only images and videos are allowed.`);
+        continue;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        errors.push(`${file.name}: File too large. Maximum size is 10MB.`);
+        continue;
+      }
+
+      if (file.type.startsWith('image/')) {
+        const moderationResult = moderateImageFile(file);
+        if (!moderationResult.isClean) {
+          setError(moderationResult.reason || 'Image contains inappropriate content');
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          return;
+        }
+      }
+
+      validFiles.push(file);
+    }
+
+    if (errors.length > 0) {
+      setError(errors[0]);
     }
 
     if (selectedFiles.length + validFiles.length > 4) {
@@ -186,6 +204,10 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       const url = URL.createObjectURL(file);
       setPreviewUrls(prev => [...prev, url]);
     });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   }
 
   function removeFile(index: number) {
@@ -758,11 +780,14 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
             )}
 
             {error && (
-              <div className="p-4 bg-red-50 border-2 border-red-300 rounded-lg text-red-800 text-sm flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-red-50 border-2 border-red-300 rounded-lg text-red-800 text-sm flex items-start gap-3 animate-pulse">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
                 <div>
-                  <p className="font-semibold mb-1">Content Policy Violation</p>
-                  <p>{error}</p>
+                  <p className="font-bold mb-1 text-red-900">Content Blocked</p>
+                  <p className="font-medium">{error}</p>
+                  <p className="text-xs mt-2 text-red-700">
+                    Our community guidelines prohibit profanity, slurs, hate speech, and explicit content.
+                  </p>
                 </div>
               </div>
             )}

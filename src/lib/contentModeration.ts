@@ -1,16 +1,33 @@
 const INAPPROPRIATE_TERMS = [
   // Explicit content
-  'porn', 'xxx', 'nsfw', 'nude', 'naked', 'sex', 'sexual', 'explicit',
-  // Slurs (racial)
-  'nigger', 'nigga', 'chink', 'gook', 'wetback', 'spic', 'beaner',
+  'porn', 'pornography', 'xxx', 'nsfw', 'nude', 'nudes', 'naked', 'sex', 'sexual', 'explicit',
+  'hentai', 'erotic', 'adult', 'cam', 'onlyfans', 'escort', 'hooker', 'prostitute',
+  // Slurs (racial) - including common variations
+  'nigger', 'nigga', 'nigg', 'n1gger', 'n1gga', 'niqqa', 'chink', 'gook', 'wetback', 'spic', 'beaner',
+  'coon', 'jigaboo', 'porch monkey', 'towelhead',
   // Slurs (sexual orientation)
-  'faggot', 'fag', 'dyke', 'tranny',
+  'faggot', 'fag', 'fags', 'f4ggot', 'dyke', 'tranny', 'shemale', 'ladyboy',
   // Slurs (religious)
-  'kike', 'raghead',
+  'kike', 'raghead', 'sandnigger',
   // Slurs (general)
-  'retard', 'retarded',
-  // Other inappropriate
-  'fuck', 'shit', 'bitch', 'ass', 'dick', 'cock', 'pussy', 'cunt', 'whore', 'slut'
+  'retard', 'retarded', 'r3tard', 'tard',
+  // Profanity
+  'fuck', 'fucking', 'fucked', 'fucker', 'fuk', 'fck', 'f*ck', 'f**k',
+  'shit', 'shitting', 'shitty', 'sh1t', 'sht',
+  'bitch', 'bitches', 'b1tch', 'biatch',
+  'ass', 'asshole', 'arse', 'a$$',
+  'dick', 'dickhead', 'd1ck',
+  'cock', 'c0ck',
+  'pussy', 'puss', 'pu$$y',
+  'cunt', 'c*nt',
+  'whore', 'wh0re',
+  'slut', 'slutty', 'sl*t',
+  'bastard', 'b@stard',
+  'damn', 'dammit',
+  'hell', 'bloody',
+  'motherfucker', 'mofo',
+  'piss', 'pissed',
+  'bullshit', 'bs'
 ];
 
 const PATTERN_VARIATIONS: Record<string, RegExp[]> = {
@@ -24,11 +41,11 @@ function normalizeText(text: string): string {
   let normalized = text.toLowerCase();
 
   normalized = normalized.replace(PATTERN_VARIATIONS.letterSpacing, '$1$2');
-  normalized = normalized.replace(PATTERN_VARIATIONS.specialChars, '');
+  normalized = normalized.replace(PATTERN_VARIATIONS.specialChars, ' ');
   normalized = normalized.replace(PATTERN_VARIATIONS.repeatedChars, '$1');
-  normalized = normalized.replace(/0/g, 'o').replace(/@/g, 'a');
+  normalized = normalized.replace(/0/g, 'o').replace(/@/g, 'a').replace(/1/g, 'i').replace(/3/g, 'e').replace(/4/g, 'a').replace(/5/g, 's').replace(/\$/g, 's').replace(/\*/g, '');
 
-  return normalized;
+  return normalized.trim();
 }
 
 export interface ModerationResult {
@@ -47,19 +64,25 @@ export function moderateContent(content: string): ModerationResult {
   const flaggedTerms: string[] = [];
 
   for (const term of INAPPROPRIATE_TERMS) {
-    const regex = new RegExp(`\\b${term}\\b`, 'i');
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`\\b${escapedTerm}\\b`, 'i');
 
     if (regex.test(normalized)) {
       flaggedTerms.push(term);
+      continue;
+    }
+
+    if (normalized.includes(term)) {
+      flaggedTerms.push(term);
+      continue;
     }
 
     for (const word of words) {
-      if (word.includes(term) || term.includes(word)) {
-        if (word.length > 2 && term.length > 2) {
-          const similarity = calculateSimilarity(word, term);
-          if (similarity > 0.8) {
-            flaggedTerms.push(term);
-          }
+      if (word.length > 3 && term.length > 3) {
+        const similarity = calculateSimilarity(word, term);
+        if (similarity > 0.85) {
+          flaggedTerms.push(term);
+          break;
         }
       }
     }
@@ -68,7 +91,7 @@ export function moderateContent(content: string): ModerationResult {
   if (flaggedTerms.length > 0) {
     return {
       isClean: false,
-      reason: 'Your post contains inappropriate language or content that violates our community guidelines.',
+      reason: 'Your post contains inappropriate language, profanity, slurs, or offensive content that violates our community guidelines. Please revise your content to be respectful and appropriate.',
       flaggedTerms: [...new Set(flaggedTerms)]
     };
   }
@@ -114,4 +137,37 @@ function levenshteinDistance(str1: string, str2: string): number {
   }
 
   return matrix[str2.length][str1.length];
+}
+
+export interface ImageModerationResult {
+  isClean: boolean;
+  reason?: string;
+}
+
+export function moderateImageFile(file: File): ImageModerationResult {
+  const fileName = file.name.toLowerCase();
+  const normalized = normalizeText(fileName);
+
+  const explicitFileTerms = [
+    'nude', 'naked', 'porn', 'xxx', 'nsfw', 'sex', 'explicit', 'adult',
+    'dick', 'cock', 'pussy', 'boob', 'tit', 'ass', 'penis', 'vagina'
+  ];
+
+  for (const term of explicitFileTerms) {
+    if (normalized.includes(term)) {
+      return {
+        isClean: false,
+        reason: 'The image filename suggests inappropriate or explicit content. Please ensure your image is appropriate for our community.'
+      };
+    }
+  }
+
+  if (file.size > 15 * 1024 * 1024) {
+    return {
+      isClean: false,
+      reason: 'Image file is too large. Maximum size is 15MB.'
+    };
+  }
+
+  return { isClean: true };
 }

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Upload, Type, Loader2, Palette } from 'lucide-react';
+import { X, Upload, Type, Loader2, Palette, AlertTriangle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import imageCompression from 'browser-image-compression';
+import { moderateContent, moderateImageFile } from '../../lib/contentModeration';
 
 interface TextElement {
   id: string;
@@ -58,6 +59,17 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
     if (file.size > 50 * 1024 * 1024) {
       setError('File size must be less than 50MB');
       return;
+    }
+
+    if (file.type.startsWith('image/')) {
+      const moderationResult = moderateImageFile(file);
+      if (!moderationResult.isClean) {
+        setError(moderationResult.reason || 'Image contains inappropriate content');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
     }
 
     setSelectedFile(file);
@@ -154,6 +166,15 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
 
   async function handleSubmit() {
     if (!user || !selectedFile) return;
+
+    const allText = textElements.map(el => el.text).join(' ');
+    if (allText.trim()) {
+      const moderationResult = moderateContent(allText);
+      if (!moderationResult.isClean) {
+        setError(moderationResult.reason || 'Your story contains inappropriate content');
+        return;
+      }
+    }
 
     setUploading(true);
     setError('');
@@ -467,8 +488,17 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
           </div>
 
           {error && (
-            <div className="absolute top-20 left-4 right-4 p-4 bg-red-500/90 backdrop-blur-sm rounded-xl">
-              <p className="text-sm text-white font-medium">{error}</p>
+            <div className="absolute top-20 left-4 right-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl shadow-lg animate-pulse">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-600" />
+                <div>
+                  <p className="text-sm font-bold text-red-900 mb-1">Content Blocked</p>
+                  <p className="text-sm font-medium text-red-800">{error}</p>
+                  <p className="text-xs text-red-700 mt-2">
+                    Our community guidelines prohibit profanity, slurs, hate speech, and explicit content.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>
