@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft, Plus, Users } from 'lucide-react';
+import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft, Plus, Users, Menu } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import UserSearch from './UserSearch';
@@ -28,9 +28,11 @@ interface Message {
 
 interface MessagesProps {
   startWithUserId?: string;
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
-export default function Messages({ startWithUserId }: MessagesProps = {}) {
+export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSidebar }: MessagesProps = {}) {
   const { user } = useAuth();
   let searchParams: URLSearchParams | null = null;
   let setSearchParams: ((params: URLSearchParams) => void) | null = null;
@@ -396,6 +398,18 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
     <div className="flex h-full bg-white dark:bg-slate-900">
       <div className={`w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-800 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-2 mb-3">
+            {onToggleSidebar && (
+              <button
+                onClick={onToggleSidebar}
+                className="hidden lg:flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+              >
+                <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              </button>
+            )}
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Messages</h2>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
