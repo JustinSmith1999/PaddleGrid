@@ -336,17 +336,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         {/* Main Feed - Centered with fixed width */}
         <div className="w-full max-w-[600px] lg:ml-[275px] border-r border-slate-200/80 dark:border-slate-800/80 min-h-screen bg-white dark:bg-slate-900 relative">
           {/* Sticky Header */}
-          <div className="sticky top-[56px] z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-            {activeView !== 'feed' && activeView !== 'messages' && (
-              <div className="pt-6 pb-5 lg:pb-6 px-4">
-                <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {activeView === 'explore' && 'Courts'}
-                  {activeView === 'search' && 'Search Players'}
-                  {activeView === 'notifications' && 'Notifications'}
-                  {activeView === 'bookmarks' && 'Bookmarks'}
-                </h1>
-              </div>
-            )}
+          {activeView !== 'messages' && (
+            <div className="sticky top-[56px] z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+              {activeView !== 'feed' && (
+                <div className="pt-6 pb-5 lg:pb-6 px-4">
+                  <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {activeView === 'explore' && 'Courts'}
+                    {activeView === 'search' && 'Search Players'}
+                    {activeView === 'notifications' && 'Notifications'}
+                    {activeView === 'bookmarks' && 'Bookmarks'}
+                  </h1>
+                </div>
+              )}
 
             {/* Twitter-style tabs - Only show in feed view */}
             {activeView === 'feed' && (
@@ -401,6 +402,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               </>
             )}
           </div>
+          )}
 
           {/* Stories Highlights - Only in feed view */}
           {activeView === 'feed' && (
@@ -498,7 +500,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
           {/* Messages View */}
           {activeView === 'messages' && user && (
-            <div className="absolute inset-0 top-[56px]">
+            <div className="absolute inset-0">
               <Messages />
             </div>
           )}
