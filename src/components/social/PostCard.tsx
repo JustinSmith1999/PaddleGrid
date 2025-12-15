@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark, Flame, Zap, Target, Laugh } from 'lucide-react';
 import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 interface PostCardProps {
   post: SocialPost;
@@ -21,6 +22,16 @@ interface Participant {
   };
 }
 
+type ReactionType = 'like' | 'fire' | 'strong' | 'ace' | 'funny';
+
+interface ReactionCounts {
+  like?: number;
+  fire?: number;
+  strong?: number;
+  ace?: number;
+  funny?: number;
+}
+
 export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfileClick }: PostCardProps) {
   const { user } = useAuth();
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
@@ -32,6 +43,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [isPostBookmarked, setIsPostBookmarked] = useState(post.user_bookmarked || false);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [reactions, setReactions] = useState<ReactionCounts>({});
+  const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
@@ -39,6 +52,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     setCommentsCount(post.comments_count || 0);
     setIsPostBookmarked(post.user_bookmarked || false);
     checkJoinStatus();
+    loadReactions();
     if (post.post_type === 'match_invite') {
       loadParticipants();
     }
@@ -80,6 +94,78 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     );
 
     setHasJoined(!!data);
+  }
+
+  async function loadReactions() {
+    const { data, error } = await supabase
+      .from('post_reactions')
+      .select('reaction_type, user_id')
+      .eq('post_id', post.id);
+
+    if (error) {
+      console.error('Error loading reactions:', error);
+      return;
+    }
+
+    const counts: ReactionCounts = {};
+    let myReaction: ReactionType | null = null;
+
+    data?.forEach(reaction => {
+      counts[reaction.reaction_type as ReactionType] = (counts[reaction.reaction_type as ReactionType] || 0) + 1;
+      if (user && reaction.user_id === user.id) {
+        myReaction = reaction.reaction_type as ReactionType;
+      }
+    });
+
+    setReactions(counts);
+    setUserReaction(myReaction);
+  }
+
+  async function handleReaction(e: React.MouseEvent, reactionType: ReactionType) {
+    e.stopPropagation();
+
+    if (!user) {
+      alert('Please log in to react to posts');
+      return;
+    }
+
+    if (userReaction === reactionType) {
+      const { error } = await supabase
+        .from('post_reactions')
+        .delete()
+        .eq('post_id', post.id)
+        .eq('user_id', user.id);
+
+      if (!error) {
+        setReactions(prev => ({
+          ...prev,
+          [reactionType]: Math.max(0, (prev[reactionType] || 0) - 1)
+        }));
+        setUserReaction(null);
+      }
+    } else {
+      const { error } = await supabase
+        .from('post_reactions')
+        .upsert({
+          post_id: post.id,
+          user_id: user.id,
+          reaction_type: reactionType
+        }, {
+          onConflict: 'post_id,user_id'
+        });
+
+      if (!error) {
+        setReactions(prev => {
+          const updated = { ...prev };
+          if (userReaction) {
+            updated[userReaction] = Math.max(0, (updated[userReaction] || 0) - 1);
+          }
+          updated[reactionType] = (updated[reactionType] || 0) + 1;
+          return updated;
+        });
+        setUserReaction(reactionType);
+      }
+    }
   }
 
   async function handleLike(e: React.MouseEvent) {
@@ -599,39 +685,89 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             </div>
           )}
 
-          <div className="flex items-center gap-4 mt-2 lg:mt-2.5">
+          <div className="flex items-center gap-1 mt-2 lg:mt-2.5 flex-wrap">
             <button
-              onClick={handleLike}
-              className={`group flex items-center gap-1.5 transition-colors ${
-                userLiked
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+              onClick={(e) => handleReaction(e, 'like')}
+              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                userReaction === 'like'
+                  ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
-              <Heart className={`w-[18px] h-[18px] ${userLiked ? 'fill-current' : ''}`} />
-              <span className="text-sm font-medium">{likesCount}</span>
+              <Heart className={`w-4 h-4 ${userReaction === 'like' ? 'fill-current' : ''}`} />
+              {reactions.like ? <span className="text-xs font-medium">{reactions.like}</span> : null}
             </button>
+
+            <button
+              onClick={(e) => handleReaction(e, 'fire')}
+              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                userReaction === 'fire'
+                  ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+              }`}
+            >
+              <Flame className={`w-4 h-4 ${userReaction === 'fire' ? 'fill-current' : ''}`} />
+              {reactions.fire ? <span className="text-xs font-medium">{reactions.fire}</span> : null}
+            </button>
+
+            <button
+              onClick={(e) => handleReaction(e, 'strong')}
+              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                userReaction === 'strong'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+              }`}
+            >
+              <Zap className={`w-4 h-4 ${userReaction === 'strong' ? 'fill-current' : ''}`} />
+              {reactions.strong ? <span className="text-xs font-medium">{reactions.strong}</span> : null}
+            </button>
+
+            <button
+              onClick={(e) => handleReaction(e, 'ace')}
+              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                userReaction === 'ace'
+                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+              }`}
+            >
+              <Target className={`w-4 h-4 ${userReaction === 'ace' ? 'fill-current' : ''}`} />
+              {reactions.ace ? <span className="text-xs font-medium">{reactions.ace}</span> : null}
+            </button>
+
+            <button
+              onClick={(e) => handleReaction(e, 'funny')}
+              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                userReaction === 'funny'
+                  ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+              }`}
+            >
+              <Laugh className={`w-4 h-4 ${userReaction === 'funny' ? 'fill-current' : ''}`} />
+              {reactions.funny ? <span className="text-xs font-medium">{reactions.funny}</span> : null}
+            </button>
+
+            <div className="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onClick();
               }}
-              className="group flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              className="group flex items-center gap-1 px-2.5 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all"
             >
-              <MessageCircle className="w-[18px] h-[18px]" />
-              <span className="text-sm font-medium">{commentsCount}</span>
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-xs font-medium">{commentsCount}</span>
             </button>
 
             <button
               onClick={handleBookmark}
-              className={`group flex items-center transition-colors ${
+              className={`group flex items-center px-2.5 py-1 rounded-full transition-all ${
                 isPostBookmarked
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
-              <Bookmark className={`w-[18px] h-[18px] ${isPostBookmarked ? 'fill-current' : ''}`} />
+              <Bookmark className={`w-4 h-4 ${isPostBookmarked ? 'fill-current' : ''}`} />
             </button>
           </div>
         </div>

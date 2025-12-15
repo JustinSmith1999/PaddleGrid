@@ -440,6 +440,20 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
               )}
             </div>
             <div className="flex-1">
+              <div className="flex flex-wrap gap-2 mb-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const timeOptions = ['30 minutes', '1 hour', '2 hours'];
+                    const time = timeOptions[Math.floor(Math.random() * timeOptions.length)];
+                    setContent(`Looking for a doubles partner! 🎾 Available in ${time}. Who's in?`);
+                    setPostType('general');
+                  }}
+                  className="px-3 py-1.5 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition"
+                >
+                  Looking for Game
+                </button>
+              </div>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}

@@ -8,6 +8,7 @@ import { Streak, Activity, getActivityFeed } from '../lib/activityUtils';
 import ActivityCard from './ActivityCard';
 import PlayerCard from './PlayerCard';
 import AchievementsBadges from './AchievementsBadges';
+import PlayStreakWidget from './PlayStreakWidget';
 
 interface PlayerStats {
   total_bookings: number;
@@ -212,6 +213,12 @@ export function PlayerProfile() {
                 </div>
               )}
             </div>
+
+            {user && (
+              <div className="mb-4">
+                <PlayStreakWidget userId={user.id} />
+              </div>
+            )}
 
             {streaks.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
