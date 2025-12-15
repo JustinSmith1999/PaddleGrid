@@ -57,6 +57,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -81,6 +82,10 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
       startConversationWithUser(userId);
     }
   }, [searchParams, startWithUserId, user]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleUserSelected = async (userId: string) => {
     setShowNewMessageModal(false);
@@ -252,28 +257,41 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
         async (payload) => {
           const newMsg = payload.new as any;
 
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('first_name, last_name, profile_picture_url')
-            .eq('id', newMsg.sender_id)
-            .single();
+          setMessages((prev) => {
+            if (prev.some(msg => msg.id === newMsg.id)) {
+              return prev;
+            }
 
-          const enrichedMessage: Message = {
-            id: newMsg.id,
-            sender_id: newMsg.sender_id,
-            content: newMsg.content,
-            media_url: newMsg.media_url,
-            media_type: newMsg.media_type,
-            created_at: newMsg.created_at,
-            sender_name: profile
-              ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User'
-              : 'User',
-            sender_avatar: profile?.profile_picture_url || null
-          };
-
-          setMessages((prev) => [...prev, enrichedMessage]);
+            return prev;
+          });
 
           if (newMsg.sender_id !== user?.id) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('first_name, last_name, profile_picture_url')
+              .eq('id', newMsg.sender_id)
+              .single();
+
+            const enrichedMessage: Message = {
+              id: newMsg.id,
+              sender_id: newMsg.sender_id,
+              content: newMsg.content,
+              media_url: newMsg.media_url,
+              media_type: newMsg.media_type,
+              created_at: newMsg.created_at,
+              sender_name: profile
+                ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User'
+                : 'User',
+              sender_avatar: profile?.profile_picture_url || null
+            };
+
+            setMessages((prev) => {
+              if (prev.some(msg => msg.id === newMsg.id)) {
+                return prev;
+              }
+              return [...prev, enrichedMessage];
+            });
+
             markMessagesAsRead(conversationId);
           }
         }
@@ -326,47 +344,82 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
       }
     }
 
+    const messageContent = newMessage.trim();
+    const fileToUpload = selectedFile;
+
+    setNewMessage('');
+    setSelectedFile(null);
+    setPreviewUrl(null);
     setSendingMessage(true);
 
     try {
       let mediaUrl = null;
       let mediaType = null;
 
-      if (selectedFile) {
+      if (fileToUpload) {
         setUploadingMedia(true);
-        mediaUrl = await uploadMedia(selectedFile);
+        mediaUrl = await uploadMedia(fileToUpload);
 
         if (!mediaUrl) {
           alert('Failed to upload media');
           return;
         }
 
-        if (selectedFile.type.startsWith('image/')) {
+        if (fileToUpload.type.startsWith('image/')) {
           mediaType = 'image';
-        } else if (selectedFile.type.startsWith('video/')) {
+        } else if (fileToUpload.type.startsWith('video/')) {
           mediaType = 'video';
         }
       }
 
-      const { error } = await supabase
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, profile_picture_url')
+        .eq('id', user.id)
+        .single();
+
+      const optimisticMessage: Message = {
+        id: `temp-${Date.now()}`,
+        sender_id: user.id,
+        content: messageContent || null,
+        media_url: mediaUrl,
+        media_type: mediaType,
+        created_at: new Date().toISOString(),
+        sender_name: profile
+          ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User'
+          : 'User',
+        sender_avatar: profile?.profile_picture_url || null
+      };
+
+      setMessages((prev) => [...prev, optimisticMessage]);
+
+      const { data, error } = await supabase
         .from('direct_messages')
         .insert({
           conversation_id: selectedConversation,
           sender_id: user.id,
-          content: newMessage.trim() || null,
+          content: messageContent || null,
           media_url: mediaUrl,
           media_type: mediaType
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      setNewMessage('');
-      setSelectedFile(null);
-      setPreviewUrl(null);
+      setMessages((prev) =>
+        prev.map(msg =>
+          msg.id === optimisticMessage.id
+            ? { ...optimisticMessage, id: data.id }
+            : msg
+        )
+      );
+
       await fetchConversations();
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Failed to send message');
+      await fetchMessages(selectedConversation);
     } finally {
       setSendingMessage(false);
       setUploadingMedia(false);
@@ -515,51 +568,54 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {selectedConversation ? (
             messages.length > 0 ? (
-              messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-[70%] ${msg.sender_id === user?.id ? '' : 'flex items-start gap-2'}`}>
-                    {msg.sender_id !== user?.id && (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
-                        {msg.sender_avatar ? (
-                          <img src={msg.sender_avatar} alt={msg.sender_name} className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                          <User className="w-4 h-4 text-white" />
-                        )}
+              <>
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[70%] ${msg.sender_id === user?.id ? '' : 'flex items-start gap-2'}`}>
+                      {msg.sender_id !== user?.id && (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                          {msg.sender_avatar ? (
+                            <img src={msg.sender_avatar} alt={msg.sender_name} className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <User className="w-4 h-4 text-white" />
+                          )}
+                        </div>
+                      )}
+                      <div>
+                        <div
+                          className={`rounded-2xl overflow-hidden ${
+                            msg.sender_id === user?.id
+                              ? 'bg-emerald-500 text-white'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                          }`}
+                        >
+                          {msg.media_url && (
+                            <div className="max-w-sm">
+                              {msg.media_type === 'image' ? (
+                                <img src={msg.media_url} alt="Shared image" className="w-full h-auto" />
+                              ) : msg.media_type === 'video' ? (
+                                <video src={msg.media_url} controls className="w-full h-auto" />
+                              ) : null}
+                            </div>
+                          )}
+                          {msg.content && (
+                            <p className="text-sm px-4 py-2">{msg.content}</p>
+                          )}
+                        </div>
+                        <p className={`text-xs mt-1 ${
+                          msg.sender_id === user?.id ? 'text-right text-slate-500' : 'text-slate-500 dark:text-slate-400'
+                        }`}>
+                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
                       </div>
-                    )}
-                    <div>
-                      <div
-                        className={`rounded-2xl overflow-hidden ${
-                          msg.sender_id === user?.id
-                            ? 'bg-emerald-500 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                        }`}
-                      >
-                        {msg.media_url && (
-                          <div className="max-w-sm">
-                            {msg.media_type === 'image' ? (
-                              <img src={msg.media_url} alt="Shared image" className="w-full h-auto" />
-                            ) : msg.media_type === 'video' ? (
-                              <video src={msg.media_url} controls className="w-full h-auto" />
-                            ) : null}
-                          </div>
-                        )}
-                        {msg.content && (
-                          <p className="text-sm px-4 py-2">{msg.content}</p>
-                        )}
-                      </div>
-                      <p className={`text-xs mt-1 ${
-                        msg.sender_id === user?.id ? 'text-right text-slate-500' : 'text-slate-500 dark:text-slate-400'
-                      }`}>
-                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
                     </div>
                   </div>
-                </div>
-              ))
+                ))}
+                <div ref={messagesEndRef} />
+              </>
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
