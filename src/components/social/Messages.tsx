@@ -396,16 +396,6 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
     <div className="flex h-[calc(100vh-3.5rem)] bg-white dark:bg-slate-900">
       <div className={`w-full md:w-1/3 border-r border-slate-200 dark:border-slate-800 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Messages</h2>
-            <button
-              onClick={() => setShowNewMessageModal(true)}
-              className="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors"
-              title="New Message"
-            >
-              <Plus className="w-5 h-5" />
-            </button>
-          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
