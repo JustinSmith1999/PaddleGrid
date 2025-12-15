@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, Users, Calendar, TrendingUp, Star, Check, ArrowRight, Sparkles, Target, Zap, Shield, Bell, BarChart3, Trophy, Building2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Users, Calendar, TrendingUp, Star, Check, ArrowRight, Sparkles, Target, Zap, Shield, Bell, BarChart3, Trophy, Building2, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CommunityFeed from './social/CommunityFeed';
@@ -17,12 +17,52 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeView, setActiveView] = useState<string>('feed');
+  const [showFeatures, setShowFeatures] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const touchStartY = useRef<number>(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile || showFeatures) return;
+
+    const touchEndY = e.touches[0].clientY;
+    const deltaY = touchEndY - touchStartY.current;
+
+    if (deltaY > 50 && window.scrollY === 0) {
+      setShowFeatures(true);
+    }
+  };
+
+  const handleSwipeIndicatorClick = () => {
+    setShowFeatures(true);
+  };
 
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700">
+        <div
+          ref={heroRef}
+          className={`relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 transition-all duration-300 ${
+            isMobile && !showFeatures ? 'min-h-[calc(100vh-4rem)]' : ''
+          }`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+        >
           {/* Background Video */}
           <video
             autoPlay
@@ -37,23 +77,35 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           {/* Green Tint Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/50 via-teal-700/45 to-emerald-800/50"></div>
 
-          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-28">
+          <div className={`relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
+            isMobile && !showFeatures ? 'pt-32 pb-20 flex flex-col justify-center min-h-[calc(100vh-4rem)]' : 'pt-20 pb-28'
+          }`}>
             <div className="text-center space-y-10">
               {/* Headline */}
-              <div className="space-y-6">
-                <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white leading-[1.05] tracking-tight">
+              <div className={`space-y-6 ${isMobile && !showFeatures ? 'space-y-8' : ''}`}>
+                <h1 className={`font-bold text-white leading-[1.05] tracking-tight transition-all duration-300 ${
+                  isMobile && !showFeatures
+                    ? 'text-5xl sm:text-6xl'
+                    : 'text-6xl sm:text-7xl lg:text-8xl'
+                }`}>
                   Your Pickleball
                   <br />
                   <span className="text-emerald-100">Community</span>
                 </h1>
 
-                <p className="text-xl sm:text-2xl text-emerald-50 leading-relaxed max-w-2xl mx-auto">
+                <p className={`text-emerald-50 leading-relaxed max-w-2xl mx-auto transition-all duration-300 ${
+                  isMobile && !showFeatures
+                    ? 'text-lg sm:text-xl px-4'
+                    : 'text-xl sm:text-2xl'
+                }`}>
                   Connect with players. Share your wins. Find matches. Grow your game.
                 </p>
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <div className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-300 ${
+                isMobile && !showFeatures ? 'pt-8 px-4' : 'pt-6'
+              }`}>
                 <button
                   onClick={() => onAuthRequired?.('signup')}
                   className="group relative inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-emerald-700 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
@@ -70,8 +122,24 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                 </button>
               </div>
 
+              {/* Swipe indicator - Mobile only when features hidden */}
+              {isMobile && !showFeatures && (
+                <button
+                  onClick={handleSwipeIndicatorClick}
+                  className="pt-12 animate-bounce flex flex-col items-center gap-2 mx-auto"
+                  aria-label="Swipe down to see more"
+                >
+                  <span className="text-white/80 text-sm font-medium">Swipe down for more</span>
+                  <ChevronDown className="w-6 h-6 text-white/80" />
+                </button>
+              )}
+
               {/* Simple Features */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-4xl mx-auto">
+              <div className={`grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-4xl mx-auto transition-all duration-500 ${
+                isMobile && !showFeatures
+                  ? 'opacity-0 max-h-0 overflow-hidden'
+                  : 'opacity-100 max-h-screen'
+              }`}>
                 {[
                   { icon: Users, label: "Find Players" },
                   { icon: Calendar, label: "Book Courts" },
@@ -88,7 +156,11 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
               </div>
 
               {/* Facility Manager Link - Mobile Only */}
-              <div className="md:hidden pt-8">
+              <div className={`md:hidden pt-8 transition-all duration-500 ${
+                isMobile && !showFeatures
+                  ? 'opacity-0 max-h-0 overflow-hidden'
+                  : 'opacity-100 max-h-screen'
+              }`}>
                 <button
                   onClick={() => navigate('/admin')}
                   className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl hover:bg-white/20 hover:border-white/50 transition-all duration-200"
