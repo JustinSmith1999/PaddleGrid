@@ -10,6 +10,11 @@ import { BrowseCourts } from '../BrowseCourts';
 import Messages from './Messages';
 import UserSearch from './UserSearch';
 import MobileMenu from '../MobileMenu';
+import StoriesHighlights from './StoriesHighlights';
+import WeeklyHighlights from './WeeklyHighlights';
+import WhosPlayingNow from './WhosPlayingNow';
+import SuggestedPlayers from './SuggestedPlayers';
+import WeatherWidget from './WeatherWidget';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -391,9 +396,26 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             )}
           </div>
 
+          {/* Stories Highlights - Only in feed view */}
+          {activeView === 'feed' && (
+            <StoriesHighlights
+              onStoryClick={(id, type) => {
+                if (type === 'facility') {
+                  onClubClick?.(id);
+                } else {
+                  onProfileClick?.(id);
+                }
+              }}
+              onCreateStory={onCreatePost}
+            />
+          )}
+
           {/* Content Area */}
           {activeView === 'feed' && (
             <>
+              {/* Weekly Highlights */}
+              {user && <WeeklyHighlights />}
+
               {/* Posts Feed */}
               {posts.length > 0 ? (
                 <>
@@ -505,6 +527,15 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         {/* Right Sidebar - Trending & Suggestions */}
         <div className="hidden xl:block w-[350px] flex-shrink-0">
           <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-[56px] w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent pt-6">
+            {/* Weather Widget */}
+            <WeatherWidget />
+
+            {/* Who's Playing Now */}
+            <WhosPlayingNow onFacilityClick={onClubClick} />
+
+            {/* Suggested Players */}
+            {user && <SuggestedPlayers onProfileClick={onProfileClick} />}
+
             {/* Trending Topics */}
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
               <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
