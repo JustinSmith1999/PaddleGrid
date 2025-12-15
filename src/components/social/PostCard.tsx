@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark, Flame, Laugh } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
 import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -22,16 +22,6 @@ interface Participant {
   };
 }
 
-type ReactionType = 'like' | 'fire' | 'strong' | 'ace' | 'funny';
-
-interface ReactionCounts {
-  like?: number;
-  fire?: number;
-  strong?: number;
-  ace?: number;
-  funny?: number;
-}
-
 export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfileClick }: PostCardProps) {
   const { user } = useAuth();
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
@@ -43,9 +33,6 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [isPostBookmarked, setIsPostBookmarked] = useState(post.user_bookmarked || false);
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [reactions, setReactions] = useState<ReactionCounts>({});
-  const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
-  const [showReactionPicker, setShowReactionPicker] = useState(false);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
@@ -53,7 +40,6 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     setCommentsCount(post.comments_count || 0);
     setIsPostBookmarked(post.user_bookmarked || false);
     checkJoinStatus();
-    loadReactions();
     if (post.post_type === 'match_invite') {
       loadParticipants();
     }
@@ -77,17 +63,6 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     }
   }, [post.spots_filled]);
 
-  useEffect(() => {
-    function handleClickOutside() {
-      setShowReactionPicker(false);
-    }
-
-    if (showReactionPicker) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [showReactionPicker]);
-
   async function loadParticipants() {
     const data = await getMatchParticipants(post.id);
     setParticipants(data);
@@ -106,78 +81,6 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     );
 
     setHasJoined(!!data);
-  }
-
-  async function loadReactions() {
-    const { data, error } = await supabase
-      .from('post_reactions')
-      .select('reaction_type, user_id')
-      .eq('post_id', post.id);
-
-    if (error) {
-      console.error('Error loading reactions:', error);
-      return;
-    }
-
-    const counts: ReactionCounts = {};
-    let myReaction: ReactionType | null = null;
-
-    data?.forEach(reaction => {
-      counts[reaction.reaction_type as ReactionType] = (counts[reaction.reaction_type as ReactionType] || 0) + 1;
-      if (user && reaction.user_id === user.id) {
-        myReaction = reaction.reaction_type as ReactionType;
-      }
-    });
-
-    setReactions(counts);
-    setUserReaction(myReaction);
-  }
-
-  async function handleReaction(reactionType: ReactionType) {
-    if (!user) {
-      alert('Please log in to react to posts');
-      return;
-    }
-
-    setShowReactionPicker(false);
-
-    if (userReaction === reactionType) {
-      const { error } = await supabase
-        .from('post_reactions')
-        .delete()
-        .eq('post_id', post.id)
-        .eq('user_id', user.id);
-
-      if (!error) {
-        setReactions(prev => ({
-          ...prev,
-          [reactionType]: Math.max(0, (prev[reactionType] || 0) - 1)
-        }));
-        setUserReaction(null);
-      }
-    } else {
-      const { error } = await supabase
-        .from('post_reactions')
-        .upsert({
-          post_id: post.id,
-          user_id: user.id,
-          reaction_type: reactionType
-        }, {
-          onConflict: 'post_id,user_id'
-        });
-
-      if (!error) {
-        setReactions(prev => {
-          const updated = { ...prev };
-          if (userReaction) {
-            updated[userReaction] = Math.max(0, (updated[userReaction] || 0) - 1);
-          }
-          updated[reactionType] = (updated[reactionType] || 0) + 1;
-          return updated;
-        });
-        setUserReaction(reactionType);
-      }
-    }
   }
 
   async function handleLike(e: React.MouseEvent) {
@@ -698,62 +601,19 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
           )}
 
           <div className="flex items-center gap-1 mt-2 lg:mt-2.5 flex-wrap">
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!user) {
-                    alert('Please log in to react to posts');
-                    return;
-                  }
-                  setShowReactionPicker(!showReactionPicker);
-                }}
-                className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-                  userReaction
-                    ? userReaction === 'fire'
-                      ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
-                      : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
-                    : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-                }`}
-              >
-                {userReaction === 'fire' ? (
-                  <Flame className="w-4 h-4 fill-current" />
-                ) : userReaction === 'funny' ? (
-                  <Laugh className="w-4 h-4 fill-current" />
-                ) : (
-                  <Heart className="w-4 h-4" />
-                )}
-                {((reactions.fire || 0) + (reactions.funny || 0)) > 0 && (
-                  <span className="text-xs font-medium">
-                    {(reactions.fire || 0) + (reactions.funny || 0)}
-                  </span>
-                )}
-              </button>
-
-              {showReactionPicker && (
-                <div
-                  className="absolute bottom-full left-0 mb-2 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-2 flex gap-1 z-10"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    onClick={() => handleReaction('fire')}
-                    className={`p-2 rounded-lg transition-all hover:bg-orange-50 dark:hover:bg-orange-900/20 ${
-                      userReaction === 'fire' ? 'bg-orange-50 dark:bg-orange-900/20' : ''
-                    }`}
-                  >
-                    <Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                  </button>
-                  <button
-                    onClick={() => handleReaction('funny')}
-                    className={`p-2 rounded-lg transition-all hover:bg-yellow-50 dark:hover:bg-yellow-900/20 ${
-                      userReaction === 'funny' ? 'bg-yellow-50 dark:bg-yellow-900/20' : ''
-                    }`}
-                  >
-                    <Laugh className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-                  </button>
-                </div>
+            <button
+              onClick={handleLike}
+              className={`group flex items-center gap-1 px-2.5 py-1 rounded-full transition-all ${
+                userLiked
+                  ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+              }`}
+            >
+              <Heart className={`w-4 h-4 ${userLiked ? 'fill-current' : ''}`} />
+              {likesCount > 0 && (
+                <span className="text-xs font-medium">{likesCount}</span>
               )}
-            </div>
+            </button>
 
             <div className="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
