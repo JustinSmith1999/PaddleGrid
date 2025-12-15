@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { User, Calendar, Clock, Trophy, Star, Target, Loader2, ArrowLeft, UserPlus, UserMinus, MessageSquare, MapPin } from 'lucide-react';
+import { User, Calendar, Clock, Trophy, Star, Target, Loader2, ArrowLeft, UserPlus, UserMinus, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { RatingGraph } from './RatingGraph';
-import { followUser, unfollowUser, isFollowing, getFollowCounts, SocialPost } from '../lib/socialUtils';
-import PostCard from './social/PostCard';
+import { followUser, unfollowUser, isFollowing, getFollowCounts } from '../lib/socialUtils';
 
 interface PlayerStats {
   total_bookings: number;
@@ -29,30 +28,6 @@ interface UserProfile {
   profile_picture_url: string | null;
 }
 
-interface Facility {
-  id: string;
-  name: string;
-  description: string;
-  address: string;
-  city: string;
-  state: string;
-  logo_url: string;
-  phone: string;
-  email: string;
-  website: string;
-}
-
-interface EventOccurrence {
-  id: string;
-  start_time: string;
-  end_time: string;
-  event_series: {
-    title: string;
-    description: string;
-    price_per_session: number;
-  };
-}
-
 interface PublicPlayerProfileProps {
   userId: string;
   onBack: () => void;
@@ -67,10 +42,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
   const [following, setFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [followCounts, setFollowCounts] = useState({ followers: 0, following: 0 });
-  const [facility, setFacility] = useState<Facility | null>(null);
-  const [isFacilityOwner, setIsFacilityOwner] = useState(false);
-  const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [upcomingEvents, setUpcomingEvents] = useState<EventOccurrence[]>([]);
 
   useEffect(() => {
     fetchPlayerData();
@@ -90,69 +61,27 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
 
       setProfile(profileData);
 
-      const { data: facilityData } = await supabase
-        .from('facility_users')
-        .select('facility_id, role, facilities(*)')
+      const { data: statsData } = await supabase
+        .from('player_stats')
+        .select('*')
         .eq('user_id', userId)
-        .eq('role', 'owner')
         .maybeSingle();
 
-      if (facilityData && facilityData.facilities) {
-        setIsFacilityOwner(true);
-        setFacility(facilityData.facilities as any);
-
-        const [{ data: postsData }, { data: eventsData }] = await Promise.all([
-          supabase
-            .from('social_posts')
-            .select('*, profiles(*), facilities(*), courts(*)')
-            .eq('facility_id', facilityData.facility_id)
-            .eq('is_archived', false)
-            .order('created_at', { ascending: false })
-            .limit(20),
-          supabase
-            .from('event_series_occurrences')
-            .select(`
-              id,
-              start_time,
-              end_time,
-              event_series!inner(
-                title,
-                description,
-                price_per_session,
-                facility_id
-              )
-            `)
-            .eq('event_series.facility_id', facilityData.facility_id)
-            .gte('start_time', new Date().toISOString())
-            .order('start_time')
-            .limit(10)
-        ]);
-
-        setPosts(postsData || []);
-        setUpcomingEvents(eventsData || []);
+      if (statsData) {
+        setStats(statsData);
       } else {
-        const { data: statsData } = await supabase
-          .from('player_stats')
-          .select('*')
-          .eq('user_id', userId)
-          .maybeSingle();
-
-        if (statsData) {
-          setStats(statsData);
-        } else {
-          setStats({
-            total_bookings: 0,
-            total_hours_played: 0,
-            total_lessons_taken: 0,
-            total_events_participated: 0,
-            total_spent: 0,
-            skill_level: null,
-            achievements: [],
-            dupr_rating: null,
-            total_matches: 0,
-            matches_won: 0,
-          });
-        }
+        setStats({
+          total_bookings: 0,
+          total_hours_played: 0,
+          total_lessons_taken: 0,
+          total_events_participated: 0,
+          total_spent: 0,
+          skill_level: null,
+          achievements: [],
+          dupr_rating: null,
+          total_matches: 0,
+          matches_won: 0,
+        });
       }
     } catch (error) {
       console.error('Error fetching player data:', error);
@@ -214,183 +143,7 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
     );
   }
 
-  if (!profile) {
-    return (
-      <div className="text-center py-12 bg-white rounded-2xl shadow-md">
-        <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <p className="text-gray-500 text-lg">Unable to load profile</p>
-      </div>
-    );
-  }
-
-  if (isFacilityOwner && facility) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back
-          </button>
-
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
-            <div className="h-48 bg-gradient-to-r from-emerald-500 to-teal-600 relative">
-              {facility.logo_url && (
-                <img
-                  src={facility.logo_url}
-                  alt={facility.name}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ mixBlendMode: 'multiply' }}
-                />
-              )}
-            </div>
-
-            <div className="p-8">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                    {facility.name}
-                  </h1>
-                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                    <MapPin className="w-4 h-4" />
-                    <span>
-                      {facility.address}, {facility.city}, {facility.state}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 mt-4">
-                    <div className="text-slate-900 dark:text-white">
-                      <span className="font-bold">{followCounts.followers}</span>
-                      <span className="text-slate-600 dark:text-slate-400 ml-1 text-sm">followers</span>
-                    </div>
-                    <div className="text-slate-900 dark:text-white">
-                      <span className="font-bold">{followCounts.following}</span>
-                      <span className="text-slate-600 dark:text-slate-400 ml-1 text-sm">following</span>
-                    </div>
-                  </div>
-                </div>
-
-                {user && user.id !== userId && (
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={handleStartMessage}
-                      className="px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600"
-                    >
-                      <MessageSquare className="w-5 h-5" />
-                      Message
-                    </button>
-                    <button
-                      onClick={handleFollowToggle}
-                      disabled={followLoading}
-                      className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
-                        following
-                          ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600'
-                          : 'bg-emerald-500 text-white hover:bg-emerald-600'
-                      }`}
-                    >
-                      {followLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : following ? (
-                        <>
-                          <UserMinus className="w-5 h-5" />
-                          Unfollow
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="w-5 h-5" />
-                          Follow
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {facility.description && (
-                <p className="text-slate-600 dark:text-slate-400 mb-6">
-                  {facility.description}
-                </p>
-              )}
-
-              <div className="flex flex-wrap gap-3">
-                <div className="bg-white dark:bg-slate-700 rounded-xl px-4 py-2 shadow-sm border border-slate-200 dark:border-slate-600">
-                  <span className="text-xs text-slate-600 dark:text-slate-400">Member since</span>
-                  <p className="font-semibold text-slate-900 dark:text-white">{formatDate(profile.created_at)}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <MessageSquare className="w-6 h-6" />
-                Recent Posts & Announcements
-              </h2>
-
-              {posts.length === 0 ? (
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-8 text-center">
-                  <p className="text-slate-500 dark:text-slate-400">No posts yet</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {posts.map((post) => (
-                    <PostCard key={post.id} post={post} onPostUpdate={fetchPlayerData} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <Calendar className="w-6 h-6" />
-                Upcoming Events
-              </h2>
-
-              {upcomingEvents.length === 0 ? (
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-8 text-center">
-                  <p className="text-slate-500 dark:text-slate-400">No upcoming events</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {upcomingEvents.map((occurrence) => (
-                    <div
-                      key={occurrence.id}
-                      className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
-                        {occurrence.event_series.title}
-                      </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                        {occurrence.event_series.description}
-                      </p>
-                      <div className="flex flex-col gap-2 text-sm text-slate-600 dark:text-slate-400">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {new Date(occurrence.start_time).toLocaleDateString()} at{' '}
-                          {new Date(occurrence.start_time).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Trophy className="w-4 h-4" />
-                          ${occurrence.event_series.price_per_session}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!stats) {
+  if (!profile || !stats) {
     return (
       <div className="text-center py-12 bg-white rounded-2xl shadow-md">
         <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
