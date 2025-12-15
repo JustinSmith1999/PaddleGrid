@@ -21,9 +21,10 @@ interface CommunityFeedProps {
   onPostClick: (postId: string) => void;
   onClubClick?: (facilityId: string) => void;
   onProfileClick?: (userId: string) => void;
+  onViewChange?: (view: string) => void;
 }
 
-export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick }: CommunityFeedProps) {
+export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick, onViewChange }: CommunityFeedProps) {
   const { user, profile } = useAuth();
   const [activeView, setActiveView] = useState<'feed' | 'explore' | 'search' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
   const [activeTab, setActiveTab] = useState<'my_clubss' | 'following' | 'all_local'>('all_local');
@@ -59,6 +60,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       loadBookmarks();
     }
   }, [activeView, user]);
+
+  useEffect(() => {
+    onViewChange?.(activeView);
+  }, [activeView, onViewChange]);
 
   async function fetchUserFacilities() {
     if (!user) return;

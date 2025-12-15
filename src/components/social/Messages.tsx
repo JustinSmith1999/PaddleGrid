@@ -393,7 +393,7 @@ export default function Messages({ startWithUserId }: MessagesProps = {}) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] bg-white dark:bg-slate-900">
+    <div className="flex h-[calc(100vh-3.5rem)] bg-white dark:bg-slate-900">
       <div className={`w-full md:w-1/3 border-r border-slate-200 dark:border-slate-800 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-3">

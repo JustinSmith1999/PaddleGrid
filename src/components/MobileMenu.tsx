@@ -79,12 +79,14 @@ export default function MobileMenu({
   return (
     <>
       {/* Hamburger Button - Bottom Left */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all shadow-lg hover:scale-110 z-40"
-      >
-        <Menu className="w-6 h-6" />
-      </button>
+      {activeView !== 'messages' && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all shadow-lg hover:scale-110 z-40"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Overlay */}
       {isOpen && (

@@ -16,6 +16,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
   const [showComposer, setShowComposer] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [activeView, setActiveView] = useState<string>('feed');
 
   if (!user) {
     return (
@@ -126,15 +127,18 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         onPostClick={(postId) => navigate(`/post/${postId}`)}
         onProfileClick={(userId) => navigate(`/player/${userId}`)}
         onClubClick={handleClubClick}
+        onViewChange={(view) => setActiveView(view)}
       />
 
       {/* Floating action button */}
-      <button
-        onClick={() => setShowComposer(true)}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all shadow-lg hover:scale-110 z-40"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
+      {activeView !== 'messages' && (
+        <button
+          onClick={() => setShowComposer(true)}
+          className="fixed bottom-24 right-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all shadow-lg hover:scale-110 z-40"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Post Composer Modal */}
       {showComposer && (
