@@ -327,7 +327,7 @@ export default function StoryComposer({ onClose, onSuccess }: StoryComposerProps
             <img
               src={previewUrl}
               alt="Story"
-              className="w-full h-full object-cover select-none"
+              className="max-w-full max-h-full object-contain select-none"
               draggable={false}
             />
 

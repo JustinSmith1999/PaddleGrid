@@ -315,8 +315,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
   return (
-    <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center">
-      <div className="relative w-full h-full max-w-lg bg-black overflow-hidden">
+    <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center p-4">
+      <div className="relative w-full h-full max-w-md max-h-[85vh] bg-black rounded-lg overflow-hidden">
         <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
@@ -426,7 +426,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
             <img
               src={currentStory.mediaUrl}
               alt="Story"
-              className="w-full h-full object-cover pointer-events-none"
+              className="max-w-full max-h-full object-contain pointer-events-none"
               draggable={false}
             />
           ) : (
@@ -436,7 +436,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               autoPlay
               muted={isMuted}
               playsInline
-              className="w-full h-full object-cover pointer-events-none"
+              className="max-w-full max-h-full object-contain pointer-events-none"
             />
           )}
         </div>
