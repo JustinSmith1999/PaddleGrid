@@ -34,7 +34,17 @@
       "ios": {
         "buildConfiguration": "Release",
         "autoIncrement": true,
-        "simulator": false
+        "simulator": false,
+        "resourceClass": "m-medium"
+      },
+      "cache": {
+        "disabled": false,
+        "key": "production-ios",
+        "cacheDefaultPaths": true,
+        "customPaths": ["node_modules", "ios/Pods"]
+      },
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
       }
     }
   },
