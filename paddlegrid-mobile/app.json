@@ -21,6 +21,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.paddlegrid.app",
       "buildNumber": "1",
+      "deploymentTarget": "14.0",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow PaddleGrid to access your camera to take profile pictures and post photos.",
         "NSPhotoLibraryUsageDescription": "Allow PaddleGrid to access your photos to select profile pictures and post photos.",
