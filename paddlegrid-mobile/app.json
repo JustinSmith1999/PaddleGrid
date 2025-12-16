@@ -15,13 +15,12 @@
       "**/*"
     ],
     "description": "PaddleGrid - The all-in-one platform for pickleball facilities and players. Book courts, join matches, track your stats, and connect with the pickleball community.",
-    "privacy": "public",
     "platforms": ["ios", "android"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.paddlegrid.app",
       "buildNumber": "1",
-      "deploymentTarget": "14.0",
+      "deploymentTarget": "15.1",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow PaddleGrid to access your camera to take profile pictures and post photos.",
         "NSPhotoLibraryUsageDescription": "Allow PaddleGrid to access your photos to select profile pictures and post photos.",
