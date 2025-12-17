@@ -29,6 +29,9 @@ const Messages = lazy(() => import('./components/social/Messages'));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
 const Support = lazy(() => import('./components/Support'));
+const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'));
+const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
+const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -106,6 +109,15 @@ function AppContent() {
         break;
       case 'messages':
         navigate('/messages');
+        break;
+      case 'waitlist':
+        navigate('/waitlist');
+        break;
+      case 'partners':
+        navigate('/partners');
+        break;
+      case 'rewards':
+        navigate('/rewards');
         break;
       case 'community':
       default:
@@ -211,6 +223,30 @@ function AppContent() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/support" element={<Support />} />
+
+        <Route path="/waitlist" element={
+          user ? (
+            <div className="min-h-screen bg-gray-50 py-8 pb-24">
+              <WaitlistManagement />
+            </div>
+          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
+
+        <Route path="/partners" element={
+          user ? (
+            <div className="min-h-screen bg-gray-50 py-8 pb-24">
+              <PartnerFinder />
+            </div>
+          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
+
+        <Route path="/rewards" element={
+          user ? (
+            <div className="min-h-screen bg-gray-50 py-8 pb-24">
+              <LoyaltyRewards />
+            </div>
+          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
 
         <Route path="*" element={<NotFound />} />
         </Routes>
