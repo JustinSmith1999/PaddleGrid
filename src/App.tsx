@@ -5,7 +5,8 @@ import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
 import { AuthModal } from './components/AuthModal';
 import { NotFound } from './components/NotFound';
-import { Loader2 } from 'lucide-react';
+import LoadingScreen from './components/LoadingScreen';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import InstallPWA from './components/InstallPWA';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -71,14 +72,7 @@ function AppContent() {
   }, [isNative]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading PaddleGrid...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Initializing app..." />;
   }
 
   const handleViewChange = (view: string) => {
@@ -126,25 +120,22 @@ function AppContent() {
     }
   };
 
-  const LoadingFallback = () => (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
-    </div>
-  );
+  const LoadingFallback = () => <LoadingScreen message="Loading content..." timeout={15000} />;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <ScrollToTop />
-      <Navbar
-        onAuthClick={() => {
-          setAuthMode('login');
-          setShowAuthModal(true);
-        }}
-        onViewChange={handleViewChange}
-      />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
+        <ScrollToTop />
+        <Navbar
+          onAuthClick={() => {
+            setAuthMode('login');
+            setShowAuthModal(true);
+          }}
+          onViewChange={handleViewChange}
+        />
 
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
         <Route path="/" element={
           <CommunityHub
             onAuthRequired={(mode = 'login') => {
@@ -261,7 +252,8 @@ function AppContent() {
       />
 
       {!isNative && <InstallPWA />}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
 
