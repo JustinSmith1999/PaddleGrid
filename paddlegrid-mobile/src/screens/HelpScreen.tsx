@@ -7,7 +7,9 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { responsiveFontSize, spacing, isTablet } from '../utils/responsive';
 
 export default function HelpScreen({ navigation }: any) {
   const handleContactSupport = () => {
@@ -23,7 +25,7 @@ export default function HelpScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1f2937" />
@@ -32,7 +34,11 @@ export default function HelpScreen({ navigation }: any) {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Get Help</Text>
 
@@ -83,7 +89,7 @@ export default function HelpScreen({ navigation }: any) {
             <Text style={styles.infoText}>
               Version 1.0.0
             </Text>
-            <Text style={styles.infoText} style={{ marginTop: 12 }}>
+            <Text style={[styles.infoText, { marginTop: spacing.sm }]}>
               PaddleGrid is the all-in-one platform for pickleball facilities and
               players. Book courts, join matches, track your stats, and connect with
               the pickleball community.
@@ -113,7 +119,7 @@ export default function HelpScreen({ navigation }: any) {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -126,37 +132,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     fontWeight: '600',
     color: '#1f2937',
   },
-  content: {
+  scrollView: {
     flex: 1,
   },
+  content: {
+    paddingBottom: spacing.xl,
+  },
   section: {
-    marginTop: 24,
-    paddingHorizontal: 16,
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     fontWeight: '600',
     color: '#1f2937',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   helpItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   helpItemLeft: {
     flexDirection: 'row',
@@ -164,47 +178,53 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   helpItemText: {
-    marginLeft: 12,
+    marginLeft: spacing.sm,
     flex: 1,
   },
   helpItemTitle: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     fontWeight: '600',
     color: '#1f2937',
   },
   helpItemSubtitle: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    marginTop: 2,
+    marginTop: spacing.xs / 2,
   },
   infoBox: {
     backgroundColor: '#fff',
-    padding: 16,
+    padding: spacing.md,
     borderRadius: 12,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   infoTitle: {
-    fontSize: 20,
+    fontSize: responsiveFontSize(20),
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    lineHeight: 20,
+    lineHeight: responsiveFontSize(20),
   },
   tipBox: {
     flexDirection: 'row',
     backgroundColor: '#d1fae5',
-    padding: 12,
+    padding: spacing.sm,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   tipText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#047857',
-    marginLeft: 12,
-    lineHeight: 20,
+    marginLeft: spacing.sm,
+    lineHeight: responsiveFontSize(20),
   },
 });

@@ -7,7 +7,9 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { responsiveFontSize, spacing, isTablet } from '../utils/responsive';
 
 export default function TermsPrivacyScreen({ navigation }: any) {
   const handleOpenTerms = () => {
@@ -19,7 +21,7 @@ export default function TermsPrivacyScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1f2937" />
@@ -28,7 +30,11 @@ export default function TermsPrivacyScreen({ navigation }: any) {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity style={styles.linkItem} onPress={handleOpenPrivacy}>
           <View style={styles.linkItemLeft}>
             <Ionicons name="shield-checkmark-outline" size={24} color="#10b981" />
@@ -130,7 +136,7 @@ export default function TermsPrivacyScreen({ navigation }: any) {
           </Text>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -143,28 +149,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     fontWeight: '600',
     color: '#1f2937',
   },
-  content: {
+  scrollView: {
     flex: 1,
-    padding: 16,
+  },
+  content: {
+    padding: spacing.md,
+    paddingBottom: spacing.xl,
   },
   linkItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   linkItemLeft: {
     flexDirection: 'row',
@@ -172,65 +186,70 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   linkItemText: {
-    marginLeft: 12,
+    marginLeft: spacing.sm,
     flex: 1,
   },
   linkItemTitle: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     fontWeight: '600',
     color: '#1f2937',
   },
   linkItemSubtitle: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    marginTop: 2,
+    marginTop: spacing.xs / 2,
   },
   summarySection: {
     backgroundColor: '#fff',
-    padding: 16,
+    padding: spacing.md,
     borderRadius: 12,
-    marginTop: 24,
+    marginTop: spacing.lg,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   summaryTitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   summaryText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    lineHeight: 20,
-    marginBottom: 16,
+    lineHeight: responsiveFontSize(20),
+    marginBottom: spacing.md,
   },
   bulletPoint: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   bulletText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#374151',
-    marginLeft: 12,
-    lineHeight: 20,
+    marginLeft: spacing.sm,
+    lineHeight: responsiveFontSize(20),
   },
   contactSection: {
     backgroundColor: '#eff6ff',
-    padding: 16,
+    padding: spacing.md,
     borderRadius: 12,
-    marginTop: 24,
-    marginBottom: 24,
+    marginTop: spacing.lg,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   contactTitle: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     fontWeight: '600',
     color: '#1f2937',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   contactText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    lineHeight: 20,
+    lineHeight: responsiveFontSize(20),
   },
 });

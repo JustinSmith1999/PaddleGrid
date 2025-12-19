@@ -6,8 +6,10 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getUserBookings, BookingWithDetails } from '@shared/api';
+import { responsiveFontSize, spacing, isTablet } from '../utils/responsive';
 
 export default function BookingsScreen() {
   const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
@@ -55,7 +57,7 @@ export default function BookingsScreen() {
   const renderBooking = ({ item }: { item: BookingWithDetails }) => (
     <View style={styles.bookingCard}>
       <View style={styles.bookingHeader}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.courtName}>{item.courts?.name}</Text>
           <Text style={styles.facilityName}>
             {item.courts?.facilities?.name}
@@ -101,14 +103,14 @@ export default function BookingsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <Text>Loading bookings...</Text>
-      </View>
+      <SafeAreaView style={styles.centerContainer} edges={['bottom']}>
+        <Text style={styles.loadingText}>Loading bookings...</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <FlatList
         data={bookings}
         renderItem={renderBooking}
@@ -138,8 +140,9 @@ export default function BookingsScreen() {
             </View>
           ) : null
         }
+        showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -152,89 +155,98 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f9fafb',
+  },
+  loadingText: {
+    fontSize: responsiveFontSize(16),
+    color: '#6b7280',
   },
   listContent: {
-    padding: 16,
+    padding: spacing.md,
+    paddingBottom: spacing.xl,
   },
   bookingCard: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   bookingHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   courtName: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     fontWeight: '600',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   facilityName: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
   },
   statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
     borderRadius: 20,
   },
   statusText: {
-    fontSize: 12,
+    fontSize: responsiveFontSize(12),
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   bookingDetails: {
-    gap: 12,
+    gap: spacing.sm,
   },
   detail: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   detailText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#374151',
-    marginLeft: 8,
+    marginLeft: spacing.sm,
   },
   emptyContainer: {
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: spacing.xl * 2,
+    paddingHorizontal: spacing.xl,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     color: '#9ca3af',
-    marginTop: 16,
+    marginTop: spacing.md,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    marginTop: 12,
-    paddingHorizontal: 32,
+    marginTop: spacing.sm,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: responsiveFontSize(20),
   },
   infoCard: {
     flexDirection: 'row',
     backgroundColor: '#d1fae5',
-    padding: 12,
+    padding: spacing.sm,
     borderRadius: 8,
-    marginBottom: 16,
+    marginBottom: spacing.md,
     alignItems: 'flex-start',
   },
   infoCardText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#047857',
-    marginLeft: 12,
-    lineHeight: 20,
+    marginLeft: spacing.sm,
+    lineHeight: responsiveFontSize(20),
   },
 });

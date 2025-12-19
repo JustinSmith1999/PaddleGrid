@@ -11,8 +11,10 @@ import {
   ActionSheetIOS,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getFeedPosts, toggleLike, SocialPost, formatTimeAgo } from '@shared/api';
+import { responsiveFontSize, spacing, getResponsiveAvatarSize, isTablet } from '../utils/responsive';
 
 export default function FeedScreen() {
   const [posts, setPosts] = useState<SocialPost[]>([]);
@@ -175,14 +177,14 @@ export default function FeedScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <Text>Loading feed...</Text>
-      </View>
+      <SafeAreaView style={styles.centerContainer} edges={['bottom']}>
+        <Text style={styles.loadingText}>Loading feed...</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <FlatList
         data={posts}
         renderItem={renderPost}
@@ -197,10 +199,13 @@ export default function FeedScreen() {
             <Text style={styles.emptyText}>No posts yet</Text>
           </View>
         }
+        showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
+
+const avatarSizes = getResponsiveAvatarSize();
 
 const styles = StyleSheet.create({
   container: {
@@ -211,35 +216,45 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f9fafb',
+  },
+  loadingText: {
+    fontSize: responsiveFontSize(16),
+    color: '#6b7280',
   },
   listContent: {
-    padding: 16,
+    padding: spacing.md,
+    paddingBottom: spacing.xl,
   },
   postCard: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   postHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   authorInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
+    width: avatarSizes.small,
+    height: avatarSizes.small,
+    borderRadius: avatarSizes.small / 2,
+    marginRight: spacing.sm,
   },
   avatarPlaceholder: {
     backgroundColor: '#10b981',
@@ -247,59 +262,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   authorName: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     fontWeight: '600',
     color: '#1f2937',
   },
   postTime: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#9ca3af',
   },
   postContent: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     color: '#374151',
-    lineHeight: 24,
-    marginBottom: 12,
+    lineHeight: responsiveFontSize(24),
+    marginBottom: spacing.sm,
   },
   matchBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#d1fae5',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
     borderRadius: 20,
     alignSelf: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   matchBadgeText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#10b981',
     fontWeight: '600',
-    marginLeft: 6,
+    marginLeft: spacing.xs,
   },
   postActions: {
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#f3f4f6',
-    paddingTop: 12,
+    paddingTop: spacing.sm,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 24,
+    marginRight: spacing.lg,
   },
   actionText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     color: '#6b7280',
-    marginLeft: 6,
+    marginLeft: spacing.xs,
   },
   emptyContainer: {
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: spacing.xl * 2,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     color: '#9ca3af',
-    marginTop: 16,
+    marginTop: spacing.md,
   },
 });

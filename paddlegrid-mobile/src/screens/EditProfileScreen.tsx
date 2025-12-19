@@ -8,9 +8,15 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import { responsiveFontSize, spacing, isTablet } from '../utils/responsive';
 
 export default function EditProfileScreen({ navigation }: any) {
   const { profile } = useAuth();
@@ -56,7 +62,7 @@ export default function EditProfileScreen({ navigation }: any) {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1f2937" />
@@ -71,59 +77,73 @@ export default function EditProfileScreen({ navigation }: any) {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.form}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.full_name}
-            onChangeText={(text) => setFormData({ ...formData, full_name: text })}
-            placeholder="Enter your full name"
-          />
-        </View>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.form}>
+              <View style={styles.field}>
+                <Text style={styles.label}>Full Name</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.full_name}
+                  onChangeText={(text) => setFormData({ ...formData, full_name: text })}
+                  placeholder="Enter your full name"
+                />
+              </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>First Name</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.first_name}
-            onChangeText={(text) => setFormData({ ...formData, first_name: text })}
-            placeholder="Enter your first name"
-          />
-        </View>
+              <View style={styles.field}>
+                <Text style={styles.label}>First Name</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.first_name}
+                  onChangeText={(text) => setFormData({ ...formData, first_name: text })}
+                  placeholder="Enter your first name"
+                />
+              </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Last Name</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.last_name}
-            onChangeText={(text) => setFormData({ ...formData, last_name: text })}
-            placeholder="Enter your last name"
-          />
-        </View>
+              <View style={styles.field}>
+                <Text style={styles.label}>Last Name</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.last_name}
+                  onChangeText={(text) => setFormData({ ...formData, last_name: text })}
+                  placeholder="Enter your last name"
+                />
+              </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.phone}
-            onChangeText={(text) => setFormData({ ...formData, phone: text })}
-            placeholder="Enter your phone number"
-            keyboardType="phone-pad"
-          />
-        </View>
+              <View style={styles.field}>
+                <Text style={styles.label}>Phone Number</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.phone}
+                  onChangeText={(text) => setFormData({ ...formData, phone: text })}
+                  placeholder="Enter your phone number"
+                  keyboardType="phone-pad"
+                />
+              </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[styles.input, styles.disabledInput]}
-            value={profile?.email}
-            editable={false}
-          />
-          <Text style={styles.hint}>Email cannot be changed</Text>
-        </View>
-      </View>
-    </ScrollView>
+              <View style={styles.field}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={[styles.input, styles.disabledInput]}
+                  value={profile?.email}
+                  editable={false}
+                />
+                <Text style={styles.hint}>Email cannot be changed</Text>
+              </View>
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -136,40 +156,54 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     fontWeight: '600',
     color: '#1f2937',
   },
   saveButton: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     fontWeight: '600',
     color: '#10b981',
   },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: spacing.xl,
+  },
   form: {
-    padding: 16,
+    padding: spacing.md,
+    maxWidth: isTablet() ? 700 : undefined,
+    alignSelf: isTablet() ? 'center' : 'stretch',
+    width: isTablet() ? '100%' : undefined,
   },
   field: {
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(14),
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   input: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#d1d5db',
     borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    fontSize: responsiveFontSize(16),
     color: '#1f2937',
   },
   disabledInput: {
@@ -177,8 +211,8 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   hint: {
-    fontSize: 12,
+    fontSize: responsiveFontSize(12),
     color: '#9ca3af',
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
 });

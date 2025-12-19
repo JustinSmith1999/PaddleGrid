@@ -10,8 +10,12 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
+import { responsiveFontSize, spacing, hp } from '../../utils/responsive';
 
 export default function SignUpScreen({ navigation }: any) {
   const [firstName, setFirstName] = useState('');
@@ -58,98 +62,106 @@ export default function SignUpScreen({ navigation }: any) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Join PaddleGrid today</Text>
-        </View>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="First Name *"
-            placeholderTextColor="#9ca3af"
-            value={firstName}
-            onChangeText={setFirstName}
-            autoCapitalize="words"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Last Name *"
-            placeholderTextColor="#9ca3af"
-            value={lastName}
-            onChangeText={setLastName}
-            autoCapitalize="words"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email *"
-            placeholderTextColor="#9ca3af"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoCorrect={false}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Phone (optional)"
-            placeholderTextColor="#9ca3af"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password *"
-            placeholderTextColor="#9ca3af"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password *"
-            placeholderTextColor="#9ca3af"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-            autoCapitalize="none"
-          />
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleSignUp}
-            disabled={loading}
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Sign Up</Text>
-            )}
-          </TouchableOpacity>
+            <View style={styles.header}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Join PaddleGrid today</Text>
+            </View>
 
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.linkText}>
-              Already have an account? <Text style={styles.linkTextBold}>Sign In</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <View style={styles.form}>
+              <TextInput
+                style={styles.input}
+                placeholder="First Name *"
+                placeholderTextColor="#9ca3af"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="words"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Last Name *"
+                placeholderTextColor="#9ca3af"
+                value={lastName}
+                onChangeText={setLastName}
+                autoCapitalize="words"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Email *"
+                placeholderTextColor="#9ca3af"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Phone (optional)"
+                placeholderTextColor="#9ca3af"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Password *"
+                placeholderTextColor="#9ca3af"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password *"
+                placeholderTextColor="#9ca3af"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleSignUp}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>Sign Up</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.linkButton}
+                onPress={() => navigation.navigate('Login')}
+              >
+                <Text style={styles.linkText}>
+                  Already have an account? <Text style={styles.linkTextBold}>Sign In</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -158,57 +170,64 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  keyboardView: {
+    flex: 1,
+  },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: hp(4),
   },
   title: {
-    fontSize: 32,
+    fontSize: responsiveFontSize(32),
     fontWeight: 'bold',
     color: '#1f2937',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
     color: '#6b7280',
   },
   form: {
     width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
   input: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#e5e7eb',
     borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    marginBottom: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: responsiveFontSize(16),
+    marginBottom: spacing.md,
     color: '#1f2937',
   },
   button: {
     backgroundColor: '#10b981',
     borderRadius: 12,
-    padding: 16,
+    paddingVertical: spacing.md,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: responsiveFontSize(18),
     fontWeight: '600',
   },
   linkButton: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.lg,
   },
   linkText: {
     color: '#6b7280',
-    fontSize: 16,
+    fontSize: responsiveFontSize(16),
   },
   linkTextBold: {
     color: '#10b981',
