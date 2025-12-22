@@ -135,43 +135,48 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white">
         <div className="max-w-7xl mx-auto px-4 py-16">
-          <h1 className="text-4xl font-bold mb-4">Event Series</h1>
-          <p className="text-xl text-blue-100 mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 rounded-2xl bg-white/10 backdrop-blur-sm">
+              <TrendingUp className="w-8 h-8" />
+            </div>
+            <h1 className="text-4xl font-bold">Event Series</h1>
+          </div>
+          <p className="text-xl text-emerald-100 mb-8 text-center">
             Join recurring events, clinics, and leagues designed for your skill level
           </p>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
                 <input
                   type="text"
                   placeholder="Search series..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="w-full pl-12 pr-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 />
               </div>
-              <div className="flex items-center gap-2 px-4 py-3 bg-white/20 rounded-lg border border-white/30">
+              <div className="flex items-center gap-2 px-4 py-3 bg-white/20 rounded-xl border border-white/30">
                 <ArrowUpDown className="w-5 h-5 text-white/80" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
                   className="bg-transparent text-white text-sm font-medium focus:outline-none cursor-pointer"
                 >
-                  <option value="date" className="bg-blue-700">Earliest Date</option>
-                  <option value="price_low" className="bg-blue-700">Price: Low to High</option>
-                  <option value="price_high" className="bg-blue-700">Price: High to Low</option>
-                  <option value="availability" className="bg-blue-700">Most Available</option>
-                  <option value="title" className="bg-blue-700">Name (A-Z)</option>
+                  <option value="date" className="bg-emerald-700">Earliest Date</option>
+                  <option value="price_low" className="bg-emerald-700">Price: Low to High</option>
+                  <option value="price_high" className="bg-emerald-700">Price: High to Low</option>
+                  <option value="availability" className="bg-emerald-700">Most Available</option>
+                  <option value="title" className="bg-emerald-700">Name (A-Z)</option>
                 </select>
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-lg transition border border-white/30"
+                className="flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-xl transition-all border border-white/30"
               >
                 <Filter className="w-5 h-5" />
                 Filters
@@ -185,14 +190,14 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   >
-                    <option value="all">All Types</option>
-                    <option value="open_play">Open Play</option>
-                    <option value="clinic">Clinic</option>
-                    <option value="tournament">Tournament</option>
-                    <option value="league">League</option>
-                    <option value="social">Social</option>
+                    <option value="all" className="bg-emerald-700">All Types</option>
+                    <option value="open_play" className="bg-emerald-700">Open Play</option>
+                    <option value="clinic" className="bg-emerald-700">Clinic</option>
+                    <option value="tournament" className="bg-emerald-700">Tournament</option>
+                    <option value="league" className="bg-emerald-700">League</option>
+                    <option value="social" className="bg-emerald-700">Social</option>
                   </select>
                 </div>
 
@@ -203,16 +208,16 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
                     onChange={(e) =>
                       setFilterSkillLevel(e.target.value ? parseFloat(e.target.value) : null)
                     }
-                    className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   >
-                    <option value="">All Levels</option>
-                    <option value="2.0">2.0</option>
-                    <option value="2.5">2.5</option>
-                    <option value="3.0">3.0</option>
-                    <option value="3.5">3.5</option>
-                    <option value="4.0">4.0</option>
-                    <option value="4.5">4.5</option>
-                    <option value="5.0">5.0+</option>
+                    <option value="" className="bg-emerald-700">All Levels</option>
+                    <option value="2.0" className="bg-emerald-700">2.0</option>
+                    <option value="2.5" className="bg-emerald-700">2.5</option>
+                    <option value="3.0" className="bg-emerald-700">3.0</option>
+                    <option value="3.5" className="bg-emerald-700">3.5</option>
+                    <option value="4.0" className="bg-emerald-700">4.0</option>
+                    <option value="4.5" className="bg-emerald-700">4.5</option>
+                    <option value="5.0" className="bg-emerald-700">5.0+</option>
                   </select>
                 </div>
               </div>
@@ -244,41 +249,41 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
                   <div
                     key={s.id}
                     onClick={() => onSeriesClick(s.id)}
-                    className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer overflow-hidden group"
+                    className="bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg hover:border-emerald-400 transition-all cursor-pointer overflow-hidden group"
                   >
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-3">
                         <span
-                          className={`px-3 py-1 rounded-lg text-xs font-medium ${getEventTypeColor(
+                          className={`px-3 py-1 rounded-xl text-xs font-medium ${getEventTypeColor(
                             s.event_type
                           )}`}
                         >
                           {getEventTypeLabel(s.event_type)}
                         </span>
-                        <span className="text-sm font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                        <span className="text-sm font-medium text-emerald-700 bg-emerald-50 px-3 py-1 rounded-xl">
                           {s.skill_level_min} - {s.skill_level_max}
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{s.title}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{s.description}</p>
+                      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">{s.title}</h3>
+                      <p className="text-slate-600 text-sm mb-4 line-clamp-2">{s.description}</p>
 
-                      <div className="space-y-2 text-sm text-gray-600 mb-4">
+                      <div className="space-y-2 text-sm text-slate-600 mb-4">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <Calendar className="w-4 h-4 text-emerald-500" />
                           <span>
                             {new Date(firstOccurrence.occurrence_date).toLocaleDateString()} -{' '}
                             {new Date(lastOccurrence.occurrence_date).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-gray-400" />
+                          <Users className="w-4 h-4 text-emerald-500" />
                           <span>
                             {s.occurrences.length} sessions • {availableSpots} spots available
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <DollarSign className="w-4 h-4 text-gray-400" />
+                          <DollarSign className="w-4 h-4 text-emerald-500" />
                           <span>
                             ${s.price_per_session}/session
                             {s.series_discount_percentage > 0 &&
@@ -288,14 +293,14 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
                       </div>
 
                       {availableSpots > 0 ? (
-                        <div className="pt-4 border-t border-gray-100">
-                          <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                        <div className="pt-4 border-t border-slate-100">
+                          <button className="w-full px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-semibold shadow-sm">
                             View Details
                           </button>
                         </div>
                       ) : (
-                        <div className="pt-4 border-t border-gray-100">
-                          <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+                        <div className="pt-4 border-t border-slate-100">
+                          <button className="w-full px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-all text-sm font-semibold">
                             Join Waitlist
                           </button>
                         </div>
@@ -310,7 +315,7 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
               <div className="text-center mt-8">
                 <button
                   onClick={() => setDisplayCount(prev => Math.min(prev + 6, sortedSeries.length))}
-                  className="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition font-medium"
+                  className="px-8 py-3 bg-white border-2 border-emerald-300 text-emerald-700 rounded-xl hover:border-emerald-400 hover:bg-emerald-50 transition-all font-semibold shadow-sm"
                 >
                   Show More ({sortedSeries.length - displayCount} remaining)
                 </button>
