@@ -155,7 +155,17 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                         className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                       >
                         <Calendar className="w-4 h-4" />
-                        My Bookings
+                        Book a Court
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          window.location.href = '/bookings/history';
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <Clock className="w-4 h-4" />
+                        Booking History
                       </button>
                       <button
                         onClick={() => {

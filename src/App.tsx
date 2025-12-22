@@ -14,6 +14,7 @@ import { App as CapacitorApp } from '@capacitor/app';
 
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
+const BookingFlow = lazy(() => import('./components/BookingFlow').then(m => ({ default: m.BookingFlow })));
 const UserBookings = lazy(() => import('./components/UserBookings').then(m => ({ default: m.UserBookings })));
 const AdminPanel = lazy(() => import('./components/admin/AdminPanel').then(m => ({ default: m.AdminPanel })));
 const PlayerProfile = lazy(() => import('./components/PlayerProfile').then(m => ({ default: m.PlayerProfile })));
@@ -194,7 +195,9 @@ function AppContent() {
           </div>
         } />
 
-        <Route path="/bookings" element={
+        <Route path="/bookings" element={<BookingFlow />} />
+
+        <Route path="/bookings/history" element={
           <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-8 pb-24">
             <UserBookings />
           </div>
