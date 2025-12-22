@@ -35,7 +35,7 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
   const navItems = [
     { view: 'community' as ViewType, icon: Home, label: 'Feed' },
     { view: 'browse' as ViewType, icon: Search, label: 'Clubs' },
-    { view: 'series' as ViewType, icon: Trophy, label: 'Series' },
+    { view: 'bookings' as ViewType, icon: Calendar, label: 'Book' },
     { view: 'discover' as ViewType, icon: Users, label: 'Players' },
   ];
 
