@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar, Clock, Gift } from 'lucide-react';
+import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar, Clock, Gift, Trophy } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUnreadNotificationCount } from '../lib/socialUtils';
 import NotificationsPanel from './social/NotificationsPanel';
 import { useLocation } from 'react-router-dom';
 
-type ViewType = 'home' | 'browse' | 'bookings' | 'profile' | 'admin' | 'series' | 'my-series' | 'community' | 'trending' | 'discover' | 'sales';
+type ViewType = 'home' | 'browse' | 'bookings' | 'profile' | 'admin' | 'series' | 'my-series' | 'community' | 'trending' | 'discover' | 'sales' | 'leaderboard' | 'tournaments';
 
 interface NavbarProps {
   onAuthClick: () => void;
@@ -146,6 +146,16 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                       >
                         <User className="w-4 h-4" />
                         View Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          handleViewChange('my-series');
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <Trophy className="w-4 h-4" />
+                        My Series
                       </button>
                       <button
                         onClick={() => {

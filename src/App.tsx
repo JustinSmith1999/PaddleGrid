@@ -33,6 +33,8 @@ const Support = lazy(() => import('./components/Support'));
 const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'));
 const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
+const PublicLeaderboard = lazy(() => import('./components/PublicLeaderboard'));
+const TournamentBrackets = lazy(() => import('./components/TournamentBrackets'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -112,6 +114,12 @@ function AppContent() {
         break;
       case 'rewards':
         navigate('/rewards');
+        break;
+      case 'leaderboard':
+        navigate('/leaderboard');
+        break;
+      case 'tournaments':
+        navigate('/tournaments');
         break;
       case 'community':
       default:
@@ -237,6 +245,18 @@ function AppContent() {
               <LoyaltyRewards />
             </div>
           ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
+
+        <Route path="/leaderboard" element={
+          <div className="min-h-screen bg-gray-50 py-8 pb-24">
+            <PublicLeaderboard />
+          </div>
+        } />
+
+        <Route path="/tournaments" element={
+          <div className="min-h-screen bg-gray-50 py-8 pb-24">
+            <TournamentBrackets />
+          </div>
         } />
 
         <Route path="*" element={<NotFound />} />

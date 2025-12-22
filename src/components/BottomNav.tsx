@@ -1,8 +1,8 @@
-import { Home, Search, Calendar, User, Shield, TrendingUp, Users } from 'lucide-react';
+import { Home, Search, Calendar, User, Shield, TrendingUp, Users, Trophy } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
 
-type ViewType = 'home' | 'browse' | 'bookings' | 'profile' | 'admin' | 'series' | 'my-series' | 'community' | 'trending' | 'discover';
+type ViewType = 'home' | 'browse' | 'bookings' | 'profile' | 'admin' | 'series' | 'my-series' | 'community' | 'trending' | 'discover' | 'leaderboard' | 'tournaments';
 
 interface BottomNavProps {
   onViewChange: (view: ViewType) => void;
@@ -20,6 +20,7 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
     if (path.startsWith('/profile')) return 'profile';
     if (path.startsWith('/admin')) return 'admin';
     if (path.startsWith('/discover')) return 'discover';
+    if (path.startsWith('/series') || path.startsWith('/my-series')) return 'series';
     if (path.startsWith('/player/')) return 'community';
     if (path.startsWith('/post/')) return 'community';
     return 'community';
@@ -34,7 +35,8 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
   const navItems = [
     { view: 'community' as ViewType, icon: Home, label: 'Feed' },
     { view: 'browse' as ViewType, icon: Search, label: 'Clubs' },
-    { view: 'discover' as ViewType, icon: Users, label: 'Search' },
+    { view: 'series' as ViewType, icon: Trophy, label: 'Series' },
+    { view: 'discover' as ViewType, icon: Users, label: 'Players' },
   ];
 
   if (isAdmin) {
