@@ -7,8 +7,6 @@ import FeedScreen from '../screens/FeedScreen';
 import ClubsScreen from '../screens/ClubsScreen';
 import BookingsScreen from '../screens/BookingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import MySeriesScreen from '../screens/MySeriesScreen';
-import LeaderboardScreen from '../screens/LeaderboardScreen';
 import { responsiveFontSize, isSmallDevice } from '../utils/responsive';
 
 const Tab = createBottomTabNavigator();
@@ -36,10 +34,8 @@ export default function MainTabNavigator() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Clubs') {
             iconName = focused ? 'business' : 'business-outline';
-          } else if (route.name === 'Series') {
-            iconName = focused ? 'trophy' : 'trophy-outline';
-          } else if (route.name === 'Leaderboard') {
-            iconName = focused ? 'podium' : 'podium-outline';
+          } else if (route.name === 'Bookings') {
+            iconName = focused ? 'calendar' : 'calendar-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           }
@@ -77,14 +73,9 @@ export default function MainTabNavigator() {
         options={{ title: 'Clubs' }}
       />
       <Tab.Screen
-        name="Series"
-        component={MySeriesScreen}
-        options={{ title: 'Series' }}
-      />
-      <Tab.Screen
-        name="Leaderboard"
-        component={LeaderboardScreen}
-        options={{ title: 'Rankings' }}
+        name="Bookings"
+        component={BookingsScreen}
+        options={{ title: 'My Bookings' }}
       />
       <Tab.Screen
         name="Profile"

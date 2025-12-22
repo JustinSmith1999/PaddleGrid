@@ -14,7 +14,6 @@ import { App as CapacitorApp } from '@capacitor/app';
 
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
-const BookingFlow = lazy(() => import('./components/BookingFlow').then(m => ({ default: m.BookingFlow })));
 const UserBookings = lazy(() => import('./components/UserBookings').then(m => ({ default: m.UserBookings })));
 const AdminPanel = lazy(() => import('./components/admin/AdminPanel').then(m => ({ default: m.AdminPanel })));
 const PlayerProfile = lazy(() => import('./components/PlayerProfile').then(m => ({ default: m.PlayerProfile })));
@@ -34,8 +33,6 @@ const Support = lazy(() => import('./components/Support'));
 const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'));
 const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
-const PublicLeaderboard = lazy(() => import('./components/PublicLeaderboard'));
-const TournamentBrackets = lazy(() => import('./components/TournamentBrackets'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -116,12 +113,6 @@ function AppContent() {
       case 'rewards':
         navigate('/rewards');
         break;
-      case 'leaderboard':
-        navigate('/leaderboard');
-        break;
-      case 'tournaments':
-        navigate('/tournaments');
-        break;
       case 'community':
       default:
         navigate('/');
@@ -195,9 +186,7 @@ function AppContent() {
           </div>
         } />
 
-        <Route path="/bookings" element={<BookingFlow />} />
-
-        <Route path="/bookings/history" element={
+        <Route path="/bookings" element={
           <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-8 pb-24">
             <UserBookings />
           </div>
@@ -248,18 +237,6 @@ function AppContent() {
               <LoyaltyRewards />
             </div>
           ) : <div className="min-h-screen bg-gray-50 pb-20" />
-        } />
-
-        <Route path="/leaderboard" element={
-          <div className="min-h-screen bg-gray-50 py-8 pb-24">
-            <PublicLeaderboard />
-          </div>
-        } />
-
-        <Route path="/tournaments" element={
-          <div className="min-h-screen bg-gray-50 py-8 pb-24">
-            <TournamentBrackets />
-          </div>
         } />
 
         <Route path="*" element={<NotFound />} />
