@@ -53,11 +53,23 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
 
   const fetchPlayerData = async () => {
     try {
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('id, full_name, email, phone, created_at, profile_picture_url')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        alert(`Unable to load profile: ${profileError.message}`);
+        return;
+      }
+
+      if (!profileData) {
+        console.error('Profile not found for user:', userId);
+        alert('Profile not found');
+        return;
+      }
 
       setProfile(profileData);
 
@@ -83,8 +95,9 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
           matches_won: 0,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching player data:', error);
+      alert(`Error: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
