@@ -14,51 +14,33 @@ interface WeatherData {
     low: number;
     condition: string;
   }>;
+  location?: string;
 }
 
-export default function WeatherWidget() {
+interface WeatherWidgetProps {
+  latitude?: number;
+  longitude?: number;
+  locationName?: string;
+}
+
+export default function WeatherWidget({ latitude, longitude, locationName }: WeatherWidgetProps = {}) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     loadWeather();
-  }, []);
+  }, [latitude, longitude]);
 
   async function loadWeather() {
     try {
-      if ('geolocation' in navigator) {
+      if (latitude && longitude) {
+        await fetchWeatherData(latitude, longitude, locationName);
+      } else if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
-
-            const response = await fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=3`
-            );
-
-            if (!response.ok) throw new Error('Weather fetch failed');
-
-            const data = await response.json();
-
-            const weatherCondition = getWeatherCondition(data.current.weather_code);
-
-            const forecast = data.daily.time.slice(0, 3).map((time: string, index: number) => ({
-              day: new Date(time).toLocaleDateString('en-US', { weekday: 'short' }),
-              high: Math.round(data.daily.temperature_2m_max[index]),
-              low: Math.round(data.daily.temperature_2m_min[index]),
-              condition: getWeatherCondition(data.daily.weather_code[index])
-            }));
-
-            setWeather({
-              current: {
-                temp: Math.round(data.current.temperature_2m),
-                condition: weatherCondition,
-                humidity: data.current.relative_humidity_2m,
-                windSpeed: Math.round(data.current.wind_speed_10m)
-              },
-              forecast
-            });
-            setLoading(false);
+            await fetchWeatherData(latitude, longitude, 'Your Location');
           },
           () => {
             setError(true);
@@ -71,6 +53,62 @@ export default function WeatherWidget() {
       }
     } catch (err) {
       console.error('Error loading weather:', err);
+      setError(true);
+      setLoading(false);
+    }
+  }
+
+  async function fetchWeatherData(lat: number, lon: number, locName?: string) {
+    try {
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=3`
+      );
+
+      if (!response.ok) throw new Error('Weather fetch failed');
+
+      const data = await response.json();
+
+      const weatherCondition = getWeatherCondition(data.current.weather_code);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const forecast = data.daily.time.slice(0, 3).map((time: string, index: number) => {
+        const forecastDate = new Date(time);
+        forecastDate.setHours(0, 0, 0, 0);
+
+        const daysDiff = Math.round((forecastDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+        let dayLabel = '';
+        if (daysDiff === 0) {
+          dayLabel = 'Today';
+        } else if (daysDiff === 1) {
+          dayLabel = 'Tomorrow';
+        } else {
+          dayLabel = forecastDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        return {
+          day: dayLabel,
+          high: Math.round(data.daily.temperature_2m_max[index]),
+          low: Math.round(data.daily.temperature_2m_min[index]),
+          condition: getWeatherCondition(data.daily.weather_code[index])
+        };
+      });
+
+      setWeather({
+        current: {
+          temp: Math.round(data.current.temperature_2m),
+          condition: weatherCondition,
+          humidity: data.current.relative_humidity_2m,
+          windSpeed: Math.round(data.current.wind_speed_10m)
+        },
+        forecast,
+        location: locName
+      });
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching weather data:', err);
       setError(true);
       setLoading(false);
     }
@@ -129,9 +167,16 @@ export default function WeatherWidget() {
   return (
     <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
       <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
-        <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">
-          Court Conditions
-        </h2>
+        <div>
+          <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">
+            Court Conditions
+          </h2>
+          {weather.location && (
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              {weather.location}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="p-6">
