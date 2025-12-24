@@ -71,13 +71,21 @@ export default function WeatherWidget({ latitude, longitude, locationName }: Wea
       const weatherCondition = getWeatherCondition(data.current.weather_code);
 
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const todayDateStr = today.toISOString().split('T')[0];
 
       const forecast = data.daily.time.slice(0, 3).map((time: string, index: number) => {
-        const forecastDate = new Date(time);
-        forecastDate.setHours(0, 0, 0, 0);
+        const forecastDateStr = time;
 
-        const daysDiff = Math.round((forecastDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const daysDiff = (() => {
+          if (forecastDateStr === todayDateStr) return 0;
+
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const tomorrowStr = tomorrow.toISOString().split('T')[0];
+          if (forecastDateStr === tomorrowStr) return 1;
+
+          return 2;
+        })();
 
         let dayLabel = '';
         if (daysDiff === 0) {
@@ -85,7 +93,9 @@ export default function WeatherWidget({ latitude, longitude, locationName }: Wea
         } else if (daysDiff === 1) {
           dayLabel = 'Tomorrow';
         } else {
-          dayLabel = forecastDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+          const [year, month, day] = time.split('-').map(Number);
+          const displayDate = new Date(year, month - 1, day);
+          dayLabel = displayDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         }
 
         return {
