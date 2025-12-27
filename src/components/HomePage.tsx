@@ -64,22 +64,22 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
     <>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600">
+        <div className="relative overflow-hidden bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 min-h-screen flex items-center">
           {/* Decorative Elements */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.08),transparent_40%)]" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[calc(100vh-80px)] py-20 lg:py-0">
+          <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
+            <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
               {/* Left Content */}
-              <div className="text-center lg:text-left space-y-8">
+              <div className="text-center lg:text-left space-y-6 sm:space-y-8">
                 {/* Headline */}
-                <div className="space-y-6">
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.05] tracking-tight">
+                <div className="space-y-4 sm:space-y-6">
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.05] tracking-tight">
                     Your Pickleball Community
                   </h1>
 
-                  <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light">
+                  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/95 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light">
                     Connect with players. Share your wins. Find matches.
                     <br className="hidden sm:block" />
                     Grow your game.
@@ -87,10 +87,10 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start pt-2 sm:pt-4">
                   <button
                     onClick={() => onAuthRequired('signup')}
-                    className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold text-teal-600 bg-white rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                    className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-teal-600 bg-white rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
                   >
                     <Users className="w-5 h-5" />
                     Get Started Free
@@ -98,7 +98,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   </button>
                   <button
                     onClick={() => onAuthRequired('login')}
-                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white/30 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
+                    className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white border-2 border-white/30 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
                   >
                     Sign In
                   </button>
@@ -106,7 +106,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               </div>
 
               {/* Right Content - Feature Grid */}
-              <div className="grid grid-cols-2 gap-6 lg:gap-8">
+              <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {[
                   {
                     icon: Users,
@@ -131,22 +131,22 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 ].map((feature, index) => (
                   <div
                     key={index}
-                    className="group relative bg-white/10 backdrop-blur-md rounded-2xl p-6 lg:p-8 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105"
+                    className="group relative bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105"
                   >
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <feature.icon className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+                    <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3 lg:space-y-4">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
                       </div>
-                      <div className="space-y-2">
-                        <h3 className="text-lg lg:text-xl font-bold text-white">
+                      <div className="space-y-1 sm:space-y-2">
+                        <h3 className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
                           {feature.title}
                         </h3>
-                        <p className="text-sm lg:text-base text-white/80 leading-snug">
+                        <p className="text-xs sm:text-sm lg:text-base text-white/80 leading-snug">
                           {feature.description}
                         </p>
                       </div>
                     </div>
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 ))}
               </div>
