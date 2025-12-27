@@ -7,6 +7,7 @@ import {
   Animated,
   Dimensions,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -50,13 +51,15 @@ export default function WelcomeScreen({ navigation }: any) {
   };
 
   return (
-    <LinearGradient
-      colors={['#10b981', '#059669', '#047857']}
-      style={styles.gradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <>
+      <StatusBar barStyle="light-content" />
+      <LinearGradient
+        colors={['#10b981', '#059669', '#047857']}
+        style={styles.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      >
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <View style={styles.content}>
           <Animated.View
             style={[
@@ -119,6 +122,7 @@ export default function WelcomeScreen({ navigation }: any) {
         </View>
       </SafeAreaView>
     </LinearGradient>
+    </>
   );
 }
 

@@ -10,6 +10,7 @@ import {
   Alert,
   ActionSheetIOS,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -184,7 +185,9 @@ export default function FeedScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.container} edges={['bottom']}>
       <FlatList
         data={posts}
         renderItem={renderPost}
@@ -202,6 +205,7 @@ export default function FeedScreen() {
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
+    </>
   );
 }
 
