@@ -12,6 +12,7 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
 
+const HomePage = lazy(() => import('./components/HomePage').then(m => ({ default: m.HomePage })));
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
 const UserBookings = lazy(() => import('./components/UserBookings').then(m => ({ default: m.UserBookings })));
@@ -114,6 +115,8 @@ function AppContent() {
         navigate('/rewards');
         break;
       case 'community':
+        navigate('/community');
+        break;
       default:
         navigate('/');
         break;
@@ -137,6 +140,15 @@ function AppContent() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
         <Route path="/" element={
+          <HomePage
+            onAuthRequired={(mode = 'login') => {
+              setAuthMode(mode);
+              setShowAuthModal(true);
+            }}
+          />
+        } />
+
+        <Route path="/community" element={
           <CommunityHub
             onAuthRequired={(mode = 'login') => {
               setAuthMode(mode);
