@@ -29,29 +29,41 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
 
   useEffect(() => {
-    registerForPushNotifications();
-
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
+    registerForPushNotifications().catch(error => {
+      console.error('Failed to register for push notifications:', error);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response:', response);
-    });
+    try {
+      notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        setNotification(notification);
+      });
+
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log('Notification response:', response);
+      });
+    } catch (error) {
+      console.error('Error setting up notification listeners:', error);
+    }
 
     return () => {
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      }
-      if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+      try {
+        if (notificationListener.current) {
+          Notifications.removeNotificationSubscription(notificationListener.current);
+        }
+        if (responseListener.current) {
+          Notifications.removeNotificationSubscription(responseListener.current);
+        }
+      } catch (error) {
+        console.error('Error removing notification listeners:', error);
       }
     };
   }, []);
 
   useEffect(() => {
     if (user && expoPushToken) {
-      registerTokenWithBackend(expoPushToken);
+      registerTokenWithBackend(expoPushToken).catch(error => {
+        console.error('Failed to register token with backend:', error);
+      });
     }
   }, [user, expoPushToken]);
 

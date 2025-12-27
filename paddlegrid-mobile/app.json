@@ -11,6 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#10b981"
     },
+    "jsEngine": "hermes",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -21,10 +22,17 @@
       "bundleIdentifier": "com.paddlegrid.app",
       "buildNumber": "1",
       "deploymentTarget": "15.1",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#10b981",
+        "tabletImage": "./assets/splash.png"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "Allow PaddleGrid to access your camera to take profile pictures and post photos.",
         "NSPhotoLibraryUsageDescription": "Allow PaddleGrid to access your photos to select profile pictures and post photos.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UILaunchStoryboardName": "SplashScreen"
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -33,6 +41,11 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#10b981"
+      },
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
         "backgroundColor": "#10b981"
       },
       "package": "com.paddlegrid.app",

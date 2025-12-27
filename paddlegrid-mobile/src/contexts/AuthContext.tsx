@@ -36,26 +36,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadSession();
 
     const subscription = onAuthStateChange((event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
+      try {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
 
-      if (newSession?.user) {
-        fetchProfile(newSession.user.id);
-        if (newSession.access_token) {
-          SecureStore.setItemAsync('access_token', newSession.access_token);
+        if (newSession?.user) {
+          fetchProfile(newSession.user.id);
+          if (newSession.access_token) {
+            SecureStore.setItemAsync('access_token', newSession.access_token).catch(console.error);
+          }
+          if (newSession.refresh_token) {
+            SecureStore.setItemAsync('refresh_token', newSession.refresh_token).catch(console.error);
+          }
+        } else {
+          setProfile(null);
+          setLoading(false);
+          SecureStore.deleteItemAsync('access_token').catch(console.error);
+          SecureStore.deleteItemAsync('refresh_token').catch(console.error);
         }
-        if (newSession.refresh_token) {
-          SecureStore.setItemAsync('refresh_token', newSession.refresh_token);
-        }
-      } else {
-        setProfile(null);
+      } catch (error) {
+        console.error('Error in auth state change:', error);
         setLoading(false);
-        SecureStore.deleteItemAsync('access_token');
-        SecureStore.deleteItemAsync('refresh_token');
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      try {
+        subscription.unsubscribe();
+      } catch (error) {
+        console.error('Error unsubscribing from auth:', error);
+      }
+    };
   }, []);
 
   const loadSession = async () => {
