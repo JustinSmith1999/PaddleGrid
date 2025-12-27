@@ -64,80 +64,91 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
     <>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
         {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5" />
-          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-teal-100/20 to-transparent rounded-full blur-3xl" />
+        <div className="relative overflow-hidden bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600">
+          {/* Decorative Elements */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.08),transparent_40%)]" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 lg:pt-32 lg:pb-40">
-            <div className="lg:grid lg:grid-cols-12 gap-12 items-center">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[calc(100vh-80px)] py-20 lg:py-0">
               {/* Left Content */}
-              <div className="lg:col-span-7 text-center lg:text-left space-y-8">
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2 text-sm font-medium text-emerald-900">
-                  <Sparkles className="w-4 h-4" />
-                  Trusted by 500+ Elite Facilities
-                </div>
-
+              <div className="text-center lg:text-left space-y-8">
                 {/* Headline */}
-                <div className="space-y-4">
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight">
-                    Modern Court Management for{' '}
-                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">
-                      Facilities That Demand Better.
-                    </span>
+                <div className="space-y-6">
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.05] tracking-tight">
+                    Your Pickleball Community
                   </h1>
 
-                  <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                    Save time, increase revenue, and deliver a membership experience players love.
+                  <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light">
+                    Connect with players. Share your wins. Find matches.
+                    <br className="hidden sm:block" />
+                    Grow your game.
                   </p>
                 </div>
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <button
-                    onClick={() => onAuthRequired('facility')}
-                    className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 hover:scale-105"
+                    onClick={() => onAuthRequired('signup')}
+                    className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold text-teal-600 bg-white rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
                   >
-                    Start Free Trial
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <Users className="w-5 h-5" />
+                    Get Started Free
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
                   <button
-                    onClick={() => setShowDemo('checkout')}
-                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-300"
+                    onClick={() => onAuthRequired('login')}
+                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white/30 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
                   >
-                    Watch Demo
+                    Sign In
                   </button>
-                </div>
-
-                {/* Trust Indicators */}
-                <div className="flex flex-wrap items-center gap-6 justify-center lg:justify-start text-sm text-slate-600">
-                  <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5 text-emerald-600" />
-                    <span>14-day free trial</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5 text-emerald-600" />
-                    <span>No credit card required</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5 text-emerald-600" />
-                    <span>Cancel anytime</span>
-                  </div>
                 </div>
               </div>
 
-              {/* Right Visual */}
-              <div className="hidden lg:block lg:col-span-5">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/20 to-teal-400/20 rounded-3xl blur-2xl" />
-                  <img
-                    src="https://images.pexels.com/photos/6253903/pexels-photo-6253903.jpeg?auto=compress&cs=tinysrgb&w=800"
-                    alt="Pickleball Court"
-                    className="relative rounded-2xl shadow-2xl w-full aspect-square object-cover ring-1 ring-slate-200"
-                  />
-                </div>
+              {/* Right Content - Feature Grid */}
+              <div className="grid grid-cols-2 gap-6 lg:gap-8">
+                {[
+                  {
+                    icon: Users,
+                    title: "Find Players",
+                    description: "Connect with players at your skill level"
+                  },
+                  {
+                    icon: Calendar,
+                    title: "Book Courts",
+                    description: "Reserve courts at your favorite facilities"
+                  },
+                  {
+                    icon: Trophy,
+                    title: "Join Events",
+                    description: "Compete in tournaments and leagues"
+                  },
+                  {
+                    icon: TrendingUp,
+                    title: "Track Stats",
+                    description: "Monitor your progress and improve"
+                  }
+                ].map((feature, index) => (
+                  <div
+                    key={index}
+                    className="group relative bg-white/10 backdrop-blur-md rounded-2xl p-6 lg:p-8 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105"
+                  >
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <feature.icon className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-lg lg:text-xl font-bold text-white">
+                          {feature.title}
+                        </h3>
+                        <p className="text-sm lg:text-base text-white/80 leading-snug">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
