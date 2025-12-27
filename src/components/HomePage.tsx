@@ -252,6 +252,201 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           </div>
         </div>
 
+        {/* How It Works Section */}
+        <div className="py-16 lg:py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+                Getting Started is Easy
+              </h2>
+              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                Join the community in three simple steps
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+              {[
+                {
+                  step: '1',
+                  icon: Users,
+                  title: 'Create Your Profile',
+                  description: 'Sign up free and tell us about your playing style and skill level.'
+                },
+                {
+                  step: '2',
+                  icon: MapPin,
+                  title: 'Find Courts & Players',
+                  description: 'Browse courts near you and connect with players in your area.'
+                },
+                {
+                  step: '3',
+                  icon: Calendar,
+                  title: 'Start Playing',
+                  description: 'Book courts, join matches, and track your progress as you play.'
+                }
+              ].map((item, index) => (
+                <div key={index} className="relative">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-6">
+                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                        <item.icon className="w-10 h-10 text-white" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                        {item.step}
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-600 leading-relaxed text-lg">
+                      {item.description}
+                    </p>
+                  </div>
+                  {index < 2 && (
+                    <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-emerald-500/50 to-transparent -translate-x-6" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Visual Showcase Section */}
+        <div className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-emerald-50/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div>
+                <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+                  Your Game, Your Way
+                </h2>
+                <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                  Whether you're a beginner or a seasoned pro, PaddleGrid helps you find the perfect match, track your improvement, and connect with a thriving community of pickleball enthusiasts.
+                </p>
+                <div className="space-y-4">
+                  {[
+                    { icon: Check, text: 'Match with players at your skill level' },
+                    { icon: Check, text: 'Track your DUPR rating and statistics' },
+                    { icon: Check, text: 'Join leagues and tournaments' },
+                    { icon: Check, text: 'Share highlights and celebrate wins' }
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <item.icon className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-lg text-slate-700">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-3xl blur-3xl" />
+                <img
+                  src="https://images.pexels.com/photos/6253903/pexels-photo-6253903.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                  alt="Pickleball Players"
+                  className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover ring-1 ring-slate-200"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Community Section */}
+        <div className="py-16 lg:py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div className="order-2 lg:order-1 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-400/20 to-emerald-400/20 rounded-3xl blur-3xl" />
+                <img
+                  src="https://images.pexels.com/photos/5067709/pexels-photo-5067709.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                  alt="Pickleball Community"
+                  className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover ring-1 ring-slate-200"
+                />
+              </div>
+              <div className="order-1 lg:order-2">
+                <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+                  Join a Thriving Community
+                </h2>
+                <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                  Connect with thousands of players, share your journey, and be part of the fastest-growing pickleball network.
+                </p>
+                <div className="grid grid-cols-2 gap-6">
+                  {[
+                    { icon: Users, value: '50K+', label: 'Active Players' },
+                    { icon: MapPin, value: '500+', label: 'Locations' },
+                    { icon: Trophy, value: '200+', label: 'Events/Week' },
+                    { icon: Star, value: '4.9', label: 'Rating' }
+                  ].map((stat, index) => (
+                    <div key={index} className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 border border-slate-200">
+                      <stat.icon className="w-8 h-8 text-emerald-600 mb-3" />
+                      <div className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</div>
+                      <div className="text-sm text-slate-600 font-medium">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials */}
+        <div className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+                Loved by Players Everywhere
+              </h2>
+              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                See what our community has to say
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  quote: "PaddleGrid has completely changed how I play. I've found amazing playing partners and my game has improved so much!",
+                  author: "Sarah Martinez",
+                  rating: "3.8 DUPR",
+                  image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200"
+                },
+                {
+                  quote: "The best part is how easy it is to find courts and book them. No more calling around or showing up to full courts.",
+                  author: "Mike Chen",
+                  rating: "4.2 DUPR",
+                  image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200"
+                },
+                {
+                  quote: "I love the community aspect. Seeing everyone's progress and match highlights keeps me motivated to play more!",
+                  author: "Jessica Park",
+                  rating: "3.5 DUPR",
+                  image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200"
+                }
+              ].map((testimonial, index) => (
+                <div key={index} className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
+                  <div className="flex gap-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-slate-700 leading-relaxed mb-6 text-lg">
+                    "{testimonial.quote}"
+                  </p>
+                  <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.author}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <div className="font-bold text-slate-900">{testimonial.author}</div>
+                      <div className="text-sm text-emerald-600 font-medium">{testimonial.rating}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Final CTA Section */}
         <div className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900">
           {/* Background Pattern */}
