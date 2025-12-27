@@ -53,9 +53,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         {/* Hero Section */}
         <div
           ref={heroRef}
-          className={`relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 transition-all duration-300 ${
-            isMobile && !showFeatures ? 'min-h-[calc(100vh-4rem)]' : ''
-          }`}
+          className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 min-h-screen flex items-center"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
         >
@@ -73,38 +71,26 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
           {/* Green Tint Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/50 via-teal-700/45 to-emerald-800/50"></div>
 
-          <div className={`relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
-            isMobile && !showFeatures ? 'pt-32 pb-20 flex flex-col justify-center min-h-[calc(100vh-4rem)]' : 'pt-20 pb-28'
-          }`}>
-            <div className="text-center space-y-10">
+          <div className="relative w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
+            <div className="text-center space-y-8 sm:space-y-10 md:space-y-12">
               {/* Headline */}
-              <div className={`space-y-6 ${isMobile && !showFeatures ? 'space-y-8' : ''}`}>
-                <h1 className={`font-bold text-white leading-[1.05] tracking-tight transition-all duration-300 ${
-                  isMobile && !showFeatures
-                    ? 'text-5xl sm:text-6xl'
-                    : 'text-6xl sm:text-7xl lg:text-8xl'
-                }`}>
+              <div className="space-y-4 sm:space-y-6">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.05] tracking-tight">
                   Your Pickleball
                   <br />
                   <span className="text-emerald-100">Community</span>
                 </h1>
 
-                <p className={`text-emerald-50 leading-relaxed max-w-2xl mx-auto transition-all duration-300 ${
-                  isMobile && !showFeatures
-                    ? 'text-lg sm:text-xl px-4'
-                    : 'text-xl sm:text-2xl'
-                }`}>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-emerald-50 leading-relaxed max-w-2xl mx-auto px-4 sm:px-0">
                   Connect with players. Share your wins. Find matches. Grow your game.
                 </p>
               </div>
 
               {/* CTA Buttons */}
-              <div className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-300 ${
-                isMobile && !showFeatures ? 'pt-8 px-4' : 'pt-6'
-              }`}>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0 pt-4 sm:pt-6">
                 <button
                   onClick={() => onAuthRequired?.('signup')}
-                  className="group relative inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-emerald-700 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                  className="group relative inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg font-semibold text-emerald-700 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <Sparkles className="w-5 h-5 mr-2 text-emerald-500" />
                   Get Started Free
@@ -112,26 +98,14 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                 </button>
                 <button
                   onClick={() => onAuthRequired?.('login')}
-                  className="inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-white border-2 border-white rounded-xl hover:bg-white hover:text-emerald-600 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                  className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg font-semibold text-white border-2 border-white rounded-xl hover:bg-white hover:text-emerald-600 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
                   Sign In
                 </button>
               </div>
 
-              {/* Swipe indicator - Mobile only when features hidden */}
-              {isMobile && !showFeatures && (
-                <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 flex flex-col items-center gap-2 pointer-events-none">
-                  <span className="text-white/80 text-sm font-medium">Swipe down for more</span>
-                  <ChevronDown className="w-6 h-6 text-white/80" />
-                </div>
-              )}
-
               {/* Simple Features */}
-              <div className={`grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-4xl mx-auto transition-all duration-500 ${
-                isMobile && !showFeatures
-                  ? 'opacity-0 max-h-0 overflow-hidden'
-                  : 'opacity-100 max-h-screen'
-              }`}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-12 sm:pt-16 max-w-4xl mx-auto">
                 {[
                   { icon: Users, label: "Find Players" },
                   { icon: Calendar, label: "Book Courts" },
@@ -139,23 +113,19 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
                   { icon: TrendingUp, label: "Track Stats" }
                 ].map((feature, index) => (
                   <div key={index} className="text-center">
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm mb-3">
-                      <feature.icon className="w-7 h-7 text-white" />
+                    <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white/20 backdrop-blur-sm mb-2 sm:mb-3">
+                      <feature.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
-                    <div className="text-white font-semibold">{feature.label}</div>
+                    <div className="text-sm sm:text-base text-white font-semibold">{feature.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* Facility Manager Link - Mobile Only */}
-              <div className={`md:hidden pt-8 transition-all duration-500 ${
-                isMobile && !showFeatures
-                  ? 'opacity-0 max-h-0 overflow-hidden'
-                  : 'opacity-100 max-h-screen'
-              }`}>
+              <div className="md:hidden pt-6 sm:pt-8">
                 <button
                   onClick={() => navigate('/admin')}
-                  className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl hover:bg-white/20 hover:border-white/50 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-xl hover:bg-white/20 hover:border-white/50 transition-all duration-200"
                 >
                   <Building2 className="w-5 h-5 mr-2" />
                   Facility Manager
