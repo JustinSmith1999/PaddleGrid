@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, X, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getCourtBlocks } from '../lib/courtAvailability';
+import WaiverModal from './WaiverModal';
 
 interface Court {
   id: string;
@@ -29,8 +30,51 @@ export function AdvancedBookingCalendar({ court, onClose, onSuccess, userId }: A
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [bookingNotes, setBookingNotes] = useState('');
+  const [hasSignedWaiver, setHasSignedWaiver] = useState<boolean | null>(null);
+  const [showWaiverModal, setShowWaiverModal] = useState(false);
+  const [facilityId, setFacilityId] = useState<string | null>(null);
+  const [facilityName, setFacilityName] = useState('');
 
   const [timeOptions, setTimeOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function checkWaiverStatus() {
+      if (!userId) return;
+
+      try {
+        const { data: courtData } = await supabase
+          .from('courts')
+          .select('facility_id, facilities(name)')
+          .eq('id', court.id)
+          .single();
+
+        if (courtData?.facility_id) {
+          setFacilityId(courtData.facility_id);
+          setFacilityName((courtData.facilities as any)?.name || '');
+
+          const { data: signedWaiver } = await supabase
+            .from('signed_waivers')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('facility_id', courtData.facility_id)
+            .maybeSingle();
+
+          setHasSignedWaiver(!!signedWaiver);
+
+          if (!signedWaiver) {
+            setShowWaiverModal(true);
+          }
+        }
+      } catch (err) {
+        console.error('Error checking waiver status:', err);
+        setHasSignedWaiver(false);
+      }
+    }
+
+    if (userId) {
+      checkWaiverStatus();
+    }
+  }, [userId, court.id]);
 
   useEffect(() => {
     const loadOperatingHours = async () => {
@@ -221,6 +265,37 @@ export function AdvancedBookingCalendar({ court, onClose, onSuccess, userId }: A
 
   const isToday = selectedDate.toDateString() === new Date().toDateString();
   const totalCost = court.hourly_rate * duration;
+
+  // Show waiver modal first if not signed
+  if (showWaiverModal && facilityId) {
+    return (
+      <WaiverModal
+        facilityId={facilityId}
+        facilityName={facilityName || 'this facility'}
+        onClose={() => {
+          setShowWaiverModal(false);
+          onClose();
+        }}
+        onSigned={() => {
+          setHasSignedWaiver(true);
+          setShowWaiverModal(false);
+        }}
+      />
+    );
+  }
+
+  // Show loading state while checking waiver
+  if (hasSignedWaiver === null) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

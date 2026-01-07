@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Check, AlertCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { sortCourtsByNumber } from '../lib/courtUtils';
+import WaiverModal from './WaiverModal';
 
 interface Court {
   id: string;
@@ -36,6 +37,10 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
   const [bookingInProgress, setBookingInProgress] = useState(false);
   const [selectedCourtFilter, setSelectedCourtFilter] = useState<string | null>(initialCourtId || null);
   const [operatingHours, setOperatingHours] = useState<{ open: number; close: number }>({ open: 6, close: 24 });
+  const [hasSignedWaiver, setHasSignedWaiver] = useState<boolean | null>(null);
+  const [showWaiverModal, setShowWaiverModal] = useState(false);
+  const [facilityId, setFacilityId] = useState<string | null>(null);
+  const [facilityName, setFacilityName] = useState('');
   const firstAvailableRef = useRef<HTMLDivElement | null>(null);
 
   const generateTimeSlots = (granularity: number) => {
@@ -66,6 +71,46 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
   useEffect(() => {
     loadData();
   }, [selectedDate]);
+
+  useEffect(() => {
+    async function checkWaiverStatus() {
+      if (!userId) return;
+
+      try {
+        const { data: courtsData } = await supabase
+          .from('courts')
+          .select('facility_id, facilities(name)')
+          .eq('is_active', true)
+          .limit(1)
+          .single();
+
+        if (courtsData?.facility_id) {
+          setFacilityId(courtsData.facility_id);
+          setFacilityName((courtsData.facilities as any)?.name || '');
+
+          const { data: signedWaiver } = await supabase
+            .from('signed_waivers')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('facility_id', courtsData.facility_id)
+            .maybeSingle();
+
+          setHasSignedWaiver(!!signedWaiver);
+
+          if (!signedWaiver) {
+            setShowWaiverModal(true);
+          }
+        }
+      } catch (err) {
+        console.error('Error checking waiver status:', err);
+        setHasSignedWaiver(false);
+      }
+    }
+
+    if (userId) {
+      checkWaiverStatus();
+    }
+  }, [userId]);
 
   // Removed auto-scroll to allow users to see all time slots from the beginning
 
@@ -260,6 +305,37 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
   const displayedCourts = selectedCourtFilter
     ? courts.filter(c => c.id === selectedCourtFilter)
     : courts;
+
+  // Show waiver modal first if not signed
+  if (showWaiverModal && facilityId) {
+    return (
+      <WaiverModal
+        facilityId={facilityId}
+        facilityName={facilityName || 'this facility'}
+        onClose={() => {
+          setShowWaiverModal(false);
+          onClose();
+        }}
+        onSigned={() => {
+          setHasSignedWaiver(true);
+          setShowWaiverModal(false);
+        }}
+      />
+    );
+  }
+
+  // Show loading state while checking waiver
+  if (hasSignedWaiver === null) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6">
+        <div className="bg-white shadow-2xl w-full md:max-w-lg md:rounded-2xl p-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6">

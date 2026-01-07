@@ -38,43 +38,48 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     setSelectedDate(today);
-    checkWaiverStatus();
   }, []);
 
-  async function checkWaiverStatus() {
-    if (!user || !court?.facility_id) return;
+  useEffect(() => {
+    async function checkWaiverStatus() {
+      if (!user || !court?.facility_id) return;
 
-    try {
-      // Get facility name
-      const { data: facility } = await supabase
-        .from('facilities')
-        .select('name')
-        .eq('id', court.facility_id)
-        .single();
+      try {
+        // Get facility name
+        const { data: facility } = await supabase
+          .from('facilities')
+          .select('name')
+          .eq('id', court.facility_id)
+          .single();
 
-      if (facility) {
-        setFacilityName(facility.name);
+        if (facility) {
+          setFacilityName(facility.name);
+        }
+
+        // Check if user has signed waiver for this facility
+        const { data: signedWaiver } = await supabase
+          .from('signed_waivers')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('facility_id', court.facility_id)
+          .maybeSingle();
+
+        setHasSignedWaiver(!!signedWaiver);
+
+        // If not signed, show waiver modal immediately
+        if (!signedWaiver) {
+          setShowWaiverModal(true);
+        }
+      } catch (err) {
+        console.error('Error checking waiver status:', err);
+        setHasSignedWaiver(false);
       }
-
-      // Check if user has signed waiver for this facility
-      const { data: signedWaiver } = await supabase
-        .from('signed_waivers')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('facility_id', court.facility_id)
-        .maybeSingle();
-
-      setHasSignedWaiver(!!signedWaiver);
-
-      // If not signed, show waiver modal immediately
-      if (!signedWaiver) {
-        setShowWaiverModal(true);
-      }
-    } catch (err) {
-      console.error('Error checking waiver status:', err);
-      setHasSignedWaiver(false);
     }
-  }
+
+    if (user && court?.facility_id) {
+      checkWaiverStatus();
+    }
+  }, [user, court?.facility_id]);
 
   useEffect(() => {
     const loadAvailability = async () => {
