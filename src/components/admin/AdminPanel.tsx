@@ -16,6 +16,7 @@ import { OperatingHours } from './OperatingHours';
 import PreRegisteredUsers from './PreRegisteredUsers';
 import TransactionsSync from './TransactionsSync';
 import BookingNotificationTest from './BookingNotificationTest';
+import SignedWaiversPanel from './SignedWaiversPanel';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -121,6 +122,8 @@ export function AdminPanel() {
         return <PreRegisteredUsers />;
       case 'transactions':
         return facilityId ? <TransactionsSync facilityId={facilityId} /> : <div className="p-8 text-center text-stone-600">Loading facility...</div>;
+      case 'waivers':
+        return <SignedWaiversPanel />;
       case 'notifications':
         return <BookingNotificationTest />;
       case 'analytics':

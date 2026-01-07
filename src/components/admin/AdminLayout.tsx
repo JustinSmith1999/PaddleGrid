@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import {
   LayoutDashboard, Calendar, Users, Settings, LogOut, Menu, X, Sun, Moon, Bell,
-  BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign, ArrowLeft
+  BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign, ArrowLeft, FileText
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -29,6 +29,7 @@ const navigationItems: NavItem[] = [
   { id: 'bookings', label: 'Bookings', icon: <ClipboardList className="w-5 h-5" /> },
   { id: 'series', label: 'Event Series', icon: <CalendarRange className="w-5 h-5" /> },
   { id: 'members', label: 'Members', icon: <Users className="w-5 h-5" /> },
+  { id: 'waivers', label: 'Signed Waivers', icon: <FileText className="w-5 h-5" /> },
   { id: 'pre-registered', label: 'Import Users', icon: <UserPlus className="w-5 h-5" /> },
   { id: 'transactions', label: 'Transactions', icon: <DollarSign className="w-5 h-5" /> },
   { id: 'notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" /> },
@@ -43,6 +44,7 @@ const mobileNavigationItems: NavItem[] = [
   { id: 'bookings', label: 'Bookings', icon: <ClipboardList className="w-5 h-5" /> },
   { id: 'series', label: 'Event Series', icon: <CalendarRange className="w-5 h-5" /> },
   { id: 'members', label: 'Members', icon: <Users className="w-5 h-5" /> },
+  { id: 'waivers', label: 'Signed Waivers', icon: <FileText className="w-5 h-5" /> },
   { id: 'notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" /> },
 ];
 

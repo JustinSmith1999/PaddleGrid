@@ -3,6 +3,7 @@ import { X, Calendar, Clock, DollarSign, Loader2, AlertCircle, Info, ExternalLin
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { isCourtAvailable, getCourtBlocks, getAvailableSlots } from '../lib/courtAvailability';
+import WaiverModal from './WaiverModal';
 
 interface Court {
   id: string;
@@ -30,11 +31,50 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
   const [selectedSlot, setSelectedSlot] = useState<string>('');
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [hasSignedWaiver, setHasSignedWaiver] = useState<boolean | null>(null);
+  const [showWaiverModal, setShowWaiverModal] = useState(false);
+  const [facilityName, setFacilityName] = useState('');
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     setSelectedDate(today);
+    checkWaiverStatus();
   }, []);
+
+  async function checkWaiverStatus() {
+    if (!user || !court?.facility_id) return;
+
+    try {
+      // Get facility name
+      const { data: facility } = await supabase
+        .from('facilities')
+        .select('name')
+        .eq('id', court.facility_id)
+        .single();
+
+      if (facility) {
+        setFacilityName(facility.name);
+      }
+
+      // Check if user has signed waiver for this facility
+      const { data: signedWaiver } = await supabase
+        .from('signed_waivers')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('facility_id', court.facility_id)
+        .maybeSingle();
+
+      setHasSignedWaiver(!!signedWaiver);
+
+      // If not signed, show waiver modal immediately
+      if (!signedWaiver) {
+        setShowWaiverModal(true);
+      }
+    } catch (err) {
+      console.error('Error checking waiver status:', err);
+      setHasSignedWaiver(false);
+    }
+  }
 
   useEffect(() => {
     const loadAvailability = async () => {
@@ -58,6 +98,37 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
   }, [court, selectedDate, duration]);
 
   if (!court) return null;
+
+  // Show waiver modal first if not signed
+  if (showWaiverModal && court.facility_id) {
+    return (
+      <WaiverModal
+        facilityId={court.facility_id}
+        facilityName={facilityName || 'this facility'}
+        onClose={() => {
+          setShowWaiverModal(false);
+          onClose();
+        }}
+        onSigned={() => {
+          setHasSignedWaiver(true);
+          setShowWaiverModal(false);
+        }}
+      />
+    );
+  }
+
+  // Show loading state while checking waiver
+  if (hasSignedWaiver === null) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full p-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const totalAmount = court.hourly_rate * duration;
 
