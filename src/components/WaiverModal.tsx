@@ -171,210 +171,212 @@ export default function WaiverModal({ facilityId, facilityName, onClose, onSigne
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full my-8">
-        <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full my-4 mx-4 max-h-[95vh] flex flex-col">
+        <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-4 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
               <FileText className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white truncate">
                 Liability Waiver Required
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
                 {facilityName}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors flex-shrink-0 ml-2"
           >
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Waiver Content */}
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 max-h-96 overflow-y-auto">
-            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4">
-              {waiver.title}
-            </h3>
-            {waiver.address && (
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                {waiver.address}
-              </p>
-            )}
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              {waiver.content.split('\n').map((paragraph, idx) => (
-                <p key={idx} className="mb-3 text-slate-700 dark:text-slate-300">
-                  {paragraph}
+        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1">
+          <div className="p-4 sm:p-6 space-y-6">
+            {/* Waiver Content */}
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 sm:p-6 max-h-[40vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+              <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white mb-4 break-words">
+                {waiver.title}
+              </h3>
+              {waiver.address && (
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-4 break-words">
+                  {waiver.address}
                 </p>
-              ))}
-            </div>
-          </div>
-
-          {error && (
-            <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
-            </div>
-          )}
-
-          {/* Player Information */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-slate-900 dark:text-white">
-              Player Information
-            </h4>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
-                />
+              )}
+              <div className="space-y-3">
+                {waiver.content.split('\n').map((paragraph, idx) => (
+                  <p key={idx} className="text-sm text-slate-700 dark:text-slate-300 break-words whitespace-pre-wrap leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
-              />
-            </div>
+            {error && (
+              <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-700 dark:text-red-300 break-words">{error}</p>
+              </div>
+            )}
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isMinor"
-                checked={isMinor}
-                onChange={(e) => setIsMinor(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <label htmlFor="isMinor" className="text-sm text-slate-700 dark:text-slate-300">
-                I am under 18 years old (requires parent/guardian signature)
-              </label>
-            </div>
-          </div>
-
-          {/* Parent/Guardian Section */}
-          {isMinor && (
-            <div className="space-y-4 border-t border-slate-200 dark:border-slate-700 pt-6">
-              <h4 className="font-semibold text-slate-900 dark:text-white">
-                Parent/Guardian Information
+            {/* Player Information */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+                Player Information
               </h4>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Parent/Guardian Full Name *
-                </label>
-                <input
-                  type="text"
-                  value={parentName}
-                  onChange={(e) => setParentName(e.target.value)}
-                  required={isMinor}
-                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Parent/Guardian Signature (Type Full Name) *
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
+                />
+              </div>
+
+              <div className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="isMinor"
+                  checked={isMinor}
+                  onChange={(e) => setIsMinor(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mt-0.5 flex-shrink-0"
+                />
+                <label htmlFor="isMinor" className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 break-words">
+                  I am under 18 years old (requires parent/guardian signature)
+                </label>
+              </div>
+            </div>
+
+            {/* Parent/Guardian Section */}
+            {isMinor && (
+              <div className="space-y-4 border-t border-slate-200 dark:border-slate-700 pt-6">
+                <h4 className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+                  Parent/Guardian Information
+                </h4>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Parent/Guardian Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={parentName}
+                    onChange={(e) => setParentName(e.target.value)}
+                    required={isMinor}
+                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Parent/Guardian Signature (Type Full Name) *
+                  </label>
+                  <input
+                    type="text"
+                    value={parentSignature}
+                    onChange={(e) => setParentSignature(e.target.value)}
+                    placeholder="Type your full name"
+                    required={isMinor}
+                    className="w-full px-3 sm:px-4 py-2 text-base sm:text-xl border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white font-['Brush_Script_MT',cursive]"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Signature */}
+            <div className="space-y-4 border-t border-slate-200 dark:border-slate-700 pt-6">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Player Signature (Type Full Name) *
                 </label>
                 <input
                   type="text"
-                  value={parentSignature}
-                  onChange={(e) => setParentSignature(e.target.value)}
+                  value={signature}
+                  onChange={(e) => setSignature(e.target.value)}
                   placeholder="Type your full name"
-                  required={isMinor}
-                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white font-['Brush_Script_MT',cursive] text-xl"
+                  required
+                  className="w-full px-3 sm:px-4 py-2 text-base sm:text-xl border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white font-['Brush_Script_MT',cursive]"
                 />
               </div>
-            </div>
-          )}
 
-          {/* Signature */}
-          <div className="space-y-4 border-t border-slate-200 dark:border-slate-700 pt-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Player Signature (Type Full Name) *
-              </label>
-              <input
-                type="text"
-                value={signature}
-                onChange={(e) => setSignature(e.target.value)}
-                placeholder="Type your full name"
-                required
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white font-['Brush_Script_MT',cursive] text-xl"
-              />
+              <div className="flex items-start gap-3 p-3 sm:p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="agreed"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  required
+                  className="w-4 h-4 sm:w-5 sm:h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mt-0.5 flex-shrink-0"
+                />
+                <label htmlFor="agreed" className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex-1 break-words leading-relaxed">
+                  I have read and understand all provisions in this Waiver, Release of Liability and Indemnification Agreement and agree to abide by them. I understand that by typing my name above, I am electronically signing this document.
+                </label>
+              </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <input
-                type="checkbox"
-                id="agreed"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                required
-                className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mt-0.5"
-              />
-              <label htmlFor="agreed" className="text-sm text-slate-700 dark:text-slate-300 flex-1">
-                I have read and understand all provisions in this Waiver, Release of Liability and Indemnification Agreement and agree to abide by them. I understand that by typing my name above, I am electronically signing this document.
-              </label>
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 sticky bottom-0 bg-white dark:bg-slate-900 pb-4 -mb-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full sm:flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting || !agreed}
+                className="w-full sm:flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
+                    <span>Signing...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Sign Waiver</span>
+                  </>
+                )}
+              </button>
             </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={submitting || !agreed}
-              className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold flex items-center justify-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Signing...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-5 h-5" />
-                  Sign Waiver
-                </>
-              )}
-            </button>
           </div>
         </form>
       </div>
