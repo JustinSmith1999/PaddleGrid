@@ -50,15 +50,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const initAuth = async () => {
       try {
+        console.log('[Auth] Starting initialization...');
+
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth timeout')), 10000)
+          setTimeout(() => reject(new Error('Auth timeout after 10s')), 10000)
         );
 
         const authPromise = supabase.auth.getSession();
 
-        const { data: { session } } = await Promise.race([authPromise, timeoutPromise]) as any;
+        const { data: { session }, error: sessionError } = await Promise.race([authPromise, timeoutPromise]) as any;
+
+        if (!mounted) return;
+
+        if (sessionError) {
+          console.error('[Auth] Session error:', sessionError);
+          throw sessionError;
+        }
+
+        console.log('[Auth] Session retrieved:', session ? 'user logged in' : 'no session');
 
         setSession(session);
         setUser(session?.user ?? null);
@@ -69,8 +82,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false);
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
-        setLoading(false);
+        console.error('[Auth] Initialization error:', error);
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+        }
       }
     };
 
@@ -80,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (() => {
         (async () => {
           try {
+            if (!mounted) return;
+            console.log('[Auth] State change event:', event);
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
@@ -89,20 +109,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setLoading(false);
             }
           } catch (error) {
-            console.error('Auth state change error:', error);
-            setLoading(false);
+            console.error('[Auth] State change error:', error);
+            if (mounted) {
+              setLoading(false);
+            }
           }
         })();
       })();
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('[Auth] Fetching profile for user:', userId);
+
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 8000)
+        setTimeout(() => reject(new Error('Profile fetch timeout after 8s')), 8000)
       );
 
       const profilePromise = supabase
@@ -113,9 +140,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       let { data, error } = await Promise.race([profilePromise, timeoutPromise]) as any;
 
-      if (error) throw error;
+      if (error) {
+        console.error('[Auth] Profile fetch error:', error);
+        throw error;
+      }
 
       if (!data) {
+        console.log('[Auth] Profile not found, creating new profile...');
         const { data: userData } = await supabase.auth.getUser();
         const userEmail = userData.user?.email || '';
         const userName = userData.user?.user_metadata?.full_name || '';
@@ -135,8 +166,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .select()
           .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('[Auth] Profile creation error:', insertError);
+          throw insertError;
+        }
+        console.log('[Auth] Profile created successfully');
         data = newProfile;
+      } else {
+        console.log('[Auth] Profile loaded successfully');
       }
 
       const { data: facilityUser } = await supabase
@@ -150,10 +187,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         facility_id: facilityUser?.facility_id,
         facility_role: facilityUser?.role,
       });
+      console.log('[Auth] Profile setup complete');
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('[Auth] Error in fetchProfile:', error);
       setProfile(null);
     } finally {
+      console.log('[Auth] Setting loading to false');
       setLoading(false);
     }
   };
