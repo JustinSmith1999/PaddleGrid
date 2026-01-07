@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -52,6 +52,8 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
   const [showScheduler, setShowScheduler] = useState(false);
   const [nextAvailableTime, setNextAvailableTime] = useState<string | null>(null);
   const [availableCourtsAtTime, setAvailableCourtsAtTime] = useState<Court[]>([]);
+  const [hasSignedWaiver, setHasSignedWaiver] = useState(false);
+  const [hasActiveWaiver, setHasActiveWaiver] = useState(false);
 
   useEffect(() => {
     loadFacilityData();
@@ -117,6 +119,30 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
 
       if (courtsData && courtsData.length > 0) {
         await findNextAvailableSlot(courtsData);
+      }
+
+      // Check if facility has an active waiver
+      const { data: waiverData } = await supabase
+        .from('facility_waivers')
+        .select('id')
+        .eq('facility_id', facilityId)
+        .eq('active', true)
+        .maybeSingle();
+
+      setHasActiveWaiver(!!waiverData);
+
+      // Check if user has signed the waiver
+      if (user && waiverData) {
+        const { data: signedWaiverData } = await supabase
+          .from('signed_waivers')
+          .select('id')
+          .eq('facility_id', facilityId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        setHasSignedWaiver(!!signedWaiverData);
+      } else {
+        setHasSignedWaiver(false);
       }
     } catch (error) {
       console.error('Error loading facility data:', error);
@@ -433,7 +459,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           )}
         </div>
 
-        {(facility.phone || facility.email || facility.website) && (
+        {(facility.phone || facility.email || facility.website || hasActiveWaiver) && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {facility.phone && (
               <a
@@ -478,6 +504,23 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   <div className="text-sm font-bold text-slate-900 dark:text-white truncate">See Website</div>
                 </div>
               </a>
+            )}
+            {hasActiveWaiver && user && (
+              <div className="flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <div className={`w-11 h-11 rounded-xl ${hasSignedWaiver ? 'bg-gradient-to-br from-emerald-500 to-green-500' : 'bg-gradient-to-br from-red-500 to-rose-500'} flex items-center justify-center flex-shrink-0 shadow-md`}>
+                  {hasSignedWaiver ? (
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  ) : (
+                    <AlertCircle className="w-5 h-5 text-white" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Waiver</div>
+                  <div className={`text-sm font-bold ${hasSignedWaiver ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'} truncate`}>
+                    {hasSignedWaiver ? 'Signed' : 'Required'}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}

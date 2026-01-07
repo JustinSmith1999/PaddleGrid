@@ -351,7 +351,7 @@ export default function WaiverModal({ facilityId, facilityName, onClose, onSigne
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 sticky bottom-0 bg-white dark:bg-slate-900 pb-4 -mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-6 pb-2">
               <button
                 type="button"
                 onClick={onClose}
