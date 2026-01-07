@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import { AdminDashboard } from './AdminDashboard';
-import { AdminAnalytics } from './AdminAnalytics';
+import { AdminReporting } from './AdminReporting';
 import { AdminBookings } from './AdminBookings';
 import CourtScheduleView from './CourtScheduleView';
 import MemberSearch from './MemberSearch';
@@ -127,7 +127,7 @@ export function AdminPanel() {
       case 'notifications':
         return <BookingNotificationTest />;
       case 'analytics':
-        return <AdminAnalytics />;
+        return <AdminReporting />;
       case 'settings':
         return <AdminSettings />;
       default:
