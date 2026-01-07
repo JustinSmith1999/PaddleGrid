@@ -51,6 +51,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const [viewerCount, setViewerCount] = useState(0);
   const [showViewers, setShowViewers] = useState(false);
   const [viewers, setViewers] = useState<StoryViewer[]>([]);
+  const [imageLoadError, setImageLoadError] = useState(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -117,8 +118,10 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     if (!currentStory) return;
 
     markStoryAsViewed(currentStory.id);
+    fetchViewerCount(currentStory.id);
     setProgress(0);
     setIsPaused(false);
+    setImageLoadError(false);
 
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
@@ -200,16 +203,27 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
     if (!user) return;
 
     try {
-      await supabase
+      // Check if already viewed
+      const { data: existingView } = await supabase
         .from('story_views')
-        .insert({
-          story_id: storyId,
-          viewer_id: user.id
-        })
-        .select()
-        .single();
+        .select('id')
+        .eq('story_id', storyId)
+        .eq('viewer_id', user.id)
+        .maybeSingle();
 
-      await fetchViewerCount(storyId);
+      // Only insert if not already viewed
+      if (!existingView) {
+        const { error } = await supabase
+          .from('story_views')
+          .insert({
+            story_id: storyId,
+            viewer_id: user.id
+          });
+
+        if (error && !error.message.includes('duplicate')) {
+          console.error('Error marking story as viewed:', error);
+        }
+      }
     } catch (error) {
       console.error('Error marking story as viewed:', error);
     }
@@ -230,28 +244,39 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
   async function fetchViewers(storyId: string) {
     try {
-      const { data, error } = await supabase
+      // First get the viewer IDs and timestamps
+      const { data: viewData, error: viewError } = await supabase
         .from('story_views')
-        .select(`
-          viewer_id,
-          viewed_at,
-          profiles!viewer_id (
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('viewer_id, viewed_at')
         .eq('story_id', storyId)
         .order('viewed_at', { ascending: false });
 
-      if (error) throw error;
+      if (viewError) throw viewError;
+      if (!viewData || viewData.length === 0) {
+        setViewers([]);
+        return;
+      }
 
-      const viewersList = data?.map((v: any) => ({
-        id: v.profiles?.id || v.viewer_id,
-        full_name: v.profiles?.full_name || 'Anonymous',
-        avatar_url: v.profiles?.avatar_url || null,
-        viewed_at: v.viewed_at
-      })) || [];
+      // Then get the profile data for those viewers
+      const viewerIds = viewData.map(v => v.viewer_id);
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url')
+        .in('id', viewerIds);
+
+      if (profileError) throw profileError;
+
+      // Combine the data
+      const profileMap = new Map(profileData?.map(p => [p.id, p]) || []);
+      const viewersList = viewData.map(v => {
+        const profile = profileMap.get(v.viewer_id);
+        return {
+          id: v.viewer_id,
+          full_name: profile?.full_name || 'Anonymous',
+          avatar_url: profile?.profile_picture_url || null,
+          viewed_at: v.viewed_at
+        };
+      });
 
       setViewers(viewersList);
     } catch (error) {
@@ -394,8 +419,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
   return (
-    <div className="fixed inset-0 bg-black z-[9999] flex justify-center">
-      <div className="relative w-full h-full max-w-md bg-black overflow-hidden">
+    <div className="fixed inset-0 bg-black z-[9999] flex items-center justify-center">
+      <div className="relative w-full h-full max-w-md bg-black overflow-hidden mx-auto">
         <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
@@ -508,14 +533,34 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          className="w-full h-full flex items-center justify-center cursor-pointer select-none"
+          className="w-full h-full flex items-center justify-center cursor-pointer select-none bg-black"
         >
-          {currentStory.mediaType === 'image' ? (
+          {imageLoadError ? (
+            <div className="text-center p-8">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                <X className="w-10 h-10 text-white/50" />
+              </div>
+              <p className="text-white/70 text-sm">Unable to load story</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNext();
+                }}
+                className="mt-4 px-6 py-2 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm transition-colors"
+              >
+                Skip
+              </button>
+            </div>
+          ) : currentStory.mediaType === 'image' ? (
             <img
               src={currentStory.mediaUrl}
               alt="Story"
               className="max-w-full max-h-full object-contain pointer-events-none"
               draggable={false}
+              onError={(e) => {
+                console.error('Image failed to load:', currentStory.mediaUrl);
+                setImageLoadError(true);
+              }}
             />
           ) : (
             <video
@@ -525,6 +570,10 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               muted={isMuted}
               playsInline
               className="max-w-full max-h-full object-contain pointer-events-none"
+              onError={(e) => {
+                console.error('Video failed to load:', currentStory.mediaUrl);
+                setImageLoadError(true);
+              }}
             />
           )}
         </div>
@@ -538,9 +587,9 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
         {showViewers && (
           <div
             ref={viewersPanelRef}
-            className="absolute bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-800 rounded-t-3xl max-h-[50vh] overflow-y-auto animate-slide-up"
+            className="absolute bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 rounded-t-3xl max-h-[60vh] overflow-hidden shadow-2xl"
           >
-            <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between z-10">
               <div className="flex items-center gap-2">
                 <Eye className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 <h3 className="font-semibold text-slate-900 dark:text-white">
@@ -549,18 +598,19 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               </div>
               <button
                 onClick={() => setShowViewers(false)}
-                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-4">
+            <div className="overflow-y-auto max-h-[calc(60vh-64px)] p-4">
               {viewers.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                  Loading viewers...
+                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                  <Eye className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No viewers yet</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {viewers.map(viewer => (
                     <button
                       key={viewer.id}
@@ -568,24 +618,28 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
                         navigate(`/player/${viewer.id}`);
                         onClose();
                       }}
-                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
                         {viewer.avatar_url ? (
                           <img
                             src={viewer.avatar_url}
                             alt={viewer.full_name}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.parentElement!.innerHTML = '<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>';
+                            }}
                           />
                         ) : (
-                          <Users className="w-5 h-5 text-white" />
+                          <Users className="w-6 h-6 text-white" />
                         )}
                       </div>
                       <div className="flex-1 text-left">
                         <div className="font-medium text-slate-900 dark:text-white">
                           {viewer.full_name}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                        <div className="text-sm text-slate-500 dark:text-slate-400">
                           {getTimeAgo(viewer.viewed_at)}
                         </div>
                       </div>
