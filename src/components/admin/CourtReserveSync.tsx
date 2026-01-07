@@ -14,6 +14,8 @@ interface SyncLog {
   blocks_created: number;
   blocks_skipped: number;
   total_reservations: number;
+  bookings_created?: number;
+  bookings_skipped?: number;
   error_message: string | null;
 }
 
@@ -164,9 +166,12 @@ export default function CourtReserveSync({ facilityId }: CourtReserveSyncProps) 
             {latestSync.status === 'success' && (
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">
-                  {latestSync.blocks_created} created
+                  {latestSync.bookings_created || 0} bookings
                 </p>
                 <p className="text-xs text-gray-600">
+                  {latestSync.blocks_created} blocks
+                </p>
+                <p className="text-xs text-gray-500">
                   {latestSync.total_reservations} total
                 </p>
               </div>
@@ -213,7 +218,7 @@ export default function CourtReserveSync({ facilityId }: CourtReserveSyncProps) 
                   </div>
                   {log.status === 'success' && (
                     <span className="text-gray-700">
-                      {log.blocks_created} blocks created
+                      {log.bookings_created || 0} bookings, {log.blocks_created} blocks
                     </span>
                   )}
                 </div>
@@ -227,9 +232,10 @@ export default function CourtReserveSync({ facilityId }: CourtReserveSyncProps) 
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li>Automatically runs every 15 minutes</li>
             <li>Fetches reservations from CourtReserve for the next 30 days</li>
+            <li>Creates booking records linked to users by email</li>
             <li>Creates availability blocks to prevent double-booking</li>
             <li>Matches courts by name automatically</li>
-            <li>Skips blocks that already exist</li>
+            <li>Skips bookings and blocks that already exist</li>
           </ul>
         </div>
       </div>
