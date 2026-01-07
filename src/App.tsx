@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
