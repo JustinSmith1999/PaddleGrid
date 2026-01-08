@@ -81,6 +81,17 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
       body {
         overflow: hidden !important;
       }
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden !important;
+      }
+      #root {
+        height: 100%;
+        width: 100%;
+      }
     `;
     document.head.appendChild(style);
 
@@ -419,8 +430,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
   return (
-    <div className="fixed inset-0 bg-black z-[9999]">
-      <div className="relative w-full h-full bg-black overflow-hidden">
+    <div className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black z-[9999]">
+      <div className="relative w-full h-full bg-black overflow-hidden flex flex-col">
         <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
@@ -533,7 +544,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          className="w-full h-full flex items-center justify-center cursor-pointer select-none bg-black"
+          className="absolute inset-0 flex items-center justify-center cursor-pointer select-none bg-black"
+          style={{ width: '100%', height: '100%' }}
         >
           {imageLoadError ? (
             <div className="text-center p-8">
@@ -555,7 +567,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
             <img
               src={currentStory.mediaUrl}
               alt="Story"
-              className="max-w-full max-h-full object-contain pointer-events-none"
+              className="w-full h-full object-cover pointer-events-none"
               draggable={false}
               onError={(e) => {
                 console.error('Image failed to load:', currentStory.mediaUrl);
@@ -569,7 +581,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               autoPlay
               muted={isMuted}
               playsInline
-              className="max-w-full max-h-full object-contain pointer-events-none"
+              className="w-full h-full object-cover pointer-events-none"
               onError={(e) => {
                 console.error('Video failed to load:', currentStory.mediaUrl);
                 setImageLoadError(true);
