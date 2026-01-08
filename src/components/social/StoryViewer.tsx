@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical, Eye, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -78,29 +79,35 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
       button[class*="fixed bottom-24"] {
         display: none !important;
       }
-      body {
-        overflow: hidden !important;
-      }
       html, body {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        height: 100vh !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
         overflow: hidden !important;
-      }
-      #root {
-        height: 100%;
-        width: 100%;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
       }
     `;
     document.head.appendChild(style);
+
+    const originalBodyStyle = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      width: document.body.style.width,
+      height: document.body.style.height
+    };
 
     return () => {
       const styleElement = document.getElementById('hide-nav-for-stories');
       if (styleElement) {
         styleElement.remove();
       }
-      document.body.style.overflow = '';
+
+      Object.assign(document.body.style, originalBodyStyle);
     };
   }, []);
 
@@ -429,7 +436,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
-  return (
+  return createPortal(
     <div className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black z-[9999]">
       <div className="relative w-full h-full bg-black overflow-hidden flex flex-col">
         <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
@@ -663,7 +670,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
