@@ -218,6 +218,14 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const isFull = post.spots_needed && post.spots_filled >= post.spots_needed;
   const spotsLeft = post.spots_needed ? post.spots_needed - post.spots_filled : 0;
 
+  function formatTime(time: string): string {
+    if (!time) return 'TBD';
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'pm' : 'am';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')}${period}`;
+  }
+
   function handleImageClick(e: React.MouseEvent, index: number) {
     e.stopPropagation();
     setExpandedImage(index);
@@ -522,11 +530,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate font-medium">
-                      {post.bookings?.start_time
-                        ? post.bookings.start_time.slice(0, 5)
-                        : post.play_start_time
-                        ? post.play_start_time.slice(0, 5)
-                        : 'TBD'}
+                      {formatTime(post.bookings?.start_time || post.play_start_time || '')}
                     </span>
                   </div>
 

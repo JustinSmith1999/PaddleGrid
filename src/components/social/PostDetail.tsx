@@ -49,6 +49,14 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
     loadPostData();
   }, [postId]);
 
+  function formatTime(time: string): string {
+    if (!time) return 'TBD';
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'pm' : 'am';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')}${period}`;
+  }
+
   async function loadPostData() {
     setLoading(true);
     const postData = await getPostById(postId);
@@ -224,8 +232,8 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
           matchDetails={{
             sport: post.sport || 'pickleball',
             date: post.bookings?.booking_date || post.play_date || '',
-            startTime: post.bookings?.start_time.slice(0, 5) || post.play_start_time?.slice(0, 5) || '',
-            endTime: post.bookings?.end_time.slice(0, 5) || post.play_end_time?.slice(0, 5) || '',
+            startTime: formatTime(post.bookings?.start_time || post.play_start_time || ''),
+            endTime: formatTime(post.bookings?.end_time || post.play_end_time || ''),
             courtName: post.courts?.name || 'Court'
           }}
           onClose={() => {
@@ -381,8 +389,8 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                   <Clock className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   <span className="truncate text-sm sm:text-base">
                     {post.bookings
-                      ? `${post.bookings.start_time.slice(0, 5)} - ${post.bookings.end_time.slice(0, 5)}`
-                      : `${post.play_start_time?.slice(0, 5)} - ${post.play_end_time?.slice(0, 5)}`}
+                      ? `${formatTime(post.bookings.start_time)} - ${formatTime(post.bookings.end_time)}`
+                      : `${formatTime(post.play_start_time || '')} - ${formatTime(post.play_end_time || '')}`}
                   </span>
                 </div>
 
