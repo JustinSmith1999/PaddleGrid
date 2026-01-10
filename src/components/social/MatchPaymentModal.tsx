@@ -337,116 +337,64 @@ export default function MatchPaymentModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-white/80 hover:text-white z-10 bg-black/20 rounded-full p-2 backdrop-blur-sm transition"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 px-8 py-12 text-white text-center">
-          <div className="text-sm font-medium opacity-90 mb-2">
-            {new Date(matchDetails.date).toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric'
-            })}
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl">
+        <div className="flex items-center justify-between p-6 border-b">
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">
+              {new Date(matchDetails.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at {matchDetails.startTime}
+            </h3>
+            <p className="text-slate-600 mt-1">{courtName}</p>
           </div>
-          <div className="text-6xl font-black mb-3">{matchDetails.startTime}</div>
-          <div className="text-emerald-50 text-base font-medium mb-4">
-            {courtName}
-          </div>
-          {matchDetails.skillLevel && (
-            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm px-5 py-2 rounded-full">
-              <span className="text-sm font-semibold">{matchDetails.skillLevel} level</span>
-              <span className="w-1 h-1 bg-white/60 rounded-full"></span>
-              <span className="text-sm font-semibold">1 spot left</span>
-            </div>
-          )}
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <div className="p-6">
-          <div className="text-center mb-6">
-            <div className="text-6xl font-black text-slate-900 mb-1">
-              ${pricePerPerson.toFixed(2)}
-            </div>
-            <div className="text-slate-500 text-sm">Split between {matchDetails.maxPlayers || 4} players</div>
+        <div className="p-6 space-y-6">
+          <div className="text-center py-4">
+            <div className="text-5xl font-black text-slate-900">${pricePerPerson.toFixed(2)}</div>
           </div>
 
           {paymentMethods.length === 0 ? (
             <button
               onClick={handleAddCard}
               disabled={addingCard}
-              className="w-full py-4 bg-slate-100 hover:bg-slate-200 rounded-xl transition mb-4 flex items-center justify-center gap-2 text-slate-700 font-semibold"
+              className="w-full py-3 bg-slate-100 hover:bg-slate-200 rounded-lg transition text-slate-700 font-medium"
             >
-              <Plus className="w-5 h-5" />
               Add Payment Method
             </button>
           ) : (
-            <div className="space-y-3 mb-6">
+            <div className="space-y-2">
               {paymentMethods.map((method) => (
                 <button
                   key={method.id}
                   onClick={() => setSelectedPaymentMethod(method.stripe_payment_method_id)}
-                  className={`w-full p-4 rounded-xl transition-all flex items-center justify-between ${
+                  className={`w-full p-3 rounded-lg flex items-center justify-between transition ${
                     selectedPaymentMethod === method.stripe_payment_method_id
-                      ? 'bg-emerald-500 text-white shadow-lg'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="w-5 h-5" />
-                    <div className="text-left">
-                      <div className="font-bold capitalize">
-                        {method.card_brand} •••• {method.card_last4}
-                      </div>
-                    </div>
-                  </div>
-                  {selectedPaymentMethod === method.stripe_payment_method_id && (
-                    <Check className="w-5 h-5" />
-                  )}
+                  <span className="font-medium">{method.card_brand} •••• {method.card_last4}</span>
+                  {selectedPaymentMethod === method.stripe_payment_method_id && <Check className="w-5 h-5" />}
                 </button>
               ))}
-              <button
-                onClick={handleAddCard}
-                disabled={addingCard}
-                className="w-full py-3 text-emerald-600 hover:text-emerald-700 font-semibold text-sm"
-              >
-                + Add Another Card
-              </button>
             </div>
           )}
-        </div>
 
-        {error && (
-          <div className="mx-6 mb-4 p-3 bg-red-50 rounded-xl text-sm text-red-600 text-center">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="p-3 bg-red-50 rounded-lg text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
-        <div className="px-6 pb-6">
           <button
             onClick={handlePayment}
             disabled={loading || !selectedPaymentMethod}
-            className="w-full py-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-xl disabled:shadow-none mb-3"
+            className="w-full py-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 font-bold text-lg"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Processing...
-              </span>
-            ) : (
-              `Join & Pay $${pricePerPerson.toFixed(2)}`
-            )}
-          </button>
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="w-full py-3 text-slate-500 hover:text-slate-700 transition font-medium disabled:opacity-50"
-          >
-            Cancel
+            {loading ? 'Processing...' : `Pay $${pricePerPerson.toFixed(2)}`}
           </button>
         </div>
       </div>
