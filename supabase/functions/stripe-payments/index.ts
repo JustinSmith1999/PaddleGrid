@@ -32,9 +32,7 @@ Deno.serve(async (req: Request) => {
     const url = new URL(req.url);
     const path = url.pathname.replace('/stripe-payments', '');
 
-    if (path === '/create-payment-intent' && req.method === 'POST') {
-      const { bookingId, amount, currency = 'usd', metadata = {} } = await req.json();
-
+    if (path === '/setup-intent' && req.method === 'POST') {
       const authHeader = req.headers.get('Authorization');
       if (!authHeader) {
         throw new Error('No authorization header');
@@ -47,66 +45,36 @@ Deno.serve(async (req: Request) => {
         throw new Error('Unauthorized');
       }
 
-      const { data: booking } = await supabase
-        .from('bookings')
-        .select('court_id, courts(facility_id), facilities(stripe_account_id)')
-        .eq('id', bookingId)
+      let { data: profile } = await supabase
+        .from('profiles')
+        .select('stripe_customer_id, email')
+        .eq('id', user.id)
         .single();
 
-      if (!booking) {
-        throw new Error('Booking not found');
-      }
+      let customerId = profile?.stripe_customer_id;
 
-      const stripeAccountId = booking.facilities?.stripe_account_id;
-      const facilityId = booking.courts?.facility_id;
-
-      const paymentIntentParams: any = {
-        amount: Math.round(amount * 100),
-        currency,
-        metadata: {
-          bookingId,
-          userId: user.id,
-          facilityId,
-          ...metadata,
-        },
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      };
-
-      if (stripeAccountId) {
-        paymentIntentParams.transfer_data = {
-          destination: stripeAccountId,
-        };
-        paymentIntentParams.application_fee_amount = Math.round(amount * 100 * 0.05);
-      }
-
-      const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
-
-      await supabase
-        .from('payment_transactions')
-        .insert({
-          booking_id: bookingId,
-          user_id: user.id,
-          amount,
-          currency,
-          stripe_payment_intent_id: paymentIntent.id,
-          status: 'pending',
-          metadata,
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: profile?.email,
+          metadata: { userId: user.id },
         });
+        customerId = customer.id;
 
-      await supabase
-        .from('bookings')
-        .update({
-          payment_intent_id: paymentIntent.id,
-          payment_status: 'pending',
-        })
-        .eq('id', bookingId);
+        await supabase
+          .from('profiles')
+          .update({ stripe_customer_id: customerId })
+          .eq('id', user.id);
+      }
+
+      const setupIntent = await stripe.setupIntents.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+      });
 
       return new Response(
         JSON.stringify({
-          clientSecret: paymentIntent.client_secret,
-          paymentIntentId: paymentIntent.id,
+          clientSecret: setupIntent.client_secret,
+          customerId,
         }),
         {
           headers: {
@@ -117,9 +85,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    if (path === '/create-series-payment-intent' && req.method === 'POST') {
-      const { seriesId, occurrenceIds, amount, currency = 'usd', metadata = {} } = await req.json();
-
+    if (path === '/payment-methods' && req.method === 'GET') {
       const authHeader = req.headers.get('Authorization');
       if (!authHeader) {
         throw new Error('No authorization header');
@@ -132,48 +98,15 @@ Deno.serve(async (req: Request) => {
         throw new Error('Unauthorized');
       }
 
-      const { data: series } = await supabase
-        .from('event_series')
-        .select('facility_id, facilities(stripe_account_id)')
-        .eq('id', seriesId)
-        .single();
-
-      if (!series) {
-        throw new Error('Series not found');
-      }
-
-      const stripeAccountId = series.facilities?.stripe_account_id;
-
-      const paymentIntentParams: any = {
-        amount: Math.round(amount * 100),
-        currency,
-        metadata: {
-          seriesId,
-          occurrenceIds: JSON.stringify(occurrenceIds),
-          userId: user.id,
-          type: 'series_registration',
-          facilityId: series.facility_id,
-          ...metadata,
-        },
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      };
-
-      if (stripeAccountId) {
-        paymentIntentParams.transfer_data = {
-          destination: stripeAccountId,
-        };
-        paymentIntentParams.application_fee_amount = Math.round(amount * 100 * 0.05);
-      }
-
-      const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+      const { data: methods } = await supabase
+        .from('stripe_payment_methods')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false })
+        .order('created_at', { ascending: false });
 
       return new Response(
-        JSON.stringify({
-          clientSecret: paymentIntent.client_secret,
-          paymentIntentId: paymentIntent.id,
-        }),
+        JSON.stringify({ paymentMethods: methods || [] }),
         {
           headers: {
             ...corsHeaders,
@@ -183,129 +116,8 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    if (path === '/webhook' && req.method === 'POST') {
-      const signature = req.headers.get('stripe-signature');
-      if (!signature) {
-        throw new Error('No signature');
-      }
-
-      const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
-      if (!webhookSecret) {
-        throw new Error('Webhook secret not configured');
-      }
-
-      const body = await req.text();
-      const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-
-      switch (event.type) {
-        case 'payment_intent.succeeded': {
-          const paymentIntent = event.data.object as Stripe.PaymentIntent;
-          const { bookingId, userId, type, seriesId, occurrenceIds } = paymentIntent.metadata;
-
-          if (type === 'series_registration') {
-            const occurrenceIdArray = JSON.parse(occurrenceIds);
-            const amountPerOccurrence = (paymentIntent.amount / 100) / occurrenceIdArray.length;
-
-            for (const occurrenceId of occurrenceIdArray) {
-              await supabase
-                .from('event_series_registrations')
-                .update({
-                  payment_status: 'paid',
-                  amount_paid: amountPerOccurrence,
-                  stripe_payment_intent_id: paymentIntent.id,
-                })
-                .eq('occurrence_id', occurrenceId)
-                .eq('user_id', userId);
-            }
-          } else {
-            await supabase
-              .from('payment_transactions')
-              .update({
-                status: 'succeeded',
-                stripe_charge_id: paymentIntent.latest_charge as string,
-              })
-              .eq('stripe_payment_intent_id', paymentIntent.id);
-
-            await supabase
-              .from('bookings')
-              .update({
-                payment_status: 'paid',
-                status: 'confirmed',
-              })
-              .eq('id', bookingId);
-
-            const { data: booking } = await supabase
-              .from('bookings')
-              .select('duration_hours')
-              .eq('id', bookingId)
-              .single();
-
-            if (booking) {
-              await supabase.rpc('update_player_stats', {
-                p_user_id: userId,
-                p_amount_spent: paymentIntent.amount / 100,
-                p_hours_played: booking.duration_hours,
-              });
-            }
-          }
-          break;
-        }
-
-        case 'payment_intent.payment_failed': {
-          const paymentIntent = event.data.object as Stripe.PaymentIntent;
-
-          await supabase
-            .from('payment_transactions')
-            .update({ status: 'failed' })
-            .eq('stripe_payment_intent_id', paymentIntent.id);
-
-          await supabase
-            .from('bookings')
-            .update({
-              payment_status: 'pending',
-              status: 'pending',
-            })
-            .eq('payment_intent_id', paymentIntent.id);
-          break;
-        }
-
-        case 'charge.refunded': {
-          const charge = event.data.object as Stripe.Charge;
-
-          await supabase
-            .from('payment_transactions')
-            .update({ status: 'refunded' })
-            .eq('stripe_charge_id', charge.id);
-
-          const { data: transaction } = await supabase
-            .from('payment_transactions')
-            .select('booking_id')
-            .eq('stripe_charge_id', charge.id)
-            .single();
-
-          if (transaction) {
-            await supabase
-              .from('bookings')
-              .update({
-                payment_status: 'refunded',
-                status: 'cancelled',
-              })
-              .eq('id', transaction.booking_id);
-          }
-          break;
-        }
-      }
-
-      return new Response(JSON.stringify({ received: true }), {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-      });
-    }
-
-    if (path === '/refund' && req.method === 'POST') {
-      const { paymentIntentId, amount, reason = 'requested_by_customer' } = await req.json();
+    if (path === '/save-payment-method' && req.method === 'POST') {
+      const { paymentMethodId } = await req.json();
 
       const authHeader = req.headers.get('Authorization');
       if (!authHeader) {
@@ -321,30 +133,103 @@ Deno.serve(async (req: Request) => {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('stripe_customer_id')
         .eq('id', user.id)
         .single();
 
-      if (!profile || !['admin', 'owner'].includes(profile.role)) {
-        throw new Error('Insufficient permissions');
+      if (!profile?.stripe_customer_id) {
+        throw new Error('No Stripe customer found');
       }
 
-      const refundParams: Stripe.RefundCreateParams = {
-        payment_intent: paymentIntentId,
-        reason,
-      };
+      const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
 
-      if (amount) {
-        refundParams.amount = Math.round(amount * 100);
+      const { data: existingMethods } = await supabase
+        .from('stripe_payment_methods')
+        .select('id')
+        .eq('user_id', user.id);
+
+      const isFirstCard = !existingMethods || existingMethods.length === 0;
+
+      await supabase
+        .from('stripe_payment_methods')
+        .insert({
+          user_id: user.id,
+          stripe_customer_id: profile.stripe_customer_id,
+          stripe_payment_method_id: paymentMethodId,
+          card_brand: paymentMethod.card?.brand || 'unknown',
+          card_last4: paymentMethod.card?.last4 || '0000',
+          exp_month: paymentMethod.card?.exp_month || 0,
+          exp_year: paymentMethod.card?.exp_year || 0,
+          is_default: isFirstCard,
+        });
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    if (path === '/match-payment-intent' && req.method === 'POST') {
+      const { postId, courtId, facilityId, amount, paymentMethodId } = await req.json();
+
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        throw new Error('No authorization header');
       }
 
-      const refund = await stripe.refunds.create(refundParams);
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        throw new Error('Unauthorized');
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('stripe_customer_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.stripe_customer_id) {
+        throw new Error('No Stripe customer found');
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        customer: profile.stripe_customer_id,
+        payment_method: paymentMethodId,
+        confirm: true,
+        return_url: `${req.headers.get('origin')}/feed`,
+        metadata: {
+          postId,
+          courtId,
+          facilityId,
+          userId: user.id,
+          type: 'match_payment',
+        },
+      });
+
+      await supabase
+        .from('match_participant_payments')
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          amount_paid: amount,
+          payment_intent_id: paymentIntent.id,
+          payment_status: paymentIntent.status === 'succeeded' ? 'paid' : 'pending',
+        });
 
       return new Response(
         JSON.stringify({
           success: true,
-          refundId: refund.id,
-          status: refund.status,
+          paymentIntentId: paymentIntent.id,
+          status: paymentIntent.status,
         }),
         {
           headers: {
