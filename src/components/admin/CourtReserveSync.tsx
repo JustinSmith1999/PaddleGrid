@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw, CheckCircle, AlertCircle, Download, Clock, Activity } from 'lucide-react';
+import { RefreshCw, CheckCircle, AlertCircle, Download, Clock, Activity, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 interface CourtReserveSyncProps {
@@ -21,6 +21,8 @@ interface SyncLog {
 
 export default function CourtReserveSync({ facilityId }: CourtReserveSyncProps) {
   const [syncing, setSyncing] = useState(false);
+  const [syncingPricing, setSyncingPricing] = useState(false);
+  const [pricingSyncResult, setPricingSyncResult] = useState<any>(null);
   const [syncLogs, setSyncLogs] = useState<SyncLog[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -93,6 +95,43 @@ export default function CourtReserveSync({ facilityId }: CourtReserveSyncProps) 
       console.error('Sync error:', error);
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const syncPricing = async () => {
+    setSyncingPricing(true);
+    setPricingSyncResult(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const apiUrl = `${supabaseUrl}/functions/v1/courtreserve-pricing-sync?facility_id=${facilityId}`;
+
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sync pricing');
+      }
+
+      setPricingSyncResult(data);
+      setTimeout(() => setPricingSyncResult(null), 10000);
+    } catch (error) {
+      console.error('Pricing sync error:', error);
+      setPricingSyncResult({ success: false, error: error.message });
+    } finally {
+      setSyncingPricing(false);
     }
   };
 
@@ -181,14 +220,62 @@ export default function CourtReserveSync({ facilityId }: CourtReserveSyncProps) 
       )}
 
       <div className="space-y-4">
-        <button
-          onClick={syncSchedule}
-          disabled={syncing || isRunning}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-        >
-          <RefreshCw className={`w-4 h-4 ${syncing || isRunning ? 'animate-spin' : ''}`} />
-          {syncing || isRunning ? 'Syncing...' : 'Manual Sync'}
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={syncSchedule}
+            disabled={syncing || isRunning}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          >
+            <RefreshCw className={`w-4 h-4 ${syncing || isRunning ? 'animate-spin' : ''}`} />
+            {syncing || isRunning ? 'Syncing...' : 'Manual Sync'}
+          </button>
+
+          <button
+            onClick={syncPricing}
+            disabled={syncingPricing}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+          >
+            <DollarSign className={`w-4 h-4 ${syncingPricing ? 'animate-spin' : ''}`} />
+            {syncingPricing ? 'Syncing Pricing...' : 'Sync Court Prices'}
+          </button>
+        </div>
+
+        {pricingSyncResult && (
+          <div className={`p-4 rounded-lg border ${
+            pricingSyncResult.success
+              ? 'bg-emerald-50 border-emerald-200'
+              : 'bg-red-50 border-red-200'
+          }`}>
+            <div className="flex items-start gap-3">
+              {pricingSyncResult.success ? (
+                <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              )}
+              <div className="flex-1">
+                <p className={`text-sm font-medium ${
+                  pricingSyncResult.success ? 'text-emerald-900' : 'text-red-900'
+                }`}>
+                  {pricingSyncResult.success
+                    ? 'Court pricing updated successfully'
+                    : 'Failed to sync pricing'
+                  }
+                </p>
+                {pricingSyncResult.success && pricingSyncResult.stats && (
+                  <div className="mt-2 text-xs text-emerald-700 space-y-1">
+                    <p>Updated {pricingSyncResult.stats.courts_updated} court prices from CourtReserve</p>
+                    {pricingSyncResult.stats.courts_skipped > 0 && (
+                      <p>{pricingSyncResult.stats.courts_skipped} courts skipped (no pricing data)</p>
+                    )}
+                  </div>
+                )}
+                {pricingSyncResult.error && (
+                  <p className="mt-1 text-xs text-red-700">{pricingSyncResult.error}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {syncLogs.length > 1 && (
           <div className="border-t border-gray-200 pt-4">
