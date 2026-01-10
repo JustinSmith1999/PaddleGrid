@@ -36,8 +36,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<{
-    bookingId: string;
+    courtId: string;
+    facilityId: string;
+    courtName: string;
     pricePerPerson: number;
+    totalAmount: number;
+    durationHours: number;
   } | null>(null);
 
   useEffect(() => {
@@ -72,6 +76,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   async function loadParticipants() {
     const data = await getMatchParticipants(post.id);
     setParticipants(data);
+  }
+
+  function calculateDuration(start: string, end: string): number {
+    if (!start || !end) return 1;
+    const [startHour, startMin] = start.split(':').map(Number);
+    const [endHour, endMin] = end.split(':').map(Number);
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+    return (endMinutes - startMinutes) / 60;
   }
 
   async function checkJoinStatus() {
@@ -128,10 +141,18 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     } else {
       const result = await joinMatch(post.id);
 
-      if (result.requiresPayment && result.bookingId && result.pricePerPerson) {
+      if (result.requiresPayment && result.courtData) {
+        const startTime = post.bookings?.start_time || post.play_start_time || '';
+        const endTime = post.bookings?.end_time || post.play_end_time || '';
+        const duration = calculateDuration(startTime, endTime);
+
         setPaymentDetails({
-          bookingId: result.bookingId,
-          pricePerPerson: result.pricePerPerson
+          courtId: result.courtData.courtId,
+          facilityId: result.courtData.facilityId,
+          courtName: result.courtData.courtName,
+          pricePerPerson: result.pricePerPerson || 0,
+          totalAmount: result.courtData.totalAmount || 0,
+          durationHours: duration
         });
         setShowPaymentModal(true);
         setLoading(false);
@@ -217,14 +238,18 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
       {showPaymentModal && paymentDetails && (
         <MatchPaymentModal
           postId={post.id}
-          bookingId={paymentDetails.bookingId}
+          courtId={paymentDetails.courtId}
+          facilityId={paymentDetails.facilityId}
+          courtName={paymentDetails.courtName}
           pricePerPerson={paymentDetails.pricePerPerson}
+          totalAmount={paymentDetails.totalAmount}
+          durationHours={paymentDetails.durationHours}
           matchDetails={{
             sport: post.sport || 'pickleball',
             date: post.bookings?.booking_date || post.play_date || '',
-            startTime: post.bookings?.start_time.slice(0, 5) || post.play_start_time?.slice(0, 5) || '',
-            endTime: post.bookings?.end_time.slice(0, 5) || post.play_end_time?.slice(0, 5) || '',
-            courtName: post.courts?.name || 'Court'
+            startTime: post.bookings?.start_time?.slice(0, 5) || post.play_start_time?.slice(0, 5) || '',
+            endTime: post.bookings?.end_time?.slice(0, 5) || post.play_end_time?.slice(0, 5) || '',
+            courtName: paymentDetails.courtName
           }}
           onClose={() => {
             setShowPaymentModal(false);

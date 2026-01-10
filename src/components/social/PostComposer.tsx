@@ -35,6 +35,8 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   const [endTime, setEndTime] = useState('10:30');
   const [spotsNeeded, setSpotsNeeded] = useState<number>(4);
   const [courtId, setCourtId] = useState('');
+  const [requiresPayment, setRequiresPayment] = useState(false);
+  const [selectedCourt, setSelectedCourt] = useState<any>(null);
 
   const [facilities, setFacilities] = useState<any[]>([]);
   const [courts, setCourts] = useState<any[]>([]);
@@ -84,6 +86,16 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     }
   }, [facilityId]);
 
+  function calculateDuration(start: string, end: string): number {
+    const [startHour, startMin] = start.split(':').map(Number);
+    const [endHour, endMin] = end.split(':').map(Number);
+
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+
+    return (endMinutes - startMinutes) / 60;
+  }
+
   async function loadFacilities() {
     const { data } = await supabase
       .from('facilities')
@@ -115,7 +127,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
   async function loadCourts(facilityId: string) {
     const { data } = await supabase
       .from('courts')
-      .select('id, name')
+      .select('id, name, hourly_rate, facility_id')
       .eq('facility_id', facilityId)
       .eq('is_active', true);
 
@@ -123,8 +135,10 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
     setCourts(sortedCourts);
     if (sortedCourts.length > 0) {
       setCourtId(sortedCourts[0].id);
+      setSelectedCourt(sortedCourts[0]);
     } else {
       setCourtId('');
+      setSelectedCourt(null);
     }
   }
 
@@ -321,6 +335,71 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       postData.spots_needed = spotsNeeded;
       if (courtId) {
         postData.court_id = courtId;
+      }
+
+      if (requiresPayment && selectedCourt && user) {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.getUser();
+          const userEmail = authUser?.email || '';
+
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name, last_name, phone')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          const userName = profile
+            ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim()
+            : 'Guest';
+
+          const durationHours = calculateDuration(startTime, endTime);
+          const totalAmount = selectedCourt.hourly_rate * durationHours;
+          const pricePerPerson = totalAmount / spotsNeeded;
+
+          const bookingPayload = {
+            facility_id: facilityId,
+            court_id: courtId,
+            user_id: user.id,
+            booking_date: playDate,
+            start_time: startTime,
+            end_time: endTime,
+            duration_hours: durationHours,
+            total_amount: totalAmount,
+            user_email: userEmail,
+            user_name: userName,
+            user_phone: profile?.phone || '',
+            court_name: selectedCourt.name,
+          };
+
+          const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/courtreserve-booking`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingPayload),
+          });
+
+          const bookingResult = await response.json();
+
+          if (!response.ok) {
+            throw new Error(bookingResult.details || bookingResult.error || 'Failed to create booking');
+          }
+
+          postData.booking_id = bookingResult.booking_id;
+          postData.requires_payment = true;
+          postData.price_per_person = pricePerPerson;
+          postData.total_spots = spotsNeeded;
+
+          if (bookingResult.payment_url) {
+            window.open(bookingResult.payment_url, '_blank');
+          }
+        } catch (err: any) {
+          setError(err.message || 'Failed to create booking for match');
+          setLoading(false);
+          return;
+        }
       }
     }
 
@@ -780,16 +859,39 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                       </label>
                       <select
                         value={courtId}
-                        onChange={(e) => setCourtId(e.target.value)}
+                        onChange={(e) => {
+                          const court = courts.find(c => c.id === e.target.value);
+                          setCourtId(e.target.value);
+                          setSelectedCourt(court || null);
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
                       >
                         <option value="">Any Court</option>
                         {courts.map((court) => (
                           <option key={court.id} value={court.id}>
-                            {court.name}
+                            {court.name} {court.hourly_rate ? `($${court.hourly_rate}/hr)` : ''}
                           </option>
                         ))}
                       </select>
+                    </div>
+                  )}
+
+                  {courtId && selectedCourt && (
+                    <div className="col-span-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={requiresPayment}
+                          onChange={(e) => setRequiresPayment(e.target.checked)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium text-black">
+                          Require payment to join (${((selectedCourt.hourly_rate * calculateDuration(startTime, endTime)) / spotsNeeded).toFixed(2)} per person)
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-600 mt-1 ml-6">
+                        A real court booking will be created. Payment splits the total court cost between all players.
+                      </p>
                     </div>
                   )}
                 </div>

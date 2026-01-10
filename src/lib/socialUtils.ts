@@ -434,8 +434,13 @@ export async function joinMatch(postId: string): Promise<{
   success: boolean;
   error?: string;
   requiresPayment?: boolean;
-  bookingId?: string;
   pricePerPerson?: number;
+  courtData?: {
+    courtId: string;
+    facilityId: string;
+    courtName: string;
+    totalAmount: number;
+  };
 }> {
   try {
     const { data: user } = await supabase.auth.getUser();
@@ -445,7 +450,20 @@ export async function joinMatch(postId: string): Promise<{
 
     const { data: post } = await supabase
       .from('social_posts')
-      .select('spots_needed, spots_filled, author_id, requires_payment, booking_id, price_per_person')
+      .select(`
+        spots_needed,
+        spots_filled,
+        author_id,
+        requires_payment,
+        booking_id,
+        price_per_person,
+        court_id,
+        facility_id,
+        courts(id, name, hourly_rate, facility_id),
+        play_date,
+        play_start_time,
+        play_end_time
+      `)
       .eq('id', postId)
       .single();
 
@@ -457,12 +475,22 @@ export async function joinMatch(postId: string): Promise<{
       return { success: false, error: 'Match is full' };
     }
 
-    if (post.requires_payment && post.booking_id) {
+    if (post.requires_payment && post.court_id && post.courts) {
+      const startTime = post.play_start_time || '';
+      const endTime = post.play_end_time || '';
+      const duration = calculateDuration(startTime, endTime);
+      const totalAmount = (post.courts as any).hourly_rate * duration;
+
       return {
         success: false,
         requiresPayment: true,
-        bookingId: post.booking_id,
-        pricePerPerson: post.price_per_person
+        pricePerPerson: post.price_per_person,
+        courtData: {
+          courtId: post.court_id,
+          facilityId: post.facility_id || (post.courts as any).facility_id,
+          courtName: (post.courts as any).name,
+          totalAmount
+        }
       };
     }
 
@@ -519,6 +547,15 @@ export async function leaveMatch(postId: string): Promise<{ success: boolean; er
     console.error('Error leaving match:', error);
     return { success: false, error: error.message };
   }
+}
+
+function calculateDuration(start: string, end: string): number {
+  if (!start || !end) return 1;
+  const [startHour, startMin] = start.split(':').map(Number);
+  const [endHour, endMin] = end.split(':').map(Number);
+  const startMinutes = startHour * 60 + startMin;
+  const endMinutes = endHour * 60 + endMin;
+  return (endMinutes - startMinutes) / 60;
 }
 
 export async function getMatchParticipants(postId: string): Promise<any[]> {
