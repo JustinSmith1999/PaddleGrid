@@ -115,8 +115,7 @@ export default function NotificationsInlineFeed({ onPostClick, onProfileClick }:
           <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-slate-400 dark:text-slate-600" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">All caught up!</h3>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">No new notifications</p>
+          <p className="text-slate-600 dark:text-slate-400">No notifications</p>
         </div>
       ) : (
         <div className="divide-y divide-slate-200 dark:border-slate-800">

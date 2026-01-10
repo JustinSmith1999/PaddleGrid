@@ -203,7 +203,7 @@ export default function NotificationCenter() {
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading notifications...</div>
         ) : notifications.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No notifications yet</div>
+          <div className="p-8 text-center text-gray-500">No notifications</div>
         ) : (
           notifications.map((notification) => (
             <div
