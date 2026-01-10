@@ -63,18 +63,58 @@ export default function MatchPaymentModal({
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+
     if (showAddCard && stripe && clientSecret && !elements) {
-      const elementsInstance = stripe.elements({
-        clientSecret,
-        appearance: { theme: 'stripe' },
-      });
+      const mountElement = () => {
+        if (!mounted) return;
 
-      const paymentElement = elementsInstance.create('payment');
-      paymentElement.mount('#payment-element');
+        try {
+          const paymentElementContainer = document.querySelector('#payment-element');
+          if (!paymentElementContainer) {
+            console.error('Payment element container not found');
+            setTimeout(mountElement, 50);
+            return;
+          }
 
-      setElements(elementsInstance);
+          const elementsInstance = stripe.elements({
+            clientSecret,
+            appearance: {
+              theme: 'stripe',
+              variables: {
+                colorPrimary: '#10b981',
+              }
+            },
+          });
+
+          const paymentElement = elementsInstance.create('payment', {
+            layout: 'tabs'
+          });
+
+          paymentElement.on('ready', () => {
+            console.log('Payment element is ready');
+          });
+
+          paymentElement.mount('#payment-element');
+
+          if (mounted) {
+            setElements(elementsInstance);
+          }
+        } catch (err) {
+          console.error('Failed to mount payment element:', err);
+          if (mounted) {
+            setError('Failed to load payment form. Please try again.');
+          }
+        }
+      };
+
+      setTimeout(mountElement, 150);
     }
-  }, [showAddCard, stripe, clientSecret, elements]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [showAddCard, stripe, clientSecret]);
 
   async function loadFacilityName() {
     if (!facilityName && facilityId) {
@@ -224,9 +264,20 @@ export default function MatchPaymentModal({
             <h2 className="text-xl font-bold text-gray-900">Add Payment Method</h2>
             <button
               onClick={() => {
+                if (elements) {
+                  try {
+                    const paymentElement = elements.getElement('payment');
+                    if (paymentElement) {
+                      paymentElement.unmount();
+                    }
+                  } catch (err) {
+                    console.error('Error unmounting payment element:', err);
+                  }
+                }
                 setShowAddCard(false);
                 setElements(null);
                 setClientSecret(null);
+                setError(null);
               }}
               className="text-gray-400 hover:text-gray-600 transition"
             >
@@ -241,7 +292,7 @@ export default function MatchPaymentModal({
             </div>
           )}
 
-          <div id="payment-element" className={`mb-4 ${!elements ? 'hidden' : ''}`}></div>
+          <div id="payment-element" className={`mb-4 ${!elements ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}></div>
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
@@ -252,9 +303,20 @@ export default function MatchPaymentModal({
           <div className="flex gap-3">
             <button
               onClick={() => {
+                if (elements) {
+                  try {
+                    const paymentElement = elements.getElement('payment');
+                    if (paymentElement) {
+                      paymentElement.unmount();
+                    }
+                  } catch (err) {
+                    console.error('Error unmounting payment element:', err);
+                  }
+                }
                 setShowAddCard(false);
                 setElements(null);
                 setClientSecret(null);
+                setError(null);
               }}
               disabled={loading}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
@@ -263,8 +325,8 @@ export default function MatchPaymentModal({
             </button>
             <button
               onClick={handleSaveCard}
-              disabled={loading}
-              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50"
+              disabled={loading || !elements}
+              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Saving...' : 'Save Card'}
             </button>
