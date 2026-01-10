@@ -337,203 +337,100 @@ export default function MatchPaymentModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-5 rounded-t-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-white">Join Match</h2>
-              <p className="text-emerald-50 text-sm mt-1">Confirm your spot</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-white hover:bg-white/20 rounded-full p-2 transition"
-            >
-              <X className="w-6 h-6" />
-            </button>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white/80 hover:text-white z-10 bg-black/20 rounded-full p-2 backdrop-blur-sm transition"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 px-8 py-12 text-white text-center">
+          <div className="text-sm font-medium opacity-90 mb-2">
+            {new Date(matchDetails.date).toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric'
+            })}
           </div>
+          <div className="text-6xl font-black mb-3">{matchDetails.startTime}</div>
+          <div className="text-emerald-50 text-base font-medium mb-4">
+            {courtName}
+          </div>
+          {matchDetails.skillLevel && (
+            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm px-5 py-2 rounded-full">
+              <span className="text-sm font-semibold">{matchDetails.skillLevel} level</span>
+              <span className="w-1 h-1 bg-white/60 rounded-full"></span>
+              <span className="text-sm font-semibold">1 spot left</span>
+            </div>
+          )}
         </div>
 
         <div className="p-6">
-          <div className="bg-gradient-to-br from-slate-50 via-white to-slate-50 rounded-xl border border-slate-200 overflow-hidden mb-6 shadow-sm">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-emerald-50 text-xs font-medium uppercase tracking-wider mb-1">
-                    {matchDetails.sport.charAt(0).toUpperCase() + matchDetails.sport.slice(1)} Match
-                  </div>
-                  <div className="text-white text-2xl font-bold">
-                    {new Date(matchDetails.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-white text-3xl font-bold">
-                    {matchDetails.startTime}
-                  </div>
-                  <div className="text-emerald-50 text-xs font-medium">
-                    {durationHours}hr session
-                  </div>
-                </div>
-              </div>
+          <div className="text-center mb-6">
+            <div className="text-6xl font-black text-slate-900 mb-1">
+              ${pricePerPerson.toFixed(2)}
             </div>
-
-            <div className="p-5 space-y-4">
-              {facilityName && (
-                <div className="flex items-center gap-4 bg-white rounded-lg p-3 border border-slate-100">
-                  <div className="bg-emerald-100 rounded-lg p-2.5 flex-shrink-0">
-                    <Building2 className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">Venue</div>
-                    <div className="font-bold text-slate-900 text-base truncate">{facilityName}</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center gap-4 bg-white rounded-lg p-3 border border-slate-100">
-                <div className="bg-blue-100 rounded-lg p-2.5 flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-blue-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">Court</div>
-                  <div className="font-bold text-slate-900 text-base truncate">{courtName}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 bg-white rounded-lg p-3 border border-slate-100">
-                <div className="bg-amber-100 rounded-lg p-2.5 flex-shrink-0">
-                  <Calendar className="w-5 h-5 text-amber-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">Date & Time</div>
-                  <div className="font-bold text-slate-900 text-base">
-                    {new Date(matchDetails.date).toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric'
-                    })} • {matchDetails.startTime} - {matchDetails.endTime}
-                  </div>
-                </div>
-              </div>
-
-              {matchDetails.skillLevel && (
-                <div className="flex items-center gap-2 justify-center py-2">
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-sm">
-                    {matchDetails.skillLevel} Level
-                  </div>
-                  <div className="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full text-sm font-semibold">
-                    1 spot left
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-t-2 border-emerald-200 px-5 py-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-slate-600 font-semibold text-sm">Your Share</div>
-                  <div className="text-slate-500 text-xs">Split between {matchDetails.maxPlayers || 4} players</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-4xl font-black text-emerald-600">
-                    ${pricePerPerson.toFixed(2)}
-                  </div>
-                  <div className="text-xs text-slate-500 font-medium">per person</div>
-                </div>
-              </div>
-            </div>
+            <div className="text-slate-500 text-sm">Split between {matchDetails.maxPlayers || 4} players</div>
           </div>
 
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <label className="text-base font-bold text-slate-900">Payment Method</label>
+          {paymentMethods.length === 0 ? (
+            <button
+              onClick={handleAddCard}
+              disabled={addingCard}
+              className="w-full py-4 bg-slate-100 hover:bg-slate-200 rounded-xl transition mb-4 flex items-center justify-center gap-2 text-slate-700 font-semibold"
+            >
+              <Plus className="w-5 h-5" />
+              Add Payment Method
+            </button>
+          ) : (
+            <div className="space-y-3 mb-6">
+              {paymentMethods.map((method) => (
+                <button
+                  key={method.id}
+                  onClick={() => setSelectedPaymentMethod(method.stripe_payment_method_id)}
+                  className={`w-full p-4 rounded-xl transition-all flex items-center justify-between ${
+                    selectedPaymentMethod === method.stripe_payment_method_id
+                      ? 'bg-emerald-500 text-white shadow-lg'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="w-5 h-5" />
+                    <div className="text-left">
+                      <div className="font-bold capitalize">
+                        {method.card_brand} •••• {method.card_last4}
+                      </div>
+                    </div>
+                  </div>
+                  {selectedPaymentMethod === method.stripe_payment_method_id && (
+                    <Check className="w-5 h-5" />
+                  )}
+                </button>
+              ))}
               <button
                 onClick={handleAddCard}
                 disabled={addingCard}
-                className="text-sm text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1.5 bg-emerald-50 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition"
+                className="w-full py-3 text-emerald-600 hover:text-emerald-700 font-semibold text-sm"
               >
-                <Plus className="w-4 h-4" />
-                Add Card
+                + Add Another Card
               </button>
             </div>
-
-            {paymentMethods.length === 0 ? (
-              <div className="text-center py-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-300">
-                <div className="bg-slate-200 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <CreditCard className="w-8 h-8 text-slate-400" />
-                </div>
-                <p className="text-base font-semibold text-slate-600">No payment methods saved</p>
-                <p className="text-sm text-slate-500 mt-1">Add a card to complete your booking</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => setSelectedPaymentMethod(method.stripe_payment_method_id)}
-                    className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-between group ${
-                      selectedPaymentMethod === method.stripe_payment_method_id
-                        ? 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-300 hover:shadow-sm bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`rounded-lg p-2.5 ${
-                        selectedPaymentMethod === method.stripe_payment_method_id
-                          ? 'bg-emerald-100'
-                          : 'bg-slate-100 group-hover:bg-slate-200'
-                      }`}>
-                        <CreditCard className={`w-5 h-5 ${
-                          selectedPaymentMethod === method.stripe_payment_method_id
-                            ? 'text-emerald-600'
-                            : 'text-slate-600'
-                        }`} />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-bold text-slate-900 capitalize text-base">
-                          {method.card_brand} •••• {method.card_last4}
-                        </div>
-                        <div className="text-xs text-slate-500 font-medium mt-0.5">
-                          Expires {method.exp_month}/{method.exp_year}
-                        </div>
-                      </div>
-                    </div>
-                    {selectedPaymentMethod === method.stripe_payment_method_id && (
-                      <div className="bg-emerald-500 rounded-full p-1">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
         {error && (
-          <div className="mb-6 mx-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-            <div className="flex items-start gap-3">
-              <div className="text-red-600 mt-0.5 text-lg">⚠️</div>
-              <p className="text-sm text-red-700 font-medium">{error}</p>
-            </div>
+          <div className="mx-6 mb-4 p-3 bg-red-50 rounded-xl text-sm text-red-600 text-center">
+            {error}
           </div>
         )}
 
-        <div className="flex gap-3 px-6 pb-6 pt-2">
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="flex-1 px-6 py-4 border-2 border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition font-semibold disabled:opacity-50"
-          >
-            Cancel
-          </button>
+        <div className="px-6 pb-6">
           <button
             onClick={handlePayment}
             disabled={loading || !selectedPaymentMethod}
-            className="flex-1 px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg disabled:shadow-none"
+            className="w-full py-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-xl disabled:shadow-none mb-3"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -541,10 +438,15 @@ export default function MatchPaymentModal({
                 Processing...
               </span>
             ) : (
-              <span className="flex items-center justify-center gap-2">
-                Join & Pay ${pricePerPerson.toFixed(2)} • 1 spot left
-              </span>
+              `Join & Pay $${pricePerPerson.toFixed(2)}`
             )}
+          </button>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="w-full py-3 text-slate-500 hover:text-slate-700 transition font-medium disabled:opacity-50"
+          >
+            Cancel
           </button>
         </div>
       </div>
