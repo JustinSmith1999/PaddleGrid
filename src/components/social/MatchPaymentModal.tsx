@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, Calendar, Clock, MapPin, CreditCard, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Calendar, Clock, MapPin, CreditCard, ExternalLink, Building2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 interface MatchPaymentModalProps {
@@ -16,6 +16,7 @@ interface MatchPaymentModalProps {
     startTime: string;
     endTime: string;
     courtName: string;
+    facilityName?: string;
   };
   onClose: () => void;
   onSuccess: () => void;
@@ -36,6 +37,24 @@ export default function MatchPaymentModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+  const [facilityName, setFacilityName] = useState<string>(matchDetails.facilityName || '');
+
+  useEffect(() => {
+    async function loadFacilityName() {
+      if (!facilityName && facilityId) {
+        const { data } = await supabase
+          .from('facilities')
+          .select('name')
+          .eq('id', facilityId)
+          .maybeSingle();
+
+        if (data) {
+          setFacilityName(data.name);
+        }
+      }
+    }
+    loadFacilityName();
+  }, [facilityId, facilityName]);
 
   async function handlePayment() {
     setLoading(true);
@@ -182,41 +201,69 @@ export default function MatchPaymentModal({
 
         <div className="mb-6">
           <p className="text-gray-600 mb-4">
-            This match requires a court booking payment to join.
+            This match requires a court booking payment to join. Review the details below:
           </p>
 
-          <div className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-lg p-4 space-y-3">
-            <div className="font-semibold text-gray-900">
-              {matchDetails.sport.charAt(0).toUpperCase() + matchDetails.sport.slice(1)} Match
-            </div>
-
-            <div className="space-y-2 text-sm text-gray-700">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                <span>
-                  {new Date(matchDetails.date).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-gray-400" />
-                <span>{matchDetails.startTime} - {matchDetails.endTime}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-gray-400" />
-                <span>{matchDetails.courtName}</span>
+          <div className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-lg p-5 space-y-4">
+            <div>
+              <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Match Type</div>
+              <div className="font-bold text-gray-900 text-lg">
+                {matchDetails.sport.charAt(0).toUpperCase() + matchDetails.sport.slice(1)} Match
               </div>
             </div>
 
-            <div className="pt-3 border-t border-blue-200">
+            <div className="border-t border-blue-200 pt-3 space-y-3">
+              {facilityName && (
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Venue</div>
+                    <div className="font-semibold text-gray-900">{facilityName}</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">Court</div>
+                  <div className="font-semibold text-gray-900">{courtName}</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Calendar className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">Date</div>
+                  <div className="font-semibold text-gray-900">
+                    {new Date(matchDetails.date).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Clock className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">Time</div>
+                  <div className="font-semibold text-gray-900">
+                    {matchDetails.startTime} - {matchDetails.endTime} ({durationHours}hr{durationHours !== 1 ? 's' : ''})
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t-2 border-blue-300">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Your share:</span>
-                <span className="text-2xl font-bold text-emerald-600">
+                <div>
+                  <div className="text-sm text-gray-600">Your Share</div>
+                  <div className="text-xs text-gray-500">Court booking fee split</div>
+                </div>
+                <span className="text-3xl font-bold text-emerald-600">
                   ${pricePerPerson.toFixed(2)}
                 </span>
               </div>

@@ -439,6 +439,7 @@ export async function joinMatch(postId: string): Promise<{
     courtId: string;
     facilityId: string;
     courtName: string;
+    facilityName: string;
     totalAmount: number;
   };
 }> {
@@ -460,6 +461,7 @@ export async function joinMatch(postId: string): Promise<{
         court_id,
         facility_id,
         courts(id, name, hourly_rate, facility_id),
+        facilities(id, name),
         play_date,
         play_start_time,
         play_end_time
@@ -489,6 +491,7 @@ export async function joinMatch(postId: string): Promise<{
           courtId: post.court_id,
           facilityId: post.facility_id || (post.courts as any).facility_id,
           courtName: (post.courts as any).name,
+          facilityName: (post.facilities as any)?.name || '',
           totalAmount
         }
       };

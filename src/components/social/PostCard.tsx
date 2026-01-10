@@ -39,6 +39,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
     courtId: string;
     facilityId: string;
     courtName: string;
+    facilityName: string;
     pricePerPerson: number;
     totalAmount: number;
     durationHours: number;
@@ -150,6 +151,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
           courtId: result.courtData.courtId,
           facilityId: result.courtData.facilityId,
           courtName: result.courtData.courtName,
+          facilityName: result.courtData.facilityName,
           pricePerPerson: result.pricePerPerson || 0,
           totalAmount: result.courtData.totalAmount || 0,
           durationHours: duration
@@ -249,7 +251,8 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
             date: post.bookings?.booking_date || post.play_date || '',
             startTime: post.bookings?.start_time?.slice(0, 5) || post.play_start_time?.slice(0, 5) || '',
             endTime: post.bookings?.end_time?.slice(0, 5) || post.play_end_time?.slice(0, 5) || '',
-            courtName: paymentDetails.courtName
+            courtName: paymentDetails.courtName,
+            facilityName: paymentDetails.facilityName
           }}
           onClose={() => {
             setShowPaymentModal(false);
