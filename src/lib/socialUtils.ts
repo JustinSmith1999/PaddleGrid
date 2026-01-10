@@ -430,7 +430,13 @@ export async function getPostComments(postId: string): Promise<Comment[]> {
   }
 }
 
-export async function joinMatch(postId: string): Promise<{ success: boolean; error?: string }> {
+export async function joinMatch(postId: string): Promise<{
+  success: boolean;
+  error?: string;
+  requiresPayment?: boolean;
+  bookingId?: string;
+  pricePerPerson?: number;
+}> {
   try {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) {
@@ -439,7 +445,7 @@ export async function joinMatch(postId: string): Promise<{ success: boolean; err
 
     const { data: post } = await supabase
       .from('social_posts')
-      .select('spots_needed, spots_filled, author_id')
+      .select('spots_needed, spots_filled, author_id, requires_payment, booking_id, price_per_person')
       .eq('id', postId)
       .single();
 
@@ -449,6 +455,15 @@ export async function joinMatch(postId: string): Promise<{ success: boolean; err
 
     if (post.spots_needed && post.spots_filled >= post.spots_needed) {
       return { success: false, error: 'Match is full' };
+    }
+
+    if (post.requires_payment && post.booking_id) {
+      return {
+        success: false,
+        requiresPayment: true,
+        bookingId: post.booking_id,
+        pricePerPerson: post.price_per_person
+      };
     }
 
     const { error } = await supabase

@@ -3,6 +3,7 @@ import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHoriz
 import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import MatchPaymentModal from './MatchPaymentModal';
 
 interface PostCardProps {
   post: SocialPost;
@@ -33,6 +34,11 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [isPostBookmarked, setIsPostBookmarked] = useState(post.user_bookmarked || false);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<{
+    bookingId: string;
+    pricePerPerson: number;
+  } | null>(null);
 
   useEffect(() => {
     setLikesCount(post.likes_count || 0);
@@ -118,18 +124,27 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
         await loadParticipants();
         onUpdate?.();
       }
+      setLoading(false);
     } else {
       const result = await joinMatch(post.id);
-      if (result.success) {
+
+      if (result.requiresPayment && result.bookingId && result.pricePerPerson) {
+        setPaymentDetails({
+          bookingId: result.bookingId,
+          pricePerPerson: result.pricePerPerson
+        });
+        setShowPaymentModal(true);
+        setLoading(false);
+      } else if (result.success) {
         setHasJoined(true);
         await loadParticipants();
         onUpdate?.();
+        setLoading(false);
       } else if (result.error) {
         alert(result.error);
+        setLoading(false);
       }
     }
-
-    setLoading(false);
   }
 
   async function handleDeletePost(e: React.MouseEvent) {
@@ -199,6 +214,32 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
   return (
     <>
+      {showPaymentModal && paymentDetails && (
+        <MatchPaymentModal
+          postId={post.id}
+          bookingId={paymentDetails.bookingId}
+          pricePerPerson={paymentDetails.pricePerPerson}
+          matchDetails={{
+            sport: post.sport || 'pickleball',
+            date: post.bookings?.booking_date || post.play_date || '',
+            startTime: post.bookings?.start_time.slice(0, 5) || post.play_start_time?.slice(0, 5) || '',
+            endTime: post.bookings?.end_time.slice(0, 5) || post.play_end_time?.slice(0, 5) || '',
+            courtName: post.courts?.name || 'Court'
+          }}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setPaymentDetails(null);
+          }}
+          onSuccess={async () => {
+            setShowPaymentModal(false);
+            setPaymentDetails(null);
+            setHasJoined(true);
+            await loadParticipants();
+            onUpdate?.();
+          }}
+        />
+      )}
+
       {expandedImage !== null && post.media_urls && (
         <div
           className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"

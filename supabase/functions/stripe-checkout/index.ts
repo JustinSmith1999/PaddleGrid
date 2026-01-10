@@ -43,20 +43,26 @@ Deno.serve(async (req) => {
       return corsResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const { price_id, success_url, cancel_url, mode } = await req.json();
+    const { price_id, success_url, cancel_url, mode, type, postId, bookingId, amount } = await req.json();
 
-    const error = validateParameters(
-      { price_id, success_url, cancel_url, mode },
-      {
-        cancel_url: 'string',
-        price_id: 'string',
-        success_url: 'string',
-        mode: { values: ['payment', 'subscription'] },
-      },
-    );
+    if (type === 'match_payment') {
+      if (!postId || !bookingId || !amount || !success_url || !cancel_url) {
+        return corsResponse({ error: 'Missing required parameters for match payment' }, 400);
+      }
+    } else {
+      const error = validateParameters(
+        { price_id, success_url, cancel_url, mode },
+        {
+          cancel_url: 'string',
+          price_id: 'string',
+          success_url: 'string',
+          mode: { values: ['payment', 'subscription'] },
+        },
+      );
 
-    if (error) {
-      return corsResponse({ error }, 400);
+      if (error) {
+        return corsResponse({ error }, 400);
+      }
     }
 
     const authHeader = req.headers.get('Authorization')!;
@@ -178,19 +184,51 @@ Deno.serve(async (req) => {
     }
 
     // create Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    let sessionConfig: any = {
       customer: customerId,
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price: price_id,
-          quantity: 1,
-        },
-      ],
-      mode,
       success_url,
       cancel_url,
-    });
+    };
+
+    if (type === 'match_payment') {
+      sessionConfig = {
+        ...sessionConfig,
+        mode: 'payment',
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: 'Court Booking - Match Payment',
+                description: 'Your share of the court booking fee',
+              },
+              unit_amount: Math.round(amount * 100),
+            },
+            quantity: 1,
+          },
+        ],
+        metadata: {
+          type: 'match_payment',
+          post_id: postId,
+          booking_id: bookingId,
+          user_id: user.id,
+        },
+      };
+    } else {
+      sessionConfig = {
+        ...sessionConfig,
+        line_items: [
+          {
+            price: price_id,
+            quantity: 1,
+          },
+        ],
+        mode,
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     console.log(`Created checkout session ${session.id} for customer ${customerId}`);
 

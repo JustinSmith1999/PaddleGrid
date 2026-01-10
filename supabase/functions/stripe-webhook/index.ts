@@ -101,7 +101,55 @@ async function handleEvent(event: Stripe.Event) {
           metadata,
         } = stripeData as Stripe.Checkout.Session;
 
-        if (metadata?.booking_id) {
+        if (metadata?.type === 'match_payment' && metadata?.post_id && metadata?.user_id) {
+          const { error: participantError } = await supabase
+            .from('social_post_participants')
+            .insert({
+              post_id: metadata.post_id,
+              user_id: metadata.user_id,
+            });
+
+          if (participantError && participantError.code !== '23505') {
+            console.error('Error adding match participant:', participantError);
+          } else {
+            console.info(`Successfully added user ${metadata.user_id} to match ${metadata.post_id}`);
+          }
+
+          const { error: paymentError } = await supabase
+            .from('match_participant_payments')
+            .insert({
+              post_id: metadata.post_id,
+              user_id: metadata.user_id,
+              booking_id: metadata.booking_id,
+              amount_paid: amount_total / 100,
+              payment_intent_id: payment_intent as string,
+              payment_status: 'paid',
+            });
+
+          if (paymentError) {
+            console.error('Error recording match payment:', paymentError);
+          } else {
+            console.info(`Successfully recorded payment for match ${metadata.post_id}`);
+          }
+
+          try {
+            const { data: post } = await supabase
+              .from('social_posts')
+              .select('author_id')
+              .eq('id', metadata.post_id)
+              .single();
+
+            if (post && post.author_id !== metadata.user_id) {
+              await supabase.rpc('create_social_notification', {
+                p_user_id: post.author_id,
+                p_type: 'match_join',
+                p_data: { post_id: metadata.post_id, from_user_id: metadata.user_id }
+              });
+            }
+          } catch (notifError) {
+            console.warn('Failed to create match join notification:', notifError);
+          }
+        } else if (metadata?.booking_id) {
           const { error: bookingError } = await supabase
             .from('bookings')
             .update({

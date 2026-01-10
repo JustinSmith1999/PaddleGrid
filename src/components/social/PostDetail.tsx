@@ -16,6 +16,7 @@ import {
 } from '../../lib/socialUtils';
 import { moderateContent } from '../../lib/contentModeration';
 import { useAuth } from '../../contexts/AuthContext';
+import MatchPaymentModal from './MatchPaymentModal';
 
 interface PostDetailProps {
   postId: string;
@@ -38,6 +39,11 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
   const [showPostMenu, setShowPostMenu] = useState(false);
   const [showCommentMenu, setShowCommentMenu] = useState<string | null>(null);
   const [likedByUsers, setLikedByUsers] = useState<Array<{ id: string; full_name: string; profile_picture_url?: string }>>([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<{
+    bookingId: string;
+    pricePerPerson: number;
+  } | null>(null);
 
   useEffect(() => {
     loadPostData();
@@ -136,7 +142,14 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
       }
     } else {
       const result = await joinMatch(postId);
-      if (result.success) {
+
+      if (result.requiresPayment && result.bookingId && result.pricePerPerson) {
+        setPaymentDetails({
+          bookingId: result.bookingId,
+          pricePerPerson: result.pricePerPerson
+        });
+        setShowPaymentModal(true);
+      } else if (result.success) {
         setHasJoined(true);
         loadPostData();
       } else if (result.error) {
@@ -202,7 +215,33 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
   const isFull = post.spots_needed && post.spots_filled >= post.spots_needed;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      {showPaymentModal && paymentDetails && post && (
+        <MatchPaymentModal
+          postId={postId}
+          bookingId={paymentDetails.bookingId}
+          pricePerPerson={paymentDetails.pricePerPerson}
+          matchDetails={{
+            sport: post.sport || 'pickleball',
+            date: post.bookings?.booking_date || post.play_date || '',
+            startTime: post.bookings?.start_time.slice(0, 5) || post.play_start_time?.slice(0, 5) || '',
+            endTime: post.bookings?.end_time.slice(0, 5) || post.play_end_time?.slice(0, 5) || '',
+            courtName: post.courts?.name || 'Court'
+          }}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setPaymentDetails(null);
+          }}
+          onSuccess={async () => {
+            setShowPaymentModal(false);
+            setPaymentDetails(null);
+            setHasJoined(true);
+            loadPostData();
+          }}
+        />
+      )}
+
+      <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <button
@@ -575,5 +614,6 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
         </div>
       </div>
     </div>
+    </>
   );
 }
