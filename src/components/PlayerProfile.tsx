@@ -7,7 +7,7 @@ import ProfilePictureUpload from './ProfilePictureUpload';
 import { Streak, Activity, getActivityFeed } from '../lib/activityUtils';
 import ActivityCard from './ActivityCard';
 import PlayerCard from './PlayerCard';
-import AchievementsBadges from './AchievementsBadges';
+import AchievementsShowcase from './AchievementsShowcase';
 import PlayStreakWidget from './PlayStreakWidget';
 
 interface PlayerStats {
@@ -390,7 +390,7 @@ export function PlayerProfile() {
         </div>
 
         <div className="mb-8">
-          <AchievementsBadges />
+          {user && <AchievementsShowcase userId={user.id} isOwnProfile={true} />}
         </div>
       </div>
     </div>

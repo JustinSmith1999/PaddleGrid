@@ -9,9 +9,12 @@ import { NotFound } from './components/NotFound';
 import LoadingScreen from './components/LoadingScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import InstallPWA from './components/InstallPWA';
+import AchievementCelebrationModal from './components/AchievementCelebrationModal';
+import { useAchievementNotifications } from './hooks/useAchievementNotifications';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
+import { supabase } from './lib/supabase';
 
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
@@ -52,6 +55,7 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const isNative = Capacitor.isNativePlatform();
+  const { currentAchievement, dismissAchievement } = useAchievementNotifications();
 
   useEffect(() => {
     if (isNative) {
@@ -250,6 +254,43 @@ function AppContent() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         mode={authMode}
+      />
+
+      <AchievementCelebrationModal
+        achievement={currentAchievement}
+        onClose={dismissAchievement}
+        onShare={async () => {
+          if (!currentAchievement || !user) return;
+
+          try {
+            const { data: facility } = await supabase
+              .from('facility_users')
+              .select('facility_id')
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            await supabase
+              .from('social_posts')
+              .insert({
+                user_id: user.id,
+                facility_id: facility?.facility_id || null,
+                content: `Just unlocked the "${currentAchievement.name}" achievement! ${currentAchievement.rarity === 'legendary' ? '🏆' : currentAchievement.rarity === 'epic' ? '⭐' : '✨'}`,
+                metadata: {
+                  achievement_id: currentAchievement.id,
+                  achievement_name: currentAchievement.name,
+                  achievement_icon: currentAchievement.icon,
+                  achievement_rarity: currentAchievement.rarity,
+                  achievement_points: currentAchievement.points,
+                  post_type: 'achievement'
+                }
+              });
+
+            dismissAchievement();
+            navigate('/');
+          } catch (error) {
+            console.error('Error sharing achievement:', error);
+          }
+        }}
       />
 
       {!isNative && <InstallPWA />}
