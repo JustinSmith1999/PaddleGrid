@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield, Menu, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield, Menu, X, RefreshCw } from 'lucide-react';
 import { SocialPost, getFeedPosts, getNotifications, Notification, getBookmarkedPosts } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -15,6 +15,8 @@ import WhosPlayingNow from './WhosPlayingNow';
 import SuggestedPlayers from './SuggestedPlayers';
 import WeatherWidget from './WeatherWidget';
 import StoryComposer from './StoryComposer';
+import { FeedSkeleton } from '../SkeletonLoader';
+import { haptics } from '../../lib/mobileUtils';
 
 interface CommunityFeedProps {
   onCreatePost: () => void;
@@ -45,6 +47,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   });
   const [hideStories, setHideStories] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const pullStartY = useRef(0);
+  const feedContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -171,6 +177,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
   async function loadPosts(isRefresh = false) {
     if (isRefresh) {
       setRefreshing(true);
+      haptics.light();
     } else {
       setLoading(true);
     }
@@ -183,13 +190,53 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       });
 
       setPosts(feedPosts);
+
+      if (isRefresh) {
+        haptics.success();
+      }
     } catch (error) {
       console.error('Error loading posts:', error);
+      if (isRefresh) {
+        haptics.error();
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }
+
+  // Pull to refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0 && activeView === 'feed') {
+      pullStartY.current = e.touches[0].clientY;
+      setIsPulling(true);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPulling || window.scrollY > 0) return;
+
+    const currentY = e.touches[0].clientY;
+    const distance = Math.max(0, currentY - pullStartY.current);
+
+    if (distance > 0) {
+      e.preventDefault();
+      // Apply resistance
+      const resistedDistance = Math.min(distance / 2.5, 80);
+      setPullDistance(resistedDistance);
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (!isPulling) return;
+
+    if (pullDistance > 60) {
+      await loadPosts(true);
+    }
+
+    setIsPulling(false);
+    setPullDistance(0);
+  };
 
   async function loadBookmarks() {
     setLoading(true);
@@ -203,10 +250,13 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     }
   }
 
-  if (loading && posts.length === 0) {
+  if (loading && posts.length === 0 && !refreshing) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+        <div className="max-w-[600px] mx-auto">
+          <div className="sticky top-[56px] z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 h-[49px]"></div>
+          <FeedSkeleton count={5} />
+        </div>
       </div>
     );
   }
@@ -379,7 +429,30 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         )}
 
         {/* Main Feed - Centered with fixed width */}
-        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[600px]'} ${shouldShowSidebar ? 'lg:ml-[275px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/80 dark:border-slate-800/80' : ''} min-h-screen bg-white dark:bg-slate-900 relative`}>
+        <div
+          ref={feedContainerRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[600px]'} ${shouldShowSidebar ? 'lg:ml-[275px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/80 dark:border-slate-800/80' : ''} min-h-screen bg-white dark:bg-slate-900 relative`}
+        >
+          {/* Pull to Refresh Indicator */}
+          {isPulling && activeView === 'feed' && (
+            <div
+              className="absolute top-[56px] left-0 right-0 flex justify-center items-center transition-all duration-200 z-50"
+              style={{
+                transform: `translateY(${pullDistance}px)`,
+                opacity: pullDistance / 60
+              }}
+            >
+              <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg">
+                <RefreshCw
+                  className={`w-5 h-5 text-emerald-600 ${pullDistance > 60 ? 'animate-spin' : ''}`}
+                  style={{ transform: `rotate(${pullDistance * 3}deg)` }}
+                />
+              </div>
+            </div>
+          )}
           {/* Sticky Header */}
           {activeView !== 'messages' && (
             <div className="sticky top-[56px] z-10 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">

@@ -4,6 +4,7 @@ import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical, Eye, ChevronD
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { haptics } from '../../lib/mobileUtils';
 
 interface Story {
   id: string;
@@ -304,22 +305,26 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   }
 
   function goToNext() {
+    haptics.light();
     if (currentStoryIndex < currentGroup.stories.length - 1) {
       setCurrentStoryIndex(prev => prev + 1);
     } else if (currentGroupIndex < allStoryGroups.length - 1) {
       setCurrentGroupIndex(prev => prev + 1);
       setCurrentStoryIndex(0);
+      haptics.medium();
     } else {
       onClose();
     }
   }
 
   function goToPrevious() {
+    haptics.light();
     if (currentStoryIndex > 0) {
       setCurrentStoryIndex(prev => prev - 1);
     } else if (currentGroupIndex > 0) {
       setCurrentGroupIndex(prev => prev - 1);
       setCurrentStoryIndex(allStoryGroups[currentGroupIndex - 1].stories.length - 1);
+      haptics.medium();
     }
   }
 
@@ -343,13 +348,16 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
     if (Math.abs(deltaY) > 100 && Math.abs(deltaY) > Math.abs(deltaX)) {
       if (deltaY < 0 && isOwnStory && viewerCount > 0) {
+        haptics.medium();
         setShowViewers(true);
         fetchViewers(currentStory.id);
         return;
       } else if (deltaY > 0 && !showViewers) {
+        haptics.medium();
         onClose();
         return;
       } else if (deltaY > 0 && showViewers) {
+        haptics.light();
         setShowViewers(false);
         return;
       }
@@ -405,6 +413,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
     if (!confirm('Delete this story?')) return;
 
+    haptics.medium();
+
     try {
       const { error } = await supabase
         .from('stories')
@@ -412,6 +422,8 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
         .eq('id', currentStory.id);
 
       if (error) throw error;
+
+      haptics.success();
 
       if (currentGroup.stories.length === 1) {
         onClose();
@@ -424,6 +436,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
       }
     } catch (error) {
       console.error('Error deleting story:', error);
+      haptics.error();
       alert('Failed to delete story');
     }
   }
