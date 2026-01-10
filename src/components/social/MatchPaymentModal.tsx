@@ -54,12 +54,27 @@ export default function MatchPaymentModal({
   const [addingCard, setAddingCard] = useState(false);
   const [stripe, setStripe] = useState<any>(null);
   const [elements, setElements] = useState<any>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   useEffect(() => {
     loadFacilityName();
     loadPaymentMethodsData();
     initializeStripe();
   }, []);
+
+  useEffect(() => {
+    if (showAddCard && stripe && clientSecret && !elements) {
+      const elementsInstance = stripe.elements({
+        clientSecret,
+        appearance: { theme: 'stripe' },
+      });
+
+      const paymentElement = elementsInstance.create('payment');
+      paymentElement.mount('#payment-element');
+
+      setElements(elementsInstance);
+    }
+  }, [showAddCard, stripe, clientSecret, elements]);
 
   async function loadFacilityName() {
     if (!facilityName && facilityId) {
@@ -112,17 +127,8 @@ export default function MatchPaymentModal({
     setError(null);
 
     try {
-      const { clientSecret } = await createSetupIntent();
-
-      const elementsInstance = stripe.elements({
-        clientSecret,
-        appearance: { theme: 'stripe' },
-      });
-
-      const paymentElement = elementsInstance.create('payment');
-      paymentElement.mount('#payment-element');
-
-      setElements(elementsInstance);
+      const { clientSecret: secret } = await createSetupIntent();
+      setClientSecret(secret);
       setShowAddCard(true);
     } catch (err: any) {
       console.error('Failed to add card:', err);
@@ -156,6 +162,7 @@ export default function MatchPaymentModal({
         await loadPaymentMethodsData();
         setShowAddCard(false);
         setElements(null);
+        setClientSecret(null);
       }
     } catch (err: any) {
       console.error('Failed to save card:', err);
@@ -219,6 +226,7 @@ export default function MatchPaymentModal({
               onClick={() => {
                 setShowAddCard(false);
                 setElements(null);
+                setClientSecret(null);
               }}
               className="text-gray-400 hover:text-gray-600 transition"
             >
@@ -226,7 +234,14 @@ export default function MatchPaymentModal({
             </button>
           </div>
 
-          <div id="payment-element" className="mb-4"></div>
+          {!elements && (
+            <div className="mb-4 p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-sm text-gray-500 mt-2">Loading payment form...</p>
+            </div>
+          )}
+
+          <div id="payment-element" className={`mb-4 ${!elements ? 'hidden' : ''}`}></div>
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
@@ -239,6 +254,7 @@ export default function MatchPaymentModal({
               onClick={() => {
                 setShowAddCard(false);
                 setElements(null);
+                setClientSecret(null);
               }}
               disabled={loading}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
