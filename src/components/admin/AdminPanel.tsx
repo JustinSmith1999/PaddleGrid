@@ -17,6 +17,7 @@ import PreRegisteredUsers from './PreRegisteredUsers';
 import TransactionsSync from './TransactionsSync';
 import BookingNotificationTest from './BookingNotificationTest';
 import SignedWaiversPanel from './SignedWaiversPanel';
+import ClubAchievementsManager from './ClubAchievementsManager';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -126,6 +127,8 @@ export function AdminPanel() {
         return <SignedWaiversPanel />;
       case 'notifications':
         return <BookingNotificationTest />;
+      case 'achievements':
+        return facilityId ? <ClubAchievementsManager facilityId={facilityId} /> : <div className="p-8 text-center text-gray-600">Loading facility...</div>;
       case 'analytics':
         return <AdminReporting />;
       case 'settings':

@@ -1,54 +1,69 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Award, Star, Lock, Sparkles } from 'lucide-react';
+import { Trophy, Award, Star, Lock, Sparkles, Building2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
+interface AchievementProgress {
+  achievement_code: string;
+  achievement_name: string;
+  achievement_description: string;
   category: string;
+  icon: string;
+  rarity: string;
   points: number;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
-}
-
-interface UserAchievement {
-  achievement_id: string;
-  unlocked_at: string;
-  progress: number;
-  achievements: Achievement;
+  current_progress: number;
+  required_threshold: number;
+  is_unlocked: boolean;
+  unlocked_at: string | null;
+  progress_percentage: number;
 }
 
 export default function AchievementsBadges() {
   const { user } = useAuth();
-  const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([]);
-  const [allAchievements, setAllAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<AchievementProgress[]>([]);
+  const [facilities, setFacilities] = useState<any[]>([]);
+  const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unlocked' | 'locked'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   useEffect(() => {
     if (user) {
-      loadAchievements();
+      loadFacilities();
     }
   }, [user]);
 
+  useEffect(() => {
+    if (selectedFacility) {
+      loadAchievements();
+    }
+  }, [selectedFacility, user]);
+
+  async function loadFacilities() {
+    const { data } = await supabase
+      .from('facility_users')
+      .select('facility_id, facilities(id, name)')
+      .eq('user_id', user!.id);
+
+    if (data && data.length > 0) {
+      setFacilities(data.map(f => f.facilities).filter(Boolean));
+      setSelectedFacility(data[0].facilities.id);
+    }
+  }
+
   async function loadAchievements() {
+    if (!selectedFacility) return;
+
     try {
-      const [achievementsRes, userAchievementsRes] = await Promise.all([
-        supabase.from('achievements').select('*').eq('is_active', true),
-        supabase
-          .from('user_achievements')
-          .select('*, achievements(*)')
-          .eq('user_id', user!.id)
-      ]);
+      setLoading(true);
+      const { data, error } = await supabase.rpc('get_user_achievement_progress', {
+        p_user_id: user!.id,
+        p_facility_id: selectedFacility
+      });
 
-      if (achievementsRes.error) throw achievementsRes.error;
-      if (userAchievementsRes.error) throw userAchievementsRes.error;
+      if (error) throw error;
 
-      setAllAchievements(achievementsRes.data || []);
-      setUserAchievements(userAchievementsRes.data || []);
+      setAchievements(data || []);
     } catch (error) {
       console.error('Error loading achievements:', error);
     } finally {
@@ -56,25 +71,18 @@ export default function AchievementsBadges() {
     }
   }
 
-  const unlockedIds = new Set(userAchievements.map(ua => ua.achievement_id));
-
-  const filteredAchievements = allAchievements.filter(achievement => {
-    const isUnlocked = unlockedIds.has(achievement.id);
-
-    if (filter === 'unlocked' && !isUnlocked) return false;
-    if (filter === 'locked' && isUnlocked) return false;
+  const filteredAchievements = achievements.filter(achievement => {
+    if (filter === 'unlocked' && !achievement.is_unlocked) return false;
+    if (filter === 'locked' && achievement.is_unlocked) return false;
     if (categoryFilter !== 'all' && achievement.category !== categoryFilter) return false;
 
     return true;
   });
 
-  const hiddenCategories = ['all', 'matches', 'hours', 'social', 'competitive', 'milestones'];
-  const categories = ['all', ...Array.from(new Set(allAchievements.map(a => a.category)))].filter(
-    cat => !hiddenCategories.includes(cat)
-  );
+  const categories = ['all', ...Array.from(new Set(achievements.map(a => a.category)))];
 
-  const totalPoints = userAchievements.reduce((sum, ua) => sum + ua.achievements.points, 0);
-  const unlockedCount = userAchievements.filter(ua => ua.progress === 100).length;
+  const totalPoints = achievements.filter(a => a.is_unlocked).reduce((sum, a) => sum + a.points, 0);
+  const unlockedCount = achievements.filter(a => a.is_unlocked).length;
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -115,9 +123,25 @@ export default function AchievementsBadges() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Achievements</h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">Track your progress and unlock rewards</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Achievements</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">Track your progress and unlock rewards</p>
+          </div>
+
+          {facilities.length > 1 && (
+            <select
+              value={selectedFacility || ''}
+              onChange={(e) => setSelectedFacility(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            >
+              {facilities.map((facility) => (
+                <option key={facility.id} value={facility.id}>
+                  {facility.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
@@ -131,8 +155,8 @@ export default function AchievementsBadges() {
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 text-center">
             <div className="text-xl sm:text-2xl font-bold text-gray-900">
-              {allAchievements.length > 0
-                ? Math.round((unlockedCount / allAchievements.length) * 100)
+              {achievements.length > 0
+                ? Math.round((unlockedCount / achievements.length) * 100)
                 : 0}%
             </div>
             <div className="text-xs text-gray-500 mt-0.5">Complete</div>
@@ -198,21 +222,16 @@ export default function AchievementsBadges() {
       ) : filteredAchievements.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {filteredAchievements.map((achievement) => {
-            const isUnlocked = unlockedIds.has(achievement.id);
-            const userAchievement = userAchievements.find(
-              ua => ua.achievement_id === achievement.id
-            );
-
             return (
               <div
-                key={achievement.id}
+                key={achievement.achievement_code}
                 className={`relative rounded-lg border bg-white p-3 sm:p-5 transition-all ${
-                  isUnlocked
+                  achievement.is_unlocked
                     ? `${getRarityBorder(achievement.rarity)} hover:shadow-md`
                     : 'border-gray-200 opacity-60'
                 }`}
               >
-                {!isUnlocked && (
+                {!achievement.is_unlocked && (
                   <div className="absolute inset-0 flex items-center justify-center bg-white/60 rounded-lg backdrop-blur-[2px]">
                     <Lock className="w-7 sm:w-8 h-7 sm:h-8 text-gray-400" />
                   </div>
@@ -222,19 +241,13 @@ export default function AchievementsBadges() {
                   <div
                     className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 rounded-full bg-gradient-to-br ${getRarityColor(
                       achievement.rarity
-                    )} flex items-center justify-center text-white`}
+                    )} flex items-center justify-center text-3xl sm:text-4xl`}
                   >
-                    {achievement.icon === 'trophy' ? (
-                      <Trophy className="w-6 sm:w-8 h-6 sm:h-8" />
-                    ) : achievement.icon === 'star' ? (
-                      <Star className="w-6 sm:w-8 h-6 sm:h-8" />
-                    ) : (
-                      <Award className="w-6 sm:w-8 h-6 sm:h-8" />
-                    )}
+                    {achievement.icon}
                   </div>
 
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1 line-clamp-1">{achievement.name}</h3>
-                  <p className="text-[10px] sm:text-xs text-gray-500 mb-2 sm:mb-3 line-clamp-2">{achievement.description}</p>
+                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1 line-clamp-1">{achievement.achievement_name}</h3>
+                  <p className="text-[10px] sm:text-xs text-gray-500 mb-2 sm:mb-3 line-clamp-2">{achievement.achievement_description}</p>
 
                   <div className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <span
@@ -251,25 +264,27 @@ export default function AchievementsBadges() {
                       {achievement.rarity}
                     </span>
                     <span className="text-emerald-600 font-semibold text-[10px] sm:text-xs">
-                      {achievement.points}
+                      +{achievement.points}
                     </span>
                   </div>
 
-                  {userAchievement && userAchievement.progress < 100 && (
+                  {!achievement.is_unlocked && achievement.progress_percentage > 0 && (
                     <div className="mt-2 sm:mt-3">
                       <div className="w-full bg-gray-200 rounded-full h-1 sm:h-1.5">
                         <div
                           className="bg-emerald-500 h-1 sm:h-1.5 rounded-full transition-all"
-                          style={{ width: `${userAchievement.progress}%` }}
+                          style={{ width: `${achievement.progress_percentage}%` }}
                         ></div>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-gray-400 mt-1">{userAchievement.progress}%</p>
+                      <p className="text-[10px] sm:text-xs text-gray-400 mt-1">
+                        {achievement.current_progress} / {achievement.required_threshold}
+                      </p>
                     </div>
                   )}
 
-                  {isUnlocked && userAchievement && (
+                  {achievement.is_unlocked && achievement.unlocked_at && (
                     <p className="text-[10px] sm:text-xs text-gray-400 mt-1.5 sm:mt-2">
-                      {new Date(userAchievement.unlocked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {new Date(achievement.unlocked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                   )}
                 </div>
