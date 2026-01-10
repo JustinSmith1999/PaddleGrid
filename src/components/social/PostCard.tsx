@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark, CreditCard } from 'lucide-react';
 import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePost, bookmarkPost, unbookmarkPost, getMatchParticipants } from '../../lib/socialUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -548,8 +548,21 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                   </div>
 
                   {post.requires_payment && post.price_per_person && (
-                    <div className="flex items-center gap-1 col-span-2 text-emerald-700 dark:text-emerald-400 font-semibold">
-                      <span>${post.price_per_person.toFixed(2)} per person</span>
+                    <div className="col-span-2 -mx-3 -mb-3 mt-2 px-3 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-t-2 border-emerald-200 dark:border-emerald-800">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-emerald-600" />
+                          <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                            Payment Required
+                          </span>
+                        </div>
+                        <span className="text-base font-bold text-emerald-700 dark:text-emerald-400">
+                          ${post.price_per_person.toFixed(2)}/person
+                        </span>
+                      </div>
+                      <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1">
+                        Real court booking - cost split between players
+                      </p>
                     </div>
                   )}
                 </div>
@@ -598,10 +611,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                         ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                         : isFull
                         ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                        : post.requires_payment
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 ring-2 ring-emerald-300 ring-offset-2'
                         : 'bg-emerald-600 text-white hover:bg-emerald-700'
                     }`}
                   >
-                    {hasJoined ? 'Leave Match' : isFull ? 'Match Full' : `Join (${spotsLeft} left)`}
+                    {hasJoined ? 'Leave Match' : isFull ? 'Match Full' : post.requires_payment ? `Join & Pay $${post.price_per_person?.toFixed(2)} (${spotsLeft} left)` : `Join (${spotsLeft} left)`}
                   </button>
                 )}
               </div>

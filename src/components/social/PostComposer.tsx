@@ -878,20 +878,52 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
 
                   {courtId && selectedCourt && (
                     <div className="col-span-2">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={requiresPayment}
-                          onChange={(e) => setRequiresPayment(e.target.checked)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm font-medium text-black">
-                          Require payment to join (${((selectedCourt.hourly_rate * calculateDuration(startTime, endTime)) / spotsNeeded).toFixed(2)} per person)
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-600 mt-1 ml-6">
-                        A real court booking will be created. Payment splits the total court cost between all players.
-                      </p>
+                      <div className={`border-2 rounded-lg p-4 transition ${requiresPayment ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 bg-gray-50'}`}>
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={requiresPayment}
+                            onChange={(e) => setRequiresPayment(e.target.checked)}
+                            className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 mt-0.5 flex-shrink-0"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-base font-semibold text-gray-900">
+                                Require payment to join
+                              </span>
+                              <span className="px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded">
+                                ${((selectedCourt.hourly_rate * calculateDuration(startTime, endTime)) / spotsNeeded).toFixed(2)}/person
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-700 mb-2">
+                              Creates a real court booking at <strong>{facilities.find(f => f.id === facilityId)?.name}</strong> on <strong>{selectedCourt.name}</strong>
+                            </p>
+                            <div className="bg-white border border-emerald-200 rounded p-2 text-xs text-gray-600 space-y-1">
+                              <div className="flex justify-between">
+                                <span>Court rate:</span>
+                                <span className="font-medium">${selectedCourt.hourly_rate}/hr</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Duration:</span>
+                                <span className="font-medium">{calculateDuration(startTime, endTime)}hr</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Total cost:</span>
+                                <span className="font-medium">${(selectedCourt.hourly_rate * calculateDuration(startTime, endTime)).toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between border-t border-emerald-200 pt-1 mt-1">
+                                <span>Split {spotsNeeded} ways:</span>
+                                <span className="font-bold text-emerald-600">${((selectedCourt.hourly_rate * calculateDuration(startTime, endTime)) / spotsNeeded).toFixed(2)} each</span>
+                              </div>
+                            </div>
+                            {requiresPayment && (
+                              <p className="text-xs text-emerald-700 font-medium mt-2">
+                                ✓ Players will see full venue, court, and payment details before joining
+                              </p>
+                            )}
+                          </div>
+                        </label>
+                      </div>
                     </div>
                   )}
                 </div>
