@@ -528,10 +528,14 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     </span>
                   </div>
 
-                  {post.courts && (
+                  {(post.facilities || post.courts) && (
                     <div className="flex items-center gap-1 col-span-2">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
-                      <span className="break-words line-clamp-1">{post.courts.name}</span>
+                      <span className="break-words line-clamp-1">
+                        {post.facilities?.name && post.courts?.name
+                          ? `${post.facilities.name} - ${post.courts.name}`
+                          : post.facilities?.name || post.courts?.name || 'Location TBD'}
+                      </span>
                     </div>
                   )}
 
@@ -556,17 +560,27 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     <div className="col-span-2 -mx-3 -mb-3 mt-2 px-3 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-t-2 border-emerald-200 dark:border-emerald-800">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <CreditCard className="w-4 h-4 text-emerald-600" />
-                          <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-                            Payment Required
-                          </span>
+                          <div className="w-7 h-7 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+                              Real Court Booking
+                            </div>
+                            <div className="text-xs text-emerald-700 dark:text-emerald-400">
+                              {post.facilities?.name && `at ${post.facilities.name}`}
+                            </div>
+                          </div>
                         </div>
                         <span className="text-base font-bold text-emerald-700 dark:text-emerald-400">
-                          ${post.price_per_person.toFixed(2)}/person
+                          ${post.price_per_person.toFixed(2)}
+                          <span className="text-xs font-normal">/person</span>
                         </span>
                       </div>
-                      <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1">
-                        Real court booking - cost split between players
+                      <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-2">
+                        Payment required to confirm spot. Cost automatically split between {post.spots_needed} players.
                       </p>
                     </div>
                   )}

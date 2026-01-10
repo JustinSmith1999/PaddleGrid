@@ -889,7 +889,12 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                     <div className="col-span-2">
                       <label className="block text-sm font-medium text-black mb-1.5 flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5" />
-                        Court
+                        Court Selection
+                        {courts.some(c => c.hourly_rate) && !courtId && (
+                          <span className="ml-auto text-xs px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full font-semibold">
+                            Select a court to enable booking
+                          </span>
+                        )}
                       </label>
                       <select
                         value={courtId}
@@ -898,15 +903,27 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                           setCourtId(e.target.value);
                           setSelectedCourt(court || null);
                         }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
+                        className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black ${
+                          !courtId && courts.some(c => c.hourly_rate)
+                            ? 'border-amber-300 bg-amber-50'
+                            : 'border-gray-300'
+                        }`}
                       >
-                        <option value="">Any Court</option>
+                        <option value="">No Court Selected (Free Match Only)</option>
                         {courts.map((court) => (
                           <option key={court.id} value={court.id}>
-                            {court.name} {court.hourly_rate ? `($${court.hourly_rate}/hr)` : ''}
+                            {court.name} {court.hourly_rate ? `- $${court.hourly_rate}/hr (Real Booking)` : '(Free)'}
                           </option>
                         ))}
                       </select>
+                      {!courtId && courts.some(c => c.hourly_rate) && (
+                        <p className="text-xs text-amber-800 mt-1.5 flex items-start gap-1.5">
+                          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          <span>Select a specific court to create a real booking with automatic payment collection. Otherwise, this is just a casual meetup.</span>
+                        </p>
+                      )}
                     </div>
                   )}
 
