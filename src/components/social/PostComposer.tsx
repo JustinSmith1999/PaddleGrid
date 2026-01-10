@@ -787,49 +787,84 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                     />
                   </div>
 
-                  <div>
+                  <div className="col-span-2">
                     <label className="block text-sm font-medium text-black mb-1.5">
-                      Min Skill
+                      Skill Level Range
                     </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="7"
-                      value={skillMin}
-                      onChange={(e) => setSkillMin(parseFloat(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
-                    />
+                    <div className="grid grid-cols-2 gap-3 mb-2">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Minimum</label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="1.0"
+                          max="7.0"
+                          value={skillMin}
+                          onChange={(e) => setSkillMin(parseFloat(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Maximum</label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="1.0"
+                          max="7.0"
+                          value={skillMax}
+                          onChange={(e) => setSkillMax(parseFloat(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg">
+                      <Trophy className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <p className="text-xs text-blue-800">
+                        Will show as <strong>{skillMin.toFixed(1)}-{skillMax.toFixed(1)} level</strong> to players
+                      </p>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1.5">
-                      Max Skill
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="7"
-                      value={skillMax}
-                      onChange={(e) => setSkillMax(parseFloat(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
-                    />
-                  </div>
-
-                  <div>
+                  <div className="col-span-2">
                     <label className="block text-sm font-medium text-black mb-1.5 flex items-center gap-1.5">
                       <Users className="w-3.5 h-3.5" />
-                      Players Needed
+                      Total Players for Game
                     </label>
-                    <input
-                      type="number"
-                      min="2"
-                      max="20"
-                      value={spotsNeeded}
-                      onChange={(e) => setSpotsNeeded(parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
-                    />
+                    <div className="flex gap-2 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => setSpotsNeeded(2)}
+                        className={`flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition ${
+                          spotsNeeded === 2
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        Singles (2)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSpotsNeeded(4)}
+                        className={`flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition ${
+                          spotsNeeded === 4
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        Doubles (4)
+                      </button>
+                      <input
+                        type="number"
+                        min="2"
+                        max="20"
+                        value={spotsNeeded}
+                        onChange={(e) => setSpotsNeeded(parseInt(e.target.value))}
+                        className="w-20 px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-600">
+                      Total number of players for this game (including yourself). Others will see how many spots remain.
+                    </p>
                   </div>
 
                   <div className="col-span-2">

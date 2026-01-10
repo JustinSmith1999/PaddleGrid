@@ -544,7 +544,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
 
                   <div className="flex items-center gap-1 min-w-0">
                     <Users className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
-                    <span className="truncate">{post.spots_filled}/{post.spots_needed} players</span>
+                    <span className="truncate">
+                      {post.spots_filled > 0
+                        ? `${post.spots_filled} joined, ${post.spots_needed - post.spots_filled} needed`
+                        : `${post.spots_needed} ${post.spots_needed === 1 ? 'player' : 'players'} needed`
+                      }
+                    </span>
                   </div>
 
                   {post.requires_payment && post.price_per_person && (
@@ -616,7 +621,14 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                         : 'bg-emerald-600 text-white hover:bg-emerald-700'
                     }`}
                   >
-                    {hasJoined ? 'Leave Match' : isFull ? 'Match Full' : post.requires_payment ? `Join & Pay $${post.price_per_person?.toFixed(2)} (${spotsLeft} left)` : `Join (${spotsLeft} left)`}
+                    {hasJoined
+                      ? 'Leave Match'
+                      : isFull
+                      ? 'Match Full'
+                      : post.requires_payment
+                      ? `Join & Pay $${post.price_per_person?.toFixed(2)} • ${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left`
+                      : `Join Match • ${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left`
+                    }
                   </button>
                 )}
               </div>
