@@ -336,6 +336,8 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
         postData.court_id = courtId;
       }
 
+      console.log('Match invite data:', { courtId, selectedCourt, hourly_rate: selectedCourt?.hourly_rate });
+
       if (courtId && selectedCourt?.hourly_rate && user) {
         try {
           const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -352,8 +354,11 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
             : 'Guest';
 
           const durationHours = calculateDuration(startTime, endTime);
-          const totalAmount = selectedCourt.hourly_rate * durationHours;
+          const hourlyRate = parseFloat(selectedCourt.hourly_rate);
+          const totalAmount = hourlyRate * durationHours;
           const pricePerPerson = totalAmount / spotsNeeded;
+
+          console.log('Payment calculation:', { durationHours, hourlyRate, totalAmount, pricePerPerson, spotsNeeded });
 
           const bookingPayload = {
             facility_id: facilityId,
@@ -402,6 +407,7 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
       }
     }
 
+    console.log('Final post data being sent:', postData);
     const result = await createPost(postData);
 
     if (result.success) {
@@ -909,10 +915,10 @@ export default function PostComposer({ onClose, onSuccess }: PostComposerProps) 
                             : 'border-gray-300'
                         }`}
                       >
-                        <option value="">No Court Selected (Free Match Only)</option>
+                        {courts.length === 0 && <option value="">No courts available</option>}
                         {courts.map((court) => (
                           <option key={court.id} value={court.id}>
-                            {court.name} {court.hourly_rate ? `- $${court.hourly_rate}/hr (Real Booking)` : '(Free)'}
+                            {court.name} {court.hourly_rate ? `- $${court.hourly_rate}/hr (Real Booking)` : '(Free Match Only)'}
                           </option>
                         ))}
                       </select>
