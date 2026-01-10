@@ -5,6 +5,7 @@ export interface SocialPost {
   author_id: string;
   facility_id?: string;
   court_id?: string;
+  booking_id?: string;
   post_type: 'general' | 'match_invite';
   content: string;
   posted_as_facility?: boolean;
@@ -25,6 +26,9 @@ export interface SocialPost {
   play_end_time?: string;
   spots_needed?: number;
   spots_filled: number;
+  requires_payment?: boolean;
+  price_per_person?: number;
+  total_spots?: number;
   visibility: 'facility' | 'friends' | 'public';
   created_at: string;
   updated_at: string;
@@ -32,6 +36,7 @@ export interface SocialPost {
   comments_count?: number;
   user_liked?: boolean;
   user_bookmarked?: boolean;
+  user_paid?: boolean;
   profiles?: {
     id: string;
     full_name: string;
@@ -48,6 +53,16 @@ export interface SocialPost {
   courts?: {
     id: string;
     name: string;
+  };
+  bookings?: {
+    id: string;
+    court_id: string;
+    booking_date: string;
+    start_time: string;
+    end_time: string;
+    total_amount: number;
+    status: string;
+    payment_status: string;
   };
 }
 
@@ -88,6 +103,10 @@ export async function createPost(post: {
   play_end_time?: string;
   spots_needed?: number;
   media_urls?: string[];
+  booking_id?: string;
+  requires_payment?: boolean;
+  price_per_person?: number;
+  total_spots?: number;
 }): Promise<{ success: boolean; post?: SocialPost; error?: string }> {
   try {
     const { data: user } = await supabase.auth.getUser();
@@ -101,7 +120,7 @@ export async function createPost(post: {
         author_id: user.user.id,
         ...post
       })
-      .select('*, profiles(*), facilities(*)')
+      .select('*, profiles(*), facilities(*), bookings(*)')
       .single();
 
     if (error) throw error;
@@ -189,7 +208,7 @@ export async function getFeedPosts(filter: {
 
     let query = supabase
       .from('social_posts')
-      .select('*, profiles(*), facilities(*), courts(*)')
+      .select('*, profiles(*), facilities(*), courts(*), bookings(*)')
       .eq('is_archived', false)
       .order('created_at', { ascending: false })
       .range(filter.offset || 0, (filter.offset || 0) + (filter.limit || 20) - 1);
@@ -234,7 +253,7 @@ export async function getPostById(postId: string): Promise<SocialPost | null> {
   try {
     const { data, error } = await supabase
       .from('social_posts')
-      .select('*, profiles(*), facilities(*), courts(*)')
+      .select('*, profiles(*), facilities(*), courts(*), bookings(*)')
       .eq('id', postId)
       .single();
 

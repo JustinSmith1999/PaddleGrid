@@ -311,23 +311,40 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
               <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
                 <Trophy className="w-5 h-5 text-blue-600" />
                 {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
+                {post.bookings && (
+                  <span className="ml-auto text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">
+                    Court Booked
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 <div className="flex items-center gap-2 text-gray-700 min-w-0">
                   <Calendar className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   <span className="truncate text-sm sm:text-base">
-                    {post.play_date ? new Date(post.play_date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric'
-                    }) : 'TBD'}
+                    {post.bookings?.booking_date
+                      ? new Date(post.bookings.booking_date).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                      : post.play_date
+                      ? new Date(post.play_date).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                      : 'TBD'}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-gray-700 min-w-0">
                   <Clock className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  <span className="truncate text-sm sm:text-base">{post.play_start_time?.slice(0, 5)} - {post.play_end_time?.slice(0, 5)}</span>
+                  <span className="truncate text-sm sm:text-base">
+                    {post.bookings
+                      ? `${post.bookings.start_time.slice(0, 5)} - ${post.bookings.end_time.slice(0, 5)}`
+                      : `${post.play_start_time?.slice(0, 5)} - ${post.play_end_time?.slice(0, 5)}`}
+                  </span>
                 </div>
 
                 {post.courts && (
@@ -341,6 +358,12 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                   <div className="flex items-center gap-2 text-gray-700 min-w-0">
                     <Trophy className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     <span className="truncate text-sm sm:text-base">Skill: {post.skill_min} - {post.skill_max}</span>
+                  </div>
+                )}
+
+                {post.requires_payment && post.price_per_person && (
+                  <div className="flex items-center gap-2 text-emerald-700 sm:col-span-2">
+                    <span className="text-lg font-bold">${post.price_per_person.toFixed(2)} per person</span>
                   </div>
                 )}
               </div>

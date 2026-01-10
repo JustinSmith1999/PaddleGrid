@@ -423,22 +423,40 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 <div className="flex items-center gap-1.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400">
                   <Trophy className="w-3.5 h-3.5" />
                   {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
+                  {post.bookings && (
+                    <span className="ml-auto text-[11px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
+                      Court Booked
+                    </span>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-1.5 text-[13px] text-slate-700 dark:text-slate-300">
                   <div className="flex items-center gap-1 min-w-0">
                     <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">
-                      {post.play_date ? new Date(post.play_date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                      }) : 'TBD'}
+                      {post.bookings?.booking_date
+                        ? new Date(post.bookings.booking_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        : post.play_date
+                        ? new Date(post.play_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        : 'TBD'}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1 min-w-0">
                     <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
-                    <span className="truncate">{post.play_start_time ? post.play_start_time.slice(0, 5) : 'TBD'}</span>
+                    <span className="truncate">
+                      {post.bookings?.start_time
+                        ? post.bookings.start_time.slice(0, 5)
+                        : post.play_start_time
+                        ? post.play_start_time.slice(0, 5)
+                        : 'TBD'}
+                    </span>
                   </div>
 
                   {post.courts && (
@@ -459,6 +477,12 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                     <Users className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                     <span className="truncate">{post.spots_filled}/{post.spots_needed} players</span>
                   </div>
+
+                  {post.requires_payment && post.price_per_person && (
+                    <div className="flex items-center gap-1 col-span-2 text-emerald-700 dark:text-emerald-400 font-semibold">
+                      <span>${post.price_per_person.toFixed(2)} per person</span>
+                    </div>
+                  )}
                 </div>
 
                 {participants.length > 0 && (
