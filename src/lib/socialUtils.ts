@@ -93,6 +93,7 @@ export async function createPost(post: {
   post_type: 'general' | 'match_invite';
   content: string;
   facility_id?: string;
+  court_id?: string;
   posted_as_facility?: boolean;
   visibility?: 'facility' | 'friends' | 'public';
   sport?: string;
@@ -103,6 +104,7 @@ export async function createPost(post: {
   play_end_time?: string;
   spots_needed?: number;
   media_urls?: string[];
+  link_preview?: any;
   booking_id?: string;
   requires_payment?: boolean;
   price_per_person?: number;
@@ -120,7 +122,7 @@ export async function createPost(post: {
         author_id: user.user.id,
         ...post
       })
-      .select('*, profiles(*), facilities(*), bookings(*)')
+      .select('*, profiles(*), facilities(*), courts(*), bookings(*)')
       .single();
 
     if (error) throw error;
