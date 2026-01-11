@@ -3,6 +3,7 @@ import { ShoppingCart, ShoppingBag, Filter, X, Plus, Minus, Check, CreditCard, T
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { loadStripe, createSetupIntent, savePaymentMethod } from '../lib/stripe';
+import { useLocation } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -44,8 +45,9 @@ interface ShippingAddress {
 
 export default function MerchShop() {
   const { user } = useAuth();
+  const location = useLocation();
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(location.state?.cart || []);
   const [showCart, setShowCart] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -68,6 +70,10 @@ export default function MerchShop() {
   useEffect(() => {
     loadProducts();
     initializeStripe();
+    // Open cart if items were passed from club page
+    if (location.state?.cart && location.state.cart.length > 0) {
+      setShowCart(true);
+    }
   }, []);
 
   useEffect(() => {

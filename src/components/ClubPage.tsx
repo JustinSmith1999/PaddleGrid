@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,6 +8,7 @@ import { CourtScheduler } from './CourtScheduler';
 import { SocialPost } from '../lib/socialUtils';
 import { sortCourtsByNumber } from '../lib/courtUtils';
 import EventCalendar from './EventCalendar';
+import { loadStripe, createSetupIntent } from '../lib/stripe';
 
 interface ClubPageProps {
   facilityId: string;
@@ -54,6 +55,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
   const [availableCourtsAtTime, setAvailableCourtsAtTime] = useState<Court[]>([]);
   const [hasSignedWaiver, setHasSignedWaiver] = useState(false);
   const [hasActiveWaiver, setHasActiveWaiver] = useState(false);
+  const [merchProducts, setMerchProducts] = useState<any[]>([]);
+  const [cart, setCart] = useState<any[]>([]);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
     loadFacilityData();
@@ -144,6 +148,18 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       } else {
         setHasSignedWaiver(false);
       }
+
+      // Load merch products
+      const { data: merchData } = await supabase
+        .from('merch_products')
+        .select(`
+          *,
+          variants:merch_product_variants(*)
+        `)
+        .eq('facility_id', facilityId)
+        .eq('is_active', true);
+
+      setMerchProducts(merchData || []);
     } catch (error) {
       console.error('Error loading facility data:', error);
     } finally {
@@ -663,6 +679,135 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 </>
               )}
             </div>
+
+            {merchProducts.length > 0 && (
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
+                    <ShoppingBag className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Shop Merch</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{merchProducts.length} products available</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {merchProducts.slice(0, 6).map((product) => (
+                    <div key={product.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition border border-slate-200 dark:border-slate-700">
+                      <div className="aspect-square bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                        {product.images && product.images.length > 0 ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <ShoppingBag className="w-12 h-12 text-slate-300 dark:text-slate-600" />
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-sm mb-1 text-slate-900 dark:text-white line-clamp-1">{product.name}</h3>
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">${product.base_price.toFixed(2)}</span>
+                          <button
+                            onClick={() => {
+                              const existing = cart.find(item => item.product.id === product.id);
+                              if (existing) {
+                                setCart(cart.map(item =>
+                                  item.product.id === product.id
+                                    ? { ...item, quantity: item.quantity + 1 }
+                                    : item
+                                ));
+                              } else {
+                                setCart([...cart, { product, quantity: 1 }]);
+                              }
+                            }}
+                            className="p-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {merchProducts.length > 6 && (
+                  <button
+                    onClick={() => navigate('/merch')}
+                    className="mt-4 w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-purple-500 dark:hover:border-purple-500 text-slate-700 dark:text-slate-300 rounded-xl font-semibold transition-all"
+                  >
+                    View All Merch
+                  </button>
+                )}
+
+                {cart.length > 0 && (
+                  <div className="mt-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-4 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <ShoppingBag className="w-5 h-5" />
+                        <span className="font-bold">Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
+                      </div>
+                      <span className="text-2xl font-bold">
+                        ${cart.reduce((sum, item) => sum + (item.product.base_price * item.quantity), 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="space-y-2 mb-3 max-h-32 overflow-y-auto">
+                      {cart.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between text-sm bg-white/10 rounded-lg p-2">
+                          <span className="flex-1 truncate">{item.product.name}</span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                if (item.quantity > 1) {
+                                  setCart(cart.map(i =>
+                                    i.product.id === item.product.id
+                                      ? { ...i, quantity: i.quantity - 1 }
+                                      : i
+                                  ));
+                                } else {
+                                  setCart(cart.filter(i => i.product.id !== item.product.id));
+                                }
+                              }}
+                              className="p-0.5 hover:bg-white/20 rounded"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="w-6 text-center font-semibold">{item.quantity}</span>
+                            <button
+                              onClick={() => {
+                                setCart(cart.map(i =>
+                                  i.product.id === item.product.id
+                                    ? { ...i, quantity: i.quantity + 1 }
+                                    : i
+                                ));
+                              }}
+                              className="p-0.5 hover:bg-white/20 rounded"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (!user) {
+                          alert('Please sign in to checkout');
+                          return;
+                        }
+                        // Navigate to full merch shop with cart
+                        navigate('/merch', { state: { cart } });
+                      }}
+                      className="w-full py-2.5 bg-white text-emerald-600 rounded-lg font-bold hover:bg-emerald-50 transition shadow-md"
+                    >
+                      Checkout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
