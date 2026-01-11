@@ -83,12 +83,24 @@ export default function MatchPaymentModal({
               theme: 'stripe',
               variables: {
                 colorPrimary: '#10b981',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                fontSize: '16px',
               }
             },
           });
 
           const paymentElement = elementsInstance.create('payment', {
-            layout: 'tabs'
+            layout: 'tabs',
+            defaultValues: {
+              billingDetails: {
+                name: '',
+                email: '',
+              }
+            },
+            wallets: {
+              applePay: 'auto',
+              googlePay: 'auto'
+            }
           });
 
           paymentElement.on('ready', () => {

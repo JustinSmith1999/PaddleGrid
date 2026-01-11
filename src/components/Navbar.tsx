@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar, Clock, Gift } from 'lucide-react';
+import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar, Clock, Gift, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUnreadNotificationCount } from '../lib/socialUtils';
 import NotificationsPanel from './social/NotificationsPanel';
@@ -166,6 +166,16 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                       >
                         <Clock className="w-4 h-4" />
                         Waitlist
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          window.location.href = '/merch';
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <ShoppingBag className="w-4 h-4" />
+                        Shop Merch
                       </button>
                       <button
                         onClick={() => {

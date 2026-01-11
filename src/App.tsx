@@ -37,6 +37,7 @@ const Support = lazy(() => import('./components/Support'));
 const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'));
 const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
+const MerchShop = lazy(() => import('./components/MerchShop'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -243,6 +244,8 @@ function AppContent() {
             </div>
           ) : <div className="min-h-screen bg-gray-50 pb-20" />
         } />
+
+        <Route path="/merch" element={<MerchShop />} />
 
         <Route path="*" element={<NotFound />} />
         </Routes>
