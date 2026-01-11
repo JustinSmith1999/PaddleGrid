@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle, ShoppingBag, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle, ShoppingBag, Plus, Minus, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +8,8 @@ import { CourtScheduler } from './CourtScheduler';
 import { SocialPost } from '../lib/socialUtils';
 import { sortCourtsByNumber } from '../lib/courtUtils';
 import EventCalendar from './EventCalendar';
-import { loadStripe, createSetupIntent } from '../lib/stripe';
+import { loadStripe } from '../lib/stripe';
+import MerchProductModal from './MerchProductModal';
 
 interface ClubPageProps {
   facilityId: string;
@@ -58,6 +59,8 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
   const [merchProducts, setMerchProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
     loadFacilityData();
@@ -315,6 +318,111 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       console.error('Error unfollowing club:', error);
       alert('Failed to unfollow club. Please try again.');
     }
+  };
+
+  const handleAddToCart = (item: { product: any; variant: any; quantity: number }) => {
+    const existingItemIndex = cart.findIndex(
+      cartItem => cartItem.product.id === item.product.id && cartItem.variant.id === item.variant.id
+    );
+
+    if (existingItemIndex >= 0) {
+      const newCart = [...cart];
+      newCart[existingItemIndex].quantity += item.quantity;
+      setCart(newCart);
+    } else {
+      setCart([...cart, item]);
+    }
+
+    setSelectedProductId(null);
+  };
+
+  const handleCheckout = async () => {
+    if (!user) {
+      alert('Please sign in to checkout');
+      return;
+    }
+
+    if (cart.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+
+    try {
+      setCheckingOut(true);
+
+      const stripe = await loadStripe();
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      const lineItems = cart.map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `${item.product.name} - ${item.variant.size} - ${item.variant.color}`,
+            images: item.product.images || [],
+          },
+          unit_amount: Math.round((parseFloat(item.product.base_price) + parseFloat(item.variant.price_adjustment)) * 100),
+        },
+        quantity: item.quantity,
+      }));
+
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        body: {
+          lineItems,
+          successUrl: `${window.location.origin}/club/${facilityId}?checkout=success`,
+          cancelUrl: `${window.location.origin}/club/${facilityId}?checkout=cancel`,
+          metadata: {
+            facility_id: facilityId,
+            user_id: user.id,
+            type: 'merch_purchase',
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.sessionId) {
+        const { error: stripeError } = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        });
+
+        if (stripeError) throw stripeError;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setCheckingOut(false);
+    }
+  };
+
+  const removeFromCart = (productId: string, variantId: string) => {
+    setCart(cart.filter(item => !(item.product.id === productId && item.variant.id === variantId)));
+  };
+
+  const updateCartQuantity = (productId: string, variantId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      removeFromCart(productId, variantId);
+      return;
+    }
+
+    setCart(cart.map(item =>
+      item.product.id === productId && item.variant.id === variantId
+        ? { ...item, quantity: newQuantity }
+        : item
+    ));
+  };
+
+  const getCartTotal = () => {
+    return cart.reduce((total, item) => {
+      const price = parseFloat(item.product.base_price) + parseFloat(item.variant.price_adjustment);
+      return total + (price * item.quantity);
+    }, 0);
+  };
+
+  const getCartItemCount = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
   if (loading) {
@@ -694,13 +802,17 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {merchProducts.slice(0, 6).map((product) => (
-                    <div key={product.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition border border-slate-200 dark:border-slate-700">
+                    <button
+                      key={product.id}
+                      onClick={() => setSelectedProductId(product.id)}
+                      className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-left group"
+                    >
                       <div className="aspect-square bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
                         {product.images && product.images.length > 0 ? (
                           <img
                             src={product.images[0]}
                             alt={product.name}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
                           <ShoppingBag className="w-12 h-12 text-slate-300 dark:text-slate-600" />
@@ -709,27 +821,11 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                       <div className="p-3">
                         <h3 className="font-semibold text-sm mb-1 text-slate-900 dark:text-white line-clamp-1">{product.name}</h3>
                         <div className="flex items-center justify-between">
-                          <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">${product.base_price.toFixed(2)}</span>
-                          <button
-                            onClick={() => {
-                              const existing = cart.find(item => item.product.id === product.id);
-                              if (existing) {
-                                setCart(cart.map(item =>
-                                  item.product.id === product.id
-                                    ? { ...item, quantity: item.quantity + 1 }
-                                    : item
-                                ));
-                              } else {
-                                setCart([...cart, { product, quantity: 1 }]);
-                              }
-                            }}
-                            className="p-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
+                          <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">${parseFloat(product.base_price).toFixed(2)}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Click to view</span>
                         </div>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
 
@@ -747,28 +843,24 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <ShoppingBag className="w-5 h-5" />
-                        <span className="font-bold">Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
+                        <span className="font-bold">Cart ({getCartItemCount()} items)</span>
                       </div>
                       <span className="text-2xl font-bold">
-                        ${cart.reduce((sum, item) => sum + (item.product.base_price * item.quantity), 0).toFixed(2)}
+                        ${getCartTotal().toFixed(2)}
                       </span>
                     </div>
-                    <div className="space-y-2 mb-3 max-h-32 overflow-y-auto">
+                    <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
                       {cart.map((item, index) => (
                         <div key={index} className="flex items-center justify-between text-sm bg-white/10 rounded-lg p-2">
-                          <span className="flex-1 truncate">{item.product.name}</span>
+                          <div className="flex-1 min-w-0 mr-2">
+                            <div className="font-semibold truncate">{item.product.name}</div>
+                            <div className="text-xs text-white/80">{item.variant.size} - {item.variant.color}</div>
+                          </div>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => {
-                                if (item.quantity > 1) {
-                                  setCart(cart.map(i =>
-                                    i.product.id === item.product.id
-                                      ? { ...i, quantity: i.quantity - 1 }
-                                      : i
-                                  ));
-                                } else {
-                                  setCart(cart.filter(i => i.product.id !== item.product.id));
-                                }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateCartQuantity(item.product.id, item.variant.id, item.quantity - 1);
                               }}
                               className="p-0.5 hover:bg-white/20 rounded"
                             >
@@ -776,12 +868,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                             </button>
                             <span className="w-6 text-center font-semibold">{item.quantity}</span>
                             <button
-                              onClick={() => {
-                                setCart(cart.map(i =>
-                                  i.product.id === item.product.id
-                                    ? { ...i, quantity: i.quantity + 1 }
-                                    : i
-                                ));
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateCartQuantity(item.product.id, item.variant.id, item.quantity + 1);
                               }}
                               className="p-0.5 hover:bg-white/20 rounded"
                             >
@@ -792,17 +881,21 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                       ))}
                     </div>
                     <button
-                      onClick={() => {
-                        if (!user) {
-                          alert('Please sign in to checkout');
-                          return;
-                        }
-                        // Navigate to full merch shop with cart
-                        navigate('/merch', { state: { cart } });
-                      }}
-                      className="w-full py-2.5 bg-white text-emerald-600 rounded-lg font-bold hover:bg-emerald-50 transition shadow-md"
+                      onClick={handleCheckout}
+                      disabled={checkingOut}
+                      className="w-full py-2.5 bg-white text-emerald-600 rounded-lg font-bold hover:bg-emerald-50 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
-                      Checkout
+                      {checkingOut ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="w-4 h-4" />
+                          Checkout with Stripe
+                        </>
+                      )}
                     </button>
                   </div>
                 )}
@@ -855,6 +948,14 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           }}
           userId={user.id}
           initialCourtId={selectedCourtId}
+        />
+      )}
+
+      {selectedProductId && (
+        <MerchProductModal
+          productId={selectedProductId}
+          onClose={() => setSelectedProductId(null)}
+          onAddToCart={handleAddToCart}
         />
       )}
     </div>

@@ -43,11 +43,15 @@ Deno.serve(async (req) => {
       return corsResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const { price_id, success_url, cancel_url, mode, type, postId, bookingId, amount } = await req.json();
+    const { price_id, success_url, cancel_url, mode, type, postId, bookingId, amount, lineItems, metadata } = await req.json();
 
     if (type === 'match_payment') {
       if (!postId || !bookingId || !amount || !success_url || !cancel_url) {
         return corsResponse({ error: 'Missing required parameters for match payment' }, 400);
+      }
+    } else if (type === 'merch_purchase') {
+      if (!lineItems || !success_url || !cancel_url) {
+        return corsResponse({ error: 'Missing required parameters for merch purchase' }, 400);
       }
     } else {
       const error = validateParameters(
@@ -212,6 +216,17 @@ Deno.serve(async (req) => {
           type: 'match_payment',
           post_id: postId,
           booking_id: bookingId,
+          user_id: user.id,
+        },
+      };
+    } else if (type === 'merch_purchase') {
+      sessionConfig = {
+        ...sessionConfig,
+        mode: 'payment',
+        line_items: lineItems,
+        metadata: {
+          ...metadata,
+          type: 'merch_purchase',
           user_id: user.id,
         },
       };
