@@ -5,30 +5,32 @@ import { useAuth } from '../contexts/AuthContext';
 import { loadStripe, createSetupIntent, savePaymentMethod } from '../lib/stripe';
 import { useLocation } from 'react-router-dom';
 
+interface ProductDesign {
+  type: string;
+  colors: {
+    name: string;
+    image: string;
+  }[];
+}
+
 interface Product {
   id: string;
   name: string;
   description: string;
-  base_price: number;
+  price: number;
   category: string;
-  images: string[];
-  variants?: ProductVariant[];
-}
-
-interface ProductVariant {
-  id: string;
-  product_id: string;
-  sku: string;
-  size: string | null;
-  color: string | null;
-  price_adjustment: number;
-  stock_quantity: number;
-  is_available: boolean;
+  designs: ProductDesign[];
+  sizes: string[];
+  in_stock: boolean;
+  display_order: number;
 }
 
 interface CartItem {
   product: Product;
-  variant?: ProductVariant;
+  selectedDesign?: string;
+  selectedColor?: string;
+  selectedSize?: string;
+  imageUrl?: string;
   quantity: number;
 }
 
@@ -52,6 +54,11 @@ export default function MerchShop() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedDesignType, setSelectedDesignType] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [currentImage, setCurrentImage] = useState<string>('');
   const [stripe, setStripe] = useState<any>(null);
   const [elements, setElements] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -124,11 +131,10 @@ export default function MerchShop() {
     try {
       const { data, error } = await supabase
         .from('merch_products')
-        .select(`
-          *,
-          variants:merch_product_variants(*)
-        `)
-        .eq('is_active', true);
+        .select('*')
+        .eq('is_active', true)
+        .eq('in_stock', true)
+        .order('display_order');
 
       if (error) throw error;
       setProducts(data || []);
@@ -139,9 +145,13 @@ export default function MerchShop() {
     }
   }
 
-  function addToCart(product: Product, variant?: ProductVariant) {
+  function addToCart(product: Product, design?: string, color?: string, size?: string, imageUrl?: string) {
     const existingIndex = cart.findIndex(
-      item => item.product.id === product.id && item.variant?.id === variant?.id
+      item =>
+        item.product.id === product.id &&
+        item.selectedDesign === design &&
+        item.selectedColor === color &&
+        item.selectedSize === size
     );
 
     if (existingIndex >= 0) {
@@ -149,7 +159,14 @@ export default function MerchShop() {
       newCart[existingIndex].quantity += 1;
       setCart(newCart);
     } else {
-      setCart([...cart, { product, variant, quantity: 1 }]);
+      setCart([...cart, {
+        product,
+        selectedDesign: design,
+        selectedColor: color,
+        selectedSize: size,
+        imageUrl,
+        quantity: 1
+      }]);
     }
   }
 
@@ -163,7 +180,7 @@ export default function MerchShop() {
   }
 
   function getItemPrice(item: CartItem): number {
-    return item.product.base_price + (item.variant?.price_adjustment || 0);
+    return item.product.price;
   }
 
   function getCartTotal(): number {
@@ -379,7 +396,10 @@ export default function MerchShop() {
                   {cart.map((item, index) => (
                     <div key={index} className="flex justify-between text-sm">
                       <span>
-                        {item.product.name} {item.variant && `(${item.variant.size} ${item.variant.color})`} x{item.quantity}
+                        {item.product.name}{' '}
+                        {(item.selectedDesign || item.selectedColor || item.selectedSize) &&
+                          `(${[item.selectedDesign, item.selectedColor, item.selectedSize].filter(Boolean).join(' - ')})`}{' '}
+                        x{item.quantity}
                       </span>
                       <span>${(getItemPrice(item) * item.quantity).toFixed(2)}</span>
                     </div>
@@ -466,33 +486,175 @@ export default function MerchShop() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map(product => (
-              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                <div className="aspect-square bg-gray-200 flex items-center justify-center">
-                  {product.images && product.images.length > 0 ? (
-                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <ShoppingBag className="w-16 h-16 text-gray-400" />
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold text-emerald-600">${product.base_price.toFixed(2)}</span>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-medium"
-                    >
-                      Add to Cart
-                    </button>
+            {filteredProducts.map(product => {
+              const firstImage = product.designs?.[0]?.colors?.[0]?.image;
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setSelectedDesignType(product.designs?.[0]?.type || '');
+                    setSelectedColor(product.designs?.[0]?.colors?.[0]?.name || '');
+                    setSelectedSize(product.sizes?.[0] || '');
+                    setCurrentImage(firstImage || '');
+                  }}
+                >
+                  <div className="aspect-square bg-gray-200 flex items-center justify-center">
+                    {firstImage ? (
+                      <img src={firstImage} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <ShoppingBag className="w-16 h-16 text-gray-400" />
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold text-emerald-600">${product.price.toFixed(2)}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProduct(product);
+                          setSelectedDesignType(product.designs?.[0]?.type || '');
+                          setSelectedColor(product.designs?.[0]?.colors?.[0]?.name || '');
+                          setSelectedSize(product.sizes?.[0] || '');
+                          setCurrentImage(firstImage || '');
+                        }}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-medium"
+                      >
+                        View Options
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b flex items-center justify-between sticky top-0 bg-white z-10">
+              <h2 className="text-2xl font-bold">{selectedProduct.name}</h2>
+              <button onClick={() => setSelectedProduct(null)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                  {currentImage ? (
+                    <img src={currentImage} alt={selectedProduct.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ShoppingBag className="w-24 h-24 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-3xl font-bold text-emerald-600">${selectedProduct.price.toFixed(2)}</p>
+                    <p className="text-gray-600 mt-2">{selectedProduct.description}</p>
+                  </div>
+
+                  {selectedProduct.designs && selectedProduct.designs.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Design Type</label>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.designs.map(design => (
+                          <button
+                            key={design.type}
+                            onClick={() => {
+                              setSelectedDesignType(design.type);
+                              setSelectedColor(design.colors[0]?.name || '');
+                              setCurrentImage(design.colors[0]?.image || '');
+                            }}
+                            className={`px-4 py-2 rounded-lg border-2 transition ${
+                              selectedDesignType === design.type
+                                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                          >
+                            {design.type}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedProduct.designs && selectedProduct.designs.length > 0 && selectedDesignType && (
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Color</label>
+                      <div className="flex flex-wrap gap-3">
+                        {selectedProduct.designs
+                          .find(d => d.type === selectedDesignType)
+                          ?.colors.map(color => (
+                            <button
+                              key={color.name}
+                              onClick={() => {
+                                setSelectedColor(color.name);
+                                setCurrentImage(color.image);
+                              }}
+                              className={`px-4 py-2 rounded-lg border-2 transition ${
+                                selectedColor === color.name
+                                  ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                                  : 'border-gray-300 hover:border-gray-400'
+                              }`}
+                            >
+                              {color.name}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Size</label>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.sizes.map(size => (
+                          <button
+                            key={size}
+                            onClick={() => setSelectedSize(size)}
+                            className={`px-4 py-2 rounded-lg border-2 transition ${
+                              selectedSize === size
+                                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      addToCart(
+                        selectedProduct,
+                        selectedDesignType,
+                        selectedColor,
+                        selectedSize,
+                        currentImage
+                      );
+                      setSelectedProduct(null);
+                    }}
+                    className="w-full bg-emerald-600 text-white py-4 rounded-lg hover:bg-emerald-700 transition font-semibold text-lg"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCart && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -515,8 +677,8 @@ export default function MerchShop() {
                   {cart.map((item, index) => (
                     <div key={index} className="flex gap-4 pb-4 border-b">
                       <div className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0">
-                        {item.product.images?.[0] ? (
-                          <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <ShoppingBag className="w-8 h-8 text-gray-400" />
@@ -525,9 +687,9 @@ export default function MerchShop() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.product.name}</h3>
-                        {item.variant && (
+                        {(item.selectedDesign || item.selectedColor || item.selectedSize) && (
                           <p className="text-sm text-gray-600">
-                            {item.variant.size} {item.variant.color}
+                            {[item.selectedDesign, item.selectedColor, item.selectedSize].filter(Boolean).join(' - ')}
                           </p>
                         )}
                         <p className="text-emerald-600 font-bold mt-1">${getItemPrice(item).toFixed(2)}</p>

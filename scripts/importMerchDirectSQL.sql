@@ -1,0 +1,120 @@
+-- Import merch products from other project
+
+INSERT INTO merch_products (id, name, description, price, base_price, sizes, category, in_stock, display_order, designs, is_active)
+VALUES
+  (
+    'f1b2476d-590a-415c-aa76-60c19dfb45ba',
+    'T-Shirt',
+    'Premium t-shirts available in Cotton or Performance fabric',
+    38,
+    38,
+    ARRAY['S', 'M', 'L', 'XL', 'XXL'],
+    'tops',
+    true,
+    1,
+    '[{"type":"Cotton","colors":[{"name":"Bone","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Cotton_BoneT.png"},{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Cotton_BlackT.png"},{"name":"White","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Cotton_WhiteT.png"},{"name":"Grey","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Cotton_GrayT.png"},{"name":"Green","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Cotton_GreenT.png"}]},{"type":"Performance","colors":[{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Perform_BlackT.png"},{"name":"Grey","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Perform_GrayT.png"},{"name":"Green","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Perform_GreenT.png"},{"name":"White","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Shirts/Perform_WhiteT.png"}]}]'::jsonb,
+    true
+  ),
+  (
+    '9f0bb676-b4b2-4bd4-a322-8cdde1be02c0',
+    'Crew Neck',
+    'Soft cotton crew neck sweatshirt with premium designs',
+    55,
+    55,
+    ARRAY['S', 'M', 'L', 'XL', 'XXL'],
+    'tops',
+    true,
+    2,
+    '[{"type":"Cloud Logo","colors":[{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Crew%20Neck/Cloud/CC_Navy.png"},{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Crew%20Neck/Cloud/CC_Black.png"},{"name":"Gray","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Crew%20Neck/Cloud/CC_Gray.png"},{"name":"White","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Crew%20Neck/Cloud/CC_White.png"}]},{"type":"Regular Logo","colors":[{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Crew%20Neck/Logo/Crew_Navy.png"},{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Crew%20Neck/Logo/Crew_Black.png"}]}]'::jsonb,
+    true
+  ),
+  (
+    '3fbe7550-6081-4af8-bf1d-37b8d1c7a0be',
+    'Hat',
+    'Premium performance adjustable hat',
+    35,
+    35,
+    ARRAY['One Size'],
+    'hats',
+    true,
+    3,
+    '[{"type":"Performance","colors":[{"name":"Blue","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Performance%20Hats/PHatLogo_Blue.png"},{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Performance%20Hats/PHatLogo_Black.png"},{"name":"Grey","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Performance%20Hats/PHatLogo_Grey.png"},{"name":"Bone","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/BoneGreenHat.png"}]}]'::jsonb,
+    true
+  ),
+  (
+    '1c993333-330f-4181-b3c8-3a3a6247cdae',
+    'Two Tone Hat',
+    'Stylish two-tone adjustable hat',
+    35,
+    35,
+    ARRAY['One Size'],
+    'hats',
+    true,
+    4,
+    '[{"type":"Two-Tone","colors":[{"name":"Walnut","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/WalnutPCap.png"},{"name":"Blue","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/TwoTone_Blue.png"},{"name":"Green","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/TwoTone_Green.png"},{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/NavyPCap.png"}]}]'::jsonb,
+    true
+  ),
+  (
+    'c3237336-da27-40c1-a6e3-2610aa84b6b5',
+    'Jacket',
+    'Premium zip-up jacket available in Cloud Logo or Regular Logo design',
+    75,
+    75,
+    ARRAY['S', 'M', 'L', 'XL', 'XXL'],
+    'outerwear',
+    true,
+    5,
+    '[{"type":"Cloud Logo","colors":[{"name":"Gray","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Jacket/Cloud/C_Jacket_Gray.png"},{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Jacket/Cloud/C_Jacket_Black.png"},{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Jacket/Cloud/C_Jacket_Navy.png"}]},{"type":"Regular Logo","colors":[{"name":"Gray","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Jacket/Logo/Jacket_Gray.png"},{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Jacket/Logo/Jacket_Black.png"},{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/Jacket/Logo/Jacket_Navy.png"}]}]'::jsonb,
+    true
+  ),
+  (
+    '155abbe1-8874-4ce9-b144-7d37d5c1a616',
+    'Sweatshirt',
+    'Premium hooded sweatshirt available in Regular Logo or Cloud Logo design',
+    65,
+    65,
+    ARRAY['S', 'M', 'L', 'XL', 'XXL'],
+    'tops',
+    true,
+    6,
+    '[{"type":"Regular Logo","colors":[{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/BlackSS.png"},{"name":"White","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/WhiteSS.png"},{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/NavySS.png"},{"name":"Green","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/GreenSS.png"}]},{"type":"Cloud Logo","colors":[{"name":"Black","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/C_BlackSS.png"},{"name":"White","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/C_WhiteSS.png"},{"name":"Navy","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/C_NavySS.png"},{"name":"Green","image":"https://fzbgwtitjutjogaqkvkp.supabase.co/storage/v1/object/public/merch/C_GreenSS.png"}]}]'::jsonb,
+    true
+  ),
+  (
+    '94351b9d-3723-4fb0-a54b-d388fcdc7f56',
+    'Duffel Bag',
+    'Perfect for carrying all your pickleball gear to the courts',
+    70,
+    70,
+    ARRAY[]::text[],
+    'accessories',
+    false,
+    7,
+    '[]'::jsonb,
+    true
+  ),
+  (
+    'fb708451-9648-4150-ab8c-66eae0a83abb',
+    'Backpack',
+    'Spacious backpack perfect for carrying all your pickleball essentials',
+    70,
+    70,
+    ARRAY['One Size'],
+    'accessories',
+    false,
+    8,
+    '[]'::jsonb,
+    true
+  )
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  base_price = EXCLUDED.base_price,
+  sizes = EXCLUDED.sizes,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  display_order = EXCLUDED.display_order,
+  designs = EXCLUDED.designs,
+  is_active = EXCLUDED.is_active,
+  updated_at = now();
