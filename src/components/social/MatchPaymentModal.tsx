@@ -159,7 +159,13 @@ export default function MatchPaymentModal({
 
   async function handleAddCard() {
     if (!stripe) {
-      setError('Stripe not initialized');
+      setError('Payment system not available. Please refresh the page and try again.');
+      return;
+    }
+
+    const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!stripeKey || stripeKey === 'your_stripe_publishable_key_here') {
+      setError('Payment system not configured. Please contact support.');
       return;
     }
 
@@ -172,7 +178,7 @@ export default function MatchPaymentModal({
       setShowAddCard(true);
     } catch (err: any) {
       console.error('Failed to add card:', err);
-      setError(err.message || 'Failed to add card');
+      setError(err.message || 'Failed to initialize payment form. Please try again.');
     } finally {
       setAddingCard(false);
     }
@@ -260,8 +266,11 @@ export default function MatchPaymentModal({
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-md w-full p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Add Payment Method</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Add Payment Method</h2>
+              <p className="text-sm text-gray-500 mt-1">Enter your card details securely</p>
+            </div>
             <button
               onClick={() => {
                 if (elements) {
@@ -280,19 +289,21 @@ export default function MatchPaymentModal({
                 setError(null);
               }}
               className="text-gray-400 hover:text-gray-600 transition"
+              disabled={loading}
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
           {!elements && (
-            <div className="mb-4 p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-sm text-gray-500 mt-2">Loading payment form...</p>
+            <div className="mb-4 p-12 text-center bg-gray-50 rounded-lg">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-600 border-t-transparent mx-auto"></div>
+              <p className="text-sm text-gray-600 mt-3 font-medium">Loading secure payment form...</p>
+              <p className="text-xs text-gray-500 mt-1">This may take a few seconds</p>
             </div>
           )}
 
-          <div id="payment-element" className={`mb-4 ${!elements ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}></div>
+          <div id="payment-element" className={`mb-4 transition-all duration-300 ${!elements ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100 min-h-[200px]'}`}></div>
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
@@ -360,26 +371,55 @@ export default function MatchPaymentModal({
             <button
               onClick={handleAddCard}
               disabled={addingCard}
-              className="w-full py-3 bg-slate-100 hover:bg-slate-200 rounded-lg transition text-slate-700 font-medium"
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              Add Payment Method
+              {addingCard ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Setting up...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5 h-5" />
+                  Add Payment Method
+                </>
+              )}
             </button>
           ) : (
-            <div className="space-y-2">
-              {paymentMethods.map((method) => (
-                <button
-                  key={method.id}
-                  onClick={() => setSelectedPaymentMethod(method.stripe_payment_method_id)}
-                  className={`w-full p-3 rounded-lg flex items-center justify-between transition ${
-                    selectedPaymentMethod === method.stripe_payment_method_id
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
-                  }`}
-                >
-                  <span className="font-medium">{method.card_brand} •••• {method.card_last4}</span>
-                  {selectedPaymentMethod === method.stripe_payment_method_id && <Check className="w-5 h-5" />}
-                </button>
-              ))}
+            <div className="space-y-3">
+              <div className="space-y-2">
+                {paymentMethods.map((method) => (
+                  <button
+                    key={method.id}
+                    onClick={() => setSelectedPaymentMethod(method.stripe_payment_method_id)}
+                    className={`w-full p-3 rounded-lg flex items-center justify-between transition ${
+                      selectedPaymentMethod === method.stripe_payment_method_id
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                    }`}
+                  >
+                    <span className="font-medium">{method.card_brand} •••• {method.card_last4}</span>
+                    {selectedPaymentMethod === method.stripe_payment_method_id && <Check className="w-5 h-5" />}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleAddCard}
+                disabled={addingCard}
+                className="w-full py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition text-slate-700 font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {addingCard ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
+                    Setting up...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    Add Another Card
+                  </>
+                )}
+              </button>
             </div>
           )}
 
