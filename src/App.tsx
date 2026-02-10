@@ -11,6 +11,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import InstallPWA from './components/InstallPWA';
 import AchievementCelebrationModal from './components/AchievementCelebrationModal';
 import { useAchievementNotifications } from './hooks/useAchievementNotifications';
+import { CookieConsent } from './components/CookieConsent';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
@@ -297,6 +298,7 @@ function AppContent() {
       />
 
       {!isNative && <InstallPWA />}
+      {!isNative && <CookieConsent />}
       </div>
     </ErrorBoundary>
   );

@@ -1,9 +1,45 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Sentry from '@sentry/react';
 import App from './App.tsx';
 import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
+
+// Initialize Sentry for error tracking and performance monitoring
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration({
+        maskAllText: true,
+        blockAllMedia: true,
+      }),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0,
+    // Session Replay
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+    // Environment
+    environment: import.meta.env.MODE,
+    // Enable debug mode in development
+    debug: import.meta.env.DEV,
+    // Ignore specific errors
+    ignoreErrors: [
+      'ResizeObserver loop limit exceeded',
+      'Non-Error promise rejection captured',
+    ],
+    beforeSend(event) {
+      // Filter out sensitive data
+      if (event.request) {
+        delete event.request.cookies;
+      }
+      return event;
+    },
+  });
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {

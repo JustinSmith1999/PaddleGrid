@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import * as Sentry from '@sentry/react';
 
 interface Props {
   children: ReactNode;
@@ -8,6 +9,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  eventId: string | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -15,24 +17,49 @@ export class ErrorBoundary extends Component<Props, State> {
     super(props);
     this.state = {
       hasError: false,
-      error: null
+      error: null,
+      eventId: null
     };
   }
 
   static getDerivedStateFromError(error: Error): State {
     return {
       hasError: true,
-      error
+      error,
+      eventId: null
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
+
+    // Log to Sentry if configured
+    if (import.meta.env.VITE_SENTRY_DSN) {
+      const eventId = Sentry.captureException(error, {
+        contexts: {
+          react: {
+            componentStack: errorInfo.componentStack,
+          },
+        },
+      });
+      this.setState({ eventId });
+    }
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, eventId: null });
     window.location.href = '/';
+  };
+
+  handleReportFeedback = () => {
+    if (this.state.eventId && import.meta.env.VITE_SENTRY_DSN) {
+      Sentry.showReportDialog({
+        eventId: this.state.eventId,
+        title: 'It looks like something went wrong',
+        subtitle: 'Our team has been notified. If you would like to help, tell us what happened below.',
+        subtitle2: '',
+      });
+    }
   };
 
   render() {
@@ -53,12 +80,22 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-gray-600 mb-6">
               {this.state.error?.message || 'An unexpected error occurred'}
             </p>
-            <button
-              onClick={this.handleReset}
-              className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-            >
-              Return to Home
-            </button>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={this.handleReset}
+                className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+              >
+                Return to Home
+              </button>
+              {this.state.eventId && import.meta.env.VITE_SENTRY_DSN && (
+                <button
+                  onClick={this.handleReportFeedback}
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Report Feedback
+                </button>
+              )}
+            </div>
           </div>
         </div>
       );
