@@ -5,13 +5,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image,
   Alert,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { responsiveFontSize, spacing, getResponsiveAvatarSize, isTablet } from '../utils/responsive';
+import { AvatarImage } from '../components/OptimizedImage';
 
 const avatarSizes = getResponsiveAvatarSize();
 
@@ -31,22 +32,18 @@ export default function ProfileScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
+      <StatusBar barStyle="dark-content" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          {profile?.profile_picture_url ? (
-            <Image
-              source={{ uri: profile.profile_picture_url }}
-              style={styles.avatar}
-            />
-          ) : (
-            <View style={[styles.avatar, styles.avatarPlaceholder]}>
-              <Ionicons name="person" size={avatarSizes.large / 2} color="#fff" />
-            </View>
-          )}
+          <AvatarImage
+            source={profile?.profile_picture_url}
+            size={avatarSizes.large}
+            fallbackIcon="person"
+          />
 
           <Text style={styles.name}>{profile?.full_name || 'User'}</Text>
           <Text style={styles.email}>{profile?.email}</Text>
@@ -151,17 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
-  },
-  avatar: {
-    width: avatarSizes.large,
-    height: avatarSizes.large,
-    borderRadius: avatarSizes.large / 2,
-    marginBottom: spacing.md,
-  },
-  avatarPlaceholder: {
-    backgroundColor: '#10b981',
-    justifyContent: 'center',
-    alignItems: 'center',
+    gap: spacing.md,
   },
   name: {
     fontSize: responsiveFontSize(24),
