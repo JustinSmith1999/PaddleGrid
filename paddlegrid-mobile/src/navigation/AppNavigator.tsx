@@ -11,6 +11,10 @@ import MainTabNavigator from './MainTabNavigator';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import HelpScreen from '../screens/HelpScreen';
 import TermsPrivacyScreen from '../screens/TermsPrivacyScreen';
+import FacilityDetailsScreen from '../screens/FacilityDetailsScreen';
+import BookingCreationScreen from '../screens/BookingCreationScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import PostDetailScreen from '../screens/PostDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +45,42 @@ export default function AppNavigator() {
               name="EditProfile"
               component={EditProfileScreen}
               options={{ presentation: 'modal' }}
+            />
+            <Stack.Screen
+              name="FacilityDetails"
+              component={FacilityDetailsScreen}
+              options={{
+                headerShown: true,
+                title: 'Club Details',
+                headerBackTitle: 'Back',
+              }}
+            />
+            <Stack.Screen
+              name="BookingCreation"
+              component={BookingCreationScreen}
+              options={{
+                headerShown: true,
+                title: 'Book a Court',
+                headerBackTitle: 'Back',
+              }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsScreen}
+              options={{
+                headerShown: true,
+                title: 'Notifications',
+                headerBackTitle: 'Back',
+              }}
+            />
+            <Stack.Screen
+              name="PostDetail"
+              component={PostDetailScreen}
+              options={{
+                headerShown: true,
+                title: 'Post',
+                headerBackTitle: 'Back',
+              }}
             />
             <Stack.Screen name="Help" component={HelpScreen} />
             <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />

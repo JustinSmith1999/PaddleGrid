@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { Platform } from 'react-native';
+import { Platform, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { supabase } from '@shared/lib/supabase';
 
 import FeedScreen from '../screens/FeedScreen';
 import ClubsScreen from '../screens/ClubsScreen';
@@ -11,7 +12,59 @@ import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
+function NotificationBadge({ count }: { count: number }) {
+  if (count === 0) return null;
+
+  return (
+    <View style={notifStyles.badge}>
+      <Text style={notifStyles.badgeText}>{count > 9 ? '9+' : count}</Text>
+    </View>
+  );
+}
+
 export default function MainTabNavigator() {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    loadUnreadCount();
+
+    const subscription = supabase
+      .channel('notifications_badge')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'social_notifications',
+        },
+        () => {
+          loadUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const loadUnreadCount = async () => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return;
+
+      const { count } = await supabase
+        .from('social_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.user.id)
+        .eq('is_read', false);
+
+      setUnreadCount(count || 0);
+    } catch (err) {
+      console.error('Error loading unread count:', err);
+    }
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -104,10 +157,19 @@ export default function MainTabNavigator() {
       <Tab.Screen
         name="Feed"
         component={FeedScreen}
-        options={{
+        options={({ navigation }) => ({
           title: 'Home',
           headerLargeTitle: true,
-        }}
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Notifications')}
+              style={notifStyles.iconButton}
+            >
+              <Ionicons name="notifications-outline" size={24} color="#1f2937" />
+              <NotificationBadge count={unreadCount} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Clubs"
@@ -136,3 +198,27 @@ export default function MainTabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const notifStyles = StyleSheet.create({
+  iconButton: {
+    position: 'relative',
+    padding: 4,
+  },
+  badge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#ef4444',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+});

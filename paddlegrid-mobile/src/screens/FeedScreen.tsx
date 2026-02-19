@@ -22,10 +22,11 @@ import { buttonPress, actionSuccess } from '../utils/haptics';
 import { AvatarImage } from '../components/OptimizedImage';
 
 // Memoized Post Card Component
-const PostCard = memo(({ post, onLike, onReport }: {
+const PostCard = memo(({ post, onLike, onReport, onComment }: {
   post: SocialPost;
   onLike: (id: string) => void;
   onReport: (id: string) => void;
+  onComment: (id: string) => void;
 }) => {
   const handleLike = useCallback(() => {
     buttonPress();
@@ -36,6 +37,11 @@ const PostCard = memo(({ post, onLike, onReport }: {
     buttonPress();
     onReport(post.id);
   }, [post.id, onReport]);
+
+  const handleComment = useCallback(() => {
+    buttonPress();
+    onComment(post.id);
+  }, [post.id, onComment]);
 
   return (
     <View style={styles.postCard}>
@@ -75,7 +81,7 @@ const PostCard = memo(({ post, onLike, onReport }: {
           <Text style={styles.actionText}>Like</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton} activeOpacity={0.6}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleComment} activeOpacity={0.6}>
           <Ionicons name="chatbubble-outline" size={24} color="#6b7280" />
           <Text style={styles.actionText}>Comment</Text>
         </TouchableOpacity>
@@ -86,7 +92,7 @@ const PostCard = memo(({ post, onLike, onReport }: {
 
 PostCard.displayName = 'PostCard';
 
-export default function FeedScreen() {
+export default function FeedScreen({ navigation }: any) {
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -219,9 +225,13 @@ export default function FeedScreen() {
     }
   }, []);
 
+  const handleCommentPress = useCallback((postId: string) => {
+    navigation.navigate('PostDetail', { postId });
+  }, [navigation]);
+
   const renderPost = useCallback(({ item }: { item: SocialPost }) => (
-    <PostCard post={item} onLike={handleLike} onReport={handleReportPost} />
-  ), [handleLike, handleReportPost]);
+    <PostCard post={item} onLike={handleLike} onReport={handleReportPost} onComment={handleCommentPress} />
+  ), [handleLike, handleReportPost, handleCommentPress]);
 
   const keyExtractor = useCallback((item: SocialPost) => item.id, []);
 

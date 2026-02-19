@@ -88,9 +88,8 @@ export default function ClubsScreen({ navigation }: any) {
   }, [loadFacilities]);
 
   const handleFacilityPress = useCallback((facility: FacilityWithCourts) => {
-    // TODO: Navigate to facility details screen when implemented
-    console.log('Facility pressed:', facility.name);
-  }, []);
+    navigation.navigate('FacilityDetails', { facilityId: facility.id });
+  }, [navigation]);
 
   const renderFacility = useCallback(({ item }: { item: FacilityWithCourts }) => (
     <FacilityCard facility={item} onPress={handleFacilityPress} />

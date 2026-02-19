@@ -88,7 +88,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       }
 
       const tokenData = await Notifications.getExpoPushTokenAsync({
-        projectId: 'your-project-id-here',
+        projectId: 'paddlegrid-mobile',
       });
       setExpoPushToken(tokenData.data);
 
