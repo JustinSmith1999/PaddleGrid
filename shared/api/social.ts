@@ -85,7 +85,11 @@ export async function createPost(post: {
         author_id: user.user.id,
         ...post
       })
-      .select('*, profiles(*), facilities(*)')
+      .select(`
+        *,
+        profiles!social_posts_author_id_fkey(*),
+        facilities!social_posts_facility_id_fkey(*)
+      `)
       .single();
 
     if (error) throw error;
@@ -108,7 +112,12 @@ export async function getFeedPosts(filter: {
 
     let query = supabase
       .from('social_posts')
-      .select('*, profiles(*), facilities(*), courts(*)')
+      .select(`
+        *,
+        profiles!social_posts_author_id_fkey(*),
+        facilities!social_posts_facility_id_fkey(*),
+        courts!social_posts_court_id_fkey(*)
+      `)
       .eq('is_archived', false)
       .order('created_at', { ascending: false })
       .range(filter.offset || 0, (filter.offset || 0) + (filter.limit || 20) - 1);
@@ -149,9 +158,14 @@ export async function getPostById(postId: string): Promise<SocialPost | null> {
   try {
     const { data, error } = await supabase
       .from('social_posts')
-      .select('*, profiles(*), facilities(*), courts(*)')
+      .select(`
+        *,
+        profiles!social_posts_author_id_fkey(*),
+        facilities!social_posts_facility_id_fkey(*),
+        courts!social_posts_court_id_fkey(*)
+      `)
       .eq('id', postId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;
@@ -244,7 +258,7 @@ export async function addComment(postId: string, content: string): Promise<{ suc
         author_id: user.user.id,
         content
       })
-      .select('*, profiles(*)')
+      .select('*, profiles!social_comments_author_id_fkey(*)')
       .single();
 
     if (error) throw error;
@@ -260,7 +274,7 @@ export async function getPostComments(postId: string): Promise<Comment[]> {
   try {
     const { data, error } = await supabase
       .from('social_comments')
-      .select('*, profiles(*)')
+      .select('*, profiles!social_comments_author_id_fkey(*)')
       .eq('post_id', postId)
       .eq('is_deleted', false)
       .order('created_at', { ascending: true });
