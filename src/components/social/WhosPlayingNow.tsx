@@ -43,7 +43,6 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
           start_time,
           end_time,
           user_id,
-          is_public,
           courts (
             id,
             name,

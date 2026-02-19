@@ -34,11 +34,11 @@ export default function SuggestedPlayers({ onProfileClick }: SuggestedPlayersPro
 
     try {
       const { data: currentFollowing } = await supabase
-        .from('user_follows')
-        .select('followed_id')
+        .from('social_follows')
+        .select('following_id')
         .eq('follower_id', user.id);
 
-      const followingSet = new Set(currentFollowing?.map(f => f.followed_id) || []);
+      const followingSet = new Set(currentFollowing?.map(f => f.following_id) || []);
       setFollowingIds(followingSet);
 
       const { data: userFacilities } = await supabase
@@ -50,7 +50,7 @@ export default function SuggestedPlayers({ onProfileClick }: SuggestedPlayersPro
 
       let query = supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, dupr_rating')
+        .select('id, full_name, profile_picture_url')
         .neq('id', user.id)
         .not('id', 'in', `(${Array.from(followingSet).join(',') || 'null'})`)
         .limit(5);
@@ -76,7 +76,7 @@ export default function SuggestedPlayers({ onProfileClick }: SuggestedPlayersPro
           id: profile.id,
           name: profile.full_name || 'Player',
           avatarUrl: profile.profile_picture_url,
-          duprRating: profile.dupr_rating,
+          duprRating: null,
           mutualFriends: Math.floor(Math.random() * 5),
           isFollowing: false,
           location: 'Local'
@@ -99,10 +99,10 @@ export default function SuggestedPlayers({ onProfileClick }: SuggestedPlayersPro
 
       if (isFollowing) {
         await supabase
-          .from('user_follows')
+          .from('social_follows')
           .delete()
           .eq('follower_id', user.id)
-          .eq('followed_id', playerId);
+          .eq('following_id', playerId);
 
         setFollowingIds(prev => {
           const next = new Set(prev);
@@ -111,10 +111,10 @@ export default function SuggestedPlayers({ onProfileClick }: SuggestedPlayersPro
         });
       } else {
         await supabase
-          .from('user_follows')
+          .from('social_follows')
           .insert({
             follower_id: user.id,
-            followed_id: playerId
+            following_id: playerId
           });
 
         setFollowingIds(prev => new Set(prev).add(playerId));
