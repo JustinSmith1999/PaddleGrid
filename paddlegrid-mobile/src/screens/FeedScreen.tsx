@@ -99,6 +99,10 @@ export default function FeedScreen({ navigation }: any) {
   const [error, setError] = useState<AppError | null>(null);
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
 
+  const handleCommentPress = useCallback((postId: string) => {
+    navigation.navigate('PostDetail', { postId });
+  }, [navigation]);
+
   useEffect(() => {
     loadFeed();
   }, []);
