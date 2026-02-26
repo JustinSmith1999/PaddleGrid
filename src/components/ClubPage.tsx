@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle, ShoppingBag, Plus, Minus, CreditCard } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle, ShoppingBag, Plus, Minus, CreditCard, Utensils } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -583,7 +583,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           )}
         </div>
 
-        {(facility.phone || facility.email || facility.website || hasActiveWaiver) && (
+        {(facility.phone || facility.email || facility.website || hasActiveWaiver || facility.name === 'Pickleball Heaven') && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {facility.phone && (
               <a
@@ -645,6 +645,22 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   </div>
                 </div>
               </div>
+            )}
+            {facility.name === 'Pickleball Heaven' && (
+              <a
+                href="https://gotab.io/loc/pickleballheaven"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl hover:bg-green-50 dark:hover:bg-slate-700 transition-all shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 group"
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                  <Utensils className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Food & Drinks</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">Order Food</div>
+                </div>
+              </a>
             )}
           </div>
         )}
