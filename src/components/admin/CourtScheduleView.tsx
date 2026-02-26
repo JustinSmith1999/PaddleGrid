@@ -19,6 +19,10 @@ interface Booking {
   status: string;
   total_amount: number;
   user_name?: string;
+  booking_type?: string;
+  player_count?: number;
+  phone?: string;
+  email?: string;
 }
 
 interface AvailabilityBlock {
@@ -29,6 +33,7 @@ interface AvailabilityBlock {
   block_date: string;
   block_type: string;
   notes: string | null;
+  player_count?: number;
 }
 
 interface CourtStatus {
@@ -140,7 +145,9 @@ export default function CourtScheduleView() {
           booking_date: block.block_date,
           status: 'confirmed',
           total_amount: 0,
-          user_name: block.notes || 'CourtReserve Booking'
+          user_name: block.notes || 'CourtReserve Booking',
+          booking_type: block.block_type,
+          player_count: block.player_count
         }));
 
       const allBookings = [...courtBookings, ...courtBlocks];
@@ -424,51 +431,103 @@ export default function CourtScheduleView() {
                         const topPosition = (startMinutes / 60) * 80;
                         const height = (duration / 60) * 80;
 
-                        const statusConfig = {
-                          confirmed: {
-                            bg: 'bg-gradient-to-br from-emerald-400 to-emerald-600',
-                            border: 'border-emerald-600',
-                            shadow: 'shadow-emerald-200'
-                          },
-                          pending: {
-                            bg: 'bg-gradient-to-br from-amber-400 to-orange-500',
-                            border: 'border-orange-600',
-                            shadow: 'shadow-orange-200'
-                          },
-                          completed: {
-                            bg: 'bg-gradient-to-br from-stone-400 to-stone-600',
-                            border: 'border-stone-600',
-                            shadow: 'shadow-stone-200'
-                          }
+                        const getBookingColor = (booking: Booking) => {
+                          const type = booking.booking_type || booking.status;
+                          const colorMap: Record<string, any> = {
+                            'reservation': {
+                              bg: 'bg-gradient-to-br from-emerald-500 to-emerald-700',
+                              border: 'border-emerald-700',
+                              label: 'Court Reservation'
+                            },
+                            'event': {
+                              bg: 'bg-gradient-to-br from-purple-500 to-purple-700',
+                              border: 'border-purple-700',
+                              label: 'Event'
+                            },
+                            'tournament': {
+                              bg: 'bg-gradient-to-br from-blue-500 to-blue-700',
+                              border: 'border-blue-700',
+                              label: 'Tournament'
+                            },
+                            'lesson': {
+                              bg: 'bg-gradient-to-br from-orange-500 to-orange-700',
+                              border: 'border-orange-700',
+                              label: 'Lesson'
+                            },
+                            'maintenance': {
+                              bg: 'bg-gradient-to-br from-red-500 to-red-700',
+                              border: 'border-red-700',
+                              label: 'Maintenance'
+                            },
+                            'pending': {
+                              bg: 'bg-gradient-to-br from-amber-400 to-orange-500',
+                              border: 'border-orange-600',
+                              label: 'Pending'
+                            },
+                            'completed': {
+                              bg: 'bg-gradient-to-br from-stone-400 to-stone-600',
+                              border: 'border-stone-600',
+                              label: 'Completed'
+                            }
+                          };
+                          return colorMap[type] || colorMap['reservation'];
                         };
-                        const config = statusConfig[booking.status as keyof typeof statusConfig] || statusConfig.confirmed;
+
+                        const config = getBookingColor(booking);
 
                         return (
                           <div
                             key={booking.id}
-                            className={`absolute left-2 right-2 ${config.bg} ${config.border} border-l-4 rounded-lg p-3 shadow-lg hover:shadow-xl transition-all cursor-pointer z-10 group`}
+                            className={`absolute left-2 right-2 ${config.bg} ${config.border} border-l-4 rounded-lg shadow-lg hover:shadow-xl transition-all cursor-pointer z-10 group overflow-visible`}
                             style={{
                               top: `${topPosition}px`,
-                              height: `${height - 4}px`,
-                              minHeight: '60px'
+                              height: `${Math.max(height - 4, 80)}px`,
                             }}
                           >
-                            <div className="h-full flex flex-col text-white">
-                              <div className="font-bold text-base mb-1 truncate">{booking.user_name}</div>
-                              <div className="text-sm font-medium opacity-95 flex items-center space-x-1">
-                                <Clock className="w-3 h-3" />
-                                <span>{formatTime(booking.start_time)} - {formatTime(booking.end_time)}</span>
+                            <div className="h-full flex flex-col text-white p-3 overflow-y-auto">
+                              <div className="font-bold text-base mb-1">{booking.user_name}</div>
+
+                              <div className="text-sm font-medium opacity-95 flex items-center space-x-1 mb-1">
+                                <Clock className="w-3 h-3 flex-shrink-0" />
+                                <span className="whitespace-nowrap">{formatTime(booking.start_time)} - {formatTime(booking.end_time)}</span>
                               </div>
-                              <div className="text-sm font-semibold mt-1 flex items-center space-x-1">
-                                <DollarSign className="w-3 h-3" />
-                                <span>${booking.total_amount.toFixed(2)}</span>
-                              </div>
-                              <div className="mt-auto">
-                                <span className="inline-block text-xs px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full">
+
+                              {booking.total_amount > 0 && (
+                                <div className="text-sm font-semibold flex items-center space-x-1 mb-1">
+                                  <DollarSign className="w-3 h-3 flex-shrink-0" />
+                                  <span>${booking.total_amount.toFixed(2)}</span>
+                                </div>
+                              )}
+
+                              {booking.player_count && (
+                                <div className="text-sm flex items-center space-x-1 mb-1">
+                                  <Users className="w-3 h-3 flex-shrink-0" />
+                                  <span>{booking.player_count} player{booking.player_count !== 1 ? 's' : ''}</span>
+                                </div>
+                              )}
+
+                              {booking.email && (
+                                <div className="text-xs opacity-90 mb-1 truncate" title={booking.email}>
+                                  {booking.email}
+                                </div>
+                              )}
+
+                              {booking.phone && (
+                                <div className="text-xs opacity-90 flex items-center space-x-1 mb-1">
+                                  <Phone className="w-3 h-3 flex-shrink-0" />
+                                  <span>{booking.phone}</span>
+                                </div>
+                              )}
+
+                              <div className="mt-auto pt-2 flex items-center justify-between gap-2 flex-wrap">
+                                <span className="inline-block text-xs px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full whitespace-nowrap">
+                                  {config.label}
+                                </span>
+                                <span className="inline-block text-xs px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full whitespace-nowrap">
                                   {booking.status.toUpperCase()}
                                 </span>
                               </div>
-                              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity rounded-lg"></div>
+                              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity rounded-lg pointer-events-none"></div>
                             </div>
                           </div>
                         );
@@ -477,25 +536,40 @@ export default function CourtScheduleView() {
                   </div>
 
                   {/* Legend */}
-                  <div className="flex items-center justify-center space-x-6 mt-8 pt-6 border-t-2 border-stone-200">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded border-l-4 border-emerald-600 shadow-md" />
-                      <span className="text-stone-700 font-semibold text-sm">Confirmed</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-gradient-to-br from-amber-400 to-orange-500 rounded border-l-4 border-orange-600 shadow-md" />
-                      <span className="text-stone-700 font-semibold text-sm">Pending</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-gradient-to-br from-stone-400 to-stone-600 rounded border-l-4 border-stone-600 shadow-md" />
-                      <span className="text-stone-700 font-semibold text-sm">Completed</span>
-                    </div>
-                    {selectedDate === new Date().toISOString().split('T')[0] && (
+                  <div className="mt-8 pt-6 border-t-2 border-stone-200">
+                    <h5 className="text-sm font-bold text-stone-800 mb-3 text-center">Booking Type Legend</h5>
+                    <div className="flex items-center justify-center flex-wrap gap-4">
                       <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse" />
-                        <span className="text-stone-700 font-semibold text-sm">Current Time</span>
+                        <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded border-l-4 border-emerald-700 shadow-md" />
+                        <span className="text-stone-700 font-semibold text-sm">Reservation</span>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-700 rounded border-l-4 border-purple-700 shadow-md" />
+                        <span className="text-stone-700 font-semibold text-sm">Event</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-700 rounded border-l-4 border-blue-700 shadow-md" />
+                        <span className="text-stone-700 font-semibold text-sm">Tournament</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-gradient-to-br from-orange-500 to-orange-700 rounded border-l-4 border-orange-700 shadow-md" />
+                        <span className="text-stone-700 font-semibold text-sm">Lesson</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-gradient-to-br from-red-500 to-red-700 rounded border-l-4 border-red-700 shadow-md" />
+                        <span className="text-stone-700 font-semibold text-sm">Maintenance</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-gradient-to-br from-amber-400 to-orange-500 rounded border-l-4 border-orange-600 shadow-md" />
+                        <span className="text-stone-700 font-semibold text-sm">Pending</span>
+                      </div>
+                      {selectedDate === new Date().toISOString().split('T')[0] && (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse" />
+                          <span className="text-stone-700 font-semibold text-sm">Current Time</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
