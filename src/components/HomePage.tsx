@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Loader2, Users, Shield, Zap, ArrowRight, Trophy, Sparkles, Target, TrendingUp, Heart, MessageCircle, Award } from 'lucide-react';
+import { Calendar, MapPin, Loader2, Users, Shield, Zap, ArrowRight, Trophy, Sparkles, Target, TrendingUp, Heart, MessageCircle, Award, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { CourtCard } from './CourtCard';
 import { AdvancedBookingCalendar } from './AdvancedBookingCalendar';
