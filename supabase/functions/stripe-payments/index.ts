@@ -68,7 +68,11 @@ Deno.serve(async (req: Request) => {
 
       const setupIntent = await stripe.setupIntents.create({
         customer: customerId,
-        payment_method_types: ['card'],
+        payment_method_types: ['card', 'us_bank_account'],
+        automatic_payment_methods: {
+          enabled: true,
+          allow_redirects: 'never',
+        },
       });
 
       return new Response(
@@ -205,6 +209,10 @@ Deno.serve(async (req: Request) => {
         customer: profile.stripe_customer_id,
         payment_method: paymentMethodId,
         confirm: true,
+        automatic_payment_methods: {
+          enabled: true,
+          allow_redirects: 'never',
+        },
         return_url: `${req.headers.get('origin')}/feed`,
         metadata: {
           postId,
@@ -231,6 +239,205 @@ Deno.serve(async (req: Request) => {
           paymentIntentId: paymentIntent.id,
           status: paymentIntent.status,
         }),
+        {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    if (path === '/booking-extension-payment' && req.method === 'POST') {
+      const { bookingId, amount, paymentMethodId } = await req.json();
+
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        throw new Error('No authorization header');
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        throw new Error('Unauthorized');
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('stripe_customer_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.stripe_customer_id) {
+        throw new Error('No Stripe customer found');
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        customer: profile.stripe_customer_id,
+        payment_method: paymentMethodId,
+        confirm: true,
+        automatic_payment_methods: {
+          enabled: true,
+          allow_redirects: 'never',
+        },
+        return_url: `${req.headers.get('origin')}/bookings`,
+        metadata: {
+          bookingId,
+          userId: user.id,
+          type: 'booking_extension',
+        },
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          paymentIntentId: paymentIntent.id,
+          status: paymentIntent.status,
+        }),
+        {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    if (path === '/merch-payment' && req.method === 'POST') {
+      const { productId, quantity, amount, paymentMethodId } = await req.json();
+
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        throw new Error('No authorization header');
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        throw new Error('Unauthorized');
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('stripe_customer_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.stripe_customer_id) {
+        throw new Error('No Stripe customer found');
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        customer: profile.stripe_customer_id,
+        payment_method: paymentMethodId,
+        confirm: true,
+        automatic_payment_methods: {
+          enabled: true,
+          allow_redirects: 'never',
+        },
+        return_url: `${req.headers.get('origin')}/merch`,
+        metadata: {
+          productId,
+          quantity,
+          userId: user.id,
+          type: 'merch_purchase',
+        },
+      });
+
+      await supabase
+        .from('merch_orders')
+        .insert({
+          user_id: user.id,
+          product_id: productId,
+          quantity,
+          total_amount: amount,
+          payment_intent_id: paymentIntent.id,
+          status: paymentIntent.status === 'succeeded' ? 'paid' : 'pending',
+        });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          paymentIntentId: paymentIntent.id,
+          status: paymentIntent.status,
+        }),
+        {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    if (path === '/set-default-payment-method' && req.method === 'POST') {
+      const { paymentMethodId } = await req.json();
+
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        throw new Error('No authorization header');
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        throw new Error('Unauthorized');
+      }
+
+      await supabase
+        .from('stripe_payment_methods')
+        .update({ is_default: false })
+        .eq('user_id', user.id);
+
+      await supabase
+        .from('stripe_payment_methods')
+        .update({ is_default: true })
+        .eq('stripe_payment_method_id', paymentMethodId)
+        .eq('user_id', user.id);
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    if (path === '/delete-payment-method' && req.method === 'DELETE') {
+      const { paymentMethodId } = await req.json();
+
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        throw new Error('No authorization header');
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        throw new Error('Unauthorized');
+      }
+
+      await stripe.paymentMethods.detach(paymentMethodId);
+
+      await supabase
+        .from('stripe_payment_methods')
+        .delete()
+        .eq('stripe_payment_method_id', paymentMethodId)
+        .eq('user_id', user.id);
+
+      return new Response(
+        JSON.stringify({ success: true }),
         {
           headers: {
             ...corsHeaders,

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Clock, AlertCircle, X, CheckCircle, ArrowRight } from 'lucide-react';
+import { Clock, AlertCircle, X, CheckCircle, ArrowRight, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { createBookingExtensionPayment, getPaymentMethods } from '../lib/stripe';
+import SavedPaymentMethods from './SavedPaymentMethods';
 
 interface BookingExtensionProps {
   bookingId?: string;
@@ -24,6 +26,9 @@ export default function BookingExtensionNotification({ bookingId, onClose }: Boo
   const [extending, setExtending] = useState(false);
   const [extensionResult, setExtensionResult] = useState<any>(null);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
+  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [estimatedCost, setEstimatedCost] = useState<number>(25);
 
   useEffect(() => {
     if (bookingId) {
@@ -118,36 +123,52 @@ export default function BookingExtensionNotification({ bookingId, onClose }: Boo
   const handleExtend = async (acceptAlternative: boolean = true) => {
     if (!booking) return;
 
+    if (!selectedPaymentMethod) {
+      setShowPaymentSelector(true);
+      return;
+    }
+
     try {
       setExtending(true);
 
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        throw new Error('Not authenticated');
-      }
+      const paymentResult = await createBookingExtensionPayment(
+        booking.id,
+        estimatedCost,
+        selectedPaymentMethod
+      );
 
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extend-booking`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          booking_id: booking.id,
-          duration_hours: 1,
-          accept_alternative: acceptAlternative
-        })
-      });
+      if (paymentResult.success && paymentResult.status === 'succeeded') {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session.session) {
+          throw new Error('Not authenticated');
+        }
 
-      const result = await response.json();
-      setExtensionResult(result);
+        const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extend-booking`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            booking_id: booking.id,
+            duration_hours: 1,
+            accept_alternative: acceptAlternative,
+            payment_intent_id: paymentResult.paymentIntentId
+          })
+        });
 
-      if (result.success) {
-        setTimeout(() => {
-          onClose();
-          window.location.reload();
-        }, 3000);
+        const result = await response.json();
+        setExtensionResult(result);
+
+        if (result.success) {
+          setTimeout(() => {
+            onClose();
+            window.location.reload();
+          }, 3000);
+        }
+      } else {
+        throw new Error('Payment failed');
       }
     } catch (error) {
       console.error('Error extending booking:', error);
@@ -159,6 +180,21 @@ export default function BookingExtensionNotification({ bookingId, onClose }: Boo
       setExtending(false);
     }
   };
+
+  useEffect(() => {
+    const loadDefaultPaymentMethod = async () => {
+      try {
+        const methods = await getPaymentMethods();
+        const defaultMethod = methods.find(m => m.is_default);
+        if (defaultMethod) {
+          setSelectedPaymentMethod(defaultMethod.stripe_payment_method_id);
+        }
+      } catch (err) {
+        console.error('Failed to load payment methods:', err);
+      }
+    };
+    loadDefaultPaymentMethod();
+  }, []);
 
   if (loading) {
     return (
@@ -298,17 +334,50 @@ export default function BookingExtensionNotification({ bookingId, onClose }: Boo
           )}
         </div>
 
+        {showPaymentSelector ? (
+          <div className="mb-6">
+            <SavedPaymentMethods
+              onSelectMethod={(methodId) => {
+                setSelectedPaymentMethod(methodId);
+                setShowPaymentSelector(false);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="bg-white border-2 border-stone-200 rounded-xl p-4 mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-stone-600" />
+              <span className="text-sm text-stone-700">Payment Method</span>
+            </div>
+            <button
+              onClick={() => setShowPaymentSelector(true)}
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+            >
+              {selectedPaymentMethod ? 'Change' : 'Select'}
+            </button>
+          </div>
+        )}
+
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 mb-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-stone-600">Extension Cost:</span>
+            <span className="text-lg font-bold text-stone-900">${estimatedCost.toFixed(2)}</span>
+          </div>
+        </div>
+
         {(booking.can_extend || booking.alternative_court_name) && (
           <button
             onClick={() => handleExtend(true)}
-            disabled={extending}
+            disabled={extending || !selectedPaymentMethod}
             className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-xl font-bold hover:from-green-700 hover:to-green-800 disabled:from-gray-300 disabled:to-gray-400 transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             {extending ? (
               <>
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                Extending...
+                Processing Payment...
               </>
+            ) : !selectedPaymentMethod ? (
+              'Select Payment Method'
             ) : (
               'Extend for 1 Hour'
             )}
