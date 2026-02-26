@@ -58,8 +58,6 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       <div className="min-h-screen bg-white overflow-hidden">
         {/* Hero Section - Premium Design */}
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          {/* Fade to next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-white/80 pointer-events-none z-20" />
           {/* Static gradient orbs */}
           <div
             className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-3xl"
@@ -96,7 +94,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                     Community
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
+                <p className="text-xl md:text-2xl text-white max-w-3xl mx-auto leading-relaxed font-bold tracking-wide">
                   Book courts instantly. Find playing partners. Track your progress.
                   <br className="hidden sm:block" />
                   Join the fastest-growing pickleball community.
