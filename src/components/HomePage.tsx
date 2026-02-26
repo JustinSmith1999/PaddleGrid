@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Loader2, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Star, Trophy, CreditCard, BarChart3, Smartphone, Globe, FileText, CheckCircle, DollarSign, Sparkles, Target, Activity, Bell, Layout } from 'lucide-react';
+import { Calendar, MapPin, Loader2, Users, Shield, Zap, ArrowRight, Star, Trophy, Sparkles, Target, TrendingUp, Heart, MessageCircle, Award } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { CourtCard } from './CourtCard';
 import { AdvancedBookingCalendar } from './AdvancedBookingCalendar';
 import { useAuth } from '../contexts/AuthContext';
-import { ThreeClickCheckout } from './ThreeClickCheckout';
-import { TransparentPricing } from './TransparentPricing';
-import { WaitlistManager } from './WaitlistManager';
-import { LiveAnalyticsDemo } from './LiveAnalyticsDemo';
-import { FamilyAccountDemo } from './FamilyAccountDemo';
-import { ConflictFreeDemo } from './ConflictFreeDemo';
 
 interface Court {
   id: string;
@@ -29,10 +23,17 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
   const [courts, setCourts] = useState<Court[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
-  const [showDemo, setShowDemo] = useState<'checkout' | 'pricing' | 'waitlist' | 'analytics' | 'family' | 'scheduling' | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     fetchCourts();
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   const fetchCourts = async () => {
@@ -62,113 +63,124 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 min-h-screen flex items-center">
-          {/* Decorative Elements */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.08),transparent_40%)]" />
+      <div className="min-h-screen bg-white overflow-hidden">
+        {/* Hero Section - Premium Design */}
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          {/* Animated gradient orbs */}
+          <div
+            className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-3xl"
+            style={{
+              transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`,
+              transition: 'transform 0.5s ease-out',
+              top: '-20%',
+              left: '-10%',
+            }}
+          />
+          <div
+            className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 blur-3xl"
+            style={{
+              transform: `translate(${mousePosition.x * -0.015}px, ${mousePosition.y * -0.015}px)`,
+              transition: 'transform 0.5s ease-out',
+              bottom: '-10%',
+              right: '-10%',
+            }}
+          />
 
-          <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
-            <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
-              {/* Left Content */}
-              <div className="text-center lg:text-left space-y-6 sm:space-y-8">
-                {/* Headline */}
-                <div className="space-y-4 sm:space-y-6">
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.05] tracking-tight">
-                    Your Pickleball Community
-                  </h1>
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptLTEyIDEyYzMuMzE0IDAgNiAyLjY4NiA2IDZzLTIuNjg2IDYtNiA2LTYtMi42ODYtNi02IDIuNjg2LTYgNi02em0yNC0xMmMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iIzFmMjkzNyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30" />
 
-                  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/95 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light">
-                    Connect with players. Share your wins. Find matches.
-                    <br className="hidden sm:block" />
-                    Grow your game.
-                  </p>
-                </div>
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20">
+            <div className="text-center space-y-12">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium animate-fade-in">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                The All-in-One Pickleball Platform
+              </div>
 
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start pt-2 sm:pt-4">
-                  <button
-                    onClick={() => onAuthRequired('signup')}
-                    className="group relative inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-teal-600 bg-white rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                  >
-                    <Users className="w-5 h-5" />
+              {/* Main Headline */}
+              <div className="space-y-6">
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-tight tracking-tight">
+                  Your Pickleball
+                  <br />
+                  <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                    Community
+                  </span>
+                </h1>
+                <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
+                  Book courts instantly. Find playing partners. Track your progress.
+                  <br className="hidden sm:block" />
+                  Join the fastest-growing pickleball community.
+                </p>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <button
+                  onClick={() => onAuthRequired('signup')}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl text-white font-semibold text-lg shadow-2xl shadow-emerald-500/50 hover:shadow-emerald-500/60 hover:scale-105 transition-all duration-300 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative flex items-center gap-2">
                     Get Started Free
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                  <button
-                    onClick={() => onAuthRequired('login')}
-                    className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white border-2 border-white/30 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
-                  >
-                    Sign In
-                  </button>
-                </div>
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => onAuthRequired('login')}
+                  className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white font-semibold text-lg hover:bg-white/20 hover:border-white/30 transition-all duration-300"
+                >
+                  Sign In
+                </button>
               </div>
 
-              {/* Right Content - Feature Grid */}
-              <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-                {[
-                  {
-                    icon: Users,
-                    title: "Find Players",
-                    description: "Connect with players at your skill level"
-                  },
-                  {
-                    icon: Calendar,
-                    title: "Book Courts",
-                    description: "Reserve courts at your favorite facilities"
-                  },
-                  {
-                    icon: Trophy,
-                    title: "Join Events",
-                    description: "Compete in tournaments and leagues"
-                  },
-                  {
-                    icon: TrendingUp,
-                    title: "Track Stats",
-                    description: "Monitor your progress and improve"
-                  }
-                ].map((feature, index) => (
-                  <div
-                    key={index}
-                    className="group relative bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105"
-                  >
-                    <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3 lg:space-y-4">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
-                      </div>
-                      <div className="space-y-1 sm:space-y-2">
-                        <h3 className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-                          {feature.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm lg:text-base text-white/80 leading-snug">
-                          {feature.description}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Social Proof */}
+              <div className="flex items-center justify-center gap-8 pt-8">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-2 border-slate-900" />
+                  ))}
+                </div>
+                <div className="text-left">
+                  <div className="flex items-center gap-1 text-yellow-400 mb-1">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
                   </div>
-                ))}
+                  <p className="text-sm text-slate-300">
+                    Loved by <span className="font-semibold text-white">50,000+</span> players
+                  </p>
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
             </div>
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="py-16 lg:py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        {/* Stats Bar */}
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-6 py-12">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
               {[
-                { value: '50K+', label: 'Active Players' },
-                { value: '500+', label: 'Courts Available' },
-                { value: '10K+', label: 'Matches Played' },
-                { value: '200+', label: 'Weekly Events' }
+                { value: '50K+', label: 'Active Players', icon: Users },
+                { value: '500+', label: 'Courts Available', icon: MapPin },
+                { value: '10K+', label: 'Matches Played', icon: Trophy },
+                { value: '200+', label: 'Weekly Events', icon: Calendar }
               ].map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+                <div key={index} className="text-center group">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 mb-4 group-hover:scale-110 transition-transform">
+                    <stat.icon className="w-6 h-6 text-emerald-400" />
+                  </div>
+                  <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-sm lg:text-base text-slate-600 font-medium">
+                  <div className="text-sm text-slate-400 font-medium">
                     {stat.label}
                   </div>
                 </div>
@@ -178,267 +190,148 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </div>
 
         {/* Features Section */}
-        <div className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 lg:mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-                Everything You Love About Pickleball.
+        <div className="py-32 bg-white relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-teal-50/50" />
+
+          <div className="relative max-w-7xl mx-auto px-6">
+            <div className="text-center mb-20">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold mb-6">
+                <Zap className="w-4 h-4" />
+                Everything You Need
+              </div>
+              <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                Play Better.
                 <br />
                 <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  All In One Place.
+                  Connect Easier.
                 </span>
               </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                From booking courts to tracking your progress, PaddleGrid makes playing pickleball easier than ever.
+              <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Everything you need to take your pickleball game to the next level.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
                   icon: Calendar,
-                  title: "Easy Court Booking",
-                  description: "Find and book courts at your favorite clubs in seconds. Real-time availability.",
-                  gradient: "from-blue-500 to-blue-600"
+                  title: "Instant Court Booking",
+                  description: "Reserve courts at your favorite facilities in seconds. Real-time availability across hundreds of venues.",
+                  color: "from-blue-500 to-cyan-500",
+                  bgColor: "bg-blue-50"
                 },
                 {
                   icon: Users,
-                  title: "Find Playing Partners",
-                  description: "Connect with players at your skill level. Build your pickleball network.",
-                  gradient: "from-emerald-500 to-teal-600"
+                  title: "Find Your People",
+                  description: "Match with players at your skill level. Build friendships that last beyond the court.",
+                  color: "from-emerald-500 to-teal-500",
+                  bgColor: "bg-emerald-50"
                 },
                 {
                   icon: Trophy,
-                  title: "Join Tournaments",
-                  description: "Compete in local events and track your tournament results.",
-                  gradient: "from-amber-500 to-orange-600"
+                  title: "Compete & Win",
+                  description: "Join tournaments, leagues, and ladder competitions. Track your rankings and celebrate victories.",
+                  color: "from-amber-500 to-orange-500",
+                  bgColor: "bg-amber-50"
                 },
                 {
                   icon: TrendingUp,
-                  title: "Track Your Progress",
-                  description: "Monitor your stats, track your rating, and see your improvement over time.",
-                  gradient: "from-violet-500 to-purple-600"
+                  title: "Track Progress",
+                  description: "Monitor your stats, analyze your game, and watch yourself improve week after week.",
+                  color: "from-violet-500 to-purple-500",
+                  bgColor: "bg-violet-50"
                 },
                 {
-                  icon: Bell,
+                  icon: MessageCircle,
                   title: "Stay Connected",
-                  description: "Get notifications for matches, events, and when your friends are playing.",
-                  gradient: "from-pink-500 to-rose-600"
+                  description: "Chat with players, share match highlights, and stay updated on community events.",
+                  color: "from-pink-500 to-rose-500",
+                  bgColor: "bg-pink-50"
                 },
                 {
-                  icon: Activity,
-                  title: "Share Your Wins",
-                  description: "Post match results, share highlights, and celebrate with the community.",
-                  gradient: "from-cyan-500 to-blue-600"
+                  icon: Award,
+                  title: "Earn Rewards",
+                  description: "Unlock achievements, earn loyalty points, and get exclusive perks at partner facilities.",
+                  color: "from-indigo-500 to-blue-500",
+                  bgColor: "bg-indigo-50"
                 }
               ].map((feature, index) => (
                 <div
                   key={index}
-                  className="group relative bg-white rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 hover:border-slate-300"
+                  className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 hover:border-slate-300 hover:-translate-y-2"
                 >
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r ${feature.gradient} mb-6 shadow-lg`}>
-                    <feature.icon className="w-6 h-6 text-white" />
+                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                    <feature.icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">
                     {feature.title}
                   </h3>
                   <p className="text-slate-600 leading-relaxed">
                     {feature.description}
                   </p>
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  {/* Hover gradient effect */}
+                  <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* How It Works Section */}
-        <div className="py-16 lg:py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 lg:mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-                Getting Started is Easy
+        {/* Social Proof Section */}
+        <div className="py-32 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptLTEyIDEyYzMuMzE0IDAgNiAyLjY4NiA2IDZzLTIuNjg2IDYtNiA2LTYtMi42ODYtNi02IDIuNjg2LTYgNi02em0yNC0xMmMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iIzFmMjkzNyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-20" />
+
+          <div className="relative max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-5xl font-bold text-white mb-6">
+                Trusted by Players
+                <br />
+                <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                  Everywhere
+                </span>
               </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                Join the community in three simple steps
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-              {[
-                {
-                  step: '1',
-                  icon: Users,
-                  title: 'Create Your Profile',
-                  description: 'Sign up free and tell us about your playing style and skill level.'
-                },
-                {
-                  step: '2',
-                  icon: MapPin,
-                  title: 'Find Courts & Players',
-                  description: 'Browse courts near you and connect with players in your area.'
-                },
-                {
-                  step: '3',
-                  icon: Calendar,
-                  title: 'Start Playing',
-                  description: 'Book courts, join matches, and track your progress as you play.'
-                }
-              ].map((item, index) => (
-                <div key={index} className="relative">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="relative mb-6">
-                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-                        <item.icon className="w-10 h-10 text-white" />
-                      </div>
-                      <div className="absolute -top-2 -right-2 w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                        {item.step}
-                      </div>
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                      {item.title}
-                    </h3>
-                    <p className="text-slate-600 leading-relaxed text-lg">
-                      {item.description}
-                    </p>
-                  </div>
-                  {index < 2 && (
-                    <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-emerald-500/50 to-transparent -translate-x-6" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Visual Showcase Section */}
-        <div className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-emerald-50/30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              <div>
-                <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
-                  Your Game, Your Way
-                </h2>
-                <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                  Whether you're a beginner or a seasoned pro, PaddleGrid helps you find the perfect match, track your improvement, and connect with a thriving community of pickleball enthusiasts.
-                </p>
-                <div className="space-y-4">
-                  {[
-                    { icon: Check, text: 'Match with players at your skill level' },
-                    { icon: Check, text: 'Track your DUPR rating and statistics' },
-                    { icon: Check, text: 'Join leagues and tournaments' },
-                    { icon: Check, text: 'Share highlights and celebrate wins' }
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-4 h-4 text-emerald-600" />
-                      </div>
-                      <span className="text-lg text-slate-700">{item.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-3xl blur-3xl" />
-                <img
-                  src="https://images.pexels.com/photos/6253903/pexels-photo-6253903.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  alt="Pickleball Players"
-                  className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover ring-1 ring-slate-200"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Community Section */}
-        <div className="py-16 lg:py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              <div className="order-2 lg:order-1 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-teal-400/20 to-emerald-400/20 rounded-3xl blur-3xl" />
-                <img
-                  src="https://images.pexels.com/photos/5067709/pexels-photo-5067709.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  alt="Pickleball Community"
-                  className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover ring-1 ring-slate-200"
-                />
-              </div>
-              <div className="order-1 lg:order-2">
-                <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
-                  Join a Thriving Community
-                </h2>
-                <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                  Connect with thousands of players, share your journey, and be part of the fastest-growing pickleball network.
-                </p>
-                <div className="grid grid-cols-2 gap-6">
-                  {[
-                    { icon: Users, value: '50K+', label: 'Active Players' },
-                    { icon: MapPin, value: '500+', label: 'Locations' },
-                    { icon: Trophy, value: '200+', label: 'Events/Week' },
-                    { icon: Star, value: '4.9', label: 'Rating' }
-                  ].map((stat, index) => (
-                    <div key={index} className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 border border-slate-200">
-                      <stat.icon className="w-8 h-8 text-emerald-600 mb-3" />
-                      <div className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</div>
-                      <div className="text-sm text-slate-600 font-medium">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Testimonials */}
-        <div className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 lg:mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-                Loved by Players Everywhere
-              </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                See what our community has to say
-              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 {
-                  quote: "PaddleGrid has completely changed how I play. I've found amazing playing partners and my game has improved so much!",
-                  author: "Sarah Martinez",
-                  rating: "3.8 DUPR",
-                  image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200"
+                  quote: "PaddleGrid completely changed how I play pickleball. Finding games and tracking my progress has never been easier!",
+                  author: "Sarah Mitchell",
+                  role: "4.5 DUPR Player",
+                  rating: 5
                 },
                 {
-                  quote: "The best part is how easy it is to find courts and book them. No more calling around or showing up to full courts.",
-                  author: "Mike Chen",
-                  rating: "4.2 DUPR",
-                  image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200"
+                  quote: "As a facility owner, this platform has streamlined our operations and increased court utilization by 40%.",
+                  author: "Mike Thompson",
+                  role: "Club Owner",
+                  rating: 5
                 },
                 {
-                  quote: "I love the community aspect. Seeing everyone's progress and match highlights keeps me motivated to play more!",
-                  author: "Jessica Park",
-                  rating: "3.5 DUPR",
-                  image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200"
+                  quote: "The community features are incredible. I've met so many amazing players and improved my game significantly.",
+                  author: "Jessica Lee",
+                  role: "Tournament Player",
+                  rating: 5
                 }
               ].map((testimonial, index) => (
-                <div key={index} className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                <div
+                  key={index}
+                  className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300"
+                >
+                  <div className="flex items-center gap-1 text-yellow-400 mb-4">
+                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-slate-700 leading-relaxed mb-6 text-lg">
+                  <p className="text-white/90 text-lg leading-relaxed mb-6">
                     "{testimonial.quote}"
                   </p>
-                  <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.author}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500" />
                     <div>
-                      <div className="font-bold text-slate-900">{testimonial.author}</div>
-                      <div className="text-sm text-emerald-600 font-medium">{testimonial.rating}</div>
+                      <div className="font-semibold text-white">{testimonial.author}</div>
+                      <div className="text-sm text-slate-400">{testimonial.role}</div>
                     </div>
                   </div>
                 </div>
@@ -447,75 +340,38 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           </div>
         </div>
 
-        {/* Final CTA Section */}
-        <div className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent_50%)]" />
+        {/* Final CTA */}
+        <div className="py-32 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.08),transparent_40%)]" />
 
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6">
-              Ready to Play?
+          <div className="relative max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              Ready to Level Up
+              <br />
+              Your Game?
             </h2>
-            <p className="text-xl lg:text-2xl text-white/90 mb-12 max-w-2xl mx-auto">
-              Join thousands of players finding matches, booking courts, and growing their game.
+            <p className="text-xl text-white/90 mb-12 leading-relaxed">
+              Join thousands of players who are already using PaddleGrid to play better, connect easier, and have more fun.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => onAuthRequired('signup')}
-                className="group inline-flex items-center justify-center gap-2 px-10 py-5 text-lg font-semibold text-teal-600 bg-white rounded-xl shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105"
-              >
-                <Users className="w-5 h-5" />
-                Get Started Free
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                onClick={() => onAuthRequired('login')}
-                className="inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-white border-2 border-white/40 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
-              >
-                Sign In
-              </button>
-            </div>
+            <button
+              onClick={() => onAuthRequired('signup')}
+              className="group inline-flex items-center gap-3 px-10 py-5 bg-white text-emerald-600 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all duration-300"
+            >
+              <Users className="w-6 h-6" />
+              Create Free Account
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
         </div>
-
-        {/* Demo Modals */}
-        {selectedCourt && user && (
-          <AdvancedBookingCalendar
-            court={selectedCourt}
-            userId={user.id}
-            onClose={() => setSelectedCourt(null)}
-            onSuccess={() => {
-              setSelectedCourt(null);
-              alert('Booking created successfully!');
-            }}
-          />
-        )}
-
-        {showDemo === 'checkout' && (
-          <ThreeClickCheckout onClose={() => setShowDemo(null)} />
-        )}
-        
-        {showDemo === 'pricing' && (
-          <TransparentPricing onClose={() => setShowDemo(null)} />
-        )}
-        
-        {showDemo === 'waitlist' && (
-          <WaitlistManager onClose={() => setShowDemo(null)} />
-        )}
-
-        {showDemo === 'analytics' && (
-          <LiveAnalyticsDemo onClose={() => setShowDemo(null)} />
-        )}
-
-        {showDemo === 'family' && (
-          <FamilyAccountDemo onClose={() => setShowDemo(null)} />
-        )}
-
-        {showDemo === 'scheduling' && (
-          <ConflictFreeDemo onClose={() => setShowDemo(null)} />
-        )}
       </div>
+
+      {selectedCourt && (
+        <AdvancedBookingCalendar
+          court={selectedCourt}
+          onClose={() => setSelectedCourt(null)}
+        />
+      )}
     </>
   );
 }
