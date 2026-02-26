@@ -59,7 +59,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         {/* Hero Section - Premium Design */}
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           {/* Fade to next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white pointer-events-none z-20" />
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-white/80 pointer-events-none z-20" />
           {/* Static gradient orbs */}
           <div
             className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-3xl"
@@ -130,10 +130,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
         {/* Features Section */}
         <div className="py-32 bg-white relative overflow-hidden">
-          {/* Fade from previous section */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white to-transparent pointer-events-none z-10" />
           {/* Fade to next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-white to-slate-900 pointer-events-none z-10" />
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-slate-900/20 pointer-events-none z-10" />
           {/* Background decoration */}
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-teal-50/50" />
 
@@ -224,10 +222,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
         {/* Social Proof Section */}
         <div className="py-32 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-          {/* Fade from previous section */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
           {/* Fade to next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-emerald-600 pointer-events-none z-10" />
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-emerald-600/30 pointer-events-none z-10" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptLTEyIDEyYzMuMzE0IDAgNiAyLjY4NiA2IDZzLTIuNjg2IDYtNiA2LTYtMi42ODYtNi02IDIuNjg2LTYgNi02em0yNC0xMmMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iIzFmMjkzNyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-20" />
 
           <div className="relative max-w-7xl mx-auto px-6">
@@ -241,7 +237,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {[
                 {
                   quote: "PaddleGrid completely changed how I play pickleball. Finding games and tracking my progress has never been easier!",
@@ -264,7 +260,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               ].map((testimonial, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300"
+                  className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 mx-auto w-full max-w-md md:max-w-none"
                 >
                   <div className="flex items-center gap-1 text-yellow-400 mb-4">
                     {Array.from({ length: testimonial.rating }).map((_, i) => (
@@ -289,8 +285,6 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
         {/* Final CTA */}
         <div className="py-32 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 relative overflow-hidden">
-          {/* Fade from previous section */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-emerald-600 to-transparent pointer-events-none z-10" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.08),transparent_40%)]" />
 
