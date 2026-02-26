@@ -58,6 +58,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       <div className="min-h-screen bg-white overflow-hidden">
         {/* Hero Section - Premium Design */}
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          {/* Fade to next section */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white pointer-events-none z-20" />
           {/* Static gradient orbs */}
           <div
             className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-3xl"
@@ -128,6 +130,10 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
         {/* Features Section */}
         <div className="py-32 bg-white relative overflow-hidden">
+          {/* Fade from previous section */}
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white to-transparent pointer-events-none z-10" />
+          {/* Fade to next section */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-white to-slate-900 pointer-events-none z-10" />
           {/* Background decoration */}
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-teal-50/50" />
 
@@ -149,7 +155,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {[
                 {
                   icon: Calendar,
@@ -196,7 +202,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               ].map((feature, index) => (
                 <div
                   key={index}
-                  className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 hover:border-slate-300 hover:-translate-y-2"
+                  className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 hover:border-slate-300 hover:-translate-y-2 mx-auto w-full max-w-md md:max-w-none"
                 >
                   <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                     <feature.icon className="w-7 h-7 text-white" />
@@ -218,6 +224,10 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
         {/* Social Proof Section */}
         <div className="py-32 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+          {/* Fade from previous section */}
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
+          {/* Fade to next section */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-emerald-600 pointer-events-none z-10" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptLTEyIDEyYzMuMzE0IDAgNiAyLjY4NiA2IDZzLTIuNjg2IDYtNiA2LTYtMi42ODYtNi02IDIuNjg2LTYgNi02em0yNC0xMmMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iIzFmMjkzNyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-20" />
 
           <div className="relative max-w-7xl mx-auto px-6">
@@ -279,6 +289,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
         {/* Final CTA */}
         <div className="py-32 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 relative overflow-hidden">
+          {/* Fade from previous section */}
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-emerald-600 to-transparent pointer-events-none z-10" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.08),transparent_40%)]" />
 
