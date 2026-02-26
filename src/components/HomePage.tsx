@@ -95,8 +95,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   </span>
                 </h1>
                 <p className="text-xl md:text-2xl text-white max-w-3xl mx-auto leading-relaxed font-bold tracking-wide">
-                  Book courts instantly. Find playing partners. Track your progress.
-                  <br className="hidden sm:block" />
+                  Book courts instantly. Find playing partners. Track your progress.{' '}
                   Join the fastest-growing pickleball community.
                 </p>
               </div>
