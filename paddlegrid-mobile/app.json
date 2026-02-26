@@ -31,11 +31,15 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Allow PaddleGrid to access your camera to take profile pictures and post photos.",
         "NSPhotoLibraryUsageDescription": "Allow PaddleGrid to access your photos to select profile pictures and post photos.",
+        "NSUserNotificationsUsageDescription": "PaddleGrid sends you timely notifications about booking extensions, match invitations, and community updates.",
         "ITSAppUsesNonExemptEncryption": false,
         "UILaunchStoryboardName": "SplashScreen"
       },
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "aps-environment": "production"
       }
     },
     "android": {
@@ -54,8 +58,11 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
-        "NOTIFICATIONS"
-      ]
+        "NOTIFICATIONS",
+        "POST_NOTIFICATIONS"
+      ],
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -65,6 +72,24 @@
         "projectId": "f69a4a7c-1b1a-427b-98c0-375bb729f48a"
       }
     },
-    "owner": "justinsmith2099"
+    "owner": "justinsmith2099",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#10b981",
+          "sounds": ["./assets/notification.wav"]
+        }
+      ]
+    ],
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#10b981",
+      "iosDisplayInForeground": true,
+      "androidMode": "default",
+      "androidCollapsedTitle": "PaddleGrid"
+    },
+    "scheme": "paddlegrid"
   }
 }
