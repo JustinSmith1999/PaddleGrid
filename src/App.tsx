@@ -11,12 +11,12 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import InstallPWA from './components/InstallPWA';
 import AchievementCelebrationModal from './components/AchievementCelebrationModal';
 import { useAchievementNotifications } from './hooks/useAchievementNotifications';
-import { CookieConsent } from './components/CookieConsent';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
 import { supabase } from './lib/supabase';
 
+const HomePage = lazy(() => import('./components/HomePage').then(m => ({ default: m.HomePage })));
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
 const BrowseCourts = lazy(() => import('./components/BrowseCourts').then(m => ({ default: m.BrowseCourts })));
 const UserBookings = lazy(() => import('./components/UserBookings').then(m => ({ default: m.UserBookings })));
@@ -144,6 +144,24 @@ function AppContent() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
         <Route path="/" element={
+          user ? (
+            <CommunityHub
+              onAuthRequired={(mode = 'login') => {
+                setAuthMode(mode);
+                setShowAuthModal(true);
+              }}
+            />
+          ) : (
+            <HomePage
+              onAuthRequired={(mode = 'login') => {
+                setAuthMode(mode);
+                setShowAuthModal(true);
+              }}
+            />
+          )
+        } />
+
+        <Route path="/community" element={
           <CommunityHub
             onAuthRequired={(mode = 'login') => {
               setAuthMode(mode);
@@ -298,7 +316,6 @@ function AppContent() {
       />
 
       {!isNative && <InstallPWA />}
-      {!isNative && <CookieConsent />}
       </div>
     </ErrorBoundary>
   );

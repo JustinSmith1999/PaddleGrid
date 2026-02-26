@@ -22,6 +22,11 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
     location.pathname === '/sales' ? 'facilities' : 'players'
   );
 
+  // Hide navbar on homepage when not logged in
+  if (!user && location.pathname === '/') {
+    return null;
+  }
+
   const handleViewChange = (view: ViewType) => {
     onViewChange(view);
   };
