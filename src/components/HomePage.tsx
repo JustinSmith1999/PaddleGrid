@@ -200,9 +200,9 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               ].map((feature, index) => (
                 <div
                   key={index}
-                  className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 hover:border-slate-300 hover:-translate-y-2 mx-auto w-full max-w-md md:max-w-none"
+                  className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 hover:border-slate-300 hover:-translate-y-2 mx-auto w-full max-w-md md:max-w-none text-center md:text-left"
                 >
-                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 mx-auto md:mx-0`}>
                     <feature.icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-3">
