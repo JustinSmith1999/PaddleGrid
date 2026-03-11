@@ -34,15 +34,18 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
   async function loadActiveBookings() {
     try {
       const now = new Date();
-      const currentTime = now.toISOString();
+      const currentDate = now.toISOString().split('T')[0];
+      const currentTime = now.toTimeString().split(' ')[0].substring(0, 8);
 
       const { data: bookings, error } = await supabase
         .from('bookings')
         .select(`
           id,
+          booking_date,
           start_time,
           end_time,
           user_id,
+          is_public,
           courts (
             id,
             name,
@@ -58,6 +61,7 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
           )
         `)
         .eq('status', 'confirmed')
+        .eq('booking_date', currentDate)
         .lte('start_time', currentTime)
         .gte('end_time', currentTime)
         .limit(5);
@@ -76,13 +80,16 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
 
         const facility = Array.isArray(court.facilities) ? court.facilities[0] : court.facilities;
 
+        const startDateTime = `${booking.booking_date}T${booking.start_time}`;
+        const endDateTime = `${booking.booking_date}T${booking.end_time}`;
+
         activeBookingsData.push({
           id: booking.id,
           courtName: court.name,
           facilityName: facility.name,
           facilityId: facility.id,
-          startTime: booking.start_time,
-          endTime: booking.end_time,
+          startTime: startDateTime,
+          endTime: endDateTime,
           players: [{
             id: profile.id,
             name: profile.full_name || 'Player',

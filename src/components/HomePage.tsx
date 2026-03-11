@@ -22,6 +22,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
   const { user } = useAuth();
   const [courts, setCourts] = useState<Court[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
   const fetchCourts = async () => {
     try {
+      setError(false);
       const { data, error } = await supabase
         .from('courts')
         .select('*')
@@ -40,6 +42,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       setCourts(data || []);
     } catch (error) {
       console.error('Error fetching courts:', error);
+      setError(true);
     } finally {
       setLoading(false);
     }
