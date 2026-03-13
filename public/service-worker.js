@@ -1,61 +1,111 @@
-const CACHE_NAME = 'paddlegrid-v1';
-const RUNTIME_CACHE = 'paddlegrid-runtime';
+const CACHE_VERSION = 'paddlegrid-v2';
+const STATIC_CACHE = `${CACHE_VERSION}-static`;
+const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 
-const PRECACHE_URLS = [
-  '/',
-  '/index.html',
+const STATIC_ASSETS = [
   '/manifest.json',
   '/untitled_design__2_-removebg-preview.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE_URLS))
+    caches.open(STATIC_CACHE)
+      .then(cache => cache.addAll(STATIC_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
-  const currentCaches = [CACHE_NAME, RUNTIME_CACHE];
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
-    }).then(cachesToDelete => {
-      return Promise.all(cachesToDelete.map(cacheToDelete => {
-        return caches.delete(cacheToDelete);
-      }));
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames
+            .filter(cacheName => cacheName.startsWith('paddlegrid-') && !cacheName.startsWith(CACHE_VERSION))
+            .map(cacheName => caches.delete(cacheName))
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.startsWith(self.location.origin)) {
-    event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+  const { request } = event;
+  const url = new URL(request.url);
 
-        return caches.open(RUNTIME_CACHE).then(cache => {
-          return fetch(event.request).then(response => {
+  if (!request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  if (url.pathname.includes('/api/') || url.pathname.includes('supabase')) {
+    return;
+  }
+
+  if (url.pathname === '/' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(DYNAMIC_CACHE).then(cache => {
+            cache.put(request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  if (url.pathname.startsWith('/assets/') ||
+      url.pathname.match(/\.(js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|webp|gif)$/)) {
+    event.respondWith(
+      caches.match(request)
+        .then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          return fetch(request).then(response => {
             if (response.status === 200) {
-              cache.put(event.request, response.clone());
+              const responseClone = response.clone();
+              caches.open(STATIC_CACHE).then(cache => {
+                cache.put(request, responseClone);
+              });
             }
             return response;
-          }).catch(() => {
-            if (event.request.mode === 'navigate') {
-              return caches.match('/index.html');
-            }
           });
-        });
-      })
+        })
     );
+    return;
   }
+
+  event.respondWith(
+    fetch(request)
+      .then(response => {
+        const responseClone = response.clone();
+        caches.open(DYNAMIC_CACHE).then(cache => {
+          cache.put(request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => caches.match(request))
+  );
 });
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      })
+    );
   }
 });

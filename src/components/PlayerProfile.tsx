@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Calendar, Clock, Trophy, DollarSign, Loader2, Star, Target, Flame, Award, Activity as ActivityIcon, CreditCard, X } from 'lucide-react';
+import { User, Calendar, Clock, Trophy, DollarSign, Loader2, Star, Target, Flame, Award, Activity as ActivityIcon, CreditCard, X, RefreshCw, Settings } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { RatingGraph } from './RatingGraph';
@@ -9,6 +9,7 @@ import ActivityCard from './ActivityCard';
 import PlayerCard from './PlayerCard';
 import AchievementsShowcase from './AchievementsShowcase';
 import PlayStreakWidget from './PlayStreakWidget';
+import { clearAllCaches } from '../utils/cacheUtils';
 
 interface PlayerStats {
   total_bookings: number;
@@ -391,6 +392,33 @@ export function PlayerProfile() {
 
         <div className="mb-8">
           {user && <AchievementsShowcase userId={user.id} isOwnProfile={true} />}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Settings className="w-5 h-5 text-gray-600" />
+            <h2 className="text-xl font-bold text-gray-800">Settings</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="border-t pt-4">
+              <h3 className="font-semibold text-gray-700 mb-2">App Performance</h3>
+              <p className="text-sm text-gray-500 mb-3">
+                If you're experiencing issues with updates not appearing or the app not loading correctly, clear the cache.
+              </p>
+              <button
+                onClick={() => {
+                  if (confirm('This will clear all cached data and reload the app. Continue?')) {
+                    clearAllCaches();
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Clear Cache & Reload
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
