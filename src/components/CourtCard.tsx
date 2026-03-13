@@ -117,53 +117,73 @@ export function CourtCard({ court, onBook, availabilityBlocks, currentUserId }: 
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500">
-      <div className={`p-4 border-b border-slate-200 dark:border-slate-700 ${
+    <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-emerald-400 dark:hover:border-emerald-500 hover:scale-[1.02] relative">
+      {isAvailableNow && (
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
+      )}
+
+      <div className={`p-5 border-b border-slate-200 dark:border-slate-700 ${
         isAvailableNow
-          ? 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20'
-          : 'bg-slate-50 dark:bg-slate-800/50'
+          ? 'bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-900/20 dark:via-teal-900/20 dark:to-emerald-900/20'
+          : 'bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/50 dark:to-slate-800/30'
       }`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock className={`w-5 h-5 ${isAvailableNow ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`} />
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl ${
+              isAvailableNow
+                ? 'bg-emerald-500 dark:bg-emerald-600 shadow-lg shadow-emerald-500/50'
+                : 'bg-slate-300 dark:bg-slate-600'
+            } transition-all duration-300`}>
+              <Clock className={`w-5 h-5 ${isAvailableNow ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`} />
+            </div>
             <div>
-              <p className={`text-xs font-medium ${isAvailableNow ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${
+                isAvailableNow ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
+              }`}>
                 Next Available
               </p>
-              <p className={`text-lg font-bold ${isAvailableNow ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-900 dark:text-white'}`}>
+              <p className={`text-xl font-bold ${
+                isAvailableNow ? 'text-emerald-800 dark:text-emerald-300' : 'text-slate-900 dark:text-white'
+              }`}>
                 {nextAvailable || 'Check Schedule'}
               </p>
             </div>
           </div>
-          <Activity className={`w-8 h-8 ${isAvailableNow ? 'text-emerald-500' : 'text-slate-300 dark:text-slate-600'}`} />
+          <Activity className={`w-10 h-10 ${
+            isAvailableNow
+              ? 'text-emerald-500 dark:text-emerald-400 animate-pulse'
+              : 'text-slate-300 dark:text-slate-600'
+          } transition-all duration-300`} />
         </div>
       </div>
 
-      <div className="p-5">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
+      <div className="p-6">
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
           {court.name}
         </h3>
         {court.location && (
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-5">
             {court.location}
           </p>
         )}
 
-        <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="space-y-3 pt-5 border-t border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30">
+                <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
               <div>
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   ${court.hourly_rate}
                 </span>
-                <span className="text-slate-500 dark:text-slate-400 text-sm ml-1">/hour</span>
+                <span className="text-slate-500 dark:text-slate-400 text-sm font-medium ml-1">/hour</span>
               </div>
             </div>
 
             <button
               onClick={() => onBook(court)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:shadow-lg"
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-3 rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 shadow-lg"
             >
               Book Now
             </button>
@@ -173,7 +193,7 @@ export function CourtCard({ court, onBook, availabilityBlocks, currentUserId }: 
             <button
               onClick={handleCheckIn}
               disabled={isCheckingIn}
-              className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-medium px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 dark:from-slate-700 dark:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500 text-slate-700 dark:text-slate-200 font-semibold px-4 py-3 rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-md"
             >
               <MapPin className="w-4 h-4" />
               {isCheckingIn ? 'Checking In...' : "I'm Playing Here"}
