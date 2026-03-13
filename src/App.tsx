@@ -358,7 +358,9 @@ function PostDetailRoute() {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
-  if (!postId) return null;
+  if (!postId) {
+    return <NotFound />;
+  }
 
   return (
     <PostDetail
@@ -374,7 +376,9 @@ function PublicPlayerProfileRoute() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
-  if (!userId) return null;
+  if (!userId) {
+    return <NotFound />;
+  }
 
   return <PublicPlayerProfile userId={userId} onBack={() => navigate('/')} />;
 }
@@ -389,12 +393,14 @@ function SeriesDetailRoute() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  if (!seriesId) return null;
-
   const handleRegister = async (sid: string, selectedOccurrences: string[]) => {
     setSearchParams({ occurrences: selectedOccurrences.join(',') });
     navigate(`/series/${sid}/register?occurrences=${selectedOccurrences.join(',')}`);
   };
+
+  if (!seriesId) {
+    return <NotFound />;
+  }
 
   return (
     <SeriesDetail
