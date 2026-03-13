@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import {
   LayoutDashboard, Calendar, Users, Settings, LogOut, Menu, X, Sun, Moon, Bell,
-  BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign, ArrowLeft, FileText, Trophy
+  BarChart3, ClipboardList, Building2, CalendarRange, Clock, UserPlus, DollarSign, ArrowLeft, FileText, Trophy, Zap
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -32,6 +32,7 @@ const navigationItems: NavItem[] = [
   { id: 'waivers', label: 'Signed Waivers', icon: <FileText className="w-5 h-5" /> },
   { id: 'pre-registered', label: 'Import Users', icon: <UserPlus className="w-5 h-5" /> },
   { id: 'transactions', label: 'Transactions', icon: <DollarSign className="w-5 h-5" /> },
+  { id: 'podplay', label: 'PodPlay Sync', icon: <Zap className="w-5 h-5" /> },
   { id: 'notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" /> },
   { id: 'achievements', label: 'Achievements', icon: <Trophy className="w-5 h-5" /> },
   { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" /> },
