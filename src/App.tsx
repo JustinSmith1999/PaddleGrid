@@ -63,7 +63,7 @@ function AppContent() {
   useEffect(() => {
     if (isNative) {
       StatusBar.setStyle({ style: Style.Light });
-      StatusBar.setBackgroundColor({ color: '#10B981' });
+      StatusBar.setBackgroundColor({ color: '#1B2A4A' });
 
       CapacitorApp.addListener('backButton', ({ canGoBack }) => {
         if (canGoBack) {
