@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, ArrowRight, CheckCircle, Trophy, MessageSquare, Bell, Flame, ChevronRight, Zap, Shield, TrendingUp, Star } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowRight, CheckCircle, Trophy, MessageSquare, Bell, Flame, ChevronRight, Zap, Shield, TrendingUp, Star, Menu, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AdvancedBookingCalendar } from './AdvancedBookingCalendar';
 import { useAuth } from '../contexts/AuthContext';
@@ -125,6 +125,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
   const [loading, setLoading] = useState(true);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 100]);
@@ -183,8 +184,9 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100"
+          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
         >
-          <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3.5">
+          <div className="max-w-6xl mx-auto flex items-center justify-between px-5 sm:px-6 py-3.5">
             <motion.div className="flex items-center gap-2.5" whileHover={{ scale: 1.02 }}>
               <img src="/logo.png" alt="PaddleGrid" className="h-9 w-9 object-contain" />
               <span className="text-lg font-bold tracking-tight">
@@ -225,25 +227,35 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 />
               </motion.button>
             </div>
-            <motion.button
-              onClick={() => onAuthRequired('signup')}
-              className="md:hidden bg-[#1B2A4A] text-white text-sm font-semibold px-4 py-2 rounded-lg"
-              whileTap={{ scale: 0.95 }}
-            >
-              Get started
-            </motion.button>
+            {/* Mobile nav buttons */}
+            <div className="flex md:hidden items-center gap-2">
+              <motion.button
+                onClick={() => onAuthRequired('login')}
+                className="text-sm font-medium text-gray-500 px-3 py-2"
+                whileTap={{ scale: 0.95 }}
+              >
+                Sign in
+              </motion.button>
+              <motion.button
+                onClick={() => onAuthRequired('signup')}
+                className="bg-[#1B2A4A] text-white text-sm font-semibold px-4 py-2 rounded-lg"
+                whileTap={{ scale: 0.95 }}
+              >
+                Get started
+              </motion.button>
+            </div>
           </div>
         </motion.nav>
 
         {/* ── Hero ── */}
-        <section ref={heroRef} className="relative min-h-[85vh] flex items-center overflow-hidden">
+        <section ref={heroRef} className="relative min-h-[75svh] md:min-h-[85vh] flex items-center overflow-hidden">
           <HeroOrbs />
           <GridPattern />
           <motion.div
             style={{ y: heroY, opacity: heroOpacity }}
-            className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-28 w-full"
+            className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 py-12 sm:py-16 md:py-28 w-full"
           >
-            <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
               <div>
                 {/* Badge */}
                 <motion.div
@@ -263,7 +275,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="text-4xl md:text-[52px] font-extrabold leading-[1.08] tracking-tight text-[#1B2A4A] mb-6"
+                  className="text-[32px] sm:text-4xl md:text-[52px] font-extrabold leading-[1.1] tracking-tight text-[#1B2A4A] mb-5 sm:mb-6"
                 >
                   Book courts.{' '}
                   <br className="hidden md:block" />
@@ -286,7 +298,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.4 }}
-                  className="text-lg text-gray-500 leading-relaxed mb-8 max-w-md"
+                  className="text-base sm:text-lg text-gray-500 leading-relaxed mb-6 sm:mb-8 max-w-md"
                 >
                   The all-in-one platform for pickleball. Real-time court booking, player matching, and venue management — built for the fastest-growing sport in America.
                 </motion.p>
@@ -343,12 +355,12 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 </motion.div>
               </div>
 
-              {/* Product preview */}
+              {/* Product preview — hidden on small mobile, visible on larger screens */}
               <motion.div
                 initial={{ opacity: 0, x: 40, rotateY: -5 }}
                 animate={{ opacity: 1, x: 0, rotateY: 0 }}
                 transition={{ duration: 0.9, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="relative"
+                className="relative hidden sm:block"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-[#6DB33F]/10 via-transparent to-[#1B2A4A]/10 rounded-3xl blur-2xl" />
                 <div className="relative bg-white rounded-2xl border border-gray-200 shadow-2xl shadow-gray-200/50 p-5 space-y-3">
@@ -396,11 +408,11 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         {/* ── Logos / Social proof bar ── */}
         <FadeIn>
           <section className="border-y border-gray-100 py-10 bg-gray-50/50">
-            <div className="max-w-6xl mx-auto px-6">
+            <div className="max-w-6xl mx-auto px-5 sm:px-6">
               <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-300 mb-6">
                 Trusted by facilities and players nationwide
               </p>
-              <div className="flex items-center justify-center gap-12 md:gap-16 flex-wrap opacity-40">
+              <div className="flex items-center justify-center gap-6 sm:gap-12 md:gap-16 flex-wrap opacity-40">
                 {['Sunset Pickleball', 'Metro Courts', 'PlayTime Sports', 'Rally Point', 'NetPro Facilities'].map((name, i) => (
                   <motion.span
                     key={i}
@@ -416,9 +428,9 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </FadeIn>
 
         {/* ── Stats ── */}
-        <section className="py-20 md:py-24">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <section className="py-14 sm:py-20 md:py-24">
+          <div className="max-w-6xl mx-auto px-5 sm:px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
               {[
                 { value: 85, suffix: '+', label: 'Partner venues', icon: MapPin },
                 { value: 2400, suffix: '+', label: 'Active players', icon: Users },
@@ -443,8 +455,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </section>
 
         {/* ── Player features ── */}
-        <section id="players" className="py-20 md:py-28 bg-gradient-to-b from-white via-gray-50/50 to-white">
-          <div className="max-w-6xl mx-auto px-6">
+        <section id="players" className="py-14 sm:py-20 md:py-28 bg-gradient-to-b from-white via-gray-50/50 to-white">
+          <div className="max-w-6xl mx-auto px-5 sm:px-6">
             <FadeUp>
               <div className="text-center mb-16">
                 <span className="inline-flex items-center gap-2 bg-[#6DB33F]/10 border border-[#6DB33F]/20 rounded-full px-4 py-1.5 mb-4">
@@ -488,14 +500,14 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </section>
 
         {/* ── Venue section ── */}
-        <section id="venues" className="py-20 md:py-28 relative overflow-hidden">
+        <section id="venues" className="py-14 sm:py-20 md:py-28 relative overflow-hidden">
           <div className="absolute inset-0 bg-[#1B2A4A]" />
           <div className="absolute inset-0 opacity-[0.03]" style={{
             backgroundImage: `radial-gradient(rgba(109,179,63,0.3) 1px, transparent 1px)`,
             backgroundSize: '32px 32px',
           }} />
 
-          <div className="relative z-10 max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-14 items-center">
+          <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 grid md:grid-cols-2 gap-10 md:gap-14 items-center">
             <div>
               <FadeUp>
                 <span className="inline-flex items-center gap-2 bg-white/10 border border-white/10 rounded-full px-4 py-1.5 mb-6">
@@ -599,7 +611,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </section>
 
         {/* ── CTA ── */}
-        <section className="py-24 md:py-32 relative overflow-hidden">
+        <section className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <motion.div
               className="absolute w-[500px] h-[500px] rounded-full opacity-[0.06]"
@@ -610,8 +622,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           </div>
 
           <FadeUp>
-            <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-              <h2 className="text-3xl md:text-[42px] font-extrabold text-[#1B2A4A] tracking-tight mb-4 leading-tight">
+            <div className="relative z-10 max-w-2xl mx-auto px-5 sm:px-6 text-center">
+              <h2 className="text-2xl sm:text-3xl md:text-[42px] font-extrabold text-[#1B2A4A] tracking-tight mb-4 leading-tight">
                 Ready to{' '}
                 <span className="bg-gradient-to-r from-[#6DB33F] to-[#4A9E2A] bg-clip-text text-transparent">play?</span>
               </h2>
@@ -642,8 +654,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </section>
 
         {/* ── Footer ── */}
-        <footer className="bg-[#0F1A2E] text-white">
-          <div className="max-w-6xl mx-auto px-6 py-14">
+        <footer className="bg-[#0F1A2E] text-white" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10 sm:py-14">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
               <div className="col-span-2 md:col-span-1">
                 <div className="flex items-center gap-2 mb-4">
