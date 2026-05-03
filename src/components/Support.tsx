@@ -1,169 +1,112 @@
-import React from 'react';
-import { Mail, MessageCircle, Book, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Mail, MessageSquare, HelpCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Support() {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Help & Support</h1>
-          <p className="text-xl text-gray-600">
-            We're here to help you get the most out of PaddleGrid
-          </p>
+    <div className="min-h-screen bg-white">
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
+        <div className="max-w-3xl mx-auto flex items-center gap-4 px-6 py-3">
+          <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="PaddleGrid" className="h-8 w-8 object-contain" />
+            <span className="text-lg font-bold tracking-tight">
+              <span className="text-[#1B2A4A]">Paddle</span>
+              <span className="text-[#6DB33F]">Grid</span>
+            </span>
+          </div>
+        </div>
+      </nav>
+
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        <h1 className="text-3xl font-extrabold text-[#1B2A4A] mb-2">Support</h1>
+        <p className="text-base text-gray-500 mb-10">We&apos;re here to help. Choose how you&apos;d like to reach us.</p>
+
+        <div className="grid sm:grid-cols-2 gap-4 mb-12">
+          <a
+            href="mailto:Justin@j20solutions.com"
+            className="flex items-start gap-4 bg-gray-50 rounded-2xl border border-gray-200 p-6 hover:border-gray-300 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-green-50 text-green-700 flex items-center justify-center flex-shrink-0">
+              <Mail className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-[#1B2A4A] mb-1">Email Us</h3>
+              <p className="text-sm text-gray-500">Justin@j20solutions.com</p>
+              <p className="text-xs text-gray-400 mt-1">We typically respond within 24 hours</p>
+            </div>
+          </a>
+
+          <div className="flex items-start gap-4 bg-gray-50 rounded-2xl border border-gray-200 p-6">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center flex-shrink-0">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-[#1B2A4A] mb-1">In-App Chat</h3>
+              <p className="text-sm text-gray-500">Available when logged in</p>
+              <p className="text-xs text-gray-400 mt-1">Fastest way to get help</p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <Mail className="w-12 h-12 text-emerald-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Email Support</h2>
-            <p className="text-gray-700 mb-4">
-              Get help from our support team via email. We typically respond within 24 hours.
-            </p>
+        <h2 className="text-lg font-bold text-[#1B2A4A] mb-4">Frequently Asked Questions</h2>
+        <div className="space-y-3">
+          {[
+            { q: 'How do I book a court?', a: 'Sign up for a free account, browse nearby courts, pick an available time slot, and confirm your booking. Payment is processed securely through Stripe.' },
+            { q: 'How do I cancel a booking?', a: "Go to your bookings in the app and tap the booking you want to cancel. Cancellation policies vary by venue — check the venue's policy before booking." },
+            { q: 'How do I delete my account?', a: 'Go to Settings > Account > Delete Account. Your account will enter a 30-day grace period. You can cancel deletion during this time. After 30 days, your data is permanently removed.' },
+            { q: 'How do I list my venue on PaddleGrid?', a: "Click \"I run a venue\" on the homepage or sign up as a facility operator. You'll get access to our venue management dashboard." },
+            { q: 'Is my payment information secure?', a: 'Yes. All payments are processed through Stripe, a PCI Level 1 certified payment processor. We never store your full card number.' },
+            { q: 'How do I report inappropriate content?', a: 'Tap the three-dot menu on any post or comment and select "Report." Our moderation team reviews all reports within 24 hours.' },
+            { q: 'Do you have a mobile app?', a: 'Yes! PaddleGrid is available on iOS and Android. Download from the App Store or Google Play to book courts and connect with players on the go.' },
+          ].map((faq, i) => (
+            <details key={i} className="group bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+              <summary className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 transition-colors">
+                <HelpCircle className="w-4 h-4 text-[#6DB33F] flex-shrink-0" />
+                <span className="text-sm font-semibold text-[#1B2A4A]">{faq.q}</span>
+              </summary>
+              <div className="px-4 pb-4 pl-11">
+                <p className="text-sm text-gray-500 leading-relaxed">{faq.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+
+        <div className="mt-12 bg-[#1B2A4A] rounded-2xl p-8 text-center">
+          <h2 className="text-xl font-bold text-white mb-2">Still need help?</h2>
+          <p className="text-sm text-white/60 mb-6">Our team is here to assist with any questions.</p>
+          <div className="flex flex-wrap gap-3 justify-center">
             <a
-              href="mailto:support@paddlegrid.com"
-              className="inline-block px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-            >
-              Email Us
-            </a>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <MessageCircle className="w-12 h-12 text-emerald-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Community Forum</h2>
-            <p className="text-gray-700 mb-4">
-              Connect with other players and facility owners in our community forum.
-            </p>
-            <button className="inline-block px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors">
-              Visit Forum
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-12">
-          <div className="flex items-center mb-6">
-            <Book className="w-8 h-8 text-emerald-500 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                How do I book a court?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Browse available courts in the "Courts" section, select your desired time slot, and complete
-                the booking with your payment information. You'll receive a confirmation email immediately.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                Can I cancel my booking?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Yes, cancellation policies vary by facility. You can view the specific cancellation policy on
-                the booking page. Most facilities allow cancellations with full refunds if done 24+ hours in
-                advance.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                How do I report inappropriate content?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Click the flag icon on any post or comment to report it. Select a reason and our moderation
-                team will review the content. Content with multiple reports is automatically hidden pending review.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                Is my payment information secure?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Yes! All payments are processed securely through Stripe, a PCI-compliant payment processor.
-                We never store your complete payment card details on our servers.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                How do I update my profile?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Click on your profile picture or name in the navigation bar, then select "Edit Profile." You
-                can update your name, phone number, skill level, and profile picture.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                Can I register my facility on PaddleGrid?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Yes! Contact us at facilities@paddlegrid.com to get started. We'll help you set up your
-                facility profile, add courts, and start accepting bookings.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                How do I delete my account?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                To delete your account and all associated data, email us at privacy@paddlegrid.com with your
-                request. We'll process your request within 30 days in accordance with data protection laws.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
-                <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
-                Do you have a mobile app?
-              </h3>
-              <p className="text-gray-700 ml-7">
-                Yes! PaddleGrid is available on both iOS and Android. Download from the App Store or Google
-                Play Store to book courts and connect with players on the go.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg p-8 text-white">
-          <h2 className="text-2xl font-bold mb-3">Still Need Help?</h2>
-          <p className="text-emerald-50 mb-6">
-            Our support team is here to assist you with any questions or issues you may have.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <a
-              href="mailto:support@paddlegrid.com"
-              className="inline-block px-6 py-3 bg-white text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors font-semibold"
+              href="mailto:Justin@j20solutions.com"
+              className="inline-block px-6 py-2.5 bg-[#6DB33F] text-white text-sm font-semibold rounded-xl hover:bg-[#5E9A35] transition-colors"
             >
               Contact Support
             </a>
             <a
               href="/privacy"
-              className="inline-block px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold border-2 border-white"
+              className="inline-block px-6 py-2.5 bg-white/10 text-white text-sm font-semibold rounded-xl hover:bg-white/20 transition-colors"
             >
               Privacy Policy
             </a>
             <a
               href="/terms"
-              className="inline-block px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold border-2 border-white"
+              className="inline-block px-6 py-2.5 bg-white/10 text-white text-sm font-semibold rounded-xl hover:bg-white/20 transition-colors"
             >
               Terms of Service
             </a>
           </div>
         </div>
       </div>
+
+      <footer className="bg-[#1B2A4A] text-white mt-16">
+        <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row justify-between items-center text-xs text-white/40 gap-2">
+          <span>&copy; {new Date().getFullYear()} PaddleGrid. All rights reserved.</span>
+          <span>J20 Solutions LLC</span>
+        </div>
+      </footer>
     </div>
   );
 }
