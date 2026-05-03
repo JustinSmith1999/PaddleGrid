@@ -35,6 +35,7 @@ const Messages = lazy(() => import('./components/social/Messages'));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
 const Support = lazy(() => import('./components/Support'));
+const AccountDeletion = lazy(() => import('./components/AccountDeletion'));
 const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'));
 const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
@@ -239,6 +240,7 @@ function AppContent() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/account/delete" element={<AccountDeletion />} />
 
         <Route path="/waitlist" element={
           user ? (
