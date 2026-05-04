@@ -72,7 +72,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
               className="group flex-shrink-0 flex items-center space-x-3"
             >
               <img
-                src="/untitled_design__2_-removebg-preview.png"
+                src="/logo.png"
                 alt="PaddleGrid Logo"
                 className="h-12 w-auto group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
               />
