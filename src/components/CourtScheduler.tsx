@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Calendar, Check, AlertCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { X, Calendar, Check, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { sortCourtsByNumber } from '../lib/courtUtils';
 import WaiverModal from './WaiverModal';
@@ -41,6 +42,7 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
   const [showWaiverModal, setShowWaiverModal] = useState(false);
   const [facilityId, setFacilityId] = useState<string | null>(null);
   const [facilityName, setFacilityName] = useState('');
+  const [dateDirection, setDateDirection] = useState<number>(0);
   const firstAvailableRef = useRef<HTMLDivElement | null>(null);
 
   const generateTimeSlots = (granularity: number) => {
@@ -112,8 +114,6 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
     }
   }, [userId]);
 
-  // Removed auto-scroll to allow users to see all time slots from the beginning
-
   async function loadData() {
     setLoading(true);
     const dateStr = selectedDate.toISOString().split('T')[0];
@@ -149,6 +149,7 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
     if (newDate >= new Date(new Date().setHours(0, 0, 0, 0))) {
+      setDateDirection(days);
       setSelectedDate(newDate);
       setSelectedSlot(null);
       firstAvailableRef.current = null;
@@ -327,59 +328,100 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
   // Show loading state while checking waiver
   if (hasSignedWaiver === null) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6">
-        <div className="bg-white shadow-2xl w-full md:max-w-lg md:rounded-2xl p-8">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-0 md:p-6"
+        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      >
+        <div className="bg-white shadow-[0_24px_48px_rgba(0,0,0,0.12)] w-full md:max-w-lg md:rounded-2xl p-8">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6">
-      <div className="bg-white shadow-2xl w-full h-full md:h-[90vh] md:max-w-5xl md:rounded-2xl flex flex-col overflow-hidden">
-        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-2.5 sm:p-3 md:p-4 flex items-center justify-between z-10 flex-shrink-0 md:rounded-t-2xl">
-          <div className="min-w-0 flex-1 pr-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-              <h2 className="text-base sm:text-xl md:text-xl font-bold">Court Scheduler</h2>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-0 md:p-6"
+      style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+        className="bg-white shadow-[0_24px_48px_rgba(0,0,0,0.12)] w-full h-full md:h-[90vh] md:max-w-5xl md:rounded-2xl flex flex-col overflow-hidden"
+      >
+        {/* Header */}
+        <div className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10 flex-shrink-0 md:rounded-t-2xl">
+          <div className="min-w-0 flex-1 pr-2 flex items-center gap-3">
+            <div className="bg-green-50 p-2 rounded-xl flex-shrink-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
             </div>
+            <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, Inter, system-ui, sans-serif' }}>
+              Court Scheduler
+            </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 p-1.5 rounded-lg transition-colors flex-shrink-0"
+            className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-full transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden" style={{ paddingBottom: selectedSlot ? '200px' : '16px' }}>
-          <div className="p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3">
-          <div className="bg-gradient-to-br from-green-50 to-white rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 border border-green-100">
-            <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <button
-                onClick={() => handleDateChange(-1)}
-                disabled={isToday}
-                className="p-1.5 sm:p-2 hover:bg-green-100 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-              <div className="text-center px-2 min-w-0 flex-1">
-                <div className="font-bold text-gray-800 text-xs sm:text-sm md:text-base truncate">{formatDate(selectedDate)}</div>
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden" style={{ paddingBottom: selectedSlot ? '220px' : '16px' }}>
+          <div className="p-3 sm:p-4 md:p-6 space-y-4">
+
+            {/* Date Navigation */}
+            <div className="bg-slate-50 rounded-xl p-3 sm:p-4 border border-slate-100">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => handleDateChange(-1)}
+                  disabled={isToday}
+                  className="p-2 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 hover:shadow transition disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" />
+                </button>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedDate.toISOString()}
+                    initial={{ opacity: 0, x: dateDirection > 0 ? 30 : -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: dateDirection > 0 ? -30 : 30 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-center px-3 min-w-0 flex-1"
+                  >
+                    <div className="font-bold text-slate-900 text-sm sm:text-base md:text-lg truncate">
+                      {formatDate(selectedDate)}
+                    </div>
+                    {isToday && (
+                      <span className="text-xs text-green-600 font-medium">Today</span>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+                <button
+                  onClick={() => handleDateChange(1)}
+                  className="p-2 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 hover:shadow transition flex-shrink-0"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" />
+                </button>
               </div>
-              <button
-                onClick={() => handleDateChange(1)}
-                className="p-1.5 sm:p-2 hover:bg-green-100 rounded-lg transition flex-shrink-0"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
             </div>
 
-            <div className="space-y-2 sm:space-y-3">
+            {/* Controls */}
+            <div className="space-y-3">
+              {/* Time Slots */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                <label className="text-xs sm:text-sm font-semibold text-gray-700 flex-shrink-0">Time Slots:</label>
+                <label className="text-sm font-medium text-slate-700 flex-shrink-0">Time Slots</label>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { value: 0.5, label: '30 min' },
@@ -394,10 +436,10 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
                         setSelectedSlot(null);
                         firstAvailableRef.current = null;
                       }}
-                      className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition ${
+                      className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-150 ${
                         slotGranularity === value
-                          ? 'bg-green-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-green-600 text-white shadow-sm'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:border-green-300'
                       }`}
                     >
                       {label}
@@ -406,19 +448,20 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
                 </div>
               </div>
 
+              {/* Court Filter */}
               {!initialCourtId && (
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <label className="text-xs sm:text-sm font-semibold text-gray-700 flex-shrink-0">Filter by Court:</label>
+                  <label className="text-sm font-medium text-slate-700 flex-shrink-0">Court</label>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => {
                         setSelectedCourtFilter(null);
                         firstAvailableRef.current = null;
                       }}
-                      className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition ${
+                      className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-150 ${
                         selectedCourtFilter === null
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-green-600 text-white shadow-sm'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:border-green-300'
                       }`}
                     >
                       All Courts
@@ -430,10 +473,10 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
                           setSelectedCourtFilter(court.id);
                           firstAvailableRef.current = null;
                         }}
-                        className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition ${
+                        className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-150 ${
                           selectedCourtFilter === court.id
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-green-600 text-white shadow-sm'
+                            : 'bg-white border border-slate-200 text-slate-600 hover:border-green-300'
                         }`}
                       >
                         {court.name}
@@ -442,178 +485,206 @@ export function CourtScheduler({ onClose, onSuccess, userId, initialCourtId }: C
                   </div>
                 </div>
               )}
-            </div>
 
-            <div className="flex flex-wrap gap-3 sm:gap-4 text-xs mt-2 sm:mt-3">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 bg-green-100 border-2 border-green-500 rounded flex-shrink-0"></div>
-                <span className="text-gray-700 font-medium">Available</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 bg-red-100 border-2 border-red-500 rounded flex-shrink-0"></div>
-                <span className="text-gray-700 font-medium">Booked</span>
-              </div>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 text-green-600 animate-spin" />
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg md:rounded-xl border border-gray-200 shadow-sm overflow-auto">
-              <div className={`overflow-x-auto ${displayedCourts.length === 1 ? '' : 'pb-2'}`}>
-                <div className={displayedCourts.length === 1 ? 'min-w-full' : 'min-w-[500px]'}>
-                  <div className="grid border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10 shadow-sm" style={{ gridTemplateColumns: `70px repeat(${displayedCourts.length}, minmax(100px, 1fr))` }}>
-                  <div className="p-1.5 sm:p-2 md:p-3 font-bold text-gray-700 border-r border-gray-200 text-[10px] sm:text-xs md:text-sm flex items-center">Time</div>
-                  {displayedCourts.map((court) => (
-                    <div key={court.id} className="p-1.5 sm:p-2 md:p-3 font-bold text-gray-700 text-center border-r last:border-r-0 border-gray-200 text-[10px] sm:text-xs md:text-sm">
-                      <div className="truncate">{court.name}</div>
-                      <div className="text-[9px] sm:text-xs text-gray-500 font-normal">${court.hourly_rate}/hr</div>
-                    </div>
-                  ))}
+              {/* Legend */}
+              <div className="flex flex-wrap gap-4 text-xs text-slate-500 pt-1">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                  <span>Available</span>
                 </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                  <span>Booked</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-600"></div>
+                  <span>Selected</span>
+                </div>
+              </div>
+            </div>
 
-                {filteredTimeSlots.map((slot, slotIndex) => {
-                  const rowHeight = slot.duration * 100;
-                  let isFirstAvailable = false;
-
-                  if (!isFirstAvailable && firstAvailableRef.current === null) {
-                    for (const court of displayedCourts) {
-                      if (getSlotStatus(court.id, slot.time, slot.duration) === 'available') {
-                        isFirstAvailable = true;
-                        break;
-                      }
-                    }
-                  }
-
-                  return (
-                    <div
-                      key={slot.time}
-                      ref={isFirstAvailable ? firstAvailableRef : null}
-                      className="grid border-b last:border-b-0 border-gray-200"
-                      style={{
-                        gridTemplateColumns: `70px repeat(${displayedCourts.length}, minmax(100px, 1fr))`,
-                        minHeight: `${rowHeight}px`
-                      }}
-                    >
+            {/* Grid */}
+            {loading ? (
+              <div className="flex justify-center py-16">
+                <Loader2 className="w-7 h-7 text-green-600 animate-spin" />
+              </div>
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedDate.toISOString() + slotGranularity}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden"
+                >
+                  <div className={`overflow-x-auto ${displayedCourts.length === 1 ? '' : 'pb-2'}`}>
+                    <div className={displayedCourts.length === 1 ? 'min-w-full' : 'min-w-[500px]'}>
+                      {/* Header Row */}
                       <div
-                        className="p-1.5 sm:p-2 md:p-3 font-medium text-gray-700 border-r border-gray-200 flex flex-col justify-center text-[10px] sm:text-xs md:text-sm"
-                        style={{ minHeight: `${rowHeight}px` }}
+                        className="grid bg-slate-50/80 border-b border-slate-200 sticky top-0 z-10"
+                        style={{ gridTemplateColumns: `70px repeat(${displayedCourts.length}, minmax(100px, 1fr))` }}
                       >
-                        <div className="font-bold">{slot.display}</div>
-                        <div className="text-[9px] sm:text-xs text-gray-500 mt-0.5">
-                          ({slot.duration === 0.5 ? '30 min' : `${slot.duration} hr${slot.duration !== 1 ? 's' : ''}`})
+                        <div className="p-2 sm:p-3 font-semibold text-slate-500 border-r border-slate-200/60 text-[10px] sm:text-xs md:text-sm flex items-center">
+                          Time
                         </div>
+                        {displayedCourts.map((court) => (
+                          <div key={court.id} className="p-2 sm:p-3 text-center border-r last:border-r-0 border-slate-200/60">
+                            <div className="font-semibold text-slate-700 text-[10px] sm:text-xs md:text-sm truncate">{court.name}</div>
+                            <div className="text-[9px] sm:text-xs text-slate-400 font-normal mt-0.5">${court.hourly_rate}/hr</div>
+                          </div>
+                        ))}
                       </div>
-                      {displayedCourts.map((court) => {
-                        const status = getSlotStatus(court.id, slot.time, slot.duration);
-                        const bookedBy = getBookedBy(court.id, slot.time);
-                        const isSelected = selectedSlot?.courtId === court.id && selectedSlot?.time === slot.time;
+
+                      {/* Time Rows */}
+                      {filteredTimeSlots.map((slot, slotIndex) => {
+                        const rowHeight = slot.duration * 100;
+                        let isFirstAvailable = false;
+
+                        if (!isFirstAvailable && firstAvailableRef.current === null) {
+                          for (const court of displayedCourts) {
+                            if (getSlotStatus(court.id, slot.time, slot.duration) === 'available') {
+                              isFirstAvailable = true;
+                              break;
+                            }
+                          }
+                        }
 
                         return (
-                          <div
-                            key={court.id}
-                            onClick={() => {
-                              if (status !== 'booked') {
-                                setSelectedSlot({ courtId: court.id, time: slot.time, duration: slot.duration });
-                              }
+                          <motion.div
+                            key={slot.time}
+                            ref={isFirstAvailable ? firstAvailableRef : null}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.25, delay: Math.min(slotIndex * 0.03, 0.5) }}
+                            className="grid border-b last:border-b-0 border-slate-100"
+                            style={{
+                              gridTemplateColumns: `70px repeat(${displayedCourts.length}, minmax(100px, 1fr))`,
+                              minHeight: `${rowHeight}px`
                             }}
-                            className={`p-1.5 sm:p-2 md:p-3 border-r last:border-r-0 border-gray-200 ${
-                              isSelected
-                                ? 'bg-green-600 ring-2 md:ring-3 ring-green-600 ring-inset'
-                                : status === 'available'
-                                ? 'bg-green-50 hover:bg-green-100 cursor-pointer'
-                                : 'bg-red-100'
-                            } transition-all duration-200 flex items-center justify-center relative`}
-                            style={{ minHeight: `${rowHeight}px` }}
                           >
-                            {status === 'available' && (
-                              <div className="text-center">
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <Check className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0 ${isSelected ? 'text-white' : 'text-green-600'}`} />
-                                  <span className={`text-[10px] sm:text-xs md:text-sm font-semibold ${isSelected ? 'text-white' : 'text-green-600'}`}>
-                                    Available
-                                  </span>
-                                  {slot.duration >= 1 && (
-                                    <span className={`text-[9px] sm:text-xs ${isSelected ? 'text-white/90' : 'text-green-500'}`}>
-                                      {slot.duration === 0.5 ? '30 min' : `${slot.duration} hour${slot.duration !== 1 ? 's' : ''}`}
-                                    </span>
+                            <div
+                              className="p-1.5 sm:p-2 md:p-3 text-slate-500 border-r border-slate-200/60 flex flex-col justify-center text-[10px] sm:text-xs md:text-sm"
+                              style={{ minHeight: `${rowHeight}px` }}
+                            >
+                              <div className="font-semibold text-slate-600">{slot.display}</div>
+                              <div className="text-[9px] sm:text-xs text-slate-400 mt-0.5">
+                                {slot.duration === 0.5 ? '30 min' : `${slot.duration} hr${slot.duration !== 1 ? 's' : ''}`}
+                              </div>
+                            </div>
+                            {displayedCourts.map((court) => {
+                              const status = getSlotStatus(court.id, slot.time, slot.duration);
+                              const bookedBy = getBookedBy(court.id, slot.time);
+                              const isSelected = selectedSlot?.courtId === court.id && selectedSlot?.time === slot.time;
+
+                              return (
+                                <div
+                                  key={court.id}
+                                  onClick={() => {
+                                    if (status !== 'booked') {
+                                      setSelectedSlot({ courtId: court.id, time: slot.time, duration: slot.duration });
+                                    }
+                                  }}
+                                  className={`p-1.5 sm:p-2 md:p-3 border-r last:border-r-0 border-slate-200/60 transition-all duration-200 flex items-center justify-center relative ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white ring-2 ring-green-600 ring-offset-2'
+                                      : status === 'available'
+                                      ? 'bg-green-50/50 hover:bg-green-100 border border-transparent hover:border-green-200 cursor-pointer'
+                                      : 'bg-red-50/50 border border-transparent'
+                                  }`}
+                                  style={{ minHeight: `${rowHeight}px` }}
+                                >
+                                  {status === 'available' && (
+                                    <div className="text-center">
+                                      <Check className={`w-4 h-4 sm:w-5 sm:h-5 mx-auto ${isSelected ? 'text-white' : 'text-green-500'}`} />
+                                      {isSelected && (
+                                        <span className="text-[10px] sm:text-xs font-medium mt-1 block text-white/90">Selected</span>
+                                      )}
+                                    </div>
+                                  )}
+                                  {status === 'booked' && (
+                                    <div className="text-center">
+                                      <X className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-red-400" />
+                                      {bookedBy && (
+                                        <p className="text-[9px] sm:text-xs text-red-500 truncate max-w-full px-1 mt-0.5">{bookedBy}</p>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
-                              </div>
-                            )}
-                            {status === 'booked' && (
-                              <div className="text-center">
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0 text-red-600" />
-                                  <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-red-600">Booked</span>
-                                  {bookedBy && <p className="text-[9px] sm:text-xs text-red-700 truncate max-w-full px-1">{bookedBy}</p>}
-                                  {slot.duration >= 1 && (
-                                    <span className="text-[9px] sm:text-xs text-red-500">
-                                      {slot.duration === 0.5 ? '30 min' : `${slot.duration} hour${slot.duration !== 1 ? 's' : ''}`}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                              );
+                            })}
+                          </motion.div>
                         );
                       })}
                     </div>
-                  );
-                })}
-                </div>
-              </div>
-            </div>
-          )}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            )}
           </div>
         </div>
 
-        {selectedSlot && selectedCourt && (
-          <div className="absolute bottom-20 left-0 right-0 md:left-6 md:right-6 md:bottom-6 bg-gradient-to-br from-green-50 to-green-100 p-2.5 sm:p-3 md:p-4 border-t-2 md:border-2 border-green-200 shadow-2xl z-20 md:rounded-xl">
-            <h3 className="font-bold text-sm sm:text-base md:text-lg text-black mb-2 md:mb-3">Booking Summary</h3>
-            <div className="space-y-1 sm:space-y-1.5 mb-2 sm:mb-3 text-xs sm:text-sm">
-              <div className="flex justify-between gap-2">
-                <span className="text-black">Court:</span>
-                <span className="font-semibold text-black text-right">{selectedCourt.name}</span>
-              </div>
-              <div className="flex justify-between gap-2">
-                <span className="text-black">Date:</span>
-                <span className="font-semibold text-black text-right">{selectedDate.toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between gap-2">
-                <span className="text-black">Time:</span>
-                <span className="font-semibold text-black text-right">
-                  {selectedSlot.time} - {calculateEndTime(selectedSlot.time, selectedSlot.duration)}
-                </span>
-              </div>
-              <div className="flex justify-between gap-2">
-                <span className="text-black">Duration:</span>
-                <span className="font-semibold text-black text-right">{selectedSlot.duration === 0.5 ? '30 minutes' : `${selectedSlot.duration} hour${selectedSlot.duration !== 1 ? 's' : ''}`}</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center pt-2 border-t border-green-200 mb-2 sm:mb-3">
-              <span className="text-xs sm:text-sm md:text-base font-bold text-black">Total:</span>
-              <span className="text-base sm:text-lg md:text-xl font-bold text-black">${totalCost.toFixed(2)}</span>
-            </div>
-            <button
-              onClick={handleBooking}
-              disabled={bookingInProgress}
-              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-2 sm:py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold hover:from-green-700 hover:to-green-800 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-xs sm:text-sm md:text-base"
+        {/* Booking Summary Panel */}
+        <AnimatePresence>
+          {selectedSlot && selectedCourt && (
+            <motion.div
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 35 }}
+              className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] z-20 md:rounded-b-2xl"
             >
-              {bookingInProgress ? (
-                <>
-                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                  Booking...
-                </>
-              ) : (
-                'Confirm Booking'
-              )}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+              <div className="p-4 sm:p-5 md:p-6">
+                <h3 className="font-bold text-sm sm:text-base text-slate-900 mb-3" style={{ fontFamily: 'Manrope, Inter, system-ui, sans-serif' }}>
+                  Booking Summary
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                  <div>
+                    <span className="text-xs text-slate-400 font-medium block">Court</span>
+                    <span className="text-sm font-semibold text-slate-800">{selectedCourt.name}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-400 font-medium block">Date</span>
+                    <span className="text-sm font-semibold text-slate-800">{selectedDate.toLocaleDateString()}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-400 font-medium block">Time</span>
+                    <span className="text-sm font-semibold text-slate-800">
+                      {selectedSlot.time} - {calculateEndTime(selectedSlot.time, selectedSlot.duration)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-400 font-medium block">Duration</span>
+                    <span className="text-sm font-semibold text-slate-800">
+                      {selectedSlot.duration === 0.5 ? '30 min' : `${selectedSlot.duration} hr${selectedSlot.duration !== 1 ? 's' : ''}`}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <div>
+                    <span className="text-xs text-slate-400 font-medium block">Total</span>
+                    <span className="text-xl sm:text-2xl font-bold text-green-600">${totalCost.toFixed(2)}</span>
+                  </div>
+                  <button
+                    onClick={handleBooking}
+                    disabled={bookingInProgress}
+                    className="bg-green-600 hover:bg-green-700 text-white rounded-xl py-3 px-6 sm:px-8 font-semibold shadow-sm disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2 text-sm sm:text-base"
+                  >
+                    {bookingInProgress ? (
+                      <>
+                        <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                        Booking...
+                      </>
+                    ) : (
+                      'Confirm Booking'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }

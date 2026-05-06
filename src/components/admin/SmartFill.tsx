@@ -158,19 +158,19 @@ export default function SmartFill() {
 
   const getTypeConfig = (type: string) => {
     switch (type) {
-      case 'open-play': return { color: 'bg-green-50 text-green-600', icon: <Users className="w-4 h-4" />, label: 'Open Play' };
-      case 'drop-in': return { color: 'bg-sky-50 text-sky-600', icon: <Zap className="w-4 h-4" />, label: 'Drop-In' };
-      case 'clinic': return { color: 'bg-amber-50 text-amber-600', icon: <Target className="w-4 h-4" />, label: 'Clinic' };
-      case 'social': return { color: 'bg-violet-50 text-violet-600', icon: <Sparkles className="w-4 h-4" />, label: 'Social' };
-      default: return { color: 'bg-slate-50 text-slate-600', icon: <Calendar className="w-4 h-4" />, label: 'Event' };
+      case 'open-play': return { color: 'bg-green-50 text-green-700 border-green-200', icon: <Users className="w-4 h-4" />, label: 'Open Play' };
+      case 'drop-in': return { color: 'bg-sky-50 text-sky-700 border-sky-200', icon: <Zap className="w-4 h-4" />, label: 'Drop-In' };
+      case 'clinic': return { color: 'bg-amber-50 text-amber-700 border-amber-200', icon: <Target className="w-4 h-4" />, label: 'Clinic' };
+      case 'social': return { color: 'bg-violet-50 text-violet-700 border-violet-200', icon: <Sparkles className="w-4 h-4" />, label: 'Social' };
+      default: return { color: 'bg-slate-50 text-slate-600 border-slate-200', icon: <Calendar className="w-4 h-4" />, label: 'Event' };
     }
   };
 
   const getConfidenceColor = (c: string) => {
     switch (c) {
-      case 'high': return 'text-green-700 bg-green-50';
-      case 'medium': return 'text-amber-700 bg-amber-50';
-      default: return 'text-slate-500 bg-slate-50';
+      case 'high': return 'text-green-700 bg-green-50 border border-green-200';
+      case 'medium': return 'text-amber-700 bg-amber-50 border border-amber-200';
+      default: return 'text-slate-500 bg-slate-50 border border-slate-200';
     }
   };
 
@@ -178,7 +178,9 @@ export default function SmartFill() {
     return (
       <div className="flex flex-col justify-center items-center py-24 gap-3">
         <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
-        <p className="text-sm text-slate-500">Analyzing empty slots...</p>
+        <p className="text-sm text-slate-500" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+          Analyzing empty slots...
+        </p>
       </div>
     );
   }
@@ -186,41 +188,53 @@ export default function SmartFill() {
   const totalPotentialRevenue = suggestions.filter(s => !publishedIds.has(s.id)).reduce((sum, s) => sum + s.estimatedRevenue, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
             Smart Fill
           </h1>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white">AI</span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white tracking-wide">
+            AI
+          </span>
         </div>
-        <p className="text-slate-500 text-sm mt-0.5">
+        <p className="text-slate-500 text-sm mt-1">
           Auto-generated events to fill empty court time
         </p>
       </div>
 
       {/* Revenue Opportunity */}
-      <div className="bg-gradient-to-r from-green-700 to-emerald-700 rounded-2xl p-5 shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-gradient-to-r from-green-700 to-emerald-700 rounded-2xl p-6 shadow-lg"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
             <p className="text-green-100 text-xs font-medium">Untapped Weekly Revenue</p>
-            <p className="text-2xl font-bold text-white">${totalPotentialRevenue.toFixed(0)}</p>
+            <p className="text-2xl font-bold text-white mt-0.5">${totalPotentialRevenue.toFixed(0)}</p>
           </div>
           <div className="ml-auto text-right">
-            <p className="text-green-100 text-xs">{suggestions.length - publishedIds.size} suggestions</p>
-            <p className="text-white text-sm font-medium">{publishedIds.size} published</p>
+            <p className="text-green-100 text-xs font-medium">{suggestions.length - publishedIds.size} suggestions</p>
+            <p className="text-white text-sm font-semibold mt-0.5">{publishedIds.size} published</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Suggestions Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
+      >
         <AnimatePresence mode="popLayout">
-          {suggestions.map((suggestion, index) => {
+          {suggestions.map((suggestion) => {
             const typeConfig = getTypeConfig(suggestion.type);
             const isPublished = publishedIds.has(suggestion.id);
             const isPublishing = publishing === suggestion.id;
@@ -228,32 +242,35 @@ export default function SmartFill() {
             return (
               <motion.div
                 key={suggestion.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.15, delay: index * 0.03 }}
+                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.35 }}
                 layout
-                className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${
-                  isPublished ? 'border-green-200 bg-green-50/30' : 'border-slate-100 hover:shadow-md hover:border-green-100'
+                className={`bg-white rounded-2xl border overflow-hidden transition-all duration-200 ${
+                  isPublished
+                    ? 'border-green-200/60 bg-green-50/20 shadow-[0_1px_3px_rgba(0,0,0,0.04)]'
+                    : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:border-green-200/60'
                 }`}
               >
-                <div className="p-5">
+                <div className="p-6">
                   {/* Type + Confidence */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${typeConfig.color}`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${typeConfig.color}`}>
                       {typeConfig.icon}
                       <span className="text-[10px] font-bold">{typeConfig.label}</span>
                     </div>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${getConfidenceColor(suggestion.confidence)}`}>
+                    <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full ${getConfidenceColor(suggestion.confidence)}`}>
                       {suggestion.confidence.toUpperCase()}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-sm font-semibold text-slate-900 mb-1">{suggestion.title}</h3>
-                  <p className="text-xs text-slate-500 mb-3 line-clamp-2">{suggestion.description}</p>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-1.5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    {suggestion.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 mb-4 line-clamp-2 leading-relaxed">{suggestion.description}</p>
 
                   {/* Time */}
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-4 mb-4">
                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       {suggestion.day}s
@@ -265,7 +282,7 @@ export default function SmartFill() {
                   </div>
 
                   {/* Stats */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-slate-400">~{suggestion.estimatedPlayers} players</span>
                       <span className="text-xs font-semibold text-green-700">${suggestion.estimatedRevenue.toFixed(0)}/week</span>
@@ -273,7 +290,7 @@ export default function SmartFill() {
                   </div>
 
                   {/* Action */}
-                  <div className="mt-4">
+                  <div className="mt-5">
                     {isPublished ? (
                       <div className="flex items-center gap-2 text-green-700">
                         <CheckCircle className="w-4 h-4" />
@@ -283,7 +300,7 @@ export default function SmartFill() {
                       <button
                         onClick={() => handlePublish(suggestion)}
                         disabled={isPublishing}
-                        className="w-full py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full py-2.5 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-xl transition-all duration-150 disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                       >
                         {isPublishing ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -301,14 +318,19 @@ export default function SmartFill() {
             );
           })}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {suggestions.length === 0 && (
-        <div className="text-center py-16 bg-white rounded-2xl border border-slate-100">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35 }}
+          className="text-center py-16 bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+        >
           <CheckCircle className="w-10 h-10 text-green-300 mx-auto mb-3" />
-          <p className="text-sm font-medium text-slate-700">All court time is well-utilized!</p>
-          <p className="text-xs text-slate-400 mt-1">No empty slots detected that need filling</p>
-        </div>
+          <p className="text-sm font-semibold text-slate-700">All court time is well-utilized!</p>
+          <p className="text-xs text-slate-400 mt-1.5">No empty slots detected that need filling</p>
+        </motion.div>
       )}
     </div>
   );

@@ -147,14 +147,14 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
     }, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
             Dynamic Pricing
           </h1>
-          <p className="text-slate-500 text-sm mt-0.5">
+          <p className="text-slate-500 text-sm mt-1">
             Optimize revenue with time-based pricing rules
           </p>
         </div>
@@ -162,7 +162,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-all shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-all duration-150 shadow-sm hover:shadow-md disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Rules
@@ -171,30 +171,37 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
       </div>
 
       {/* Impact Banner */}
-      <div className="bg-gradient-to-r from-green-700 to-emerald-700 rounded-2xl p-5 shadow-lg">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-gradient-to-r from-green-700 to-emerald-700 rounded-2xl p-6 shadow-lg"
+      >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-green-100 text-xs font-medium">Estimated Weekly Revenue Impact</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-white mt-0.5">
                 {estimatedWeeklyImpact >= 0 ? '+' : ''}${Math.abs(estimatedWeeklyImpact).toFixed(0)}/week
               </p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-green-100 text-xs">Base Rate</p>
-            <p className="text-lg font-bold text-white">${baseRate}/hr</p>
+            <p className="text-green-100 text-xs font-medium">Base Rate</p>
+            <p className="text-lg font-bold text-white mt-0.5">${baseRate}/hr</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Pricing Rules */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900">Active Rules</h3>
+          <h3 className="text-sm font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Active Rules
+          </h3>
           <button
             onClick={() => {
               setEditingRule({
@@ -209,7 +216,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
               });
               setShowEditor(true);
             }}
-            className="text-xs font-medium text-green-700 hover:text-green-800 flex items-center gap-1"
+            className="text-xs font-medium text-green-700 hover:text-green-800 flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-green-50 transition-colors duration-150"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Rule
@@ -223,19 +230,23 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
             return (
               <motion.div
                 key={rule.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.15, delay: index * 0.03 }}
+                transition={{ duration: 0.25, delay: index * 0.04 }}
                 layout
-                className={`bg-white rounded-xl border ${rule.isActive ? 'border-slate-100 shadow-sm' : 'border-slate-100 opacity-60'} overflow-hidden`}
+                className={`bg-white rounded-2xl border shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden transition-all duration-200 ${
+                  rule.isActive
+                    ? 'border-slate-200/60 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]'
+                    : 'border-slate-200/40 opacity-60'
+                }`}
               >
                 <div className={`h-1 bg-gradient-to-r ${color.gradient} ${!rule.isActive ? 'opacity-30' : ''}`} />
-                <div className="p-4 flex items-center gap-4">
+                <div className="p-5 flex items-center gap-4">
                   {/* Toggle */}
                   <button
                     onClick={() => toggleRule(rule.id)}
-                    className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${rule.isActive ? 'bg-green-600' : 'bg-slate-200'}`}
+                    className={`relative w-10 h-5 rounded-full transition-colors duration-200 flex-shrink-0 ${rule.isActive ? 'bg-green-600' : 'bg-slate-200'}`}
                   >
                     <motion.div
                       animate={{ x: rule.isActive ? 20 : 2 }}
@@ -246,9 +257,9 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2.5 mb-1">
                       <p className="text-sm font-medium text-slate-900">{rule.name}</p>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${color.bg} ${color.text}`}>
+                      <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${color.bg} ${color.text} ${color.border}`}>
                         {formatMultiplier(rule.multiplier)}
                       </span>
                     </div>
@@ -267,9 +278,9 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
                   {/* Delete */}
                   <button
                     onClick={() => deleteRule(rule.id)}
-                    className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors flex-shrink-0"
+                    className="w-8 h-8 rounded-xl hover:bg-red-50 flex items-center justify-center transition-colors duration-150 flex-shrink-0 group"
                   >
-                    <Trash2 className="w-3.5 h-3.5 text-slate-300 hover:text-red-500" />
+                    <Trash2 className="w-3.5 h-3.5 text-slate-300 group-hover:text-red-500 transition-colors duration-150" />
                   </button>
                 </div>
               </motion.div>
@@ -279,17 +290,24 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
       </div>
 
       {/* Price Calendar Preview */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-900">Weekly Price Preview</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Effective rates based on active rules</p>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15 }}
+        className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+      >
+        <div className="px-6 py-5 border-b border-slate-100">
+          <h3 className="text-sm font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Weekly Price Preview
+          </h3>
+          <p className="text-xs text-slate-400 mt-1">Effective rates based on active rules</p>
         </div>
-        <div className="p-4 overflow-x-auto">
-          <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-1 min-w-[600px]">
+        <div className="p-6 overflow-x-auto">
+          <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-1.5 min-w-[600px]">
             {/* Header */}
             <div />
             {DAYS.map(day => (
-              <div key={day} className="text-center text-[10px] font-semibold text-slate-500 py-1">
+              <div key={day} className="text-center text-[10px] font-semibold text-slate-500 py-1.5">
                 {day}
               </div>
             ))}
@@ -303,16 +321,16 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
                 {Array.from({ length: 7 }, (_, dayIndex) => {
                   const price = getHourPrice(dayIndex, hour);
                   const ratio = price / baseRate;
-                  let cellColor = 'bg-slate-100 text-slate-500';
-                  if (ratio > 1.3) cellColor = 'bg-red-100 text-red-700';
-                  else if (ratio > 1.1) cellColor = 'bg-amber-100 text-amber-700';
-                  else if (ratio < 0.8) cellColor = 'bg-green-100 text-green-800';
+                  let cellColor = 'bg-slate-50 text-slate-500';
+                  if (ratio > 1.3) cellColor = 'bg-red-100/80 text-red-700';
+                  else if (ratio > 1.1) cellColor = 'bg-amber-100/80 text-amber-700';
+                  else if (ratio < 0.8) cellColor = 'bg-green-100/80 text-green-800';
                   else if (ratio < 0.95) cellColor = 'bg-green-50 text-green-700';
 
                   return (
                     <div
                       key={`${dayIndex}-${hour}`}
-                      className={`text-center py-1.5 rounded-md text-[10px] font-medium ${cellColor} transition-colors`}
+                      className={`text-center py-2 rounded-lg text-[10px] font-medium ${cellColor} transition-colors duration-150`}
                     >
                       ${price.toFixed(0)}
                     </div>
@@ -323,26 +341,26 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-50">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-sm bg-green-100" />
-              <span className="text-[10px] text-slate-400">Discount</span>
+          <div className="flex items-center gap-5 mt-5 pt-4 border-t border-slate-100">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-md bg-green-100" />
+              <span className="text-[10px] text-slate-400 font-medium">Discount</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-sm bg-slate-100" />
-              <span className="text-[10px] text-slate-400">Base</span>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-md bg-slate-100" />
+              <span className="text-[10px] text-slate-400 font-medium">Base</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-sm bg-amber-100" />
-              <span className="text-[10px] text-slate-400">Slight Premium</span>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-md bg-amber-100" />
+              <span className="text-[10px] text-slate-400 font-medium">Slight Premium</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-sm bg-red-100" />
-              <span className="text-[10px] text-slate-400">Peak Premium</span>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-md bg-red-100" />
+              <span className="text-[10px] text-slate-400 font-medium">Peak Premium</span>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Status Message */}
       <AnimatePresence>
@@ -351,8 +369,10 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className={`p-3 rounded-xl flex items-center gap-2 text-sm ${
-              message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+            className={`p-4 rounded-2xl flex items-center gap-2.5 text-sm font-medium ${
+              message.type === 'success'
+                ? 'bg-green-50 text-green-700 border border-green-200/60'
+                : 'bg-red-50 text-red-700 border border-red-200/60'
             }`}
           >
             <CheckCircle className="w-4 h-4" />
