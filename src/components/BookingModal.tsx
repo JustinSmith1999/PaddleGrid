@@ -19,6 +19,31 @@ interface BookingModalProps {
   onSuccess: () => void;
 }
 
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.92, y: 24 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 380, damping: 28 },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.92,
+    y: 24,
+    transition: { duration: 0.2 },
+  },
+};
+
+const inputClasses =
+  'w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none text-sm text-slate-800 transition-all';
+
 export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState('');
@@ -127,9 +152,9 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
   if (hasSignedWaiver === null) {
     return (
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-8">
+        <div className="bg-white rounded-2xl shadow-2xl border border-slate-200/60 max-w-lg w-full p-8">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700"></div>
+            <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
           </div>
         </div>
       </div>
@@ -277,81 +302,99 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
     }
   };
 
+  // --- Booking success state ---
   if (bookingSuccess) {
     return (
       <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          variants={overlayVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-8 text-center"
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="bg-white rounded-2xl shadow-2xl border border-slate-200/60 max-w-lg w-full p-10 text-center"
           >
-            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5 ring-2 ring-white shadow-sm">
               <svg className="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Booking Confirmed!</h3>
-            <p className="text-slate-500">Your court reservation has been successfully created.</p>
+            <h3
+              className="text-2xl font-bold text-slate-800 mb-2"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              Booking Confirmed!
+            </h3>
+            <p className="text-slate-500 text-sm">Your court reservation has been successfully created.</p>
           </motion.div>
         </motion.div>
       </AnimatePresence>
     );
   }
 
+  // --- Payment redirect state ---
   if (paymentUrl) {
     return (
       <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          variants={overlayVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-8 relative"
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="bg-white rounded-2xl shadow-2xl border border-slate-200/60 max-w-lg w-full p-8 relative"
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-4 h-4 text-slate-500" />
             </button>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5 ring-2 ring-white shadow-sm">
                 <DollarSign className="w-8 h-8 text-green-700" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Complete Payment</h3>
-              <p className="text-slate-500 mb-6">Your booking has been reserved. Please complete payment to confirm your reservation.</p>
+              <h3
+                className="text-2xl font-bold text-slate-800 mb-2"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Complete Payment
+              </h3>
+              <p className="text-slate-500 text-sm mb-6">
+                Your booking has been reserved. Please complete payment to confirm your reservation.
+              </p>
 
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+              <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-4 mb-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-700 font-medium">Total Amount:</span>
+                  <span className="text-slate-600 font-medium text-sm">Total Amount</span>
                   <span className="text-2xl font-bold text-green-700">${totalAmount.toFixed(2)}</span>
                 </div>
               </div>
 
-              <button
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handlePaymentRedirect}
-                className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-sm flex items-center justify-center"
+                className="w-full rounded-xl bg-green-700 hover:bg-green-800 text-white font-semibold py-3.5 px-4 transition-colors shadow-sm flex items-center justify-center gap-2"
               >
-                <ExternalLink className="w-5 h-5 mr-2" />
+                <ExternalLink className="w-5 h-5" />
                 Complete Payment on CourtReserve
-              </button>
+              </motion.button>
 
-              <p className="text-sm text-slate-500 mt-4">
+              <p className="text-xs text-slate-400 mt-4">
                 You will be redirected to CourtReserve's secure payment page
               </p>
             </div>
@@ -361,38 +404,67 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
     );
   }
 
+  // --- Main booking form ---
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        variants={overlayVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       >
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full relative max-h-[90vh] overflow-y-auto"
+          variants={modalVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="bg-white rounded-2xl shadow-2xl border border-slate-200/60 max-w-lg w-full relative max-h-[90vh] overflow-y-auto"
         >
-          <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-sm z-10 rounded-t-2xl">
             <div>
-              <h2 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Book {court.name}</h2>
-              <p className="text-slate-500 text-sm mt-1">Select your preferred date and time</p>
+              <h2
+                className="text-xl font-bold text-slate-800"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Book {court.name}
+              </h2>
+              <p className="text-slate-400 text-sm mt-0.5">Select your preferred date and time</p>
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 transition-colors"
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-4 h-4 text-slate-500" />
             </button>
           </div>
 
+          {/* Form body */}
           <div className="p-6">
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Step indicators */}
+              <div className="flex items-center gap-2 mb-1">
+                {['Date', 'Duration', 'Time', 'Confirm'].map((step, i) => (
+                  <div key={step} className="flex items-center gap-2 flex-1">
+                    <div className={`w-6 h-6 rounded-full text-xs font-semibold flex items-center justify-center ${
+                      i === 0 ? 'bg-green-700 text-white' :
+                      (i === 1 && selectedDate) ? 'bg-green-700 text-white' :
+                      (i === 2 && duration) ? 'bg-green-700 text-white' :
+                      (i === 3 && selectedSlot) ? 'bg-green-700 text-white' :
+                      'bg-slate-100 text-slate-400'
+                    }`}>
+                      {i + 1}
+                    </div>
+                    <span className="text-xs text-slate-400 hidden sm:inline">{step}</span>
+                    {i < 3 && <div className="flex-1 h-px bg-slate-100" />}
+                  </div>
+                ))}
+              </div>
+
+              {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center">
+                <label className="flex items-center text-sm font-medium text-slate-700 mb-2">
                   <Calendar className="w-4 h-4 mr-2 text-green-700" />
                   Date
                 </label>
@@ -402,25 +474,26 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
                   required
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all bg-white"
+                  className={inputClasses}
                 />
                 {availabilityWarning && (
-                  <div className="mt-2 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                  <div className="mt-2.5 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200/60 rounded-xl p-3">
                     <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span>{availabilityWarning} Please check available times carefully.</span>
                   </div>
                 )}
               </div>
 
+              {/* Duration */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center">
+                <label className="flex items-center text-sm font-medium text-slate-700 mb-2">
                   <Clock className="w-4 h-4 mr-2 text-green-700" />
-                  Duration (hours)
+                  Duration
                 </label>
                 <select
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value))}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all bg-white"
+                  className={inputClasses}
                 >
                   <option value={0.5}>30 minutes</option>
                   <option value={1}>1 hour</option>
@@ -431,8 +504,9 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
                 </select>
               </div>
 
+              {/* Time slots */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center">
+                <label className="flex items-center text-sm font-medium text-slate-700 mb-2">
                   <Clock className="w-4 h-4 mr-2 text-green-700" />
                   Available Time Slots
                 </label>
@@ -440,7 +514,7 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
                   value={selectedSlot}
                   onChange={(e) => handleSlotSelection(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all bg-white"
+                  className={inputClasses}
                 >
                   <option value="">Select a time slot...</option>
                   {availableSlots.map((slot, index) => (
@@ -450,19 +524,20 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
                   ))}
                 </select>
                 {availableSlots.length === 0 && selectedDate && (
-                  <div className="mt-2 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                  <div className="mt-2.5 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200/60 rounded-xl p-3">
                     <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>No available time slots for this duration on this date. Try selecting a different date or shorter duration.</span>
+                    <span>No available time slots for this duration on this date. Try a different date or shorter duration.</span>
                   </div>
                 )}
                 {availableSlots.length > 0 && (
-                  <div className="mt-2 flex items-start gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
+                  <div className="mt-2.5 flex items-start gap-2 text-sm text-green-700 bg-emerald-50 border border-emerald-200/60 rounded-xl p-3">
                     <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span>{availableSlots.length} time slot{availableSlots.length !== 1 ? 's' : ''} available</span>
                   </div>
                 )}
               </div>
 
+              {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Notes (optional)
@@ -471,20 +546,22 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all resize-none bg-white"
+                  className={`${inputClasses} resize-none`}
                   placeholder="Any special requests or notes..."
                 />
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-slate-700 font-medium">Duration:</span>
-                  <span className="text-slate-900">{duration} hour{duration !== 1 ? 's' : ''}</span>
-                </div>
+              {/* Price summary */}
+              <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-4 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-700 font-medium flex items-center">
+                  <span className="text-slate-600 text-sm font-medium">Duration</span>
+                  <span className="text-slate-800 text-sm font-semibold">{duration} hour{duration !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="h-px bg-emerald-200/50" />
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 text-sm font-medium flex items-center">
                     <DollarSign className="w-4 h-4 mr-1" />
-                    Total Amount:
+                    Total Amount
                   </span>
                   <span className="text-2xl font-bold text-green-700">
                     ${totalAmount.toFixed(2)}
@@ -492,37 +569,49 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
                 </div>
               </div>
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-                  {error}
-                </div>
-              )}
+              {/* Error */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="flex items-start gap-2 bg-red-50 border border-red-200/60 text-red-700 px-4 py-3 rounded-xl text-sm"
+                  >
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{error}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              <div className="flex gap-3">
+              {/* Buttons */}
+              <div className="flex gap-3 pt-1">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-semibold py-3 px-4 transition-all duration-200"
+                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-semibold py-3 px-4 transition-colors text-sm"
                 >
                   Cancel
                 </button>
-                <button
+                <motion.button
                   type="submit"
                   disabled={loading || !selectedSlot}
-                  className="flex-[2] bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  whileHover={!loading && selectedSlot ? { y: -1 } : {}}
+                  whileTap={!loading && selectedSlot ? { scale: 0.98 } : {}}
+                  className="flex-[2] rounded-xl bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Processing Booking...
                     </>
                   ) : (
-                    <>Book Now & Pay</>
+                    'Book Now & Pay'
                   )}
-                </button>
+                </motion.button>
               </div>
 
-              <p className="text-xs text-slate-500 text-center">
+              <p className="text-xs text-slate-400 text-center">
                 Payment will be processed securely
               </p>
             </form>

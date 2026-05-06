@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Users, Search, Clock, Star, CheckCircle, X, MessageCircle, Calendar } from 'lucide-react';
@@ -53,6 +53,12 @@ interface PartnerMatch {
     skill_level: number;
   };
 }
+
+const tabs = [
+  { key: 'browse', label: 'Browse', icon: Search },
+  { key: 'my-requests', label: 'My Requests', icon: Users },
+  { key: 'matches', label: 'Matches', icon: CheckCircle },
+] as const;
 
 export default function PartnerFinder() {
   const { user } = useAuth();
@@ -262,407 +268,451 @@ export default function PartnerFinder() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      open: <span className="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-lg">Open</span>,
-      matched: <span className="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-lg">Matched</span>,
-      expired: <span className="px-2.5 py-1 bg-slate-100 text-slate-500 text-xs font-medium rounded-lg">Expired</span>,
-      cancelled: <span className="px-2.5 py-1 bg-red-50 text-red-700 text-xs font-medium rounded-lg">Cancelled</span>,
-      pending: <span className="px-2.5 py-1 bg-yellow-50 text-yellow-700 text-xs font-medium rounded-lg">Pending</span>,
-      accepted: <span className="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-lg">Accepted</span>,
-      declined: <span className="px-2.5 py-1 bg-red-50 text-red-700 text-xs font-medium rounded-lg">Declined</span>,
+      open: <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-xs font-semibold rounded-full">Open</span>,
+      matched: <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-xs font-semibold rounded-full">Matched</span>,
+      expired: <span className="px-2.5 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Expired</span>,
+      cancelled: <span className="px-2.5 py-0.5 bg-red-50 text-red-600 text-xs font-semibold rounded-full">Cancelled</span>,
+      pending: <span className="px-2.5 py-0.5 bg-amber-50 text-amber-700 text-xs font-semibold rounded-full">Pending</span>,
+      accepted: <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-xs font-semibold rounded-full">Accepted</span>,
+      declined: <span className="px-2.5 py-0.5 bg-red-50 text-red-600 text-xs font-semibold rounded-full">Declined</span>,
     };
     return badges[status as keyof typeof badges] || null;
   };
 
+  const inputClass = "w-full px-3.5 py-2.5 border border-slate-200 rounded-xl bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-600 text-slate-900 transition-all duration-200 outline-none";
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2
-            className="text-2xl font-bold text-slate-900 flex items-center gap-2"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
-          >
-            <Users className="w-7 h-7 text-green-700" />
-            Partner Finder
-          </h2>
-          <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="px-4 py-2 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-colors font-medium text-sm"
-          >
-            {showCreateForm ? 'Cancel' : 'Find Partner'}
-          </button>
-        </div>
-
-        {showCreateForm && (
-          <motion.form
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            onSubmit={handleCreateRequest}
-            className="mb-6 p-5 bg-slate-50 rounded-xl border border-slate-100"
-          >
-            <h3
-              className="text-lg font-semibold mb-4 text-slate-900"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
-            >
-              Create Partner Request
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+    <div className="min-h-screen bg-[#F8F9FC]">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6"
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                <Users className="w-5 h-5 text-green-700" />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">
-                  Facility
-                </label>
-                <select
-                  value={formData.facility_id}
-                  onChange={(e) => setFormData({ ...formData, facility_id: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                  required
+                <h2
+                  className="text-xl font-bold text-slate-800"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
-                  <option value="">Select facility</option>
-                  {facilities.map((facility) => (
-                    <option key={facility.id} value={facility.id}>
-                      {facility.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">
-                  Game Format
-                </label>
-                <select
-                  value={formData.game_format}
-                  onChange={(e) => setFormData({ ...formData, game_format: e.target.value as 'singles' | 'doubles' })}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                  required
-                >
-                  <option value="doubles">Doubles</option>
-                  <option value="singles">Singles</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">
-                  Preferred Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.preferred_date}
-                  onChange={(e) => setFormData({ ...formData, preferred_date: e.target.value })}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">
-                  Time Range
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="time"
-                    value={formData.preferred_start_time}
-                    onChange={(e) => setFormData({ ...formData, preferred_start_time: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                    required
-                  />
-                  <span className="self-center text-slate-400">to</span>
-                  <input
-                    type="time"
-                    value={formData.preferred_end_time}
-                    onChange={(e) => setFormData({ ...formData, preferred_end_time: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">
-                  Skill Level Range
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    step="0.5"
-                    value={formData.skill_level_min}
-                    onChange={(e) => setFormData({ ...formData, skill_level_min: parseFloat(e.target.value) })}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                    required
-                  />
-                  <span className="self-center text-slate-400">to</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    step="0.5"
-                    value={formData.skill_level_max}
-                    onChange={(e) => setFormData({ ...formData, skill_level_max: parseFloat(e.target.value) })}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-600 mb-1">
-                  About You (Optional)
-                </label>
-                <textarea
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  placeholder="Tell potential partners about your play style, experience, or preferences..."
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white text-slate-900 placeholder:text-slate-400"
-                  rows={3}
-                />
+                  Partner Finder
+                </h2>
+                <p className="text-sm text-slate-400">Find your next playing partner</p>
               </div>
             </div>
-
             <button
-              type="submit"
-              className="w-full px-4 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-colors font-medium"
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="px-5 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
             >
-              Create Request
+              {showCreateForm ? 'Cancel' : 'Find Partner'}
             </button>
-          </motion.form>
-        )}
+          </div>
 
-        <div className="flex gap-2 mb-6 border-b border-slate-100">
-          <button
-            onClick={() => setActiveTab('browse')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'browse'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Search className="w-4 h-4 inline mr-1" />
-            Browse
-          </button>
-          <button
-            onClick={() => setActiveTab('my-requests')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'my-requests'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Users className="w-4 h-4 inline mr-1" />
-            My Requests
-          </button>
-          <button
-            onClick={() => setActiveTab('matches')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'matches'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <CheckCircle className="w-4 h-4 inline mr-1" />
-            Matches
-          </button>
-        </div>
+          {/* Create Form */}
+          <AnimatePresence>
+            {showCreateForm && (
+              <motion.form
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                onSubmit={handleCreateRequest}
+                className="mb-8 overflow-hidden"
+              >
+                <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/60">
+                  <h3
+                    className="text-lg font-semibold mb-5 text-slate-800"
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
+                  >
+                    Create Partner Request
+                  </h3>
 
-        {loading ? (
-          <div className="text-center py-12 text-slate-400">Loading...</div>
-        ) : (
-          <div className="space-y-4">
-            {activeTab === 'browse' && (
-              <>
-                {openRequests.length === 0 ? (
-                  <div className="text-center py-12 text-slate-400">
-                    <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>No open partner requests at the moment.</p>
-                    <p className="text-sm mt-1">Be the first to create one!</p>
+                  <div className="grid md:grid-cols-2 gap-4 mb-5">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-1.5">Facility</label>
+                      <select
+                        value={formData.facility_id}
+                        onChange={(e) => setFormData({ ...formData, facility_id: e.target.value })}
+                        className={inputClass}
+                        required
+                      >
+                        <option value="">Select facility</option>
+                        {facilities.map((facility) => (
+                          <option key={facility.id} value={facility.id}>{facility.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-1.5">Game Format</label>
+                      <select
+                        value={formData.game_format}
+                        onChange={(e) => setFormData({ ...formData, game_format: e.target.value as 'singles' | 'doubles' })}
+                        className={inputClass}
+                        required
+                      >
+                        <option value="doubles">Doubles</option>
+                        <option value="singles">Singles</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-1.5">Preferred Date</label>
+                      <input
+                        type="date"
+                        value={formData.preferred_date}
+                        onChange={(e) => setFormData({ ...formData, preferred_date: e.target.value })}
+                        min={new Date().toISOString().split('T')[0]}
+                        className={inputClass}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-1.5">Time Range</label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="time"
+                          value={formData.preferred_start_time}
+                          onChange={(e) => setFormData({ ...formData, preferred_start_time: e.target.value })}
+                          className={`flex-1 ${inputClass}`}
+                          required
+                        />
+                        <span className="text-slate-300 text-sm font-medium">to</span>
+                        <input
+                          type="time"
+                          value={formData.preferred_end_time}
+                          onChange={(e) => setFormData({ ...formData, preferred_end_time: e.target.value })}
+                          className={`flex-1 ${inputClass}`}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-1.5">Skill Level Range</label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="number"
+                          min="1"
+                          max="5"
+                          step="0.5"
+                          value={formData.skill_level_min}
+                          onChange={(e) => setFormData({ ...formData, skill_level_min: parseFloat(e.target.value) })}
+                          className={`flex-1 ${inputClass}`}
+                          required
+                        />
+                        <span className="text-slate-300 text-sm font-medium">to</span>
+                        <input
+                          type="number"
+                          min="1"
+                          max="5"
+                          step="0.5"
+                          value={formData.skill_level_max}
+                          onChange={(e) => setFormData({ ...formData, skill_level_max: parseFloat(e.target.value) })}
+                          className={`flex-1 ${inputClass}`}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-600 mb-1.5">About You (Optional)</label>
+                      <textarea
+                        value={formData.bio}
+                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                        placeholder="Tell potential partners about your play style, experience, or preferences..."
+                        className={`${inputClass} placeholder:text-slate-300`}
+                        rows={3}
+                      />
+                    </div>
                   </div>
-                ) : (
-                  openRequests.map((request, index) => (
+
+                  <button
+                    type="submit"
+                    className="w-full px-4 py-3 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
+                  >
+                    Create Request
+                  </button>
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {/* Tab Bar - Underline Style */}
+          <div className="relative flex gap-1 mb-8 border-b border-slate-100">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`relative px-5 py-3 font-medium transition-colors text-sm flex items-center gap-2 ${
+                    activeTab === tab.key
+                      ? 'text-green-700'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                  {activeTab === tab.key && (
                     <motion.div
-                      key={request.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3
-                              className="font-semibold text-slate-900"
-                              style={{ fontFamily: 'Manrope, sans-serif' }}
-                            >
-                              {request.profiles?.full_name || request.profiles?.username || 'Anonymous'}
-                            </h3>
-                            {getStatusBadge(request.status)}
-                            <span className="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-lg">
-                              {request.game_format}
-                            </span>
-                          </div>
+                      layoutId="partner-tab-indicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-700 rounded-full"
+                      transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-                          <div className="space-y-1 text-sm text-slate-500 mb-3">
-                            <p className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4 text-green-700" />
-                              {request.facilities.name}
-                            </p>
-                            <p className="flex items-center gap-1">
-                              <Clock className="w-4 h-4 text-green-700" />
-                              {new Date(request.preferred_date).toLocaleDateString()} {request.preferred_start_time.slice(0, 5)} - {request.preferred_end_time.slice(0, 5)}
-                            </p>
-                            <p className="flex items-center gap-1">
-                              <Star className="w-4 h-4 text-green-700" />
-                              Skill Level: {request.skill_level_min} - {request.skill_level_max}
-                            </p>
-                          </div>
-
-                          {request.bio && (
-                            <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">
-                              {request.bio}
-                            </p>
-                          )}
+          {/* Content */}
+          {loading ? (
+            <div className="text-center py-16">
+              <div className="w-8 h-8 border-2 border-green-700/20 border-t-green-700 rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-slate-400 text-sm">Loading...</p>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
+              >
+                {activeTab === 'browse' && (
+                  <>
+                    {openRequests.length === 0 ? (
+                      <div className="text-center py-16">
+                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                          <Search className="w-8 h-8 text-slate-300" />
                         </div>
-
-                        <button
-                          onClick={() => handleSendMatch(request.id, request.user_id)}
-                          className="px-4 py-2 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-colors flex items-center gap-1 font-medium text-sm"
+                        <p className="text-slate-500 font-medium">No open partner requests at the moment.</p>
+                        <p className="text-sm text-slate-400 mt-1">Be the first to create one!</p>
+                      </div>
+                    ) : (
+                      openRequests.map((request, index) => (
+                        <motion.div
+                          key={request.id}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.06, duration: 0.35 }}
+                          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200 group"
                         >
-                          <MessageCircle className="w-4 h-4" />
-                          Connect
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-              </>
-            )}
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2.5 mb-3">
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center ring-2 ring-white shadow-sm text-green-700 font-bold text-sm">
+                                  {(request.profiles?.full_name || request.profiles?.username || 'A').charAt(0).toUpperCase()}
+                                </div>
+                                <h3
+                                  className="font-semibold text-slate-800"
+                                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                                >
+                                  {request.profiles?.full_name || request.profiles?.username || 'Anonymous'}
+                                </h3>
+                                {getStatusBadge(request.status)}
+                                <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-xs font-semibold rounded-full capitalize">
+                                  {request.game_format}
+                                </span>
+                              </div>
 
-            {activeTab === 'my-requests' && (
-              <>
-                {myRequests.length === 0 ? (
-                  <div className="text-center py-12 text-slate-400">
-                    <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>You haven't created any partner requests yet.</p>
-                  </div>
-                ) : (
-                  myRequests.map((request, index) => (
-                    <motion.div
-                      key={request.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3
-                              className="font-semibold text-slate-900"
-                              style={{ fontFamily: 'Manrope, sans-serif' }}
+                              <div className="space-y-1.5 text-sm text-slate-500 mb-3">
+                                <p className="flex items-center gap-2">
+                                  <Calendar className="w-4 h-4 text-green-700/60" />
+                                  {request.facilities.name}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Clock className="w-4 h-4 text-green-700/60" />
+                                  {new Date(request.preferred_date).toLocaleDateString()} {request.preferred_start_time.slice(0, 5)} - {request.preferred_end_time.slice(0, 5)}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Star className="w-4 h-4 text-green-700/60" />
+                                  Skill Level: {request.skill_level_min} - {request.skill_level_max}
+                                </p>
+                              </div>
+
+                              {request.bio && (
+                                <p className="text-sm text-slate-500 bg-slate-50/80 p-3 rounded-xl border border-slate-100">
+                                  {request.bio}
+                                </p>
+                              )}
+                            </div>
+
+                            <button
+                              onClick={() => handleSendMatch(request.id, request.user_id)}
+                              className="px-4 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-all duration-200 flex items-center gap-1.5 font-medium text-sm shadow-sm hover:shadow-md ml-4 shrink-0"
                             >
-                              {request.facilities.name}
-                            </h3>
-                            {getStatusBadge(request.status)}
+                              <MessageCircle className="w-4 h-4" />
+                              Connect
+                            </button>
                           </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </>
+                )}
 
-                          <div className="space-y-1 text-sm text-slate-500">
-                            <p>Date: {new Date(request.preferred_date).toLocaleDateString()}</p>
-                            <p>Time: {request.preferred_start_time.slice(0, 5)} - {request.preferred_end_time.slice(0, 5)}</p>
-                            <p>Skill Range: {request.skill_level_min} - {request.skill_level_max}</p>
-                            <p>Format: {request.game_format}</p>
-                          </div>
+                {activeTab === 'my-requests' && (
+                  <>
+                    {myRequests.length === 0 ? (
+                      <div className="text-center py-16">
+                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                          <Users className="w-8 h-8 text-slate-300" />
                         </div>
-
-                        {request.status === 'open' && (
-                          <button
-                            onClick={() => handleCancelRequest(request.id)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        )}
+                        <p className="text-slate-500 font-medium">You haven't created any partner requests yet.</p>
                       </div>
-                    </motion.div>
-                  ))
-                )}
-              </>
-            )}
+                    ) : (
+                      myRequests.map((request, index) => (
+                        <motion.div
+                          key={request.id}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.06, duration: 0.35 }}
+                          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2.5 mb-3">
+                                <h3
+                                  className="font-semibold text-slate-800"
+                                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                                >
+                                  {request.facilities.name}
+                                </h3>
+                                {getStatusBadge(request.status)}
+                              </div>
 
-            {activeTab === 'matches' && (
-              <>
-                {myMatches.length === 0 ? (
-                  <div className="text-center py-12 text-slate-400">
-                    <CheckCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>No matches yet.</p>
-                  </div>
-                ) : (
-                  myMatches.map((match, index) => (
-                    <motion.div
-                      key={match.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3
-                              className="font-semibold text-slate-900"
-                              style={{ fontFamily: 'Manrope, sans-serif' }}
-                            >
-                              {match.profiles?.full_name || match.profiles?.username || 'Player'}
-                            </h3>
-                            {getStatusBadge(match.status)}
-                            {match.match_score > 0 && (
-                              <span className="text-green-700 font-bold text-sm">
-                                {Math.round(match.match_score)}% match
-                              </span>
+                              <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm text-slate-500">
+                                <p className="flex items-center gap-2">
+                                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                  {new Date(request.preferred_date).toLocaleDateString()}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                  {request.preferred_start_time.slice(0, 5)} - {request.preferred_end_time.slice(0, 5)}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Star className="w-3.5 h-3.5 text-slate-400" />
+                                  Skill: {request.skill_level_min} - {request.skill_level_max}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Users className="w-3.5 h-3.5 text-slate-400" />
+                                  <span className="capitalize">{request.game_format}</span>
+                                </p>
+                              </div>
+                            </div>
+
+                            {request.status === 'open' && (
+                              <button
+                                onClick={() => handleCancelRequest(request.id)}
+                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
                             )}
                           </div>
-
-                          <div className="space-y-1 text-sm text-slate-500 mb-2">
-                            <p>Facility: {match.partner_requests?.facilities?.name}</p>
-                            <p>Date: {new Date(match.partner_requests?.preferred_date).toLocaleDateString()}</p>
-                            <p>Time: {match.partner_requests?.preferred_start_time.slice(0, 5)} - {match.partner_requests?.preferred_end_time.slice(0, 5)}</p>
-                            <p className="flex items-center gap-1">
-                              <Star className="w-3.5 h-3.5 text-green-700" />
-                              Skill Level: {match.profiles?.skill_level?.toFixed(1)}
-                            </p>
-                          </div>
-
-                          {match.message && (
-                            <p className="text-sm text-slate-600 bg-slate-50 p-2 rounded-xl">
-                              "{match.message}"
-                            </p>
-                          )}
-                        </div>
-
-                        {match.status === 'pending' && match.requester_id !== user?.id && (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleRespondToMatch(match.id, true)}
-                              className="px-3 py-2 bg-green-700 hover:bg-green-800 text-white rounded-xl text-sm font-medium transition-colors"
-                            >
-                              Accept
-                            </button>
-                            <button
-                              onClick={() => handleRespondToMatch(match.id, false)}
-                              className="px-3 py-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-xl text-sm font-medium transition-colors"
-                            >
-                              Decline
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))
+                        </motion.div>
+                      ))
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </div>
-        )}
+
+                {activeTab === 'matches' && (
+                  <>
+                    {myMatches.length === 0 ? (
+                      <div className="text-center py-16">
+                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                          <CheckCircle className="w-8 h-8 text-slate-300" />
+                        </div>
+                        <p className="text-slate-500 font-medium">No matches yet.</p>
+                      </div>
+                    ) : (
+                      myMatches.map((match, index) => (
+                        <motion.div
+                          key={match.id}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.06, duration: 0.35 }}
+                          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2.5 mb-3">
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center ring-2 ring-white shadow-sm text-green-700 font-bold text-sm">
+                                  {(match.profiles?.full_name || match.profiles?.username || 'P').charAt(0).toUpperCase()}
+                                </div>
+                                <h3
+                                  className="font-semibold text-slate-800"
+                                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                                >
+                                  {match.profiles?.full_name || match.profiles?.username || 'Player'}
+                                </h3>
+                                {getStatusBadge(match.status)}
+                                {match.match_score > 0 && (
+                                  <span className="px-2.5 py-0.5 bg-green-50 text-green-700 text-xs font-bold rounded-full">
+                                    {Math.round(match.match_score)}% match
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="space-y-1.5 text-sm text-slate-500 mb-3">
+                                <p className="flex items-center gap-2">
+                                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                  {match.partner_requests?.facilities?.name}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                  {new Date(match.partner_requests?.preferred_date).toLocaleDateString()} {match.partner_requests?.preferred_start_time.slice(0, 5)} - {match.partner_requests?.preferred_end_time.slice(0, 5)}
+                                </p>
+                                <p className="flex items-center gap-2">
+                                  <Star className="w-3.5 h-3.5 text-green-700/60" />
+                                  Skill Level: {match.profiles?.skill_level?.toFixed(1)}
+                                </p>
+                              </div>
+
+                              {match.message && (
+                                <p className="text-sm text-slate-500 bg-slate-50/80 p-3 rounded-xl border border-slate-100 italic">
+                                  "{match.message}"
+                                </p>
+                              )}
+                            </div>
+
+                            {match.status === 'pending' && match.requester_id !== user?.id && (
+                              <div className="flex gap-2 ml-4 shrink-0">
+                                <button
+                                  onClick={() => handleRespondToMatch(match.id, true)}
+                                  className="px-4 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                                >
+                                  Accept
+                                </button>
+                                <button
+                                  onClick={() => handleRespondToMatch(match.id, false)}
+                                  className="px-4 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-red-200 hover:text-red-600 hover:bg-red-50 rounded-xl text-sm font-medium transition-all duration-200"
+                                >
+                                  Decline
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </motion.div>
       </div>
     </div>
   );

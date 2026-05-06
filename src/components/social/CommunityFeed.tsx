@@ -212,14 +212,14 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
   if (loading && posts.length === 0) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
+      <div className="flex justify-center items-center py-16">
+        <Loader2 className="w-7 h-7 text-green-700 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 relative">
+    <div className="min-h-screen bg-[#F8F9FC] relative">
       {/* Background Pattern - Desktop Only */}
       <div
         className="hidden lg:block fixed inset-0 pointer-events-none z-0"
@@ -236,7 +236,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         {shouldShowSidebar && (
         <div className="hidden lg:flex w-[240px] xl:w-[260px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1400px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/60 px-4 pb-6 overflow-y-auto pt-4 z-40 bg-white/98 backdrop-blur-sm">
             {/* Navigation Links */}
-            <nav className="space-y-1 pt-2 pb-2 px-2">
+            <nav className="space-y-0.5 pt-2 pb-2 px-2">
             {navItems.map((item, index) => (
               <motion.div
                 key={item.view}
@@ -246,12 +246,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               >
                 <button
                   onClick={() => setActiveView(item.view)}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 w-full text-left group ${
-                    activeView === item.view ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                  className={`flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200 w-full text-left group ${
+                    activeView === item.view ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-700'
                   }`}
                 >
-                  <item.icon className={`w-5 h-5 ${activeView === item.view ? 'text-green-700' : 'text-slate-500 group-hover:text-slate-700'} transition-colors`} />
-                  <span className={`text-sm font-semibold ${activeView === item.view ? 'font-bold text-green-700' : 'text-slate-500 group-hover:text-slate-700'} transition-colors`}>{item.label}</span>
+                  <item.icon className={`w-5 h-5 ${activeView === item.view ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
+                  <span className={`text-sm ${activeView === item.view ? 'font-bold text-green-700' : 'font-semibold text-slate-500 group-hover:text-slate-700'} transition-colors`}>{item.label}</span>
                 </button>
               </motion.div>
             ))}
@@ -263,9 +263,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             >
               <button
                 onClick={() => user ? onProfileClick?.(user.id) : null}
-                className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-slate-50 hover:text-slate-700 transition-all duration-200 w-full text-left group text-slate-500"
+                className="flex items-center gap-4 px-4 py-2.5 rounded-xl hover:bg-slate-50/50 hover:text-slate-700 transition-all duration-200 w-full text-left group text-slate-500"
               >
-                <User className="w-5 h-5 text-slate-500 group-hover:text-slate-700 transition-colors" />
+                <User className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
                 <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Profile</span>
               </button>
             </motion.div>
@@ -278,9 +278,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               >
                 <button
                   onClick={() => window.location.href = '/admin'}
-                  className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-slate-50 hover:text-slate-700 transition-all duration-200 w-full text-left group text-slate-500"
+                  className="flex items-center gap-4 px-4 py-2.5 rounded-xl hover:bg-slate-50/50 hover:text-slate-700 transition-all duration-200 w-full text-left group text-slate-500"
                 >
-                  <Shield className="w-5 h-5 text-slate-500 group-hover:text-slate-700 transition-colors" />
+                  <Shield className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
                   <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Admin</span>
                 </button>
               </motion.div>
@@ -295,12 +295,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 >
                   <button
                     onClick={() => setShowNotificationsPanel(true)}
-                    className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-slate-50 hover:text-slate-700 transition-all duration-200 w-full text-left group relative text-slate-500"
+                    className="flex items-center gap-4 px-4 py-2.5 rounded-xl hover:bg-slate-50/50 hover:text-slate-700 transition-all duration-200 w-full text-left group relative text-slate-500"
                   >
-                    <Bell className="w-5 h-5 text-slate-500 group-hover:text-slate-700 transition-colors" />
+                    <Bell className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
                     <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Notifications</span>
                     {unreadNotifications > 0 && (
-                      <span className="absolute top-2.5 left-7 w-2 h-2 bg-green-600 rounded-full"></span>
+                      <span className="absolute top-2 left-7 w-2 h-2 bg-green-700 rounded-full"></span>
                     )}
                   </button>
                 </motion.div>
@@ -312,12 +312,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 >
                   <button
                     onClick={() => setActiveView('messages')}
-                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 w-full text-left group ${
-                      activeView === 'messages' ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                    className={`flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200 w-full text-left group ${
+                      activeView === 'messages' ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-700'
                     }`}
                   >
-                    <MessageCircle className={`w-5 h-5 ${activeView === 'messages' ? 'text-green-700' : 'text-slate-500 group-hover:text-slate-700'} transition-colors`} />
-                    <span className={`text-sm font-semibold ${activeView === 'messages' ? 'font-bold text-green-700' : 'text-slate-500 group-hover:text-slate-700'} transition-colors`}>Messages</span>
+                    <MessageCircle className={`w-5 h-5 ${activeView === 'messages' ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
+                    <span className={`text-sm ${activeView === 'messages' ? 'font-bold text-green-700' : 'font-semibold text-slate-500 group-hover:text-slate-700'} transition-colors`}>Messages</span>
                   </button>
                 </motion.div>
 
@@ -328,12 +328,12 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 >
                   <button
                     onClick={() => setActiveView('bookmarks')}
-                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 w-full text-left group ${
-                      activeView === 'bookmarks' ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                    className={`flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200 w-full text-left group ${
+                      activeView === 'bookmarks' ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-700'
                     }`}
                   >
-                    <Bookmark className={`w-5 h-5 ${activeView === 'bookmarks' ? 'text-green-700' : 'text-slate-500 group-hover:text-slate-700'} transition-colors`} />
-                    <span className={`text-sm font-semibold ${activeView === 'bookmarks' ? 'font-bold text-green-700' : 'text-slate-500 group-hover:text-slate-700'} transition-colors`}>Bookmarks</span>
+                    <Bookmark className={`w-5 h-5 ${activeView === 'bookmarks' ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
+                    <span className={`text-sm ${activeView === 'bookmarks' ? 'font-bold text-green-700' : 'font-semibold text-slate-500 group-hover:text-slate-700'} transition-colors`}>Bookmarks</span>
                   </button>
                 </motion.div>
               </>
@@ -341,10 +341,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           </nav>
 
           {/* Local Clubs */}
-          <div className="mt-2 mb-2">
+          <div className="mt-3 mb-2">
             <div>
               <div className="px-6 py-3 border-t border-slate-200/60">
-                <h2 className="text-base font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>Local Clubs</h2>
+                <h2 className="text-xs font-bold text-slate-400 tracking-wider uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Local Clubs</h2>
               </div>
               <div className="px-2">
                 {facilities.map((facility, index) => (
@@ -356,10 +356,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   >
                     <button
                       onClick={() => onClubClick?.(facility.slug)}
-                      className="w-full px-4 py-3 hover:bg-slate-50 rounded-xl transition-all duration-200 text-left group"
+                      className="w-full px-4 py-2.5 hover:bg-slate-50/50 rounded-xl transition-all duration-200 text-left group"
                     >
                       <div className="flex items-start gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0 p-1">
+                        <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 p-1">
                           {facility.logo_url ? (
                             <img
                               src={facility.logo_url}
@@ -376,8 +376,8 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-bold text-slate-900 text-sm mb-0.5">{facility.name}</div>
-                          <div className="text-xs font-medium text-slate-500 flex items-center gap-1">
+                          <div className="font-bold text-slate-800 text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>{facility.name}</div>
+                          <div className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
                             <Users className="w-3 h-3" />
                             <span>{facility.memberCount} {facility.memberCount === 1 ? 'member' : 'members'}</span>
                           </div>
@@ -393,10 +393,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         )}
 
         {/* Main Feed - Centered with fixed width */}
-        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[620px]'} ${shouldShowSidebar ? 'lg:ml-[240px] xl:ml-[260px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/60' : ''} min-h-screen bg-white relative`}>
+        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[620px]'} ${shouldShowSidebar ? 'lg:ml-[240px] xl:ml-[260px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/60' : ''} min-h-screen bg-[#F8F9FC] relative`}>
           {/* Sticky Header */}
           {activeView !== 'messages' && (
-            <div className="sticky top-[56px] z-10 bg-white/98 backdrop-blur-xl border-b border-slate-100 shadow-sm">
+            <div className="sticky top-[56px] z-10 bg-white/98 backdrop-blur-xl border-b border-slate-200/60">
               {activeView !== 'feed' && (
                 <div className="pt-4 pb-4 lg:pb-5 px-4 flex items-center gap-3">
                   <button
@@ -404,9 +404,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     className="hidden lg:flex p-2 hover:bg-slate-50 rounded-xl transition-colors"
                     title={sidebarCollapsed ? 'Show menu' : 'Hide menu'}
                   >
-                    <Menu className="w-6 h-6 text-slate-700" />
+                    <Menu className="w-5 h-5 text-slate-500" />
                   </button>
-                  <h1 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
+                  <h1 className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
                     {activeView === 'explore' && 'Courts'}
                     {activeView === 'search' && 'Search Players'}
                     {activeView === 'notifications' && 'Notifications'}
@@ -415,16 +415,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 </div>
               )}
 
-            {/* Twitter-style tabs - Only show in feed view */}
+            {/* Feed Tabs */}
             {activeView === 'feed' && (
               <>
-                <div className="flex border-b border-slate-100">
+                <div className="flex">
                   <button
                     onClick={() => setActiveTab('all_local')}
-                    className={`flex-1 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 transition-colors relative ${
+                    className={`flex-1 px-4 py-3 text-sm font-semibold hover:bg-slate-50/50 transition-all duration-200 relative ${
                       activeTab === 'all_local'
-                        ? 'text-slate-900'
-                        : 'text-slate-500'
+                        ? 'text-slate-800'
+                        : 'text-slate-400'
                     }`}
                   >
                     For You
@@ -436,10 +436,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && userFacilityIds.length > 0 && (
                     <button
                       onClick={() => setActiveTab('my_clubs')}
-                      className={`flex-1 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 transition-colors relative ${
+                      className={`flex-1 px-4 py-3 text-sm font-semibold hover:bg-slate-50/50 transition-all duration-200 relative ${
                         activeTab === 'my_clubs'
-                          ? 'text-slate-900'
-                          : 'text-slate-500'
+                          ? 'text-slate-800'
+                          : 'text-slate-400'
                       }`}
                     >
                       My Clubs
@@ -452,10 +452,10 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {user && (
                     <button
                       onClick={() => setActiveTab('following')}
-                      className={`flex-1 px-4 py-2.5 text-sm font-semibold hover:bg-slate-50 transition-colors relative ${
+                      className={`flex-1 px-4 py-3 text-sm font-semibold hover:bg-slate-50/50 transition-all duration-200 relative ${
                         activeTab === 'following'
-                          ? 'text-slate-900'
-                          : 'text-slate-500'
+                          ? 'text-slate-800'
+                          : 'text-slate-400'
                       }`}
                     >
                       Following
@@ -498,43 +498,53 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             <>
               {/* Posts Feed */}
               {posts.length > 0 ? (
-                <>
-                  {posts.slice(0, displayCount).map((post) => (
-                    <PostCard
+                <div className="pt-3 px-0 lg:px-0">
+                  {posts.slice(0, displayCount).map((post, index) => (
+                    <motion.div
                       key={post.id}
-                      post={post}
-                      onClick={() => onPostClick(post.id)}
-                      onUpdate={() => loadPosts(true)}
-                      onClubClick={onClubClick}
-                      onProfileClick={onProfileClick}
-                    />
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.04, duration: 0.3 }}
+                    >
+                      <PostCard
+                        post={post}
+                        onClick={() => onPostClick(post.id)}
+                        onUpdate={() => loadPosts(true)}
+                        onClubClick={onClubClick}
+                        onProfileClick={onProfileClick}
+                      />
+                    </motion.div>
                   ))}
 
                   {displayCount < posts.length && (
-                    <div className="border-b border-slate-100 p-4">
+                    <div className="px-3 py-4">
                       <button
                         onClick={() => setDisplayCount(prev => Math.min(prev + 25, posts.length))}
-                        className="w-full py-3 text-green-700 hover:bg-slate-50 rounded-xl font-medium transition-colors"
+                        className="w-full py-3 text-green-700 hover:bg-white rounded-xl font-semibold transition-all duration-200 text-sm border border-slate-200/60 bg-white/50"
                       >
                         Show more posts
                       </button>
                     </div>
                   )}
-                </>
+                </div>
               ) : (
                 <div className="p-6">
-                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm text-center py-16 px-4">
-                    <div className="text-6xl mb-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-center py-16 px-6"
+                  >
+                    <div className="text-5xl mb-4">
                       {activeTab === 'my_clubs' ? '🏢' : activeTab === 'following' ? '👥' : '📣'}
                     </div>
-                    <p className="text-slate-900 font-semibold text-lg mb-2">
+                    <p className="text-slate-800 font-bold text-lg mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
                       {activeTab === 'my_clubs'
                         ? 'No posts from your clubs yet'
                         : activeTab === 'following'
                         ? 'No posts from followed players'
                         : 'No posts yet'}
                     </p>
-                    <p className="text-sm text-slate-600 mb-6">
+                    <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
                       {activeTab === 'my_clubs'
                         ? 'Be the first to share with members of your clubs!'
                         : activeTab === 'following'
@@ -544,14 +554,16 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                         : 'Sign in to create posts and join the conversation'}
                     </p>
                     {user && (
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={onCreatePost}
-                        className="px-6 py-3 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold transition-colors shadow-sm"
+                        className="px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-sm text-sm"
                       >
                         Create Post
-                      </button>
+                      </motion.button>
                     )}
-                  </div>
+                  </motion.div>
                 </div>
               )}
             </>
@@ -588,25 +600,39 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {activeView === 'bookmarks' && user && (
             <>
               {bookmarkedPosts.length > 0 ? (
-                bookmarkedPosts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onClick={() => onPostClick(post.id)}
-                    onUpdate={() => loadBookmarks()}
-                    onClubClick={onClubClick}
-                    onProfileClick={onProfileClick}
-                  />
-                ))
+                <div className="pt-3">
+                  {bookmarkedPosts.map((post, index) => (
+                    <motion.div
+                      key={post.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.04, duration: 0.2 }}
+                    >
+                      <PostCard
+                        post={post}
+                        onClick={() => onPostClick(post.id)}
+                        onUpdate={() => loadBookmarks()}
+                        onClubClick={onClubClick}
+                        onProfileClick={onProfileClick}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
               ) : (
                 <div className="p-8">
-                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm text-center py-12 px-4">
-                    <div className="text-6xl mb-4">🔖</div>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-3">No Bookmarks Yet</h2>
-                    <p className="text-slate-600 mb-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-center py-16 px-6"
+                  >
+                    <div className="w-16 h-16 bg-[#F8F9FC] rounded-2xl border border-slate-200/60 flex items-center justify-center mx-auto mb-4">
+                      <Bookmark className="w-7 h-7 text-slate-300" />
+                    </div>
+                    <h2 className="text-lg font-bold text-slate-800 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>No Bookmarks Yet</h2>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
                       Save posts you want to revisit later by clicking the bookmark icon
                     </p>
-                  </div>
+                  </motion.div>
                 </div>
               )}
             </>
@@ -627,85 +653,60 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {user && <SuggestedPlayers onProfileClick={onProfileClick} />}
 
             {/* Trending Topics */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
               <div className="px-4 py-4 border-b border-slate-100">
-                <h2 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Trending</h2>
+                <h2 className="text-sm font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Trending</h2>
               </div>
               <div className="divide-y divide-slate-100">
-                <button className="w-full hover:bg-slate-50 rounded-xl transition-all px-4 py-3 text-left group">
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1.5 group-hover:text-green-700 transition-colors">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Pickleball · Trending</span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-0.5">DUPR Ratings</div>
-                  <div className="text-xs text-slate-400">3.8K posts</div>
-                </button>
-                <button className="w-full hover:bg-slate-50 rounded-xl transition-all px-4 py-3 text-left group">
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1.5 group-hover:text-green-700 transition-colors">
-                    <Calendar className="w-4 h-4" />
-                    <span>Events · This Week</span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-0.5">Weekend Tournaments</div>
-                  <div className="text-xs text-slate-400">1.4K posts</div>
-                </button>
-                <button className="w-full hover:bg-slate-50 rounded-xl transition-all px-4 py-3 text-left group">
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1.5 group-hover:text-green-700 transition-colors">
-                    <Building2 className="w-4 h-4" />
-                    <span>Local · Popular</span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-0.5">New Courts Opening</div>
-                  <div className="text-xs text-slate-400">2.1K posts</div>
-                </button>
-                <button className="w-full hover:bg-slate-50 rounded-xl transition-all px-4 py-3 text-left group">
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1.5 group-hover:text-green-700 transition-colors">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Equipment · Trending</span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-0.5">Best Paddles 2025</div>
-                  <div className="text-xs text-slate-400">987 posts</div>
-                </button>
-                <button className="w-full hover:bg-slate-50 rounded-xl transition-all px-4 py-3 text-left group">
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1.5 group-hover:text-green-700 transition-colors">
-                    <Users className="w-4 h-4" />
-                    <span>Community · Growing</span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-0.5">Social Mixers</div>
-                  <div className="text-xs text-slate-400">1.8K posts</div>
-                </button>
-                <button className="w-full hover:bg-slate-50 rounded-xl transition-all px-4 py-3 text-left group">
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1.5 group-hover:text-green-700 transition-colors">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Strategy · Hot</span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-0.5">Third Shot Drop Tips</div>
-                  <div className="text-xs text-slate-400">1.5K posts</div>
-                </button>
+                {[
+                  { icon: TrendingUp, label: 'Pickleball · Trending', title: 'DUPR Ratings', count: '3.8K posts' },
+                  { icon: Calendar, label: 'Events · This Week', title: 'Weekend Tournaments', count: '1.4K posts' },
+                  { icon: Building2, label: 'Local · Popular', title: 'New Courts Opening', count: '2.1K posts' },
+                  { icon: TrendingUp, label: 'Equipment · Trending', title: 'Best Paddles 2025', count: '987 posts' },
+                  { icon: Users, label: 'Community · Growing', title: 'Social Mixers', count: '1.8K posts' },
+                  { icon: TrendingUp, label: 'Strategy · Hot', title: 'Third Shot Drop Tips', count: '1.5K posts' },
+                ].map((item, index) => (
+                  <motion.button
+                    key={index}
+                    whileHover={{ x: 2 }}
+                    className="w-full hover:bg-slate-50/50 transition-all duration-200 px-4 py-3 text-left group"
+                  >
+                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium mb-1 group-hover:text-green-700 transition-colors">
+                      <item.icon className="w-3.5 h-3.5" />
+                      <span>{item.label}</span>
+                    </div>
+                    <div className="text-sm font-bold text-slate-800 mb-0.5" style={{ fontFamily: 'Manrope, sans-serif' }}>{item.title}</div>
+                    <div className="text-[11px] text-slate-400">{item.count}</div>
+                  </motion.button>
+                ))}
               </div>
             </div>
 
             {/* Post Button */}
             {user && (
               <div className="px-4 mt-4">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={onCreatePost}
-                  className="w-full py-3.5 px-6 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold text-base shadow-sm transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-2"
+                  className="w-full py-3 px-6 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold text-sm shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <span>Post</span>
-                </button>
+                </motion.button>
               </div>
             )}
 
             {/* Footer Links */}
             <div className="px-4 py-4 pb-6">
-              <div className="bg-slate-50 rounded-xl border border-slate-100 px-4 py-4 text-center">
-                <div className="text-sm font-medium text-slate-500 mb-2">
+              <div className="bg-white rounded-xl border border-slate-200/60 px-4 py-4 text-center">
+                <div className="text-xs font-medium text-slate-400 mb-2">
                   <a href="#" className="hover:text-green-700 transition-colors">Terms</a>
-                  <span className="mx-1.5">·</span>
+                  <span className="mx-1.5 text-slate-300">&middot;</span>
                   <a href="#" className="hover:text-green-700 transition-colors">Privacy</a>
-                  <span className="mx-1.5">·</span>
+                  <span className="mx-1.5 text-slate-300">&middot;</span>
                   <a href="#" className="hover:text-green-700 transition-colors">Help</a>
                 </div>
-                <div className="text-sm font-semibold text-slate-600">© 2026 PaddleGrid</div>
+                <div className="text-xs font-semibold text-slate-500">&copy; 2026 PaddleGrid</div>
               </div>
             </div>
           </div>

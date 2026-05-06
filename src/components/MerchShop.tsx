@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, ShoppingBag, Filter, X, Plus, Minus, Check, CreditCard, Truck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -108,9 +109,10 @@ export default function MerchShop() {
       appearance: {
         theme: 'stripe',
         variables: {
-          colorPrimary: '#10b981',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
+          colorPrimary: '#15803d',
+          fontFamily: 'Manrope, system-ui, -apple-system, sans-serif',
           fontSize: '16px',
+          borderRadius: '12px',
         }
       },
     });
@@ -295,116 +297,74 @@ export default function MerchShop() {
     ? products
     : products.filter(p => p.category === selectedCategory);
 
+  const inputClass = "w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-600 text-slate-900 transition-all duration-200 outline-none placeholder:text-slate-400";
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      <div className="flex justify-center items-center min-h-screen bg-[#F8F9FC]">
+        <div className="w-10 h-10 border-2 border-green-700/20 border-t-green-700 rounded-full animate-spin" />
       </div>
     );
   }
 
   if (showCheckout) {
     return (
-      <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+      <div className="min-h-screen bg-[#F8F9FC] py-6 sm:py-10">
         <div className="max-w-6xl mx-auto px-4">
           <button
             onClick={() => {
               setShowCheckout(false);
               setShowCart(true);
             }}
-            className="mb-4 sm:mb-6 text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2"
+            className="mb-6 text-green-700 hover:text-green-800 font-medium flex items-center gap-2 text-sm transition-colors"
           >
-            ← Back to Cart
+            <ChevronLeft className="w-4 h-4" />
+            Back to Cart
           </button>
 
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="bg-emerald-600 text-white px-6 py-4">
-              <h2 className="text-2xl font-bold">Secure Checkout</h2>
-              <p className="text-emerald-100 text-sm mt-1">Complete your purchase securely</p>
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+            <div className="bg-green-700 text-white px-8 py-5">
+              <h2 className="text-2xl font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>Secure Checkout</h2>
+              <p className="text-green-200 text-sm mt-1">Complete your purchase securely</p>
             </div>
 
-            <div className="p-4 sm:p-6 lg:p-8">
-              <div className="grid lg:grid-cols-5 gap-6 lg:gap-8">
+            <div className="p-6 sm:p-8">
+              <div className="grid lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3 space-y-6">
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                      <Truck className="w-5 h-5 text-emerald-600" />
+                  <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200/60">
+                    <h3
+                      className="font-bold text-lg mb-5 flex items-center gap-2 text-slate-800"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                        <Truck className="w-4 h-4 text-green-700" />
+                      </div>
                       Shipping Information
                     </h3>
                     <div className="space-y-3">
-                      <input
-                        type="text"
-                        placeholder="Full Name *"
-                        value={shippingAddress.name}
-                        onChange={(e) => setShippingAddress({ ...shippingAddress, name: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                        required
-                      />
+                      <input type="text" placeholder="Full Name *" value={shippingAddress.name} onChange={(e) => setShippingAddress({ ...shippingAddress, name: e.target.value })} className={inputClass} required />
                       <div className="grid sm:grid-cols-2 gap-3">
-                        <input
-                          type="email"
-                          placeholder="Email *"
-                          value={shippingAddress.email}
-                          onChange={(e) => setShippingAddress({ ...shippingAddress, email: e.target.value })}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                          required
-                        />
-                        <input
-                          type="tel"
-                          placeholder="Phone *"
-                          value={shippingAddress.phone}
-                          onChange={(e) => setShippingAddress({ ...shippingAddress, phone: e.target.value })}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                          required
-                        />
+                        <input type="email" placeholder="Email *" value={shippingAddress.email} onChange={(e) => setShippingAddress({ ...shippingAddress, email: e.target.value })} className={inputClass} required />
+                        <input type="tel" placeholder="Phone *" value={shippingAddress.phone} onChange={(e) => setShippingAddress({ ...shippingAddress, phone: e.target.value })} className={inputClass} required />
                       </div>
-                      <input
-                        type="text"
-                        placeholder="Address Line 1 *"
-                        value={shippingAddress.address_line1}
-                        onChange={(e) => setShippingAddress({ ...shippingAddress, address_line1: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                        required
-                      />
-                      <input
-                        type="text"
-                        placeholder="Address Line 2 (Optional)"
-                        value={shippingAddress.address_line2}
-                        onChange={(e) => setShippingAddress({ ...shippingAddress, address_line2: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                      />
+                      <input type="text" placeholder="Address Line 1 *" value={shippingAddress.address_line1} onChange={(e) => setShippingAddress({ ...shippingAddress, address_line1: e.target.value })} className={inputClass} required />
+                      <input type="text" placeholder="Address Line 2 (Optional)" value={shippingAddress.address_line2} onChange={(e) => setShippingAddress({ ...shippingAddress, address_line2: e.target.value })} className={inputClass} />
                       <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
-                        <input
-                          type="text"
-                          placeholder="City *"
-                          value={shippingAddress.city}
-                          onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
-                          className="col-span-2 sm:col-span-3 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                          required
-                        />
-                        <input
-                          type="text"
-                          placeholder="State *"
-                          value={shippingAddress.state}
-                          onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                          className="col-span-1 sm:col-span-2 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                          required
-                        />
-                        <input
-                          type="text"
-                          placeholder="ZIP *"
-                          value={shippingAddress.postal_code}
-                          onChange={(e) => setShippingAddress({ ...shippingAddress, postal_code: e.target.value })}
-                          className="col-span-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                          required
-                        />
+                        <input type="text" placeholder="City *" value={shippingAddress.city} onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })} className={`col-span-2 sm:col-span-3 ${inputClass}`} required />
+                        <input type="text" placeholder="State *" value={shippingAddress.state} onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })} className={`col-span-1 sm:col-span-2 ${inputClass}`} required />
+                        <input type="text" placeholder="ZIP *" value={shippingAddress.postal_code} onChange={(e) => setShippingAddress({ ...shippingAddress, postal_code: e.target.value })} className={`col-span-1 ${inputClass}`} required />
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                      <CreditCard className="w-5 h-5 text-emerald-600" />
+                  <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200/60">
+                    <h3
+                      className="font-bold text-lg mb-5 flex items-center gap-2 text-slate-800"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                        <CreditCard className="w-4 h-4 text-green-700" />
+                      </div>
                       Payment Method
                     </h3>
                     <div id="payment-element"></div>
@@ -412,58 +372,58 @@ export default function MerchShop() {
                 </div>
 
                 <div className="lg:col-span-2">
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6 sticky top-4">
-                    <h3 className="font-bold text-lg mb-4">Order Summary</h3>
+                  <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200/60 sticky top-4">
+                    <h3 className="font-bold text-lg mb-5 text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Order Summary</h3>
                     <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
                       {cart.map((item, index) => (
-                        <div key={index} className="flex gap-3 pb-3 border-b border-gray-200">
+                        <div key={index} className="flex gap-3 pb-3 border-b border-slate-200/60">
                           {item.imageUrl && (
-                            <img src={item.imageUrl} alt={item.product.name} className="w-16 h-16 object-cover rounded" />
+                            <img src={item.imageUrl} alt={item.product.name} className="w-14 h-14 object-cover rounded-xl ring-2 ring-white shadow-sm" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">{item.product.name}</p>
+                            <p className="font-medium text-sm text-slate-800 truncate">{item.product.name}</p>
                             {(item.selectedDesign || item.selectedColor || item.selectedSize) && (
-                              <p className="text-xs text-gray-600 truncate">
-                                {[item.selectedDesign, item.selectedColor, item.selectedSize].filter(Boolean).join(' • ')}
+                              <p className="text-xs text-slate-400 truncate">
+                                {[item.selectedDesign, item.selectedColor, item.selectedSize].filter(Boolean).join(' / ')}
                               </p>
                             )}
-                            <p className="text-sm font-semibold text-emerald-600 mt-1">
-                              ${getItemPrice(item).toFixed(2)} × {item.quantity}
+                            <p className="text-sm font-semibold text-green-700 mt-1">
+                              ${getItemPrice(item).toFixed(2)} x {item.quantity}
                             </p>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="space-y-2 py-3 border-t border-gray-200">
+                    <div className="space-y-2 py-4 border-t border-slate-200/60">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Subtotal</span>
-                        <span className="font-medium">${getCartTotal().toFixed(2)}</span>
+                        <span className="text-slate-500">Subtotal</span>
+                        <span className="font-medium text-slate-800">${getCartTotal().toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Shipping</span>
-                        <span className="font-medium">{getShippingCost() === 0 ? 'FREE' : `$${getShippingCost().toFixed(2)}`}</span>
+                        <span className="text-slate-500">Shipping</span>
+                        <span className="font-medium text-slate-800">{getShippingCost() === 0 ? 'FREE' : `$${getShippingCost().toFixed(2)}`}</span>
                       </div>
                       {getShippingCost() > 0 && (
-                        <p className="text-xs text-gray-500">Free shipping on orders over $50</p>
+                        <p className="text-xs text-slate-400">Free shipping on orders over $50</p>
                       )}
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Tax</span>
-                        <span className="font-medium">${getTax().toFixed(2)}</span>
+                        <span className="text-slate-500">Tax</span>
+                        <span className="font-medium text-slate-800">${getTax().toFixed(2)}</span>
                       </div>
-                      <div className="border-t pt-3 flex justify-between font-bold text-xl">
-                        <span>Total</span>
-                        <span className="text-emerald-600">${getGrandTotal().toFixed(2)}</span>
+                      <div className="border-t border-slate-200/60 pt-3 flex justify-between font-bold text-xl">
+                        <span className="text-slate-800">Total</span>
+                        <span className="text-green-700">${getGrandTotal().toFixed(2)}</span>
                       </div>
                     </div>
 
                     <button
                       onClick={handlePlaceOrder}
                       disabled={processingPayment || !elements}
-                      className="w-full mt-4 bg-emerald-600 text-white py-3.5 rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg"
+                      className="w-full mt-4 bg-green-700 text-white py-3.5 rounded-xl hover:bg-green-800 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-lg shadow-sm hover:shadow-md"
                     >
                       {processingPayment ? 'Processing Payment...' : `Pay $${getGrandTotal().toFixed(2)}`}
                     </button>
-                    <p className="text-xs text-center text-gray-500 mt-3">
+                    <p className="text-xs text-center text-slate-400 mt-3">
                       Secure payment powered by Stripe
                     </p>
                   </div>
@@ -477,20 +437,26 @@ export default function MerchShop() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b sticky top-0 z-40">
+    <div className="min-h-screen bg-[#F8F9FC]">
+      {/* Sticky Header */}
+      <div className="bg-white/80 backdrop-blur-lg border-b border-slate-200/60 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Pickleball Heaven Merch</h1>
-            <p className="text-sm text-gray-600">Premium pickleball gear and apparel</p>
+            <h1
+              className="text-xl font-bold text-slate-800"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              Pickleball Heaven Merch
+            </h1>
+            <p className="text-sm text-slate-400">Premium pickleball gear and apparel</p>
           </div>
           <button
             onClick={() => setShowCart(true)}
-            className="relative p-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+            className="relative p-3 bg-green-700 text-white rounded-xl hover:bg-green-800 transition-all duration-200 shadow-sm hover:shadow-md"
           >
-            <ShoppingCart className="w-6 h-6" />
+            <ShoppingCart className="w-5 h-5" />
             {cart.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center ring-2 ring-white shadow-sm">
                 {cart.reduce((sum, item) => sum + item.quantity, 0)}
               </span>
             )}
@@ -499,15 +465,16 @@ export default function MerchShop() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        {/* Category Filter Pills */}
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
+              className={`px-5 py-2 rounded-full whitespace-nowrap transition-all duration-200 text-sm font-medium border ${
                 selectedCategory === cat
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-green-700 text-white border-green-700 shadow-sm'
+                  : 'bg-white text-slate-600 border-slate-200/60 hover:border-slate-300 hover:shadow-[0_1px_3px_rgba(0,0,0,0.04)]'
               }`}
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -516,22 +483,27 @@ export default function MerchShop() {
         </div>
 
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">No products available yet</p>
-            <p className="text-gray-400 text-sm mt-2">Check back soon for new items!</p>
+          <div className="text-center py-20">
+            <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-5">
+              <ShoppingBag className="w-10 h-10 text-slate-300" />
+            </div>
+            <p className="text-slate-500 text-lg font-medium">No products available yet</p>
+            <p className="text-slate-400 text-sm mt-1">Check back soon for new items!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map(product => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {filteredProducts.map((product, index) => {
               const firstImage = product.images?.[0];
               const hasDesigns = product.designs && Array.isArray(product.designs) && product.designs.length > 0;
               const hasSizes = product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0;
 
               return (
-                <div
+                <motion.div
                   key={product.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer group"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.06, duration: 0.35 }}
+                  className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200 cursor-pointer group"
                   onClick={() => {
                     setSelectedProduct(product);
                     if (hasDesigns) {
@@ -546,271 +518,318 @@ export default function MerchShop() {
                     }
                   }}
                 >
-                  <div className="aspect-square bg-gray-100 overflow-hidden">
+                  <div className="aspect-square bg-slate-50 overflow-hidden">
                     {firstImage ? (
                       <img
                         src={firstImage}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <ShoppingBag className="w-16 h-16 text-gray-400" />
+                        <ShoppingBag className="w-14 h-14 text-slate-200" />
                       </div>
                     )}
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                  <div className="p-5">
+                    <h3
+                      className="font-semibold text-slate-800 mb-1 group-hover:text-green-700 transition-colors"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    >
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-slate-400 mb-4 line-clamp-2">{product.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-emerald-600">${product.price.toFixed(2)}</span>
+                      <span className="text-xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>${product.price.toFixed(2)}</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                         }}
-                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-medium"
+                        className="px-4 py-2 bg-green-700 text-white rounded-xl hover:bg-green-800 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md"
                       >
                         {hasSizes || hasDesigns ? 'View Options' : 'Add to Cart'}
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
         )}
       </div>
 
-      {selectedProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b flex items-center justify-between sticky top-0 bg-white z-10">
-              <h2 className="text-2xl font-bold">{selectedProduct.name}</h2>
-              <button onClick={() => setSelectedProduct(null)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setSelectedProduct(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
+              className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-200/60 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur-lg z-10 rounded-t-2xl">
+                <h2 className="text-xl font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{selectedProduct.name}</h2>
+                <button onClick={() => setSelectedProduct(null)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-            <div className="p-6">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                    {currentImage || selectedProduct.images?.[0] ? (
-                      <img
-                        src={currentImage || selectedProduct.images?.[0]}
-                        alt={selectedProduct.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <ShoppingBag className="w-24 h-24 text-gray-400" />
+              <div className="p-6">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-200/60">
+                      {currentImage || selectedProduct.images?.[0] ? (
+                        <img
+                          src={currentImage || selectedProduct.images?.[0]}
+                          alt={selectedProduct.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ShoppingBag className="w-20 h-20 text-slate-200" />
+                        </div>
+                      )}
+                    </div>
+                    {selectedProduct.images && selectedProduct.images.length > 1 && (
+                      <div className="flex gap-2 overflow-x-auto">
+                        {selectedProduct.images.map((img: string, idx: number) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentImage(img)}
+                            className={`w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                              currentImage === img || (!currentImage && idx === 0)
+                                ? 'border-green-700 ring-2 ring-green-500/20'
+                                : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                          >
+                            <img src={img} alt={`${selectedProduct.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
-                  {selectedProduct.images && selectedProduct.images.length > 1 && (
-                    <div className="flex gap-2 overflow-x-auto">
-                      {selectedProduct.images.map((img: string, idx: number) => (
-                        <button
-                          key={idx}
-                          onClick={() => setCurrentImage(img)}
-                          className={`w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition ${
-                            currentImage === img || (!currentImage && idx === 0)
-                              ? 'border-emerald-600'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <img src={img} alt={`${selectedProduct.name} ${idx + 1}`} className="w-full h-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-3xl font-bold text-emerald-600">${selectedProduct.price.toFixed(2)}</p>
-                    <p className="text-gray-600 mt-2">{selectedProduct.description}</p>
-                  </div>
-
-                  {selectedProduct.designs && Array.isArray(selectedProduct.designs) && selectedProduct.designs.length > 0 && (
+                  <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Design Type</label>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedProduct.designs.map((design: any) => (
-                          <button
-                            key={design.type}
-                            onClick={() => {
-                              setSelectedDesignType(design.type);
-                              setSelectedColor(design.colors?.[0]?.name || '');
-                              setCurrentImage(design.colors?.[0]?.image || selectedProduct.images?.[0] || '');
-                            }}
-                            className={`px-4 py-2 rounded-lg border-2 transition ${
-                              selectedDesignType === design.type
-                                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                                : 'border-gray-300 hover:border-gray-400'
-                            }`}
-                          >
-                            {design.type}
-                          </button>
-                        ))}
-                      </div>
+                      <p className="text-3xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>${selectedProduct.price.toFixed(2)}</p>
+                      <p className="text-slate-500 mt-2 leading-relaxed">{selectedProduct.description}</p>
                     </div>
-                  )}
 
-                  {selectedProduct.designs && Array.isArray(selectedProduct.designs) && selectedProduct.designs.length > 0 && selectedDesignType && (
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Color</label>
-                      <div className="flex flex-wrap gap-3">
-                        {selectedProduct.designs
-                          .find((d: any) => d.type === selectedDesignType)
-                          ?.colors?.map((color: any) => (
+                    {selectedProduct.designs && Array.isArray(selectedProduct.designs) && selectedProduct.designs.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Design Type</label>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedProduct.designs.map((design: any) => (
                             <button
-                              key={color.name}
+                              key={design.type}
                               onClick={() => {
-                                setSelectedColor(color.name);
-                                setCurrentImage(color.image);
+                                setSelectedDesignType(design.type);
+                                setSelectedColor(design.colors?.[0]?.name || '');
+                                setCurrentImage(design.colors?.[0]?.image || selectedProduct.images?.[0] || '');
                               }}
-                              className={`px-4 py-2 rounded-lg border-2 transition ${
-                                selectedColor === color.name
-                                  ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                                  : 'border-gray-300 hover:border-gray-400'
+                              className={`px-4 py-2 rounded-xl border-2 transition-all duration-200 text-sm font-medium ${
+                                selectedDesignType === design.type
+                                  ? 'border-green-700 bg-green-50 text-green-700'
+                                  : 'border-slate-200 text-slate-600 hover:border-slate-300'
                               }`}
                             >
-                              {color.name}
+                              {design.type}
                             </button>
                           ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {selectedProduct.sizes && Array.isArray(selectedProduct.sizes) && selectedProduct.sizes.length > 0 && (
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Size</label>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedProduct.sizes.map((size: string) => (
-                          <button
-                            key={size}
-                            onClick={() => setSelectedSize(size)}
-                            className={`px-4 py-2 rounded-lg border-2 transition ${
-                              selectedSize === size
-                                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                                : 'border-gray-300 hover:border-gray-400'
-                            }`}
-                          >
-                            {size}
-                          </button>
-                        ))}
+                    {selectedProduct.designs && Array.isArray(selectedProduct.designs) && selectedProduct.designs.length > 0 && selectedDesignType && (
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Color</label>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedProduct.designs
+                            .find((d: any) => d.type === selectedDesignType)
+                            ?.colors?.map((color: any) => (
+                              <button
+                                key={color.name}
+                                onClick={() => {
+                                  setSelectedColor(color.name);
+                                  setCurrentImage(color.image);
+                                }}
+                                className={`px-4 py-2 rounded-xl border-2 transition-all duration-200 text-sm font-medium ${
+                                  selectedColor === color.name
+                                    ? 'border-green-700 bg-green-50 text-green-700'
+                                    : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                                }`}
+                              >
+                                {color.name}
+                              </button>
+                            ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  <button
-                    onClick={() => {
-                      addToCart(
-                        selectedProduct,
-                        selectedDesignType,
-                        selectedColor,
-                        selectedSize,
-                        currentImage || selectedProduct.images?.[0]
-                      );
-                      setSelectedProduct(null);
-                    }}
-                    className="w-full bg-emerald-600 text-white py-4 rounded-lg hover:bg-emerald-700 transition font-semibold text-lg"
-                  >
-                    Add to Cart
-                  </button>
+                    {selectedProduct.sizes && Array.isArray(selectedProduct.sizes) && selectedProduct.sizes.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Size</label>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedProduct.sizes.map((size: string) => (
+                            <button
+                              key={size}
+                              onClick={() => setSelectedSize(size)}
+                              className={`px-4 py-2 rounded-xl border-2 transition-all duration-200 text-sm font-medium ${
+                                selectedSize === size
+                                  ? 'border-green-700 bg-green-50 text-green-700'
+                                  : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                              }`}
+                            >
+                              {size}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        addToCart(
+                          selectedProduct,
+                          selectedDesignType,
+                          selectedColor,
+                          selectedSize,
+                          currentImage || selectedProduct.images?.[0]
+                        );
+                        setSelectedProduct(null);
+                      }}
+                      className="w-full bg-green-700 text-white py-4 rounded-xl hover:bg-green-800 transition-all duration-200 font-semibold text-lg shadow-sm hover:shadow-md"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {showCart && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Shopping Cart</h2>
-              <button onClick={() => setShowCart(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6">
-              {cart.length === 0 ? (
-                <div className="text-center py-12">
-                  <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">Your cart is empty</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {cart.map((item, index) => (
-                    <div key={index} className="flex gap-4 pb-4 border-b">
-                      <div className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0">
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <ShoppingBag className="w-8 h-8 text-gray-400" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{item.product.name}</h3>
-                        {(item.selectedDesign || item.selectedColor || item.selectedSize) && (
-                          <p className="text-sm text-gray-600">
-                            {[item.selectedDesign, item.selectedColor, item.selectedSize].filter(Boolean).join(' - ')}
-                          </p>
-                        )}
-                        <p className="text-emerald-600 font-bold mt-1">${getItemPrice(item).toFixed(2)}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(index, -1)}
-                          className="p-1 rounded-full hover:bg-gray-100"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="w-8 text-center font-medium">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(index, 1)}
-                          className="p-1 rounded-full hover:bg-gray-100"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {cart.length > 0 && (
-              <div className="p-6 border-t bg-gray-50">
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span className="font-semibold">${getCartTotal().toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Shipping</span>
-                    <span>{getShippingCost() === 0 ? 'FREE' : `$${getShippingCost().toFixed(2)}`}</span>
-                  </div>
-                  {getShippingCost() > 0 && (
-                    <p className="text-xs text-gray-500">Free shipping on orders over $50</p>
-                  )}
-                </div>
-                <button
-                  onClick={handleCheckout}
-                  className="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition font-semibold"
-                >
-                  Proceed to Checkout
+      {/* Cart Sidebar Modal */}
+      <AnimatePresence>
+        {showCart && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setShowCart(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
+              className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Shopping Cart</h2>
+                <button onClick={() => setShowCart(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+
+              <div className="flex-1 overflow-y-auto p-6">
+                {cart.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                      <ShoppingCart className="w-8 h-8 text-slate-300" />
+                    </div>
+                    <p className="text-slate-500 font-medium">Your cart is empty</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map((item, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex gap-4 pb-4 border-b border-slate-100"
+                      >
+                        <div className="w-16 h-16 bg-slate-50 rounded-xl flex-shrink-0 overflow-hidden border border-slate-200/60">
+                          {item.imageUrl ? (
+                            <img src={item.imageUrl} alt={item.product.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ShoppingBag className="w-6 h-6 text-slate-300" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-slate-800 text-sm">{item.product.name}</h3>
+                          {(item.selectedDesign || item.selectedColor || item.selectedSize) && (
+                            <p className="text-xs text-slate-400">
+                              {[item.selectedDesign, item.selectedColor, item.selectedSize].filter(Boolean).join(' / ')}
+                            </p>
+                          )}
+                          <p className="text-green-700 font-bold text-sm mt-1">${getItemPrice(item).toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateQuantity(index, -1)}
+                            className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200/60"
+                          >
+                            <Minus className="w-3.5 h-3.5 text-slate-500" />
+                          </button>
+                          <span className="w-8 text-center font-semibold text-sm text-slate-800">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(index, 1)}
+                            className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200/60"
+                          >
+                            <Plus className="w-3.5 h-3.5 text-slate-500" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {cart.length > 0 && (
+                <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500">Subtotal</span>
+                      <span className="font-semibold text-slate-800">${getCartTotal().toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500">Shipping</span>
+                      <span className="font-medium text-slate-600">{getShippingCost() === 0 ? 'FREE' : `$${getShippingCost().toFixed(2)}`}</span>
+                    </div>
+                    {getShippingCost() > 0 && (
+                      <p className="text-xs text-slate-400">Free shipping on orders over $50</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-green-700 text-white py-3.5 rounded-xl hover:bg-green-800 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
+                  >
+                    Proceed to Checkout
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

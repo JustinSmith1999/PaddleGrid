@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Trophy, Gift, Star, TrendingUp, Award, History, ShoppingBag, CheckCircle } from 'lucide-react';
@@ -47,6 +47,13 @@ interface LoyaltyRedemption {
     description: string;
   };
 }
+
+const tabs = [
+  { key: 'overview', label: 'Overview', icon: TrendingUp },
+  { key: 'rewards', label: 'Rewards', icon: Gift },
+  { key: 'history', label: 'History', icon: History },
+  { key: 'redemptions', label: 'My Rewards', icon: ShoppingBag },
+] as const;
 
 export default function LoyaltyRewards() {
   const { user } = useAuth();
@@ -178,10 +185,10 @@ export default function LoyaltyRewards() {
 
   const getTierColor = (tier: string) => {
     const colors = {
-      bronze: 'text-orange-700 bg-orange-50',
-      silver: 'text-slate-600 bg-slate-100',
-      gold: 'text-yellow-700 bg-yellow-50',
-      platinum: 'text-purple-700 bg-purple-50'
+      bronze: 'text-orange-700 bg-orange-50 border-orange-200/60',
+      silver: 'text-slate-600 bg-slate-50 border-slate-200/60',
+      gold: 'text-yellow-700 bg-yellow-50 border-yellow-200/60',
+      platinum: 'text-slate-600 bg-slate-100 border-slate-300/60'
     };
     return colors[tier as keyof typeof colors] || colors.bronze;
   };
@@ -205,355 +212,403 @@ export default function LoyaltyRewards() {
     };
   };
 
-  if (loading) {
+  if (loading && !account) {
     return (
-      <div className="text-center py-8 text-slate-400">Loading rewards...</div>
+      <div className="min-h-screen bg-[#F8F9FC] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-green-700/20 border-t-green-700 rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-slate-400 text-sm">Loading rewards...</p>
+        </div>
+      </div>
     );
   }
 
   if (!account) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <Trophy className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-        <h2
-          className="text-2xl font-bold text-slate-900 mb-2"
-          style={{ fontFamily: 'Manrope, sans-serif' }}
+      <div className="min-h-screen bg-[#F8F9FC] flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-sm"
         >
-          Join a Facility
-        </h2>
-        <p className="text-slate-500">Sign up with a facility to start earning loyalty points!</p>
+          <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-5">
+            <Trophy className="w-10 h-10 text-slate-300" />
+          </div>
+          <h2
+            className="text-2xl font-bold text-slate-800 mb-2"
+            style={{ fontFamily: 'Manrope, sans-serif' }}
+          >
+            Join a Facility
+          </h2>
+          <p className="text-slate-400">Sign up with a facility to start earning loyalty points!</p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Hero Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6"
-      >
-        <div className="flex justify-between items-start">
-          <div>
-            <h2
-              className="text-2xl font-bold text-slate-900 mb-1"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
+    <div className="min-h-screen bg-[#F8F9FC]">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Hero Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 mb-6"
+        >
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-green-700" />
+              </div>
+              <div>
+                <h2
+                  className="text-xl font-bold text-slate-800"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                >
+                  Loyalty Rewards
+                </h2>
+                <p className="text-sm text-slate-400">{account.facilities?.name}</p>
+              </div>
+            </div>
+            <div className={`px-4 py-2 rounded-full border ${getTierColor(account.tier)} font-semibold flex items-center gap-2 text-sm`}>
+              {getTierIcon(account.tier)}
+              {account.tier.toUpperCase()}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-green-50 to-green-50/50 rounded-2xl p-5 border border-green-100/60"
             >
-              Loyalty Rewards
-            </h2>
-            <p className="text-slate-500">{account.facilities?.name}</p>
-          </div>
-          <div className={`px-4 py-2 rounded-xl ${getTierColor(account.tier)} font-semibold flex items-center gap-2 text-sm`}>
-            {getTierIcon(account.tier)}
-            {account.tier.toUpperCase()}
-          </div>
-        </div>
+              <div className="text-sm text-slate-500 mb-1 font-medium">Current Balance</div>
+              <div className="text-3xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{account.points_balance}</div>
+              <div className="text-sm text-slate-400 mt-0.5">points</div>
+            </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-4 mt-6">
-          <div className="bg-green-50 rounded-xl p-4">
-            <div className="text-sm text-slate-500 mb-1">Current Balance</div>
-            <div className="text-3xl font-bold text-green-700">{account.points_balance}</div>
-            <div className="text-sm text-slate-400 mt-1">points</div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-gradient-to-br from-slate-50 to-slate-50/50 rounded-2xl p-5 border border-slate-100/60"
+            >
+              <div className="text-sm text-slate-500 mb-1 font-medium">Lifetime Earned</div>
+              <div className="text-3xl font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{account.lifetime_points_earned}</div>
+              <div className="text-sm text-slate-400 mt-0.5">total points</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-gradient-to-br from-green-50 to-green-50/50 rounded-2xl p-5 border border-green-100/60"
+            >
+              <div className="text-sm text-slate-500 mb-1 font-medium">Next Tier</div>
+              {getNextTierPoints(account.tier, account.lifetime_points_earned) ? (
+                <>
+                  <div className="text-2xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    {getNextTierPoints(account.tier, account.lifetime_points_earned)?.remaining}
+                  </div>
+                  <div className="text-sm text-slate-400 mt-0.5">
+                    points to {getNextTierPoints(account.tier, account.lifetime_points_earned)?.next}
+                  </div>
+                </>
+              ) : (
+                <div className="text-xl font-bold text-green-700 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Max Tier!</div>
+              )}
+            </motion.div>
           </div>
 
-          <div className="bg-green-50 rounded-xl p-4">
-            <div className="text-sm text-slate-500 mb-1">Lifetime Earned</div>
-            <div className="text-3xl font-bold text-green-700">{account.lifetime_points_earned}</div>
-            <div className="text-sm text-slate-400 mt-1">total points</div>
-          </div>
-
-          <div className="bg-green-50 rounded-xl p-4">
-            <div className="text-sm text-slate-500 mb-1">Next Tier</div>
-            {getNextTierPoints(account.tier, account.lifetime_points_earned) ? (
-              <>
-                <div className="text-2xl font-bold text-green-700">
-                  {getNextTierPoints(account.tier, account.lifetime_points_earned)?.remaining}
-                </div>
-                <div className="text-sm text-slate-400 mt-1">
-                  points to {getNextTierPoints(account.tier, account.lifetime_points_earned)?.next}
-                </div>
-              </>
-            ) : (
-              <div className="text-xl font-bold text-green-700 mt-2">Max Tier!</div>
-            )}
-          </div>
-        </div>
-
-        {/* Tier Progress Bar */}
-        {getNextTierPoints(account.tier, account.lifetime_points_earned) && (
-          <div className="mt-4">
-            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${Math.min(account.tier_progress * 100, 100)}%` }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                className="h-full bg-green-700 rounded-full"
-              />
-            </div>
-          </div>
-        )}
-      </motion.div>
-
-      {/* Tabs & Content */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <div className="flex gap-2 mb-6 border-b border-slate-100">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'overview'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <TrendingUp className="w-4 h-4 inline mr-1" />
-            Overview
-          </button>
-          <button
-            onClick={() => setActiveTab('rewards')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'rewards'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Gift className="w-4 h-4 inline mr-1" />
-            Rewards
-          </button>
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'history'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <History className="w-4 h-4 inline mr-1" />
-            History
-          </button>
-          <button
-            onClick={() => setActiveTab('redemptions')}
-            className={`px-4 py-2 font-medium transition-colors text-sm ${
-              activeTab === 'redemptions'
-                ? 'text-green-700 border-b-2 border-green-700'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <ShoppingBag className="w-4 h-4 inline mr-1" />
-            My Rewards
-          </button>
-        </div>
-
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div>
-              <h3
-                className="text-lg font-semibold mb-3 text-slate-900"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
-              >
-                How to Earn Points
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4">
+          {/* Tier Progress Bar */}
+          {getNextTierPoints(account.tier, account.lifetime_points_earned) && (
+            <div className="mt-5">
+              <div className="flex justify-between text-xs text-slate-400 mb-1.5 font-medium">
+                <span>{account.tier.charAt(0).toUpperCase() + account.tier.slice(1)}</span>
+                <span>{getNextTierPoints(account.tier, account.lifetime_points_earned)?.next}</span>
+              </div>
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"
-                >
-                  <Star className="w-8 h-8 text-green-700 mb-2" />
-                  <h4 className="font-semibold text-slate-900 mb-1">Book Courts</h4>
-                  <p className="text-sm text-slate-500">Earn 10 points per hour of court time</p>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"
-                >
-                  <Trophy className="w-8 h-8 text-green-700 mb-2" />
-                  <h4 className="font-semibold text-slate-900 mb-1">Welcome Bonus</h4>
-                  <p className="text-sm text-slate-500">Get 50 points when you join</p>
-                </motion.div>
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(account.tier_progress * 100, 100)}%` }}
+                  transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+                  className="h-full bg-gradient-to-r from-green-600 to-green-700 rounded-full"
+                />
               </div>
             </div>
+          )}
+        </motion.div>
 
-            <div>
-              <h3
-                className="text-lg font-semibold mb-3 text-slate-900"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
-              >
-                Tier Benefits
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-100 rounded-xl">
-                  <Award className="w-6 h-6 text-orange-600" />
-                  <div className="flex-1">
-                    <div className="font-semibold text-orange-900">Bronze Tier</div>
-                    <div className="text-sm text-orange-700">0 - 499 lifetime points</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                  <Award className="w-6 h-6 text-slate-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold text-slate-900">Silver Tier</div>
-                    <div className="text-sm text-slate-600">500 - 1,999 lifetime points  +50 bonus</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-100 rounded-xl">
-                  <Award className="w-6 h-6 text-yellow-600" />
-                  <div className="flex-1">
-                    <div className="font-semibold text-yellow-900">Gold Tier</div>
-                    <div className="text-sm text-yellow-700">2,000 - 4,999 lifetime points  +200 bonus</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-purple-50 border border-purple-100 rounded-xl">
-                  <Award className="w-6 h-6 text-purple-600" />
-                  <div className="flex-1">
-                    <div className="font-semibold text-purple-900">Platinum Tier</div>
-                    <div className="text-sm text-purple-700">5,000+ lifetime points  +500 bonus</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Tabs & Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6"
+        >
+          <div className="relative flex gap-1 mb-6 border-b border-slate-100">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`relative px-5 py-3 font-medium transition-colors text-sm flex items-center gap-2 ${
+                    activeTab === tab.key
+                      ? 'text-green-700'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                  {activeTab === tab.key && (
+                    <motion.div
+                      layoutId="loyalty-tab-indicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-700 rounded-full"
+                      transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
-        )}
 
-        {activeTab === 'rewards' && (
-          <div>
-            {rewards.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <Gift className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No rewards available at the moment.</p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-4">
-                {rewards.map((reward, index) => (
-                  <motion.div
-                    key={reward.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="font-semibold text-slate-900">{reward.name}</h4>
-                        <p className="text-sm text-slate-500 mt-1">{reward.description}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-green-700">{reward.points_cost}</div>
-                        <div className="text-xs text-slate-400">points</div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      {reward.available_quantity !== null && (
-                        <span className="text-sm text-slate-400">
-                          {reward.available_quantity} available
-                        </span>
-                      )}
-                      <button
-                        onClick={() => handleRedeemReward(reward.id, reward.points_cost)}
-                        disabled={account.points_balance < reward.points_cost}
-                        className="px-4 py-2 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {activeTab === 'overview' && (
+                <div className="space-y-8">
+                  <div>
+                    <h3
+                      className="text-lg font-semibold mb-4 text-slate-800"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    >
+                      How to Earn Points
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200"
                       >
-                        Redeem
-                      </button>
+                        <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3">
+                          <Star className="w-5 h-5 text-green-700" />
+                        </div>
+                        <h4 className="font-semibold text-slate-800 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>Book Courts</h4>
+                        <p className="text-sm text-slate-400">Earn 10 points per hour of court time</p>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3">
+                          <Trophy className="w-5 h-5 text-green-700" />
+                        </div>
+                        <h4 className="font-semibold text-slate-800 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>Welcome Bonus</h4>
+                        <p className="text-sm text-slate-400">Get 50 points when you join</p>
+                      </motion.div>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  </div>
 
-        {activeTab === 'history' && (
-          <div>
-            {transactions.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <History className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No transaction history yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {transactions.map((transaction, index) => (
-                  <motion.div
-                    key={transaction.id}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    className="flex justify-between items-center p-3 border border-slate-100 rounded-xl"
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium text-slate-900">{transaction.reason}</div>
-                      <div className="text-sm text-slate-400">
-                        {new Date(transaction.created_at).toLocaleString()}
+                  <div>
+                    <h3
+                      className="text-lg font-semibold mb-4 text-slate-800"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    >
+                      Tier Benefits
+                    </h3>
+                    <div className="space-y-3">
+                      {[
+                        { name: 'Bronze', range: '0 - 499 lifetime points', bg: 'bg-orange-50', border: 'border-orange-100', iconColor: 'text-orange-600', nameColor: 'text-orange-900', rangeColor: 'text-orange-700' },
+                        { name: 'Silver', range: '500 - 1,999 lifetime points  +50 bonus', bg: 'bg-slate-50', border: 'border-slate-100', iconColor: 'text-slate-500', nameColor: 'text-slate-800', rangeColor: 'text-slate-600' },
+                        { name: 'Gold', range: '2,000 - 4,999 lifetime points  +200 bonus', bg: 'bg-yellow-50', border: 'border-yellow-100', iconColor: 'text-yellow-600', nameColor: 'text-yellow-900', rangeColor: 'text-yellow-700' },
+                        { name: 'Platinum', range: '5,000+ lifetime points  +500 bonus', bg: 'bg-slate-50', border: 'border-slate-200', iconColor: 'text-slate-600', nameColor: 'text-slate-800', rangeColor: 'text-slate-600' },
+                      ].map((tier, index) => (
+                        <motion.div
+                          key={tier.name}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.08 }}
+                          className={`flex items-center gap-3 p-4 ${tier.bg} border ${tier.border} rounded-2xl hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200`}
+                        >
+                          <div className={`w-10 h-10 rounded-xl ${tier.bg} flex items-center justify-center`}>
+                            <Award className={`w-5 h-5 ${tier.iconColor}`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className={`font-semibold ${tier.nameColor}`} style={{ fontFamily: 'Manrope, sans-serif' }}>{tier.name} Tier</div>
+                            <div className={`text-sm ${tier.rangeColor}`}>{tier.range}</div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'rewards' && (
+                <div>
+                  {rewards.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                        <Gift className="w-8 h-8 text-slate-300" />
                       </div>
+                      <p className="text-slate-500 font-medium">No rewards available at the moment.</p>
                     </div>
-                    <div className={`text-lg font-semibold ${transaction.points > 0 ? 'text-green-700' : 'text-red-600'}`}>
-                      {transaction.points > 0 ? '+' : ''}{transaction.points}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  ) : (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {rewards.map((reward, index) => (
+                        <motion.div
+                          key={reward.id}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.06, duration: 0.35 }}
+                          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{reward.name}</h4>
+                              <p className="text-sm text-slate-400 mt-1">{reward.description}</p>
+                            </div>
+                            <div className="text-right ml-4">
+                              <div className="text-2xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{reward.points_cost}</div>
+                              <div className="text-xs text-slate-400">points</div>
+                            </div>
+                          </div>
 
-        {activeTab === 'redemptions' && (
-          <div>
-            {redemptions.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <ShoppingBag className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No redemptions yet.</p>
-                <p className="text-sm mt-1">Start redeeming rewards to see them here!</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {redemptions.map((redemption, index) => (
-                  <motion.div
-                    key={redemption.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="font-semibold text-slate-900">{redemption.loyalty_rewards.name}</h4>
-                        <p className="text-sm text-slate-500">{redemption.loyalty_rewards.description}</p>
+                          <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+                            {reward.available_quantity !== null && (
+                              <span className="text-xs text-slate-400 font-medium">
+                                {reward.available_quantity} available
+                              </span>
+                            )}
+                            <button
+                              onClick={() => handleRedeemReward(reward.id, reward.points_cost)}
+                              disabled={account.points_balance < reward.points_cost}
+                              className="px-5 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium shadow-sm hover:shadow-md ml-auto"
+                            >
+                              Redeem
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'history' && (
+                <div>
+                  {transactions.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                        <History className="w-8 h-8 text-slate-300" />
                       </div>
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
-                        redemption.status === 'active' ? 'bg-green-50 text-green-700' :
-                        redemption.status === 'used' ? 'bg-slate-100 text-slate-600' :
-                        'bg-red-50 text-red-700'
-                      }`}>
-                        {redemption.status}
-                      </span>
+                      <p className="text-slate-500 font-medium">No transaction history yet.</p>
                     </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {transactions.map((transaction, index) => (
+                        <motion.div
+                          key={transaction.id}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.03 }}
+                          className="flex justify-between items-center p-4 rounded-2xl border border-slate-200/60 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200 bg-white"
+                        >
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              transaction.points > 0 ? 'bg-green-50' : 'bg-red-50'
+                            }`}>
+                              <TrendingUp className={`w-4 h-4 ${transaction.points > 0 ? 'text-green-700' : 'text-red-500 rotate-180'}`} />
+                            </div>
+                            <div>
+                              <div className="font-medium text-slate-800 text-sm">{transaction.reason}</div>
+                              <div className="text-xs text-slate-400">
+                                {new Date(transaction.created_at).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                          <div className={`text-lg font-bold ${transaction.points > 0 ? 'text-green-700' : 'text-red-500'}`}>
+                            {transaction.points > 0 ? '+' : ''}{transaction.points}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
-                    <div className="bg-slate-50 p-3 rounded-xl">
-                      <div className="text-sm text-slate-500 mb-1">Redemption Code</div>
-                      <div className="text-lg font-mono font-bold text-slate-900">{redemption.code}</div>
+              {activeTab === 'redemptions' && (
+                <div>
+                  {redemptions.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+                        <ShoppingBag className="w-8 h-8 text-slate-300" />
+                      </div>
+                      <p className="text-slate-500 font-medium">No redemptions yet.</p>
+                      <p className="text-sm text-slate-400 mt-1">Start redeeming rewards to see them here!</p>
                     </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {redemptions.map((redemption, index) => (
+                        <motion.div
+                          key={redemption.id}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.06, duration: 0.35 }}
+                          className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h4 className="font-semibold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{redemption.loyalty_rewards.name}</h4>
+                              <p className="text-sm text-slate-400">{redemption.loyalty_rewards.description}</p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              redemption.status === 'active' ? 'bg-green-50 text-green-700' :
+                              redemption.status === 'used' ? 'bg-slate-100 text-slate-600' :
+                              'bg-red-50 text-red-600'
+                            }`}>
+                              {redemption.status.charAt(0).toUpperCase() + redemption.status.slice(1)}
+                            </span>
+                          </div>
 
-                    <div className="mt-3 text-sm text-slate-500">
-                      <p>Points Spent: {redemption.points_spent}</p>
-                      <p>Expires: {new Date(redemption.expires_at).toLocaleDateString()}</p>
-                      {redemption.used_at && (
-                        <p className="flex items-center gap-1 text-green-700">
-                          <CheckCircle className="w-4 h-4" />
-                          Used on {new Date(redemption.used_at).toLocaleDateString()}
-                        </p>
-                      )}
+                          <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100">
+                            <div className="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider">Redemption Code</div>
+                            <div className="text-lg font-mono font-bold text-slate-800 tracking-wider">{redemption.code}</div>
+                          </div>
+
+                          <div className="mt-4 flex items-center gap-4 text-sm text-slate-400">
+                            <p className="flex items-center gap-1.5">
+                              <Star className="w-3.5 h-3.5" />
+                              {redemption.points_spent} pts
+                            </p>
+                            <p>Expires: {new Date(redemption.expires_at).toLocaleDateString()}</p>
+                            {redemption.used_at && (
+                              <p className="flex items-center gap-1.5 text-green-700">
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                Used {new Date(redemption.used_at).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
