@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Plus, Users, MapPin } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -324,34 +325,30 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
 
   return (
     <>
-      <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-[56px] z-10">
+      <div className="px-4 py-3 border-b border-slate-100 bg-white sticky top-[56px] z-10">
         <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-4 px-4 py-4 min-w-max">
-            {storyPreviews.map((preview) => (
-              <button
+          <div className="flex gap-4 min-w-max">
+            {storyPreviews.map((preview, index) => (
+              <motion.div
                 key={preview.id}
-                onClick={() => handleStoryClick(preview.ownerId, preview.type)}
-                className="flex flex-col items-center gap-2 group flex-shrink-0"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
               >
-                <div className="relative">
-                  {preview.id !== 'create' && (
-                    <div className={`absolute -inset-[3px] rounded-full ${
-                      preview.hasUnread
-                        ? 'bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500'
-                        : 'bg-slate-300 dark:bg-slate-700'
-                    }`}>
-                      <div className="w-full h-full rounded-full bg-white dark:bg-slate-900 m-[3px]" />
-                    </div>
-                  )}
-
+                <button
+                  onClick={() => handleStoryClick(preview.ownerId, preview.type)}
+                  className="flex flex-col items-center gap-2 group flex-shrink-0"
+                >
                   <div className="relative">
-                    <div className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center ${
+                    <div className={`w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center ${
                       preview.id === 'create'
-                        ? 'bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 border-2 border-slate-300 dark:border-slate-600'
-                        : 'bg-white dark:bg-slate-900'
+                        ? 'border-2 border-dashed border-slate-200'
+                        : preview.hasUnread
+                        ? 'ring-2 ring-green-600'
+                        : 'ring-2 ring-slate-200'
                     } group-hover:scale-105 transition-transform`}>
                       {preview.id === 'create' ? (
-                        <Plus className="w-8 h-8 text-slate-600 dark:text-slate-400" />
+                        <Plus className="w-8 h-8 text-green-700" />
                       ) : preview.avatarUrl ? (
                         <img
                           src={preview.avatarUrl}
@@ -359,7 +356,7 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                        <div className="w-full h-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
                           {preview.type === 'facility' ? (
                             <MapPin className="w-8 h-8 text-white" />
                           ) : (
@@ -370,31 +367,25 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
                     </div>
 
                     {preview.name === 'Your Story' && preview.id !== 'create' && (
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-700 rounded-full border-2 border-white flex items-center justify-center">
                         <Plus className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+
+                    {preview.type === 'facility' && preview.id !== 'create' && preview.name !== 'Your Story' && (
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-700 rounded-full border-2 border-white flex items-center justify-center">
+                        <MapPin className="w-3 h-3 text-white" />
                       </div>
                     )}
                   </div>
 
-                  {preview.type === 'facility' && preview.id !== 'create' && preview.name !== 'Your Story' && (
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
-                      <MapPin className="w-3 h-3 text-white" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="text-center max-w-[72px]">
-                  <span className={`text-xs font-medium truncate block ${
-                    preview.id === 'create'
-                      ? 'text-slate-600 dark:text-slate-400'
-                      : preview.hasUnread
-                      ? 'text-slate-900 dark:text-white font-semibold'
-                      : 'text-slate-500 dark:text-slate-500'
-                  }`}>
-                    {preview.name}
-                  </span>
-                </div>
-              </button>
+                  <div className="text-center max-w-[72px]">
+                    <span className="text-[11px] font-medium text-slate-600 truncate block">
+                      {preview.name}
+                    </span>
+                  </div>
+                </button>
+              </motion.div>
             ))}
           </div>
         </div>

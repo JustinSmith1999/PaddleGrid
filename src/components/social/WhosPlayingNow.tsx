@@ -124,41 +124,41 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
   if (activeBookings.length === 0) return null;
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
-      <div className="px-6 py-5 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="px-5 pt-5 pb-3">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+            <Activity className="w-5 h-5 text-green-700" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           </div>
-          <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
             Playing Now
           </h2>
         </div>
       </div>
 
-      <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
+      <div className="divide-y divide-slate-100">
         {activeBookings.map((booking) => (
           <button
             key={booking.id}
             onClick={() => onFacilityClick?.(booking.facilityId)}
-            className="w-full px-6 py-4 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 dark:hover:from-emerald-900/10 dark:hover:to-teal-900/10 transition-all duration-200 text-left group"
+            className="w-full px-5 py-2.5 hover:bg-slate-50 transition-all text-left group"
           >
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-slate-900 dark:text-white text-sm mb-1">
+                  <div className="font-bold text-slate-900 text-sm mb-1">
                     {booking.courtName}
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     <MapPin className="w-3 h-3 flex-shrink-0" />
                     <span className="truncate">{booking.facilityName}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex-shrink-0">
-                  <Clock className="w-3 h-3 text-emerald-700 dark:text-emerald-400" />
-                  <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-50 rounded-full flex-shrink-0">
+                  <Clock className="w-3 h-3 text-green-700" />
+                  <span className="text-[10px] font-bold text-green-700">
                     LIVE
                   </span>
                 </div>
@@ -170,7 +170,7 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
                     {booking.players.slice(0, 3).map((player) => (
                       <div
                         key={player.id}
-                        className="w-7 h-7 rounded-full border-2 border-white dark:border-slate-800 overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center"
+                        className="w-7 h-7 rounded-full ring-2 ring-white shadow-sm overflow-hidden bg-green-700 flex items-center justify-center"
                       >
                         {player.avatarUrl ? (
                           <img
@@ -184,12 +184,12 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
                       </div>
                     ))}
                   </div>
-                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                  <span className="text-xs font-medium text-slate-500">
                     {booking.players.length} {booking.players.length === 1 ? 'player' : 'players'}
                   </span>
                 </div>
 
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <span className="text-xs font-semibold text-slate-500">
                   {formatTimeRemaining(booking.endTime)}
                 </span>
               </div>

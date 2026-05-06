@@ -175,87 +175,82 @@ export default function WeatherWidget({ latitude, longitude, locationName }: Wea
     weather.current.windSpeed < 15;
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-850 rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-xl shadow-slate-200/40 dark:shadow-slate-950/40">
-      <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-800/80 border-b border-slate-200/80 dark:border-slate-700/80">
-        <div>
-          <h2 className="font-black text-xl text-slate-900 dark:text-white tracking-tight">
-            Court Conditions
-          </h2>
-          {weather.location && (
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-              {weather.location}
-            </p>
-          )}
-        </div>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+      <div className="px-5 pt-5 pb-3">
+        <h2 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          Court Conditions
+        </h2>
+        {weather.location && (
+          <p className="text-xs text-slate-500 mt-0.5">
+            {weather.location}
+          </p>
+        )}
       </div>
 
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-5 pt-2">
+        <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-4">
             {getWeatherIcon(weather.current.condition)}
             <div>
-              <div className="text-4xl font-black text-slate-900 dark:text-white">
+              <div className="text-3xl font-bold text-slate-900">
                 {weather.current.temp}°
               </div>
-              <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-slate-500">
                 {weather.current.condition}
               </div>
             </div>
           </div>
 
-          <div className={`px-4 py-2 rounded-full ${
+          <div className={`px-3 py-1 rounded-lg ${
             isGoodForOutdoor
-              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-              : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+              ? 'bg-green-50 text-green-700'
+              : 'bg-orange-50 text-orange-700'
           }`}>
-            <div className="text-xs font-bold">
-              {isGoodForOutdoor ? 'Great' : 'Fair'}
-            </div>
-            <div className="text-[10px] font-semibold">
-              for outdoor
+            <div className="text-xs font-semibold">
+              {isGoodForOutdoor ? 'Great for pickleball' : 'Fair for outdoor'}
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-5">
           <div className="flex items-center gap-2 text-sm">
-            <Wind className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-            <span className="text-slate-600 dark:text-slate-400">Wind</span>
-            <span className="font-bold text-slate-900 dark:text-white ml-auto">
+            <Wind className="w-4 h-4 text-slate-400" />
+            <span className="text-slate-500">Wind</span>
+            <span className="font-bold text-slate-900 ml-auto">
               {weather.current.windSpeed} mph
             </span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <Droplets className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-            <span className="text-slate-600 dark:text-slate-400">Humidity</span>
-            <span className="font-bold text-slate-900 dark:text-white ml-auto">
+            <Droplets className="w-4 h-4 text-slate-400" />
+            <span className="text-slate-500">Humidity</span>
+            <span className="font-bold text-slate-900 ml-auto">
               {weather.current.humidity}%
             </span>
           </div>
         </div>
 
         <div className="space-y-3">
-          <div className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+          <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             3-Day Forecast
           </div>
           <div className="grid grid-cols-3 gap-3">
             {weather.forecast.map((day, index) => (
               <div
                 key={index}
-                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 text-center"
+                className="bg-slate-50 rounded-xl p-3 text-center"
               >
-                <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                <div className="text-xs font-semibold text-slate-500 mb-2">
                   {day.day}
                 </div>
                 <div className="flex justify-center mb-2">
                   {getSmallWeatherIcon(day.condition)}
                 </div>
                 <div className="flex items-center justify-center gap-1 text-xs">
-                  <span className="font-bold text-slate-900 dark:text-white">
+                  <span className="font-bold text-slate-900">
                     {day.high}°
                   </span>
-                  <span className="text-slate-400 dark:text-slate-600">/</span>
-                  <span className="text-slate-500 dark:text-slate-500">
+                  <span className="text-slate-400">/</span>
+                  <span className="text-slate-500">
                     {day.low}°
                   </span>
                 </div>
@@ -265,9 +260,9 @@ export default function WeatherWidget({ latitude, longitude, locationName }: Wea
         </div>
 
         {!isGoodForOutdoor && (
-          <div className="mt-4 flex items-start gap-2 p-3 bg-orange-50 dark:bg-orange-900/10 rounded-xl">
-            <AlertCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
-            <div className="text-xs text-orange-700 dark:text-orange-400">
+          <div className="mt-4 flex items-start gap-2 p-3 bg-orange-50 rounded-xl">
+            <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+            <div className="text-xs text-orange-700">
               Consider indoor courts or check weather updates before booking outdoor courts
             </div>
           </div>

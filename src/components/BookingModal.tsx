@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Calendar, Clock, DollarSign, Loader2, AlertCircle, Info, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { isCourtAvailable, getCourtBlocks, getAvailableSlots } from '../lib/courtAvailability';
@@ -125,10 +126,10 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
   // Show loading state while checking waiver
   if (hasSignedWaiver === null) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full p-8">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-8">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700"></div>
           </div>
         </div>
       </div>
@@ -278,203 +279,256 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
 
   if (bookingSuccess) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
-          <p className="text-gray-600">Your court reservation has been successfully created.</p>
-        </div>
-      </div>
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-8 text-center"
+          >
+            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Booking Confirmed!</h3>
+            <p className="text-slate-500">Your court reservation has been successfully created.</p>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   if (paymentUrl) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-8 relative"
           >
-            <X className="w-6 h-6" />
-          </button>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <DollarSign className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Complete Payment</h3>
-            <p className="text-gray-600 mb-6">Your booking has been reserved. Please complete payment to confirm your reservation.</p>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 font-medium">Total Amount:</span>
-                <span className="text-2xl font-bold text-blue-600">${totalAmount.toFixed(2)}</span>
-              </div>
-            </div>
-
             <button
-              onClick={handlePaymentRedirect}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center"
+              onClick={onClose}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
             >
-              <ExternalLink className="w-5 h-5 mr-2" />
-              Complete Payment on CourtReserve
+              <X className="w-6 h-6" />
             </button>
 
-            <p className="text-sm text-gray-500 mt-4">
-              You will be redirected to CourtReserve's secure payment page
-            </p>
-          </div>
-        </div>
-      </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="w-8 h-8 text-green-700" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Complete Payment</h3>
+              <p className="text-slate-500 mb-6">Your booking has been reserved. Please complete payment to confirm your reservation.</p>
+
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-700 font-medium">Total Amount:</span>
+                  <span className="text-2xl font-bold text-green-700">${totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={handlePaymentRedirect}
+                className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-sm flex items-center justify-center"
+              >
+                <ExternalLink className="w-5 h-5 mr-2" />
+                Complete Payment on CourtReserve
+              </button>
+
+              <p className="text-sm text-slate-500 mt-4">
+                You will be redirected to CourtReserve's secure payment page
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full relative max-h-[90vh] overflow-y-auto"
         >
-          <X className="w-6 h-6" />
-        </button>
-
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Book {court.name}</h2>
-        <p className="text-gray-600 mb-6">Select your preferred date and time</p>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-              <Calendar className="w-4 h-4 mr-2 text-emerald-600" />
-              Date
-            </label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-            />
-            {availabilityWarning && (
-              <div className="mt-2 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>{availabilityWarning} Please check available times carefully.</span>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-              <Clock className="w-4 h-4 mr-2 text-emerald-600" />
-              Duration (hours)
-            </label>
-            <select
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+          <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Book {court.name}</h2>
+              <p className="text-slate-500 text-sm mt-1">Select your preferred date and time</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-600 transition-colors"
             >
-              <option value={0.5}>30 minutes</option>
-              <option value={1}>1 hour</option>
-              <option value={1.5}>1.5 hours</option>
-              <option value={2}>2 hours</option>
-              <option value={3}>3 hours</option>
-              <option value={4}>4 hours</option>
-            </select>
+              <X className="w-6 h-6" />
+            </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-              <Clock className="w-4 h-4 mr-2 text-emerald-600" />
-              Available Time Slots
-            </label>
-            <select
-              value={selectedSlot}
-              onChange={(e) => handleSlotSelection(e.target.value)}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
-            >
-              <option value="">Select a time slot...</option>
-              {availableSlots.map((slot, index) => (
-                <option key={index} value={`${slot.start}|${slot.end}`}>
-                  {slot.label}
-                </option>
-              ))}
-            </select>
-            {availableSlots.length === 0 && selectedDate && (
-              <div className="mt-2 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>No available time slots for this duration on this date. Try selecting a different date or shorter duration.</span>
+          <div className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center">
+                  <Calendar className="w-4 h-4 mr-2 text-green-700" />
+                  Date
+                </label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  required
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all bg-white"
+                />
+                {availabilityWarning && (
+                  <div className="mt-2 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{availabilityWarning} Please check available times carefully.</span>
+                  </div>
+                )}
               </div>
-            )}
-            {availableSlots.length > 0 && (
-              <div className="mt-2 flex items-start gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg p-2">
-                <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>{availableSlots.length} time slot{availableSlots.length !== 1 ? 's' : ''} available</span>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center">
+                  <Clock className="w-4 h-4 mr-2 text-green-700" />
+                  Duration (hours)
+                </label>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all bg-white"
+                >
+                  <option value={0.5}>30 minutes</option>
+                  <option value={1}>1 hour</option>
+                  <option value={1.5}>1.5 hours</option>
+                  <option value={2}>2 hours</option>
+                  <option value={3}>3 hours</option>
+                  <option value={4}>4 hours</option>
+                </select>
               </div>
-            )}
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center">
+                  <Clock className="w-4 h-4 mr-2 text-green-700" />
+                  Available Time Slots
+                </label>
+                <select
+                  value={selectedSlot}
+                  onChange={(e) => handleSlotSelection(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all bg-white"
+                >
+                  <option value="">Select a time slot...</option>
+                  {availableSlots.map((slot, index) => (
+                    <option key={index} value={`${slot.start}|${slot.end}`}>
+                      {slot.label}
+                    </option>
+                  ))}
+                </select>
+                {availableSlots.length === 0 && selectedDate && (
+                  <div className="mt-2 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>No available time slots for this duration on this date. Try selecting a different date or shorter duration.</span>
+                  </div>
+                )}
+                {availableSlots.length > 0 && (
+                  <div className="mt-2 flex items-start gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
+                    <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{availableSlots.length} time slot{availableSlots.length !== 1 ? 's' : ''} available</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Notes (optional)
+                </label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all resize-none bg-white"
+                  placeholder="Any special requests or notes..."
+                />
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-700 font-medium">Duration:</span>
+                  <span className="text-slate-900">{duration} hour{duration !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-700 font-medium flex items-center">
+                    <DollarSign className="w-4 h-4 mr-1" />
+                    Total Amount:
+                  </span>
+                  <span className="text-2xl font-bold text-green-700">
+                    ${totalAmount.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-semibold py-3 px-4 transition-all duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || !selectedSlot}
+                  className="flex-[2] bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Processing Booking...
+                    </>
+                  ) : (
+                    <>Book Now & Pay</>
+                  )}
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-500 text-center">
+                Payment will be processed securely
+              </p>
+            </form>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Notes (optional)
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all resize-none"
-              placeholder="Any special requests or notes..."
-            />
-          </div>
-
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-700 font-medium">Duration:</span>
-              <span className="text-gray-900">{duration} hour{duration !== 1 ? 's' : ''}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700 font-medium flex items-center">
-                <DollarSign className="w-4 h-4 mr-1" />
-                Total Amount:
-              </span>
-              <span className="text-2xl font-bold text-emerald-600">
-                ${totalAmount.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading || !selectedSlot}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Processing Booking...
-              </>
-            ) : (
-              <>Book Now & Pay</>
-            )}
-          </button>
-
-          <p className="text-xs text-gray-500 text-center">
-            Payment will be processed securely
-          </p>
-        </form>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

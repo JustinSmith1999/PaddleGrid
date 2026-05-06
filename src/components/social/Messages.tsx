@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft, Plus, Users, Menu } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { moderateContent, moderateImageFile } from '../../lib/contentModeration';
@@ -469,26 +470,27 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-full bg-white dark:bg-slate-900">
-      <div className={`w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-800 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800">
+    <div className="flex h-full bg-white">
+      {/* Conversation List */}
+      <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-slate-200/60 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
+        <div className="px-5 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2 mb-3">
             {onToggleSidebar && (
               <button
                 onClick={onToggleSidebar}
-                className="hidden lg:flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                className="hidden lg:flex p-2 hover:bg-slate-50 rounded-lg transition-colors"
                 title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
               >
-                <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <Menu className="w-5 h-5 text-slate-500" />
               </button>
             )}
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Messages</h2>
+            <h2 className="text-xl font-bold text-slate-900">Messages</h2>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -497,7 +499,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-700/20 focus:border-green-700"
             />
           </div>
         </div>
@@ -508,33 +510,36 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
               <button
                 key={conv.id}
                 onClick={() => setSelectedConversation(conv.id)}
-                className={`w-full p-4 flex items-start gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-b border-slate-100 dark:border-slate-800 ${
-                  selectedConversation === conv.id ? 'bg-slate-100 dark:bg-slate-800' : ''
+                className={`w-full px-4 py-3.5 flex items-center gap-3 hover:bg-slate-50 transition-colors border-b border-slate-100 ${
+                  selectedConversation === conv.id ? 'bg-green-50 border-l-2 border-l-green-700' : ''
                 }`}
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
-                  {conv.other_user_avatar ? (
-                    <img
-                      src={conv.other_user_avatar}
-                      alt={conv.other_user_name}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-6 h-6 text-white" />
-                  )}
+                <div className="relative flex-shrink-0">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+                    {conv.other_user_avatar ? (
+                      <img
+                        src={conv.other_user_avatar}
+                        alt={conv.other_user_name}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 text-white" />
+                    )}
+                  </div>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 ring-2 ring-white rounded-full" />
                 </div>
                 <div className="flex-1 text-left min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="font-semibold text-slate-900 dark:text-white flex-1">
+                  <div className="flex items-center justify-between gap-2 mb-0.5">
+                    <span className="font-semibold text-slate-900 flex-1 truncate">
                       {conv.other_user_name}
                     </span>
                     {conv.unread_count > 0 && (
-                      <span className="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full flex-shrink-0">
+                      <span className="bg-green-700 text-white text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0">
                         {conv.unread_count}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+                  <p className="text-sm text-slate-500 truncate">
                     {conv.last_message}
                   </p>
                 </div>
@@ -542,96 +547,112 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
             ))
           ) : (
             <div className="p-8 text-center">
-              <MessageCircle className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
-              <p className="text-sm text-slate-600 dark:text-slate-400">No conversations yet</p>
+              <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-3">
+                <MessageCircle className="w-7 h-7 text-green-700" />
+              </div>
+              <p className="text-sm text-slate-500">No conversations yet</p>
             </div>
           )}
         </div>
       </div>
 
+      {/* Chat Area */}
       <div className={`flex-1 flex flex-col ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
         {selectedConversation && (
-          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="bg-white border-b border-slate-100 px-5 py-4 flex items-center gap-3">
             <button
               onClick={() => setSelectedConversation(null)}
-              className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+              className="md:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-50 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-              {conversations.find(c => c.id === selectedConversation)?.other_user_avatar ? (
-                <img
-                  src={conversations.find(c => c.id === selectedConversation)?.other_user_avatar || ''}
-                  alt="User"
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <User className="w-5 h-5 text-white" />
-              )}
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+                {conversations.find(c => c.id === selectedConversation)?.other_user_avatar ? (
+                  <img
+                    src={conversations.find(c => c.id === selectedConversation)?.other_user_avatar || ''}
+                    alt="User"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-white" />
+                )}
+              </div>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 ring-2 ring-white rounded-full" />
             </div>
-            <span className="font-semibold text-slate-900 dark:text-white">
-              {conversations.find(c => c.id === selectedConversation)?.other_user_name}
-            </span>
+            <div>
+              <span className="font-semibold text-slate-900 block">
+                {conversations.find(c => c.id === selectedConversation)?.other_user_name}
+              </span>
+              <span className="text-[10px] text-slate-400">Online</span>
+            </div>
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50">
           {selectedConversation ? (
             messages.length > 0 ? (
               <>
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-[70%] ${msg.sender_id === user?.id ? '' : 'flex items-start gap-2'}`}>
-                      {msg.sender_id !== user?.id && (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
-                          {msg.sender_avatar ? (
-                            <img src={msg.sender_avatar} alt={msg.sender_name} className="w-full h-full rounded-full object-cover" />
-                          ) : (
-                            <User className="w-4 h-4 text-white" />
-                          )}
+                <AnimatePresence initial={false}>
+                  {messages.map((msg) => (
+                    <motion.div
+                      key={msg.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`max-w-[70%] ${msg.sender_id !== user?.id ? 'flex items-end gap-2' : ''}`}>
+                        {msg.sender_id !== user?.id && (
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center flex-shrink-0 mb-5">
+                            {msg.sender_avatar ? (
+                              <img src={msg.sender_avatar} alt={msg.sender_name} className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                              <User className="w-3.5 h-3.5 text-white" />
+                            )}
+                          </div>
+                        )}
+                        <div>
+                          <div
+                            className={`overflow-hidden ${
+                              msg.sender_id === user?.id
+                                ? 'bg-green-700 text-white rounded-2xl rounded-br-md'
+                                : 'bg-slate-100 text-slate-800 rounded-2xl rounded-bl-md'
+                            }`}
+                          >
+                            {msg.media_url && (
+                              <div className="max-w-sm">
+                                {msg.media_type === 'image' ? (
+                                  <img src={msg.media_url} alt="Shared image" className="w-full h-auto" />
+                                ) : msg.media_type === 'video' ? (
+                                  <video src={msg.media_url} controls className="w-full h-auto" />
+                                ) : null}
+                              </div>
+                            )}
+                            {msg.content && (
+                              <p className="text-sm px-4 py-2.5">{msg.content}</p>
+                            )}
+                          </div>
+                          <p className={`text-[10px] text-slate-400 mt-1 ${
+                            msg.sender_id === user?.id ? 'text-right' : ''
+                          }`}>
+                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <div
-                          className={`rounded-2xl overflow-hidden ${
-                            msg.sender_id === user?.id
-                              ? 'bg-emerald-500 text-white'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                          }`}
-                        >
-                          {msg.media_url && (
-                            <div className="max-w-sm">
-                              {msg.media_type === 'image' ? (
-                                <img src={msg.media_url} alt="Shared image" className="w-full h-auto" />
-                              ) : msg.media_type === 'video' ? (
-                                <video src={msg.media_url} controls className="w-full h-auto" />
-                              ) : null}
-                            </div>
-                          )}
-                          {msg.content && (
-                            <p className="text-sm px-4 py-2">{msg.content}</p>
-                          )}
-                        </div>
-                        <p className={`text-xs mt-1 ${
-                          msg.sender_id === user?.id ? 'text-right text-slate-500' : 'text-slate-500 dark:text-slate-400'
-                        }`}>
-                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
                 <div ref={messagesEndRef} />
               </>
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <MessageCircle className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
-                  <p className="text-slate-600 dark:text-slate-400">Start the conversation</p>
-                  <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
+                  <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+                    <MessageCircle className="w-8 h-8 text-green-700" />
+                  </div>
+                  <p className="font-medium text-slate-900">Start the conversation</p>
+                  <p className="text-sm text-slate-400 mt-1">
                     Send a message to begin chatting
                   </p>
                 </div>
@@ -640,11 +661,13 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
           ) : (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <MessageCircle className="w-20 h-20 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+                <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="w-10 h-10 text-green-700" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">
                   Select a conversation
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-slate-400">
                   Choose a conversation from the list to start chatting
                 </p>
               </div>
@@ -652,7 +675,8 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
           )}
         </div>
 
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+        {/* Input Area */}
+        <div className="bg-white border-t border-slate-200/60 px-4 py-3">
           {previewUrl && (
             <div className="mb-3 relative inline-block">
               <div className="relative">
@@ -670,7 +694,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
               </div>
             </div>
           )}
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <input
               type="file"
               ref={fileInputRef}
@@ -681,7 +705,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={!selectedConversation}
-              className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Attach image or video"
             >
               <ImageIcon className="w-5 h-5" />
@@ -692,13 +716,13 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && !sendingMessage && selectedConversation && sendMessage()}
-              className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-700/20 focus:border-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!selectedConversation || sendingMessage || uploadingMedia}
             />
             <button
               onClick={sendMessage}
               disabled={!selectedConversation || (!newMessage.trim() && !selectedFile) || sendingMessage || uploadingMedia}
-              className="p-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-green-700 hover:bg-green-800 text-white rounded-xl p-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {sendingMessage || uploadingMedia ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -712,20 +736,20 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
 
       {/* New Message Modal */}
       {showNewMessageModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-emerald-500" />
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <Users className="w-5 h-5 text-green-700" />
+                <h3 className="text-lg font-semibold text-slate-900">
                   Start New Conversation
                 </h3>
               </div>
               <button
                 onClick={() => setShowNewMessageModal(false)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                className="p-2 hover:bg-slate-50 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <X className="w-5 h-5 text-slate-400" />
               </button>
             </div>
             <div className="overflow-y-auto max-h-[calc(80vh-5rem)]">

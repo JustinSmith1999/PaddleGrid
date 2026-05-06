@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Trophy, Award, Star, Lock, Sparkles, Building2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -106,16 +107,18 @@ export default function AchievementsBadges() {
       case 'rare':
         return 'border-blue-400';
       default:
-        return 'border-gray-300';
+        return 'border-slate-200';
     }
   };
 
   if (!user) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-8 text-center">
-        <Trophy className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-        <p className="text-gray-600 font-medium mb-2">Sign in to track achievements</p>
-        <p className="text-sm text-gray-500">Unlock badges and earn rewards as you play</p>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center">
+        <Trophy className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+        <p className="text-slate-700 font-medium mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          Sign in to track achievements
+        </p>
+        <p className="text-sm text-slate-400">Unlock badges and earn rewards as you play</p>
       </div>
     );
   }
@@ -125,15 +128,22 @@ export default function AchievementsBadges() {
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Achievements</h1>
-            <p className="text-sm sm:text-base text-gray-600 mt-1">Track your progress and unlock rewards</p>
+            <h1
+              className="text-2xl sm:text-3xl font-bold text-slate-900"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              Achievements
+            </h1>
+            <p className="text-sm sm:text-base text-slate-500 mt-1">
+              Track your progress and unlock rewards
+            </p>
           </div>
 
           {facilities.length > 1 && (
             <select
               value={selectedFacility || ''}
               onChange={(e) => setSelectedFacility(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-green-700 focus:border-transparent bg-white"
             >
               {facilities.map((facility) => (
                 <option key={facility.id} value={facility.id}>
@@ -145,21 +155,21 @@ export default function AchievementsBadges() {
         </div>
 
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-gray-900">{unlockedCount}</div>
-            <div className="text-xs text-gray-500 mt-0.5">Unlocked</div>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold text-slate-900">{unlockedCount}</div>
+            <div className="text-xs text-slate-400 mt-0.5">Unlocked</div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-emerald-600">{totalPoints}</div>
-            <div className="text-xs text-gray-500 mt-0.5">Points</div>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold text-green-700">{totalPoints}</div>
+            <div className="text-xs text-slate-400 mt-0.5">Points</div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold text-slate-900">
               {achievements.length > 0
                 ? Math.round((unlockedCount / achievements.length) * 100)
                 : 0}%
             </div>
-            <div className="text-xs text-gray-500 mt-0.5">Complete</div>
+            <div className="text-xs text-slate-400 mt-0.5">Complete</div>
           </div>
         </div>
       </div>
@@ -167,45 +177,45 @@ export default function AchievementsBadges() {
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setFilter('all')}
-          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
             filter === 'all'
-              ? 'bg-emerald-500 text-white'
-              : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
           }`}
         >
           All
         </button>
         <button
           onClick={() => setFilter('unlocked')}
-          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
             filter === 'unlocked'
-              ? 'bg-emerald-500 text-white'
-              : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
           }`}
         >
           Unlocked
         </button>
         <button
           onClick={() => setFilter('locked')}
-          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
             filter === 'locked'
-              ? 'bg-emerald-500 text-white'
-              : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
           }`}
         >
           Locked
         </button>
 
-        {categories.length > 1 && <div className="w-px h-6 sm:h-8 bg-gray-200 mx-1"></div>}
+        {categories.length > 1 && <div className="w-px h-6 sm:h-8 bg-slate-200 mx-1"></div>}
 
         {categories.map(category => (
           <button
             key={category}
             onClick={() => setCategoryFilter(category)}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium capitalize transition-colors ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium capitalize transition-colors ${
               categoryFilter === category
-                ? 'bg-gray-900 text-white'
-                : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
+                ? 'bg-green-50 text-green-700'
+                : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'
             }`}
           >
             {category}
@@ -216,86 +226,98 @@ export default function AchievementsBadges() {
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-100 h-40 sm:h-44 rounded-lg"></div>
+            <div key={i} className="animate-pulse bg-slate-100 h-40 sm:h-44 rounded-2xl"></div>
           ))}
         </div>
       ) : filteredAchievements.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {filteredAchievements.map((achievement) => {
+          {filteredAchievements.map((achievement, index) => {
             return (
-              <div
+              <motion.div
                 key={achievement.achievement_code}
-                className={`relative rounded-lg border bg-white p-3 sm:p-5 transition-all ${
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: index * 0.04, type: 'spring', stiffness: 260, damping: 20 }}
+                className={`relative rounded-2xl border bg-white p-3 sm:p-5 transition-all ${
                   achievement.is_unlocked
                     ? `${getRarityBorder(achievement.rarity)} hover:shadow-md`
-                    : 'border-gray-200 opacity-60'
+                    : 'border-slate-100 opacity-60'
                 }`}
               >
                 {!achievement.is_unlocked && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 rounded-lg backdrop-blur-[2px]">
-                    <Lock className="w-7 sm:w-8 h-7 sm:h-8 text-gray-400" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 rounded-2xl backdrop-blur-[2px]">
+                    <Lock className="w-7 sm:w-8 h-7 sm:h-8 text-slate-400" />
                   </div>
                 )}
 
                 <div className="text-center">
                   <div
-                    className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 rounded-full bg-gradient-to-br ${getRarityColor(
-                      achievement.rarity
-                    )} flex items-center justify-center text-3xl sm:text-4xl`}
+                    className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 rounded-xl flex items-center justify-center text-3xl sm:text-4xl ${
+                      achievement.is_unlocked
+                        ? 'bg-green-50 text-green-700'
+                        : 'bg-slate-50 text-slate-400'
+                    }`}
                   >
                     {achievement.icon}
                   </div>
 
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1 line-clamp-1">{achievement.achievement_name}</h3>
-                  <p className="text-[10px] sm:text-xs text-gray-500 mb-2 sm:mb-3 line-clamp-2">{achievement.achievement_description}</p>
+                  <h3
+                    className="font-semibold text-slate-900 text-xs sm:text-sm mb-1 line-clamp-1"
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
+                  >
+                    {achievement.achievement_name}
+                  </h3>
+                  <p className="text-[10px] sm:text-xs text-slate-400 mb-2 sm:mb-3 line-clamp-2">
+                    {achievement.achievement_description}
+                  </p>
 
                   <div className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <span
-                      className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium ${
+                      className={`px-1.5 sm:px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-medium ${
                         achievement.rarity === 'legendary'
-                          ? 'bg-yellow-100 text-yellow-700'
+                          ? 'bg-yellow-50 text-yellow-700'
                           : achievement.rarity === 'epic'
-                          ? 'bg-purple-100 text-purple-700'
+                          ? 'bg-purple-50 text-purple-700'
                           : achievement.rarity === 'rare'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'bg-slate-100 text-slate-500'
                       }`}
                     >
                       {achievement.rarity}
                     </span>
-                    <span className="text-emerald-600 font-semibold text-[10px] sm:text-xs">
+                    <span className="text-green-700 font-semibold text-[10px] sm:text-xs">
                       +{achievement.points}
                     </span>
                   </div>
 
                   {!achievement.is_unlocked && achievement.progress_percentage > 0 && (
                     <div className="mt-2 sm:mt-3">
-                      <div className="w-full bg-gray-200 rounded-full h-1 sm:h-1.5">
+                      <div className="w-full bg-slate-100 rounded-full h-1 sm:h-1.5">
                         <div
-                          className="bg-emerald-500 h-1 sm:h-1.5 rounded-full transition-all"
+                          className="bg-green-700 h-1 sm:h-1.5 rounded-full transition-all"
                           style={{ width: `${achievement.progress_percentage}%` }}
                         ></div>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-gray-400 mt-1">
+                      <p className="text-[10px] sm:text-xs text-slate-400 mt-1">
                         {achievement.current_progress} / {achievement.required_threshold}
                       </p>
                     </div>
                   )}
 
                   {achievement.is_unlocked && achievement.unlocked_at && (
-                    <p className="text-[10px] sm:text-xs text-gray-400 mt-1.5 sm:mt-2">
+                    <p className="text-[10px] sm:text-xs text-slate-400 mt-1.5 sm:mt-2">
                       {new Date(achievement.unlocked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                   )}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       ) : (
         <div className="text-center py-20">
-          <Trophy className="w-16 h-16 mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-500">No achievements found</p>
+          <Trophy className="w-16 h-16 mx-auto text-slate-300 mb-3" />
+          <p className="text-slate-400">No achievements found</p>
         </div>
       )}
     </div>

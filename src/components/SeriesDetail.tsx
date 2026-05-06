@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { calculateSeriesPrice, formatTimeRange, getOccurrenceStatus } from '../lib/seriesUtils';
 import { ArrowLeft, Calendar, MapPin, Users, DollarSign, Clock, CheckCircle } from 'lucide-react';
@@ -112,21 +113,10 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
     return labels[type] || type;
   };
 
-  const getEventTypeColor = (type: string) => {
-    const colors: Record<string, string> = {
-      open_play: 'bg-blue-100 text-blue-800',
-      clinic: 'bg-green-100 text-green-800',
-      tournament: 'bg-purple-100 text-purple-800',
-      league: 'bg-orange-100 text-orange-800',
-      social: 'bg-pink-100 text-pink-800'
-    };
-    return colors[type] || 'bg-gray-100 text-gray-800';
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading series details...</div>
+        <div className="text-slate-400">Loading series details...</div>
       </div>
     );
   }
@@ -134,98 +124,123 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
   if (!series) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Series not found</div>
+        <div className="text-slate-400">Series not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-white/80 hover:text-white mb-6 transition"
+            className="flex items-center gap-2 text-slate-500 hover:text-green-700 mb-6 transition text-sm font-medium"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
             Back to Series
           </button>
 
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getEventTypeColor(series.event_type)}`}>
-                  {getEventTypeLabel(series.event_type)}
-                </span>
-                <span className="text-white/80">
-                  Skill Level: {series.skill_level_min} - {series.skill_level_max}
-                </span>
-              </div>
-              <h1 className="text-4xl font-bold mb-4">{series.title}</h1>
-              <p className="text-xl text-blue-100 mb-6">{series.description}</p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <Calendar className="w-6 h-6" />
-                  <div>
-                    <div className="text-sm text-blue-100">Sessions</div>
-                    <div className="font-semibold">{occurrences.length}</div>
-                  </div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6"
+          >
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="bg-green-50 text-green-700 rounded-lg px-3 py-1 text-xs font-semibold">
+                    {getEventTypeLabel(series.event_type)}
+                  </span>
+                  <span className="bg-slate-100 text-slate-600 rounded-lg px-3 py-1 text-xs font-semibold">
+                    Skill: {series.skill_level_min} - {series.skill_level_max}
+                  </span>
                 </div>
+                <h1
+                  className="text-2xl font-bold text-slate-900 mb-2"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                >
+                  {series.title}
+                </h1>
+                <p className="text-slate-500 mb-6">{series.description}</p>
 
-                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <Users className="w-6 h-6" />
-                  <div>
-                    <div className="text-sm text-blue-100">Max Capacity</div>
-                    <div className="font-semibold">{series.max_participants_per_session} per session</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-4">
+                    <Calendar className="w-5 h-5 text-green-700" />
+                    <div>
+                      <div className="text-xs text-slate-500">Sessions</div>
+                      <div className="font-semibold text-slate-900 text-sm">{occurrences.length}</div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <DollarSign className="w-6 h-6" />
-                  <div>
-                    <div className="text-sm text-blue-100">Price</div>
-                    <div className="font-semibold">${series.price_per_session}/session</div>
+                  <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-4">
+                    <Users className="w-5 h-5 text-green-700" />
+                    <div>
+                      <div className="text-xs text-slate-500">Max Capacity</div>
+                      <div className="font-semibold text-slate-900 text-sm">{series.max_participants_per_session} per session</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-4">
+                    <DollarSign className="w-5 h-5 text-green-700" />
+                    <div>
+                      <div className="text-xs text-slate-500">Price</div>
+                      <div className="font-semibold text-slate-900 text-sm">${series.price_per_session}/session</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Sessions List */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.1 }}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm"
+            >
+              <div className="p-6 border-b border-slate-100">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold">Select Sessions</h2>
+                  <h2
+                    className="text-lg font-bold text-slate-900"
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
+                  >
+                    Select Sessions
+                  </h2>
                   <div className="flex gap-2">
                     <button
                       onClick={selectAll}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-green-700 hover:text-green-800 font-semibold"
                     >
                       Select All
                     </button>
-                    <span className="text-gray-300">|</span>
+                    <span className="text-slate-200">|</span>
                     <button
                       onClick={clearSelection}
-                      className="text-sm text-gray-600 hover:text-gray-700 font-medium"
+                      className="text-sm text-slate-500 hover:text-slate-700 font-medium"
                     >
                       Clear
                     </button>
                   </div>
                 </div>
                 {series.series_discount_percentage > 0 && (
-                  <p className="text-sm text-green-600 mt-2">
+                  <p className="text-sm text-green-600 mt-2 font-medium">
                     Register for all sessions and save {series.series_discount_percentage}%!
                   </p>
                 )}
               </div>
 
-              <div className="divide-y divide-gray-200">
-                {occurrences.map((occ) => {
+              <div className="divide-y divide-slate-100">
+                {occurrences.map((occ, index) => {
                   const isRegistered = userRegistrations.includes(occ.id);
                   const isSelected = selectedOccurrences.has(occ.id);
                   const isFull = occ.current_registrants >= occ.max_participants;
@@ -235,29 +250,29 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                   return (
                     <label
                       key={occ.id}
-                      className={`flex items-center gap-4 p-6 transition ${
+                      className={`flex items-center gap-4 p-5 transition ${
                         isRegistered
                           ? 'bg-green-50 cursor-not-allowed'
                           : isSelected
-                          ? 'bg-blue-50'
-                          : 'hover:bg-gray-50 cursor-pointer'
+                          ? 'bg-green-50/50'
+                          : 'hover:bg-slate-50 cursor-pointer'
                       }`}
                     >
                       {isRegistered ? (
-                        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                       ) : (
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleOccurrence(occ.id)}
                           disabled={isRegistered}
-                          className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+                          className="w-5 h-5 text-green-700 rounded focus:ring-2 focus:ring-green-600 flex-shrink-0 accent-green-700"
                         />
                       )}
 
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="font-semibold text-gray-900">
+                        <div className="flex items-center gap-3 mb-1.5">
+                          <div className="font-semibold text-slate-900 text-sm">
                             {new Date(occ.occurrence_date).toLocaleDateString('en-US', {
                               weekday: 'long',
                               month: 'long',
@@ -265,23 +280,23 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                             })}
                           </div>
                           {status === 'today' && (
-                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">
+                            <span className="bg-green-50 text-green-700 rounded-lg px-3 py-1 text-xs font-semibold">
                               Today
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-6 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
+                        <div className="flex items-center gap-5 text-sm text-slate-500">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" />
                             {formatTimeRange(occ.start_time, occ.end_time)}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" />
                             {occ.courts?.name || 'Court TBD'}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4" />
+                          <div className="flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5" />
                             {isFull ? (
                               <span className="text-red-600 font-medium">Full</span>
                             ) : (
@@ -295,9 +310,9 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
 
                       <div className="text-right">
                         {isRegistered ? (
-                          <span className="text-green-600 font-medium">Registered</span>
+                          <span className="text-green-700 font-semibold text-sm">Registered</span>
                         ) : (
-                          <div className="font-semibold text-gray-900">
+                          <div className="font-semibold text-slate-900 text-sm">
                             ${series.price_per_session}
                           </div>
                         )}
@@ -306,35 +321,46 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
           </div>
 
+          {/* Registration Summary Sidebar */}
           <div>
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-6">
-              <div className="p-6 border-b border-gray-200">
-                <h3 className="text-lg font-semibold mb-4">Registration Summary</h3>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.2 }}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm sticky top-6"
+            >
+              <div className="p-6 border-b border-slate-100">
+                <h3
+                  className="text-lg font-bold text-slate-900 mb-4"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                >
+                  Registration Summary
+                </h3>
 
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Sessions Selected</span>
-                    <span className="font-medium">{selectedOccurrences.size}</span>
+                    <span className="text-slate-500">Sessions Selected</span>
+                    <span className="font-semibold text-slate-900">{selectedOccurrences.size}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Price Per Session</span>
-                    <span className="font-medium">${series.price_per_session}</span>
+                    <span className="text-slate-500">Price Per Session</span>
+                    <span className="font-semibold text-slate-900">${series.price_per_session}</span>
                   </div>
 
                   {selectedOccurrences.size === occurrences.length &&
                     series.series_discount_percentage > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Full Series Discount</span>
-                        <span className="font-medium">-{series.series_discount_percentage}%</span>
+                      <div className="flex justify-between text-green-700">
+                        <span className="font-medium">Full Series Discount</span>
+                        <span className="font-semibold">-{series.series_discount_percentage}%</span>
                       </div>
                     )}
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex justify-between text-lg font-bold">
+                <div className="mt-4 pt-4 border-t border-slate-100">
+                  <div className="flex justify-between text-lg font-bold text-slate-900">
                     <span>Total</span>
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
@@ -346,7 +372,7 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                   <button
                     onClick={() => onRegister(seriesId, Array.from(selectedOccurrences))}
                     disabled={selectedOccurrences.size === 0}
-                    className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-green-700 text-white rounded-xl hover:bg-green-800 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {selectedOccurrences.size === 0
                       ? 'Select Sessions to Continue'
@@ -356,23 +382,23 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                   </button>
 
                   {!series.allow_partial_registration && (
-                    <p className="text-xs text-gray-600 mt-3 text-center">
+                    <p className="text-xs text-slate-500 mt-3 text-center">
                       Full series registration required
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="p-6">
-                  <p className="text-center text-gray-600 mb-4">Sign in to register</p>
+                  <p className="text-center text-slate-500 mb-4 text-sm">Sign in to register</p>
                   <button
                     onClick={() => alert('Please sign in to register')}
-                    className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                    className="w-full py-3 bg-green-700 text-white rounded-xl hover:bg-green-800 transition font-semibold shadow-sm"
                   >
                     Sign In
                   </button>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

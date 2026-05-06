@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Calendar, Clock, DollarSign, MapPin, Loader2, X, Filter, Search, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -147,28 +148,28 @@ export function UserBookings() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        return 'bg-green-50 text-green-700 border-green-200';
       case 'pending':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'cancelled':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-50 text-red-600 border-red-200';
       case 'completed':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-slate-100 text-slate-600 border-slate-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-slate-100 text-slate-600 border-slate-200';
     }
   };
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'bg-green-50 text-green-700';
       case 'pending':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-amber-50 text-amber-700';
       case 'refunded':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-slate-100 text-slate-600';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-slate-600';
     }
   };
 
@@ -205,7 +206,7 @@ export function UserBookings() {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
       </div>
     );
   }
@@ -213,9 +214,13 @@ export function UserBookings() {
   return (
     <div className="space-y-6">
       {paymentSuccess && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3 animate-fade-in">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-start gap-3"
+        >
           <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -229,27 +234,37 @@ export function UserBookings() {
           >
             <X className="w-5 h-5" />
           </button>
-        </div>
+        </motion.div>
       )}
 
       {/* Header with Controls */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6"
+      >
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">My Bookings</h2>
-            <p className="text-gray-600 mt-1">{filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found</p>
+            <h2
+              className="text-2xl font-bold text-slate-900"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              My Bookings
+            </h2>
+            <p className="text-slate-500 mt-1 text-sm">{filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found</p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search bookings..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none w-full sm:w-64"
+                className="pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-600/20 focus:border-green-600 outline-none w-full sm:w-64 bg-slate-50 text-slate-900 placeholder-slate-400 transition"
               />
             </div>
 
@@ -257,7 +272,7 @@ export function UserBookings() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+              className="px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-600/20 focus:border-green-600 outline-none bg-slate-50 text-slate-700 text-sm"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -269,134 +284,139 @@ export function UserBookings() {
             {/* Export Button */}
             <button
               onClick={exportToCSV}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 bg-green-700 text-white rounded-xl hover:bg-green-800 transition-colors flex items-center gap-2 font-semibold text-sm shadow-sm"
             >
               <Download className="w-4 h-4" />
               Export
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Spreadsheet Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.1 }}
+        className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"
+      >
         {filteredBookings.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No bookings found</h3>
-            <p className="text-gray-500">
-              {searchTerm || statusFilter !== 'all' 
-                ? 'Try adjusting your search or filter criteria' 
+            <Calendar className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-700 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>No bookings found</h3>
+            <p className="text-slate-500 text-sm">
+              {searchTerm || statusFilter !== 'all'
+                ? 'Try adjusting your search or filter criteria'
                 : 'Book a court to get started!'}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-slate-50 border-b border-slate-100">
                 <tr>
-                  <th 
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 transition-colors"
                     onClick={() => handleSort('booking_date')}
                   >
                     <div className="flex items-center gap-2">
                       Date {getSortIcon('booking_date')}
                     </div>
                   </th>
-                  <th 
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 transition-colors"
                     onClick={() => handleSort('courts')}
                   >
                     <div className="flex items-center gap-2">
                       Court {getSortIcon('courts')}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Time
                   </th>
-                  <th 
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 transition-colors"
                     onClick={() => handleSort('duration_hours')}
                   >
                     <div className="flex items-center gap-2">
                       Duration {getSortIcon('duration_hours')}
                     </div>
                   </th>
-                  <th 
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 transition-colors"
                     onClick={() => handleSort('total_amount')}
                   >
                     <div className="flex items-center gap-2">
                       Amount {getSortIcon('total_amount')}
                     </div>
                   </th>
-                  <th 
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 transition-colors"
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center gap-2">
                       Status {getSortIcon('status')}
                     </div>
                   </th>
-                  <th 
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 transition-colors"
                     onClick={() => handleSort('payment_status')}
                   >
                     <div className="flex items-center gap-2">
                       Payment {getSortIcon('payment_status')}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Notes
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-slate-100">
                 {filteredBookings.map((booking, index) => (
-                  <tr 
-                    key={booking.id} 
-                    className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                  <tr
+                    key={booking.id}
+                    className="hover:bg-slate-50 transition-colors"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                       {new Date(booking.booking_date).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric'
                       })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
                       {booking.courts.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                       {booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                       {booking.duration_hours}h
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
                       ${booking.total_amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(booking.status)}`}>
+                      <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg border ${getStatusColor(booking.status)}`}>
                         {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPaymentStatusColor(booking.payment_status)}`}>
+                      <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${getPaymentStatusColor(booking.payment_status)}`}>
                         {booking.payment_status.charAt(0).toUpperCase() + booking.payment_status.slice(1)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                    <td className="px-6 py-4 text-sm text-slate-500 max-w-xs truncate">
                       {booking.notes || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {booking.status === 'pending' && (
                         <button
                           onClick={() => cancelBooking(booking.id)}
-                          className="text-red-600 hover:text-red-800 font-medium transition-colors"
+                          className="border border-red-200 text-red-600 rounded-xl hover:bg-red-50 px-3 py-1.5 font-medium text-xs transition-colors"
                         >
                           Cancel
                         </button>
@@ -408,7 +428,7 @@ export function UserBookings() {
             </table>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

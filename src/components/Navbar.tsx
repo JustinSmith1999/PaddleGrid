@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, LogOut, Shield, CalendarRange, Users as UsersIcon, Bell, Search, Calendar, Clock, Gift, ShoppingBag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { getUnreadNotificationCount } from '../lib/socialUtils';
 import NotificationsPanel from './social/NotificationsPanel';
@@ -63,7 +64,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 backdrop-blur-xl shadow-2xl sticky top-0 z-40 border-b border-slate-700/50">
+    <nav className="bg-white/95 backdrop-blur-xl sticky top-0 z-40 border-b border-slate-200/60 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
@@ -74,20 +75,20 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
               <img
                 src="/logo.png"
                 alt="PaddleGrid Logo"
-                className="h-12 w-auto group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
+                className="h-12 w-auto group-hover:scale-105 transition-all duration-300"
               />
             </button>
             {!user && (
-              <div className="hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/10">
+              <div className="hidden sm:flex items-center gap-1 bg-slate-100 rounded-xl p-1">
                 <button
                   onClick={() => {
                     setAudienceType('players');
                     handleViewChange('community');
                   }}
-                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  className={`px-5 py-2 rounded-lg text-sm transition-all duration-300 ${
                     audienceType === 'players'
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white shadow-sm text-green-700 font-semibold'
+                      : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   Social
@@ -97,10 +98,10 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                     setAudienceType('facilities');
                     handleViewChange('sales');
                   }}
-                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+                  className={`px-5 py-2 rounded-lg text-sm transition-all duration-300 whitespace-nowrap ${
                     audienceType === 'facilities'
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white shadow-sm text-green-700 font-semibold'
+                      : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   Facilities Manager
@@ -114,11 +115,11 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
               <>
                 <button
                   onClick={() => setShowNotifications(true)}
-                  className="relative p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/20"
+                  className="relative p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all duration-300"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-sm">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
@@ -132,86 +133,94 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                       <img
                         src={profile.profile_picture_url}
                         alt={profile.full_name || 'Profile'}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-white/30 group-hover:border-emerald-400 transition-all duration-300 shadow-lg"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 hover:border-green-500 transition-all duration-300"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 flex items-center justify-center border-2 border-white/30 group-hover:border-white/50 transition-all duration-300 shadow-lg">
+                      <div className="w-10 h-10 rounded-full bg-green-700 hover:bg-green-800 flex items-center justify-center border-2 border-slate-200 hover:border-green-500 transition-all duration-300">
                         <User className="w-5 h-5 text-white" />
                       </div>
                     )}
                   </button>
 
-                  {showProfileMenu && (
-                    <div className="absolute right-0 mt-3 w-52 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2 z-50 backdrop-blur-xl">
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          handleViewChange('profile');
-                        }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 flex items-center gap-3 transition-all duration-200 rounded-lg mx-1"
+                  <AnimatePresence>
+                    {showProfileMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                        className="absolute right-0 mt-3 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50"
                       >
-                        <User className="w-4 h-4" />
-                        View Profile
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          handleViewChange('partners');
-                        }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 flex items-center gap-3 transition-all duration-200 rounded-lg mx-1"
-                      >
-                        <UsersIcon className="w-4 h-4" />
-                        Find Partners
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          handleViewChange('waitlist');
-                        }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 flex items-center gap-3 transition-all duration-200 rounded-lg mx-1"
-                      >
-                        <Clock className="w-4 h-4" />
-                        Waitlist
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          window.location.href = '/merch';
-                        }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 flex items-center gap-3 transition-all duration-200 rounded-lg mx-1"
-                      >
-                        <ShoppingBag className="w-4 h-4" />
-                        Shop Merch
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          handleViewChange('rewards');
-                        }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 flex items-center gap-3 transition-all duration-200 rounded-lg mx-1"
-                      >
-                        <Gift className="w-4 h-4" />
-                        Rewards
-                      </button>
-                      <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          signOut();
-                        }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 transition-all duration-200 rounded-lg mx-1"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  )}
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            handleViewChange('profile');
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-green-50 flex items-center gap-3 transition-all duration-200 rounded-xl"
+                        >
+                          <User className="w-4 h-4" />
+                          View Profile
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            handleViewChange('partners');
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-green-50 flex items-center gap-3 transition-all duration-200 rounded-xl"
+                        >
+                          <UsersIcon className="w-4 h-4" />
+                          Find Partners
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            handleViewChange('waitlist');
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-green-50 flex items-center gap-3 transition-all duration-200 rounded-xl"
+                        >
+                          <Clock className="w-4 h-4" />
+                          Waitlist
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            window.location.href = '/merch';
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-green-50 flex items-center gap-3 transition-all duration-200 rounded-xl"
+                        >
+                          <ShoppingBag className="w-4 h-4" />
+                          Shop Merch
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            handleViewChange('rewards');
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-green-50 flex items-center gap-3 transition-all duration-200 rounded-xl"
+                        >
+                          <Gift className="w-4 h-4" />
+                          Rewards
+                        </button>
+                        <div className="border-t border-slate-100 my-1"></div>
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            signOut();
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-3 transition-all duration-200 rounded-xl"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </>
             ) : (
               <button
                 onClick={onAuthClick}
-                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-sm font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                className="px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-xl text-sm font-semibold transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 Sign In
               </button>

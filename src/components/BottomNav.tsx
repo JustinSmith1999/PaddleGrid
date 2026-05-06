@@ -1,4 +1,5 @@
 import { Home, Search, Calendar, User, Shield, TrendingUp, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
 
@@ -42,31 +43,48 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
   }
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-2xl z-50 safe-area-bottom">
-      <div className="flex items-center justify-around max-w-2xl mx-auto">
-        {navItems.map(({ view, icon: Icon, label }) => (
-          <button
-            key={view}
-            onClick={() => onViewChange(view)}
-            className={`flex-1 flex flex-col items-center justify-center py-3.5 px-1 transition-all duration-300 relative ${
-              currentView === view
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-            }`}
-          >
-            {currentView === view && (
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-b-full shadow-lg"></div>
-            )}
-            <div className={`p-1.5 rounded-xl transition-all duration-300 ${
-              currentView === view
-                ? 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30'
-                : 'bg-transparent'
-            }`}>
-              <Icon className={`w-6 h-6 transition-all duration-300 ${currentView === view ? 'scale-110' : ''}`} />
-            </div>
-            <span className={`text-xs mt-1 transition-all duration-300 ${currentView === view ? 'font-bold' : 'font-medium'}`}>{label}</span>
-          </button>
-        ))}
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/98 backdrop-blur-2xl border-t border-slate-200/60 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] z-50 safe-area-bottom">
+      <div className="flex items-center justify-around max-w-2xl mx-auto px-2 py-1.5">
+        {navItems.map(({ view, icon: Icon, label }) => {
+          const isActive = currentView === view;
+
+          return (
+            <motion.button
+              key={view}
+              onClick={() => onViewChange(view)}
+              whileTap={{ scale: 0.92 }}
+              className="relative flex-1 flex flex-col items-center justify-center py-2 px-3 gap-1"
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="bottomNavIndicator"
+                  className="absolute inset-1 bg-green-50 rounded-2xl"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+
+              <div
+                className={`relative z-10 transition-colors duration-200 ${
+                  isActive
+                    ? 'text-green-700 bg-green-50 rounded-xl p-2'
+                    : 'text-slate-400 hover:text-slate-600 p-2'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+              </div>
+
+              <span
+                className={`relative z-10 transition-colors duration-200 text-[10px] ${
+                  isActive
+                    ? 'text-green-700 font-bold'
+                    : 'text-slate-400 font-medium'
+                }`}
+              >
+                {label}
+              </span>
+            </motion.button>
+          );
+        })}
       </div>
     </nav>
   );

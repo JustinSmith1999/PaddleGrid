@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Building2, User, Check, AlertCircle, Mail, Eye, EyeOff, ArrowRight, Shield, Sparkles, Apple } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,8 @@ interface AuthModalProps {
 }
 
 type AccountType = 'user' | 'facility' | null;
+
+const inputClasses = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all';
 
 export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(mode === 'login');
@@ -85,8 +88,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
       }
     }
   }, [profile, loading, isOpen, registrationSuccess, navigate, onClose]);
-
-  if (!isOpen) return null;
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,7 +204,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const getPasswordStrengthColor = () => {
     if (passwordStrength === 'weak') return 'bg-red-500';
     if (passwordStrength === 'medium') return 'bg-yellow-500';
-    if (passwordStrength === 'strong') return 'bg-emerald-500';
+    if (passwordStrength === 'strong') return 'bg-green-600';
     return 'bg-slate-200';
   };
 
@@ -215,439 +216,501 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div
-        className={`relative bg-white rounded-3xl shadow-2xl ${
-          isFacilitySignup ? 'max-w-4xl' : 'max-w-md'
-        } w-full max-h-[90vh] overflow-hidden`}
-      >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-6 right-6 z-10 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
-          <X className="w-5 h-5 text-slate-600" />
-        </button>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className={`relative bg-white rounded-2xl shadow-2xl border border-slate-100 ${
+              isFacilitySignup ? 'max-w-4xl' : 'max-w-md'
+            } w-full mx-4 overflow-hidden max-h-[90vh]`}
+          >
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors shadow-sm"
+            >
+              <X className="w-4 h-4 text-slate-500" />
+            </button>
 
-        <div className="overflow-y-auto max-h-[90vh]">
-          {/* Success State */}
-          {registrationSuccess ? (
-            <div className="p-12 text-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-6">
-                <Check className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-3xl font-bold text-slate-900 mb-4">Welcome to PaddleGrid!</h3>
-              <p className="text-lg text-slate-600 mb-8">
-                Your facility account has been created successfully. Our team will review your application and contact you shortly.
-              </p>
-              <button
-                onClick={onClose}
-                className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-              >
-                Get Started
-              </button>
-            </div>
-          ) : isForgotPassword ? (
-            <div className="p-8">
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-emerald-600" />
-                </div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Reset Password</h2>
-                <p className="text-slate-600">
-                  {resetEmailSent
-                    ? "Check your email for reset instructions"
-                    : "Enter your email to receive reset instructions"}
-                </p>
-              </div>
-
-              {!resetEmailSent ? (
-                <form onSubmit={handlePasswordReset} className="space-y-4">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                  />
-
-                  {error && (
-                    <div className="flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-xl">
-                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-600">{error}</p>
-                    </div>
-                  )}
-
+            <div className="overflow-y-auto max-h-[90vh]">
+              {/* Success State */}
+              {registrationSuccess ? (
+                <div className="p-12 text-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-700 to-green-800 flex items-center justify-center mx-auto mb-6">
+                    <Check className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Welcome to PaddleGrid!</h3>
+                  <p className="text-lg text-slate-600 mb-8">
+                    Your facility account has been created successfully. Our team will review your application and contact you shortly.
+                  </p>
                   <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                    onClick={onClose}
+                    className="px-8 py-3 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold shadow-sm transition-all"
                   >
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Send Reset Link'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsForgotPassword(false)}
-                    className="w-full text-slate-600 hover:text-slate-900 text-sm font-medium"
-                  >
-                    Back to Sign In
-                  </button>
-                </form>
-              ) : (
-                <button
-                  onClick={() => {
-                    setIsForgotPassword(false);
-                    setResetEmailSent(false);
-                  }}
-                  className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold"
-                >
-                  Back to Sign In
-                </button>
-              )}
-            </div>
-          ) : showAccountTypeSelection ? (
-            <div className="p-12">
-              <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold mb-6">
-                  <Sparkles className="w-4 h-4" />
-                  Join PaddleGrid
-                </div>
-                <h2 className="text-4xl font-bold text-slate-900 mb-3">Create Your Account</h2>
-                <p className="text-lg text-slate-600">Choose the account type that fits you best</p>
-              </div>
-
-              <div className="grid gap-6">
-                <button
-                  onClick={() => setAccountType('user')}
-                  className="group relative p-8 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 hover:shadow-xl transition-all duration-300 text-left"
-                >
-                  <div className="flex items-start gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <User className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">Player Account</h3>
-                      <p className="text-slate-600 leading-relaxed">
-                        Perfect for individual players who want to book courts, find partners, and track their progress.
-                      </p>
-                    </div>
-                    <ArrowRight className="w-6 h-6 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setAccountType('facility')}
-                  className="group relative p-8 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 hover:shadow-xl transition-all duration-300 text-left"
-                >
-                  <div className="flex items-start gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Building2 className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">Facility Account</h3>
-                      <p className="text-slate-600 leading-relaxed">
-                        Ideal for club owners and facility managers who want to manage courts and memberships.
-                      </p>
-                    </div>
-                    <ArrowRight className="w-6 h-6 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
-                  </div>
-                </button>
-              </div>
-
-              <div className="mt-8 text-center">
-                <button
-                  onClick={() => setIsLogin(true)}
-                  className="text-slate-600 hover:text-slate-900 font-medium"
-                >
-                  Already have an account? <span className="text-emerald-600">Sign In</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="p-8">
-              <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold text-slate-900 mb-2">
-                  {isLogin ? 'Welcome Back' : isFacilitySignup ? 'Register Your Facility' : 'Create Account'}
-                </h2>
-                <p className="text-slate-600">
-                  {isLogin ? 'Sign in to continue to PaddleGrid' : 'Join the fastest-growing pickleball community'}
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <input
-                  type="text"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
-                  className="hidden"
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
-
-                {isFacilitySignup ? (
-                  <div className="grid md:grid-cols-2 gap-5">
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Facility Name</label>
-                      <input
-                        type="text"
-                        value={facilityName}
-                        onChange={(e) => setFacilityName(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Address</label>
-                      <input
-                        type="text"
-                        value={facilityAddress}
-                        onChange={(e) => setFacilityAddress(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">City</label>
-                      <input
-                        type="text"
-                        value={facilityCity}
-                        onChange={(e) => setFacilityCity(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">State</label>
-                      <input
-                        type="text"
-                        value={facilityState}
-                        onChange={(e) => setFacilityState(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Estimated Member Count</label>
-                      <input
-                        type="number"
-                        value={estimatedPatronBase}
-                        onChange={(e) => setEstimatedPatronBase(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Owner Name</label>
-                      <input
-                        type="text"
-                        value={ownerName}
-                        onChange={(e) => setOwnerName(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Owner Phone</label>
-                      <input
-                        type="tel"
-                        value={ownerPhone}
-                        onChange={(e) => setOwnerPhone(formatPhoneNumber(e.target.value))}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                  </div>
-                ) : !isLogin ? (
-                  <div className="grid grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="First Name"
-                      className="px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                      required
-                    />
-                    <input
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Last Name"
-                      className="px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                      required
-                    />
-                  </div>
-                ) : null}
-
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                  required
-                />
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    Get Started
                   </button>
                 </div>
-
-                {!isLogin && passwordStrength && (
-                  <div>
-                    <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                      <div className={`h-full ${getPasswordStrengthColor()} ${getPasswordStrengthWidth()} transition-all duration-300`} />
+              ) : isForgotPassword ? (
+                <div>
+                  {/* Header */}
+                  <div className="bg-gradient-to-br from-green-700 to-green-800 px-8 py-8 text-center">
+                    <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                      <Mail className="w-7 h-7 text-white" />
                     </div>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Password strength: <span className="font-semibold capitalize">{passwordStrength}</span>
+                    <h2 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>Reset Password</h2>
+                    <p className="text-green-100 text-sm">
+                      {resetEmailSent
+                        ? "Check your email for reset instructions"
+                        : "Enter your email to receive reset instructions"}
                     </p>
                   </div>
-                )}
 
-                {error && (
-                  <div className="flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-xl">
-                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-red-600">{error}</p>
-                  </div>
-                )}
+                  <div className="p-8">
+                    {!resetEmailSent ? (
+                      <form onSubmit={handlePasswordReset} className="space-y-4">
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="Your email"
+                          className={inputClasses}
+                        />
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold text-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100"
-                >
-                  {loading ? (
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto" />
-                  ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      {isLogin ? 'Sign In' : 'Create Account'}
-                      <ArrowRight className="w-5 h-5" />
-                    </span>
-                  )}
-                </button>
+                        {error && (
+                          <div className="flex items-start gap-2 p-3 bg-red-50 rounded-xl">
+                            <AlertCircle className="w-4 h-4 text-red-700 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-red-700">{error}</p>
+                          </div>
+                        )}
 
-                {!isFacilitySignup && (
-                  <>
-                    <div className="relative my-6">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-slate-200" />
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-white text-slate-400">or continue with</span>
-                      </div>
-                    </div>
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full py-3 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold shadow-sm transition-all disabled:opacity-50"
+                        >
+                          {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Send Reset Link'}
+                        </button>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setLoading(true);
-                          setError('');
-                          try {
-                            const { error } = await signInWithApple();
-                            if (error) throw error;
-                          } catch (err: unknown) {
-                            setError(err instanceof Error ? err.message : 'Apple sign in failed');
-                          } finally {
-                            setLoading(false);
-                          }
-                        }}
-                        disabled={loading}
-                        className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all font-medium text-slate-700 disabled:opacity-50"
-                      >
-                        <Apple className="w-5 h-5" />
-                        <span className="text-sm">Apple</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setLoading(true);
-                          setError('');
-                          try {
-                            const { error } = await signInWithGoogle();
-                            if (error) throw error;
-                          } catch (err: unknown) {
-                            setError(err instanceof Error ? err.message : 'Google sign in failed');
-                          } finally {
-                            setLoading(false);
-                          }
-                        }}
-                        disabled={loading}
-                        className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all font-medium text-slate-700 disabled:opacity-50"
-                      >
-                        <svg className="w-5 h-5" viewBox="0 0 24 24">
-                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        <span className="text-sm">Google</span>
-                      </button>
-                    </div>
-                  </>
-                )}
-
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={() => setIsForgotPassword(true)}
-                    className="w-full text-sm text-slate-600 hover:text-slate-900 font-medium mt-4"
-                  >
-                    Forgot password?
-                  </button>
-                )}
-
-                <div className="pt-4 text-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLogin(!isLogin);
-                      setAccountType(null);
-                      setError('');
-                    }}
-                    className="text-slate-600 hover:text-slate-900 font-medium"
-                  >
-                    {isLogin ? (
-                      <>
-                        Don't have an account? <span className="text-emerald-600 font-semibold">Sign Up</span>
-                      </>
+                        <button
+                          type="button"
+                          onClick={() => setIsForgotPassword(false)}
+                          className="w-full text-slate-600 hover:text-slate-900 text-sm font-medium"
+                        >
+                          Back to Sign In
+                        </button>
+                      </form>
                     ) : (
-                      <>
-                        Already have an account? <span className="text-emerald-600 font-semibold">Sign In</span>
-                      </>
+                      <button
+                        onClick={() => {
+                          setIsForgotPassword(false);
+                          setResetEmailSent(false);
+                        }}
+                        className="w-full py-3 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold shadow-sm transition-all"
+                      >
+                        Back to Sign In
+                      </button>
                     )}
-                  </button>
+                  </div>
                 </div>
-              </form>
+              ) : showAccountTypeSelection ? (
+                <div>
+                  {/* Header */}
+                  <div className="bg-gradient-to-br from-green-700 to-green-800 px-8 py-8 text-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 text-white text-xs font-semibold mb-4">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Join PaddleGrid
+                    </div>
+                    <h2 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Create Your Account</h2>
+                    <p className="text-green-100">Choose the account type that fits you best</p>
+                  </div>
 
-              {!isLogin && !isFacilitySignup && (
-                <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-                  <div className="flex items-start gap-3">
-                    <Shield className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-emerald-900">
-                      Your data is secure with us. We use industry-standard encryption to protect your information.
+                  <div className="p-8">
+                    <div className="grid gap-4">
+                      <button
+                        onClick={() => setAccountType('user')}
+                        className="group relative p-6 rounded-xl border border-slate-200 hover:border-green-600 hover:shadow-lg transition-all duration-300 text-left"
+                      >
+                        <div className="flex items-start gap-5">
+                          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-700 to-green-800 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <User className="w-7 h-7 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-slate-900 mb-1">Player Account</h3>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              Perfect for individual players who want to book courts, find partners, and track their progress.
+                            </p>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-green-700 group-hover:translate-x-1 transition-all mt-1" />
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => setAccountType('facility')}
+                        className="group relative p-6 rounded-xl border border-slate-200 hover:border-green-600 hover:shadow-lg transition-all duration-300 text-left"
+                      >
+                        <div className="flex items-start gap-5">
+                          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-700 to-green-800 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <Building2 className="w-7 h-7 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-slate-900 mb-1">Facility Account</h3>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              Ideal for club owners and facility managers who want to manage courts and memberships.
+                            </p>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-green-700 group-hover:translate-x-1 transition-all mt-1" />
+                        </div>
+                      </button>
+                    </div>
+
+                    <div className="mt-6 text-center">
+                      <button
+                        onClick={() => setIsLogin(true)}
+                        className="text-sm text-slate-600 hover:text-slate-900 font-medium"
+                      >
+                        Already have an account? <span className="text-green-700 font-semibold">Sign In</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {/* Header */}
+                  <div className="bg-gradient-to-br from-green-700 to-green-800 px-8 py-8 text-center">
+                    <h2 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                      {isLogin ? 'Welcome Back' : isFacilitySignup ? 'Register Your Facility' : 'Create Account'}
+                    </h2>
+                    <p className="text-green-100 text-sm">
+                      {isLogin ? 'Sign in to continue to PaddleGrid' : 'Join the fastest-growing pickleball community'}
                     </p>
+                  </div>
+
+                  <div className="p-8">
+                    {/* Tab Switcher */}
+                    {!isFacilitySignup && (
+                      <div className="bg-slate-100 rounded-xl p-1 flex mb-6">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsLogin(true);
+                            setAccountType(null);
+                            setError('');
+                          }}
+                          className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                            isLogin
+                              ? 'bg-white shadow-sm text-green-700'
+                              : 'text-slate-500 hover:text-slate-700'
+                          }`}
+                        >
+                          Sign In
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsLogin(false);
+                            setAccountType(null);
+                            setError('');
+                          }}
+                          className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                            !isLogin
+                              ? 'bg-white shadow-sm text-green-700'
+                              : 'text-slate-500 hover:text-slate-700'
+                          }`}
+                        >
+                          Sign Up
+                        </button>
+                      </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <input
+                        type="text"
+                        value={honeypot}
+                        onChange={(e) => setHoneypot(e.target.value)}
+                        className="hidden"
+                        tabIndex={-1}
+                        autoComplete="off"
+                      />
+
+                      {isFacilitySignup ? (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Facility Name</label>
+                            <input
+                              type="text"
+                              value={facilityName}
+                              onChange={(e) => setFacilityName(e.target.value)}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Address</label>
+                            <input
+                              type="text"
+                              value={facilityAddress}
+                              onChange={(e) => setFacilityAddress(e.target.value)}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">City</label>
+                            <input
+                              type="text"
+                              value={facilityCity}
+                              onChange={(e) => setFacilityCity(e.target.value)}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">State</label>
+                            <input
+                              type="text"
+                              value={facilityState}
+                              onChange={(e) => setFacilityState(e.target.value)}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Estimated Member Count</label>
+                            <input
+                              type="number"
+                              value={estimatedPatronBase}
+                              onChange={(e) => setEstimatedPatronBase(e.target.value)}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Owner Name</label>
+                            <input
+                              type="text"
+                              value={ownerName}
+                              onChange={(e) => setOwnerName(e.target.value)}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Owner Phone</label>
+                            <input
+                              type="tel"
+                              value={ownerPhone}
+                              onChange={(e) => setOwnerPhone(formatPhoneNumber(e.target.value))}
+                              className={inputClasses}
+                              required
+                            />
+                          </div>
+                        </div>
+                      ) : !isLogin ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          <input
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            placeholder="First Name"
+                            className={inputClasses}
+                            required
+                          />
+                          <input
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            placeholder="Last Name"
+                            className={inputClasses}
+                            required
+                          />
+                        </div>
+                      ) : null}
+
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email"
+                        className={inputClasses}
+                        required
+                      />
+
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Password"
+                          className={`${inputClasses} pr-12`}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+
+                      {!isLogin && passwordStrength && (
+                        <div>
+                          <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                            <div className={`h-full ${getPasswordStrengthColor()} ${getPasswordStrengthWidth()} transition-all duration-300`} />
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Password strength: <span className="font-semibold capitalize">{passwordStrength}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {error && (
+                        <div className="flex items-start gap-2 p-3 bg-red-50 rounded-xl">
+                          <AlertCircle className="w-4 h-4 text-red-700 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-700">{error}</p>
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold py-3 shadow-sm w-full transition-all disabled:opacity-50"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                        ) : (
+                          <span className="flex items-center justify-center gap-2">
+                            {isLogin ? 'Sign In' : 'Create Account'}
+                            <ArrowRight className="w-4 h-4" />
+                          </span>
+                        )}
+                      </button>
+
+                      {!isFacilitySignup && (
+                        <>
+                          {/* Divider */}
+                          <div className="relative my-5">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-slate-200" />
+                            </div>
+                            <div className="relative flex justify-center">
+                              <span className="px-3 bg-white text-xs text-slate-400">or</span>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                setLoading(true);
+                                setError('');
+                                try {
+                                  const { error } = await signInWithApple();
+                                  if (error) throw error;
+                                } catch (err: unknown) {
+                                  setError(err instanceof Error ? err.message : 'Apple sign in failed');
+                                } finally {
+                                  setLoading(false);
+                                }
+                              }}
+                              disabled={loading}
+                              className="bg-white border border-slate-200 rounded-xl py-3 hover:bg-slate-50 font-medium text-slate-700 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            >
+                              <Apple className="w-5 h-5" />
+                              <span className="text-sm">Apple</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                setLoading(true);
+                                setError('');
+                                try {
+                                  const { error } = await signInWithGoogle();
+                                  if (error) throw error;
+                                } catch (err: unknown) {
+                                  setError(err instanceof Error ? err.message : 'Google sign in failed');
+                                } finally {
+                                  setLoading(false);
+                                }
+                              }}
+                              disabled={loading}
+                              className="bg-white border border-slate-200 rounded-xl py-3 hover:bg-slate-50 font-medium text-slate-700 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            >
+                              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                              </svg>
+                              <span className="text-sm">Google</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {isLogin && (
+                        <button
+                          type="button"
+                          onClick={() => setIsForgotPassword(true)}
+                          className="w-full text-sm text-slate-500 hover:text-slate-700 font-medium mt-2"
+                        >
+                          Forgot password?
+                        </button>
+                      )}
+
+                      {isFacilitySignup && (
+                        <div className="pt-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsLogin(!isLogin);
+                              setAccountType(null);
+                              setError('');
+                            }}
+                            className="text-sm text-slate-600 hover:text-slate-900 font-medium"
+                          >
+                            {isLogin ? (
+                              <>
+                                Don't have an account? <span className="text-green-700 font-semibold">Sign Up</span>
+                              </>
+                            ) : (
+                              <>
+                                Already have an account? <span className="text-green-700 font-semibold">Sign In</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </form>
+
+                    {!isLogin && !isFacilitySignup && (
+                      <div className="mt-5 p-3 bg-green-50 rounded-xl border border-green-100">
+                        <div className="flex items-start gap-3">
+                          <Shield className="w-4 h-4 text-green-700 flex-shrink-0 mt-0.5" />
+                          <p className="text-xs text-green-800">
+                            Your data is secure with us. We use industry-standard encryption to protect your information.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
             </div>
-          )}
-        </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

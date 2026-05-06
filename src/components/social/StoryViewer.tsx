@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Volume2, VolumeX, Users, MapPin, Trash2, MoreVertical, Eye, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -437,8 +438,13 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
   const timeAgo = getTimeAgo(currentStory.createdAt);
 
   return createPortal(
-    <div className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black z-[9999]">
-      <div className="relative w-full h-full bg-black overflow-hidden flex flex-col">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/95 z-[9999]"
+    >
+      <div className="relative w-full h-full bg-black/95 overflow-hidden flex flex-col">
         <div className="absolute top-0 left-0 right-0 z-40 p-4 bg-gradient-to-b from-black/60 to-transparent">
           <div className="flex gap-1 mb-4">
             {currentGroup.stories.map((_, index) => (
@@ -448,12 +454,12 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               >
                 {index === currentStoryIndex && (
                   <div
-                    className="h-full bg-white transition-all duration-100"
+                    className="h-full bg-green-600 transition-all duration-100"
                     style={{ width: `${progress}%` }}
                   />
                 )}
                 {index < currentStoryIndex && (
-                  <div className="h-full bg-white" />
+                  <div className="h-full bg-green-600" />
                 )}
               </div>
             ))}
@@ -461,7 +467,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
                 {currentGroup.ownerAvatar ? (
                   <img
                     src={currentGroup.ownerAvatar}
@@ -491,7 +497,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
                       fetchViewers(currentStory.id);
                     }
                   }}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-sm transition-colors cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl backdrop-blur-sm transition-colors cursor-pointer"
                 >
                   <Eye className="w-4 h-4 text-white" />
                   <span className="text-white text-sm font-semibold">{viewerCount}</span>
@@ -502,7 +508,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
               {currentStory.mediaType === 'video' && (
                 <button
                   onClick={() => setIsMuted(!isMuted)}
-                  className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors backdrop-blur-sm"
                 >
                   {isMuted ? (
                     <VolumeX className="w-5 h-5 text-white" />
@@ -516,15 +522,15 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
                 <div className="relative">
                   <button
                     onClick={() => setShowMenu(!showMenu)}
-                    className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors backdrop-blur-sm"
                   >
                     <MoreVertical className="w-5 h-5 text-white" />
                   </button>
                   {showMenu && (
-                    <div className="absolute top-12 right-0 bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden min-w-[150px]">
+                    <div className="absolute top-12 right-0 bg-white rounded-xl shadow-lg overflow-hidden min-w-[150px]">
                       <button
                         onClick={handleDeleteStory}
-                        className="w-full px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
+                        className="w-full px-4 py-3 text-left text-red-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                         Delete Story
@@ -536,7 +542,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
 
               <button
                 onClick={onClose}
-                className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors backdrop-blur-sm"
               >
                 <X className="w-6 h-6 text-white" />
               </button>
@@ -551,7 +557,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          className="absolute inset-0 flex items-center justify-center cursor-pointer select-none bg-black"
+          className="absolute inset-0 flex items-center justify-center cursor-pointer select-none bg-black/95"
           style={{ width: '100%', height: '100%' }}
         >
           {imageLoadError ? (
@@ -565,7 +571,7 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
                   e.stopPropagation();
                   goToNext();
                 }}
-                className="mt-4 px-6 py-2 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm transition-colors"
+                className="mt-4 px-6 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-white text-sm transition-colors"
               >
                 Skip
               </button>
@@ -603,74 +609,80 @@ export default function StoryViewer({ initialOwnerId, ownerType, allStoryGroups,
           </div>
         )}
 
-        {showViewers && (
-          <div
-            ref={viewersPanelRef}
-            className="absolute bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 rounded-t-3xl max-h-[60vh] overflow-hidden shadow-2xl"
-          >
-            <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between z-10">
-              <div className="flex items-center gap-2">
-                <Eye className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                <h3 className="font-semibold text-slate-900 dark:text-white">
-                  Viewed by {viewerCount}
-                </h3>
+        <AnimatePresence>
+          {showViewers && (
+            <motion.div
+              ref={viewersPanelRef}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl max-h-[60vh] overflow-hidden shadow-2xl"
+            >
+              <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
+                <div className="flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-slate-500" />
+                  <h3 className="font-semibold text-slate-900">
+                    Viewed by {viewerCount}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowViewers(false)}
+                  className="text-slate-500 hover:text-slate-700 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => setShowViewers(false)}
-                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="overflow-y-auto max-h-[calc(60vh-64px)] p-4">
-              {viewers.length === 0 ? (
-                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                  <Eye className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>No viewers yet</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {viewers.map(viewer => (
-                    <button
-                      key={viewer.id}
-                      onClick={() => {
-                        navigate(`/player/${viewer.id}`);
-                        onClose();
-                      }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
-                        {viewer.avatar_url ? (
-                          <img
-                            src={viewer.avatar_url}
-                            alt={viewer.full_name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                              e.currentTarget.parentElement!.innerHTML = '<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>';
-                            }}
-                          />
-                        ) : (
-                          <Users className="w-6 h-6 text-white" />
-                        )}
-                      </div>
-                      <div className="flex-1 text-left">
-                        <div className="font-medium text-slate-900 dark:text-white">
-                          {viewer.full_name}
+              <div className="overflow-y-auto max-h-[calc(60vh-64px)] p-4">
+                {viewers.length === 0 ? (
+                  <div className="text-center py-12 text-slate-500">
+                    <Eye className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No viewers yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {viewers.map(viewer => (
+                      <button
+                        key={viewer.id}
+                        onClick={() => {
+                          navigate(`/player/${viewer.id}`);
+                          onClose();
+                        }}
+                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center flex-shrink-0">
+                          {viewer.avatar_url ? (
+                            <img
+                              src={viewer.avatar_url}
+                              alt={viewer.full_name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.parentElement!.innerHTML = '<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>';
+                              }}
+                            />
+                          ) : (
+                            <Users className="w-6 h-6 text-white" />
+                          )}
                         </div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400">
-                          {getTimeAgo(viewer.viewed_at)}
+                        <div className="flex-1 text-left">
+                          <div className="font-medium text-slate-900">
+                            {viewer.full_name}
+                          </div>
+                          <div className="text-sm text-slate-500">
+                            {getTimeAgo(viewer.viewed_at)}
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>,
+    </motion.div>,
     document.body
   );
 }

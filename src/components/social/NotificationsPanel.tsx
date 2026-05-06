@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, MessageCircle, UserPlus, Users, Check } from 'lucide-react';
 import {
   getNotifications,
@@ -51,13 +52,13 @@ export default function NotificationsPanel({ onClose, onNotificationClick }: Not
       case 'like':
         return <Heart className="w-5 h-5 text-red-500 fill-current" />;
       case 'comment':
-        return <MessageCircle className="w-5 h-5 text-blue-500" />;
+        return <MessageCircle className="w-5 h-5 text-green-700" />;
       case 'follow':
-        return <UserPlus className="w-5 h-5 text-blue-600" />;
+        return <UserPlus className="w-5 h-5 text-green-700" />;
       case 'match_join':
-        return <Users className="w-5 h-5 text-blue-600" />;
+        return <Users className="w-5 h-5 text-green-700" />;
       default:
-        return <Check className="w-5 h-5 text-gray-500" />;
+        return <Check className="w-5 h-5 text-slate-400" />;
     }
   }
 
@@ -95,23 +96,37 @@ export default function NotificationsPanel({ onClose, onNotificationClick }: Not
   }, [notifications]);
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
-      <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col animate-slide-in">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Notifications</h2>
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      />
+      <motion.div
+        className="fixed top-0 right-0 bottom-0 bg-white w-full max-w-md shadow-2xl z-50 flex flex-col"
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+      >
+        <div className="sticky top-0 bg-white px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Notifications
+          </h2>
           <div className="flex items-center gap-2">
             {notifications.some(n => !n.is_read) && (
               <button
                 onClick={handleMarkAllRead}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium px-3 py-1 hover:bg-blue-50 rounded-full transition"
+                className="text-green-700 text-xs font-semibold hover:text-green-800 px-3 py-1 hover:bg-green-50 rounded-full transition-all"
               >
                 Mark all read
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition"
+              className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -121,66 +136,65 @@ export default function NotificationsPanel({ onClose, onNotificationClick }: Not
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-600">Loading notifications...</p>
+              <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-slate-400">Loading notifications...</p>
             </div>
           ) : notifications.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-gray-400" />
+              <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-600" />
               </div>
-              <p className="text-gray-600">No notifications</p>
+              <p className="text-slate-400">No notifications</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
-              {notifications.map((notification) => (
-                <button
+            <div className="divide-y divide-slate-100">
+              {notifications.map((notification, index) => (
+                <motion.button
                   key={notification.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.04, duration: 0.25 }}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`w-full p-4 hover:bg-gray-50 transition text-left ${
-                    !notification.is_read ? 'bg-blue-50/50' : ''
+                  className={`w-full px-5 py-3 hover:bg-slate-50 transition-all text-left ${
+                    !notification.is_read ? 'bg-green-50/50' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 ring-2 ring-white shadow-sm rounded-full p-1">
                       {getNotificationIcon(notification.type)}
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className={`text-[15px] leading-normal ${
-                        !notification.is_read ? 'font-medium text-gray-900' : 'text-gray-700'
-                      }`}>
-                        {notificationTexts[notification.id] || 'New notification'}
+                      <p className="text-sm text-slate-600 leading-normal">
+                        {(() => {
+                          const text = notificationTexts[notification.id] || 'New notification';
+                          const actorName = notification.data?.actor_name;
+                          if (actorName && text.startsWith(actorName)) {
+                            return (
+                              <>
+                                <span className="font-semibold text-slate-900">{actorName}</span>
+                                {text.slice(actorName.length)}
+                              </>
+                            );
+                          }
+                          return text;
+                        })()}
                       </p>
-                      <p className="text-sm text-gray-500 mt-0.5">
+                      <p className="text-xs text-slate-400 mt-0.5">
                         {formatTimeAgo(notification.created_at)}
                       </p>
                     </div>
 
                     {!notification.is_read && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-2" />
+                      <div className="bg-green-600 w-2 h-2 rounded-full flex-shrink-0 mt-2" />
                     )}
                   </div>
-                </button>
+                </motion.button>
               ))}
             </div>
           )}
         </div>
-      </div>
-
-      <style>{`
-        @keyframes slide-in {
-          from {
-            transform: translateX(100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        .animate-slide-in {
-          animation: slide-in 0.3s ease-out;
-        }
-      `}</style>
-    </>
+      </motion.div>
+    </AnimatePresence>
   );
 }
