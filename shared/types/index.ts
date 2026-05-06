@@ -12,6 +12,18 @@ export interface Profile {
   updated_at: string;
 }
 
+export type PaymentProcessorType = 'stripe' | 'safesave' | 'square' | 'none';
+
+export interface PaymentProcessorInfo {
+  id: string;
+  display_name: string;
+  description: string;
+  supports_apple_pay: boolean;
+  supports_google_pay: boolean;
+  supports_auto_billing: boolean;
+  is_active: boolean;
+}
+
 export interface Facility {
   id: string;
   name: string;
@@ -24,6 +36,9 @@ export interface Facility {
   zip_code: string | null;
   logo_url: string | null;
   is_active: boolean;
+  payment_processor: PaymentProcessorType;
+  payment_config: Record<string, any>;
+  stripe_account_id?: string | null;
   created_at: string;
   updated_at: string;
 }
