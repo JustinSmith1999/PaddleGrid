@@ -67,23 +67,25 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
       {/* ─── Hero with Video ─── */}
       <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-        {/* Video background */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'%3E%3Crect fill='%230f172a' width='1920' height='1080'/%3E%3C/svg%3E"
-        >
-          <source src="https://videos.pexels.com/video-files/8224653/8224653-uhd_2560_1440_30fps.mp4" type="video/mp4" />
-        </video>
+        {/* Video background — YouTube embed as looping bg */}
+        <div className="absolute inset-0">
+          <iframe
+            src="https://www.youtube.com/embed/cAqbRJmSmFE?autoplay=1&mute=1&loop=1&playlist=cAqbRJmSmFE&controls=0&showinfo=0&modestbranding=1&rel=0&disablekb=1&playsinline=1"
+            allow="autoplay; encrypted-media"
+            className="absolute top-1/2 left-1/2 w-[180%] h-[180%] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{ border: 'none', minWidth: '180%', minHeight: '180%' }}
+            title="Pickleball background"
+          />
+        </div>
+
+        {/* Fallback bg in case iframe doesn't load */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-green-900 via-green-800 to-slate-900" />
 
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/60" />
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 md:py-36 w-full">
-          <div className="max-w-2xl">
+          <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -98,11 +100,10 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-[2.5rem] sm:text-5xl md:text-[3.75rem] font-extrabold leading-[1.06] tracking-tight text-white"
+              className="text-[2.5rem] sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold leading-[1.08] tracking-tight text-white"
               style={{ fontFamily: 'Manrope, sans-serif' }}
             >
-              Book courts.{' '}
-              <span className="text-green-300">Find players.</span>
+              <span className="whitespace-nowrap">Book courts. <span className="text-green-300">Find players.</span></span>
               <br />
               Own your game.
             </motion.h1>
@@ -111,7 +112,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="mt-6 text-lg sm:text-xl text-white/70 leading-relaxed max-w-lg"
+              className="mt-6 text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl"
             >
               The all-in-one platform for pickleball — instant court bookings, skill-matched partners, and a community built around your local scene.
             </motion.p>

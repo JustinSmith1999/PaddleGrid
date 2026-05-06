@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Calendar, Clock, MapPin, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Star, Trophy, CreditCard, BarChart3, Smartphone, Globe, Play, ChevronRight } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -41,34 +41,28 @@ function AnimatedSection({ children, className = '' }: { children: React.ReactNo
 export function SalesPage({ onAuthRequired }: SalesPageProps) {
   const { user } = useAuth();
   const [showDemo, setShowDemo] = useState<'checkout' | 'pricing' | 'waitlist' | 'analytics' | 'family' | 'scheduling' | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   return (
     <>
       <div className="min-h-screen bg-[#F8F9FC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
         {/* ══════════════════ HERO ══════════════════ */}
         <div className="relative min-h-[90vh] flex items-center overflow-hidden">
-          {/* Video background */}
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'%3E%3Crect fill='%230f172a' width='1920' height='1080'/%3E%3C/svg%3E"
-          >
-            <source src="https://videos.pexels.com/video-files/8224653/8224653-uhd_2560_1440_30fps.mp4" type="video/mp4" />
-          </video>
+          {/* Video background — YouTube embed as looping bg */}
+          <div className="absolute inset-0">
+            <iframe
+              src="https://www.youtube.com/embed/cAqbRJmSmFE?autoplay=1&mute=1&loop=1&playlist=cAqbRJmSmFE&controls=0&showinfo=0&modestbranding=1&rel=0&disablekb=1&playsinline=1"
+              allow="autoplay; encrypted-media"
+              className="absolute top-1/2 left-1/2 w-[180%] h-[180%] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ border: 'none', minWidth: '180%', minHeight: '180%' }}
+              title="Pickleball background"
+            />
+          </div>
+
+          {/* Fallback bg in case iframe doesn't load */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-green-900 via-green-800 to-slate-900" />
 
           {/* Dark overlay with green tint */}
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-green-950/70 to-slate-900/80" />
-
-          {/* Subtle grid overlay */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }} />
 
           <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32 w-full">
             <motion.div
