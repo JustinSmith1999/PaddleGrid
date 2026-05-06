@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { Calendar, Clock, MapPin, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Star, Trophy, CreditCard, BarChart3, Smartphone, Globe, Play, ChevronRight } from 'lucide-react';
-import { motion, useInView } from 'framer-motion';
+import { Calendar, Clock, MapPin, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Star, Trophy, CreditCard, BarChart3, Smartphone, Globe, Play, ChevronRight, X, ChevronDown, HelpCircle } from 'lucide-react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { ThreeClickCheckout } from './ThreeClickCheckout';
 import { TransparentPricing } from './TransparentPricing';
@@ -351,6 +351,121 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
           <motion.p variants={fadeUp} className="text-center text-sm text-slate-500 mt-6">
             All plans include a 14-day free trial. No credit card required.
           </motion.p>
+        </AnimatedSection>
+
+        {/* ══════════════════ TESTIMONIALS ══════════════════ */}
+        <AnimatedSection className="max-w-6xl mx-auto px-6 py-16 lg:py-24">
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Venue success stories</p>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              Venues That Switched See Results Fast
+            </h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              { name: 'Mike Rodriguez', role: 'Facility owner, Scottsdale AZ', metric: '+89%', metricLabel: 'court utilization', text: 'Our court utilization went from 60% to 89% in the first month. The automated waitlist alone has been a game-changer for filling empty slots.' },
+              { name: 'Tom Whitfield', role: 'Venue manager, Austin TX', metric: '+35%', metricLabel: 'revenue increase', text: 'Revenue is up 35% since we switched. The analytics dashboard shows me exactly where the money is coming from and which time slots to push.' },
+              { name: 'Jenny Park', role: 'Club organizer, Portland OR', metric: '200+', metricLabel: 'members managed', text: 'Managing our 200-member club used to be chaos. PaddleGrid handles registration, court assignments, and payments. I actually enjoy running events now.' },
+            ].map((t, i) => (
+              <motion.div key={i} variants={fadeUp}>
+                <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 h-full">
+                  <div className="bg-green-50 rounded-xl p-3 mb-4 inline-block">
+                    <div className="text-2xl font-extrabold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{t.metric}</div>
+                    <div className="text-xs text-green-600 font-medium">{t.metricLabel}</div>
+                  </div>
+                  <div className="flex gap-0.5 mb-3">
+                    {Array.from({ length: 5 }).map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed mb-4">"{t.text}"</p>
+                  <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
+                    <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500">{t.name[0]}</div>
+                    <div>
+                      <div className="text-sm font-semibold text-slate-800">{t.name}</div>
+                      <div className="text-xs text-slate-400">{t.role}</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </AnimatedSection>
+
+        {/* ══════════════════ COMPARISON TABLE ══════════════════ */}
+        <div className="bg-white py-16 lg:py-24">
+          <AnimatedSection className="max-w-4xl mx-auto px-6">
+            <motion.div variants={fadeUp} className="text-center mb-12">
+              <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Why switch</p>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                PaddleGrid vs. the Old Way
+              </h2>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="rounded-2xl border border-slate-200/60 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50">
+                    <th className="text-left p-4 font-semibold text-slate-500 w-[40%]">Capability</th>
+                    <th className="p-4 font-bold text-green-700 text-center" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</th>
+                    <th className="p-4 font-semibold text-slate-400 text-center">Spreadsheets</th>
+                    <th className="p-4 font-semibold text-slate-400 text-center">Generic SaaS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { feature: 'Pickleball-specific features', pg: true, ss: false, gen: false },
+                    { feature: 'Online booking & payments', pg: true, ss: false, gen: true },
+                    { feature: 'Player skill matching', pg: true, ss: false, gen: false },
+                    { feature: 'Automated waitlists', pg: true, ss: false, gen: false },
+                    { feature: 'Built-in player community', pg: true, ss: false, gen: false },
+                    { feature: 'Real-time analytics', pg: true, ss: false, gen: true },
+                    { feature: 'Event & league management', pg: true, ss: false, gen: false },
+                    { feature: 'CourtReserve data sync', pg: true, ss: false, gen: false },
+                    { feature: 'Mobile-first experience', pg: true, ss: false, gen: true },
+                    { feature: 'Setup in under 10 min', pg: true, ss: true, gen: false },
+                  ].map((row, i) => (
+                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
+                      <td className="p-4 text-slate-700 font-medium">{row.feature}</td>
+                      <td className="p-4 text-center">{row.pg ? <Check className="w-5 h-5 text-green-600 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                      <td className="p-4 text-center">{row.ss ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                      <td className="p-4 text-center">{row.gen ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </motion.div>
+          </AnimatedSection>
+        </div>
+
+        {/* ══════════════════ FAQ ══════════════════ */}
+        <AnimatedSection className="max-w-3xl mx-auto px-6 py-16 lg:py-24">
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">FAQ</p>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              Questions from Venue Operators
+            </h2>
+          </motion.div>
+
+          <div className="space-y-3">
+            {[
+              { q: 'How long does setup take?', a: 'Most venues are live within 10 minutes. Add your courts, set pricing, and you\'re ready to accept bookings. Our team is available to help with migration from existing systems.' },
+              { q: 'What does it cost?', a: 'Plans start at $99/month with a 14-day free trial. No credit card required. Players never pay a fee — you only pay the subscription. Processing fees are 1%, the lowest in the industry.' },
+              { q: 'Can I import from CourtReserve?', a: 'Yes. We offer full bi-directional sync with CourtReserve. Import your courts, schedules, members, and booking history. We handle the migration at no extra cost.' },
+              { q: 'How do payments work?', a: 'Payments go through Stripe Connect. Players pay at booking, and funds are deposited directly to your bank account on a rolling basis. You see every transaction in your dashboard.' },
+              { q: 'What if I need more than 15 courts?', a: 'Our Enterprise plan supports unlimited courts and multiple locations. Contact us for custom pricing — we\'ll build a plan that fits your operation.' },
+              { q: 'Is there a long-term contract?', a: 'No. All plans are month-to-month. You can cancel anytime. We earn your business every month — no lock-in, no cancellation fees.' },
+            ].map((faq, i) => (
+              <motion.div key={i} variants={fadeUp}>
+                <details className="group bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
+                  <summary className="flex items-center justify-between p-5 cursor-pointer hover:bg-slate-50/50 transition-colors">
+                    <span className="text-[15px] font-semibold text-slate-800 pr-4" style={{ fontFamily: 'Manrope, sans-serif' }}>{faq.q}</span>
+                    <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                  </summary>
+                  <div className="px-5 pb-5 text-sm text-slate-500 leading-relaxed">{faq.a}</div>
+                </details>
+              </motion.div>
+            ))}
+          </div>
         </AnimatedSection>
 
         {/* ══════════════════ FINAL CTA ══════════════════ */}
