@@ -47,22 +47,14 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
       <div className="min-h-screen bg-[#F8F9FC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
         {/* ══════════════════ HERO ══════════════════ */}
         <div className="relative min-h-[90vh] flex items-center overflow-hidden">
-          {/* Video background — YouTube embed as looping bg */}
-          <div className="absolute inset-0">
-            <iframe
-              src="https://www.youtube.com/embed/cAqbRJmSmFE?autoplay=1&mute=1&loop=1&playlist=cAqbRJmSmFE&controls=0&showinfo=0&modestbranding=1&rel=0&disablekb=1&playsinline=1"
-              allow="autoplay; encrypted-media"
-              className="absolute top-1/2 left-1/2 w-[180%] h-[180%] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-              style={{ border: 'none', minWidth: '180%', minHeight: '180%' }}
-              title="Pickleball background"
-            />
-          </div>
-
-          {/* Fallback bg in case iframe doesn't load */}
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-green-900 via-green-800 to-slate-900" />
+          {/* Background image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+          />
 
           {/* Dark overlay with green tint */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-green-950/70 to-slate-900/80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-green-950/70 to-slate-900/75" />
 
           <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32 w-full">
             <motion.div
