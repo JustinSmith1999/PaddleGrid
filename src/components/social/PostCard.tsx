@@ -500,14 +500,16 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 </a>
               )}
 
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-100 rounded-2xl p-4 space-y-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-sm font-bold text-green-700">
-                    <Trophy className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-sm font-bold text-green-700">
+                    <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center">
+                      <Trophy className="w-4 h-4" />
+                    </div>
                     {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
                   </div>
                   {post.requires_payment && post.price_per_person && (
-                    <span className="text-lg font-black text-green-700">
+                    <span className="text-lg font-black text-green-700 bg-green-50 px-2.5 py-0.5 rounded-lg">
                       ${post.price_per_person.toFixed(2)}
                     </span>
                   )}

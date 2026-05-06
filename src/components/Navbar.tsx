@@ -64,19 +64,22 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
   }
 
   return (
-    <nav className="bg-white/95 backdrop-blur-xl sticky top-0 z-40 border-b border-slate-200/60 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
+    <nav className="bg-white/98 backdrop-blur-xl sticky top-0 z-40 border-b border-slate-200/60">
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-2">
+        <div className="flex items-center justify-between h-12">
           <div className="flex items-center gap-6">
             <button
               onClick={() => handleViewChange('community')}
-              className="group flex-shrink-0 flex items-center space-x-3"
+              className="group flex-shrink-0 flex items-center gap-2.5"
             >
               <img
                 src="/logo.png"
                 alt="PaddleGrid Logo"
-                className="h-12 w-auto group-hover:scale-105 transition-all duration-300"
+                className="h-9 w-9 object-contain group-hover:scale-105 transition-all duration-300"
               />
+              <span className="hidden sm:block text-lg font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                PaddleGrid
+              </span>
             </button>
             {!user && (
               <div className="hidden sm:flex items-center gap-1 bg-slate-100 rounded-xl p-1">

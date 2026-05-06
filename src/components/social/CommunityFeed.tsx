@@ -234,7 +234,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
         {shouldShowSidebar && (
-        <div className="hidden lg:flex w-[275px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1280px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/60 px-6 pb-6 overflow-y-auto pt-6 z-40 bg-white">
+        <div className="hidden lg:flex w-[240px] xl:w-[260px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1400px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/60 px-4 pb-6 overflow-y-auto pt-4 z-40 bg-white/98 backdrop-blur-sm">
             {/* Navigation Links */}
             <nav className="space-y-1 pt-2 pb-2 px-2">
             {navItems.map((item, index) => (
@@ -393,7 +393,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         )}
 
         {/* Main Feed - Centered with fixed width */}
-        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[600px]'} ${shouldShowSidebar ? 'lg:ml-[275px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/60' : ''} min-h-screen bg-white relative`}>
+        <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[620px]'} ${shouldShowSidebar ? 'lg:ml-[240px] xl:ml-[260px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/60' : ''} min-h-screen bg-white relative`}>
           {/* Sticky Header */}
           {activeView !== 'messages' && (
             <div className="sticky top-[56px] z-10 bg-white/98 backdrop-blur-xl border-b border-slate-100 shadow-sm">
@@ -615,8 +615,8 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
         {/* Right Sidebar - Trending & Suggestions */}
         {activeView === 'feed' && (
-        <div className="hidden xl:block w-[350px] flex-shrink-0">
-          <div className="fixed right-[max(0px,calc((100vw-1280px)/2))] top-[56px] w-[350px] space-y-6 pl-8 pr-4 max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent pt-6">
+        <div className="hidden xl:block w-[320px] flex-shrink-0">
+          <div className="fixed right-[max(16px,calc((100vw-1400px)/2))] top-[56px] w-[300px] space-y-4 max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent pt-4">
             {/* Weather Widget */}
             <WeatherWidget />
 
@@ -705,7 +705,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   <span className="mx-1.5">·</span>
                   <a href="#" className="hover:text-green-700 transition-colors">Help</a>
                 </div>
-                <div className="text-sm font-semibold text-slate-600">© 2025 PaddleGrid</div>
+                <div className="text-sm font-semibold text-slate-600">© 2026 PaddleGrid</div>
               </div>
             </div>
           </div>
