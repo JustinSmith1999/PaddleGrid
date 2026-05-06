@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import CommandPalette from './CommandPalette';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -277,6 +278,9 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
 
   return (
     <div className="flex h-screen bg-[#F8FAFC]">
+      {/* Command Palette */}
+      <CommandPalette onNavigate={onViewChange} />
+
       {/* Desktop Sidebar */}
       <aside
         className={`${
@@ -320,15 +324,15 @@ export default function AdminLayout({ children, currentView, onViewChange }: Adm
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Search (Desktop) */}
-            <div className="hidden md:block relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-              <input
-                type="text"
-                placeholder="Search members, events..."
-                className="w-64 pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50/50 text-slate-600 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 transition-all"
-              />
-            </div>
+            {/* Search (Desktop) — triggers Command Palette */}
+            <button
+              onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+              className="hidden md:flex items-center gap-2 w-64 pl-3 pr-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50/50 text-slate-300 hover:border-green-300 hover:bg-white transition-all"
+            >
+              <Search className="w-4 h-4" />
+              <span className="flex-1 text-left">Search...</span>
+              <kbd className="text-[10px] font-mono text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-200">⌘K</kbd>
+            </button>
 
             {/* Notifications */}
             <button className="relative p-2 rounded-lg hover:bg-slate-50 transition-colors">
