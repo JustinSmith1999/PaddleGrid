@@ -327,48 +327,76 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         </AnimatedSection>
 
         {/* ══════════════════ COMPARISON TABLE ══════════════════ */}
-        <div className="bg-white py-16 lg:py-24">
-          <AnimatedSection className="max-w-4xl mx-auto px-6">
+        <div className="bg-slate-900 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            backgroundSize: '32px 32px',
+          }} />
+          <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 py-16 lg:py-24 relative">
             <motion.div variants={fadeUp} className="text-center mb-12">
-              <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Why switch</p>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                PaddleGrid vs. the Old Way
+              <p className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-3">How we compare</p>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                PaddleGrid vs. CourtReserve vs. PodPlay
               </h2>
+              <p className="text-slate-400 max-w-2xl mx-auto">
+                We researched the competition so you don't have to. Here's what you actually get for your money.
+              </p>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="rounded-2xl border border-slate-200/60 overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
-              <table className="w-full text-sm min-w-[520px]">
+            <motion.div variants={fadeUp} className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+              <table className="w-full text-sm min-w-[600px]">
                 <thead>
-                  <tr className="bg-slate-50">
-                    <th className="text-left p-3 sm:p-4 font-semibold text-slate-500 w-[40%]">Capability</th>
-                    <th className="p-3 sm:p-4 font-bold text-green-700 text-center" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</th>
-                    <th className="p-3 sm:p-4 font-semibold text-slate-400 text-center">Spreadsheets</th>
-                    <th className="p-3 sm:p-4 font-semibold text-slate-400 text-center">Generic SaaS</th>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left p-3 sm:p-4 font-semibold text-slate-400 w-[34%]"></th>
+                    <th className="p-3 sm:p-4 text-center">
+                      <div className="font-bold text-green-400 text-base" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</div>
+                      <div className="text-xs text-slate-500 mt-0.5">from $179/mo</div>
+                    </th>
+                    <th className="p-3 sm:p-4 text-center">
+                      <div className="font-semibold text-slate-300" style={{ fontFamily: 'Manrope, sans-serif' }}>CourtReserve</div>
+                      <div className="text-xs text-slate-500 mt-0.5">from $159/mo</div>
+                    </th>
+                    <th className="p-3 sm:p-4 text-center">
+                      <div className="font-semibold text-slate-300" style={{ fontFamily: 'Manrope, sans-serif' }}>PodPlay</div>
+                      <div className="text-xs text-slate-500 mt-0.5">$30–350/court/mo</div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { feature: 'Pickleball-specific features', pg: true, ss: false, gen: false },
-                    { feature: 'Online booking & payments', pg: true, ss: false, gen: true },
-                    { feature: 'Player skill matching', pg: true, ss: false, gen: false },
-                    { feature: 'Automated waitlists', pg: true, ss: false, gen: false },
-                    { feature: 'Built-in player community', pg: true, ss: false, gen: false },
-                    { feature: 'Real-time analytics', pg: true, ss: false, gen: true },
-                    { feature: 'Event & league management', pg: true, ss: false, gen: false },
-                    { feature: 'CourtReserve data sync', pg: true, ss: false, gen: false },
-                    { feature: 'Mobile-first experience', pg: true, ss: false, gen: true },
-                    { feature: 'Setup in under 10 min', pg: true, ss: true, gen: false },
+                    { feature: 'Player skill matching', pg: true, cr: false, pp: false },
+                    { feature: 'Built-in player community', pg: true, cr: false, pp: false },
+                    { feature: 'Automated waitlist with SMS', pg: true, cr: true, pp: false },
+                    { feature: 'Event & league management', pg: true, cr: true, pp: true },
+                    { feature: 'Real-time analytics dashboard', pg: true, cr: true, pp: true },
+                    { feature: 'Stripe Connect payments', pg: true, cr: false, pp: false },
+                    { feature: 'Family accounts', pg: true, cr: false, pp: false },
+                    { feature: 'CourtReserve data import', pg: true, cr: false, pp: false },
+                    { feature: 'Per-court pricing', pg: false, cr: false, pp: true },
+                    { feature: 'Processing fee', pg: '1%', cr: '2.9%+', pp: '2.9%+' },
+                    { feature: 'Free trial', pg: '14 days', cr: 'Demo only', pp: 'Demo only' },
+                    { feature: 'Long-term contract', pg: 'None', cr: 'Annual', pp: 'Annual' },
                   ].map((row, i) => (
-                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
-                      <td className="p-3 sm:p-4 text-slate-700 font-medium">{row.feature}</td>
-                      <td className="p-3 sm:p-4 text-center">{row.pg ? <Check className="w-5 h-5 text-green-600 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
-                      <td className="p-3 sm:p-4 text-center">{row.ss ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
-                      <td className="p-3 sm:p-4 text-center">{row.gen ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                    <tr key={i} className="border-b border-white/[0.05] hover:bg-white/[0.02] transition-colors">
+                      <td className="p-3 sm:p-4 text-slate-300 font-medium">{row.feature}</td>
+                      {['pg', 'cr', 'pp'].map((col) => {
+                        const val = row[col as keyof typeof row];
+                        return (
+                          <td key={col} className="p-3 sm:p-4 text-center">
+                            {val === true ? <Check className={`w-5 h-5 mx-auto ${col === 'pg' ? 'text-green-400' : 'text-slate-500'}`} /> :
+                             val === false ? <X className="w-5 h-5 text-slate-600 mx-auto" /> :
+                             <span className={`text-sm font-medium ${col === 'pg' ? 'text-green-400' : 'text-slate-400'}`}>{val as string}</span>}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </motion.div>
+            <motion.p variants={fadeUp} className="text-xs text-slate-500 mt-4 text-center">
+              Competitor pricing and features based on publicly available information as of 2025. Subject to change.
+            </motion.p>
           </AnimatedSection>
         </div>
 
