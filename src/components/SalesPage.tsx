@@ -54,7 +54,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
           />
 
           {/* Dark overlay with green tint */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-green-950/70 to-slate-900/75" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-green-950/85 to-slate-900/80" />
 
           <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32 w-full">
             <motion.div

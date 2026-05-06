@@ -73,8 +73,8 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           style={{ backgroundImage: "url('/hero-bg.jpg')" }}
         />
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/75 to-slate-900/55" />
+        {/* Dark overlay — heavy enough for white text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/85 to-slate-900/75" />
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 md:py-36 w-full">
           <div className="max-w-3xl">
