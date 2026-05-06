@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Calendar, Clock, MapPin, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Star, Trophy, CreditCard, BarChart3, Smartphone, Globe, Play, ChevronRight, X, ChevronDown, HelpCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Trophy, CreditCard, BarChart3, Smartphone, Globe, Play, ChevronRight, X, ChevronDown, HelpCircle } from 'lucide-react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { ThreeClickCheckout } from './ThreeClickCheckout';
@@ -55,10 +55,13 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 <span className="text-green-700">Grid</span>
               </span>
             </a>
+            {/* Desktop nav links */}
+            <div className="hidden md:flex items-center gap-1">
+              <a href="/#players" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Players</a>
+              <a href="/#venues" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Venues</a>
+              <a href="#pricing" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Pricing</a>
+            </div>
             <div className="flex items-center gap-1 sm:gap-3">
-              <a href="/#players" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Players</a>
-              <a href="/#venues" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Venues</a>
-              <a href="#pricing" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Pricing</a>
               <button
                 onClick={() => onAuthRequired('login')}
                 className="text-sm font-medium text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl transition-colors"
@@ -76,7 +79,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         </nav>
 
         {/* ══════════════════ HERO ══════════════════ */}
-        <div className="relative min-h-[90vh] flex items-center overflow-hidden bg-[#0a0f1a]">
+        <div className="relative min-h-[70vh] sm:min-h-[80vh] flex items-center overflow-hidden bg-[#0a0f1a]">
           {/* Gradient mesh background */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 via-transparent to-emerald-900/30" />
@@ -96,25 +99,20 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
               variants={stagger}
               className="max-w-3xl"
             >
-              <motion.div variants={fadeUp} className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-sm font-medium text-green-200">Now serving 500+ facilities</span>
-              </motion.div>
-
               <motion.h1
                 variants={fadeUp}
                 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6"
                 style={{ fontFamily: 'Manrope, sans-serif' }}
               >
-                Your Courts Deserve
+                Stop managing courts
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-emerald-400">
-                  Smarter Management.
+                  with spreadsheets.
                 </span>
               </motion.h1>
 
               <motion.p variants={fadeUp} className="text-lg sm:text-xl text-slate-300 leading-relaxed mb-8 max-w-xl">
-                PaddleGrid replaces outdated booking systems with a modern platform that fills courts, automates operations, and keeps players coming back.
+                PaddleGrid handles bookings, payments, waitlists, and player matching so you can focus on running your facility — not chasing down reservations.
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
@@ -152,41 +150,22 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
           </div>
 
           {/* Curved bottom edge */}
-          <div className="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-              <path d="M0 80V30C360 0 720 60 1080 30C1260 15 1380 30 1440 40V80H0Z" fill="#F8F9FC" />
+          <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+            <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block">
+              <path d="M0 48V20C360 0 720 40 1080 20C1260 10 1380 20 1440 28V48H0Z" fill="#F8F9FC" />
             </svg>
           </div>
         </div>
-
-        {/* ══════════════════ SOCIAL PROOF BAR ══════════════════ */}
-        <AnimatedSection className="max-w-6xl mx-auto px-6 py-12">
-          <motion.div variants={fadeUp} className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-8 py-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              {[
-                { value: '500+', label: 'Active Facilities' },
-                { value: '12K+', label: 'Monthly Bookings' },
-                { value: '14s', label: 'Avg. Booking Time' },
-                { value: '99.9%', label: 'Uptime SLA' },
-              ].map((stat, i) => (
-                <div key={i}>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{stat.value}</div>
-                  <div className="text-sm text-slate-500 mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </AnimatedSection>
 
         {/* ══════════════════ FEATURES GRID ══════════════════ */}
         <AnimatedSection id="features" className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
           <motion.div variants={fadeUp} className="text-center mb-14">
             <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Platform Features</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              Everything to Run Your Facility
+              What's included
             </h2>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              From court reservations to player engagement — one platform that handles it all.
+              Court reservations, memberships, events, analytics, and a player portal — all in one place.
             </p>
           </motion.div>
 
@@ -231,23 +210,23 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
 
           <AnimatedSection className="max-w-7xl mx-auto px-6 py-20 lg:py-32 relative">
             <motion.div variants={fadeUp} className="text-center mb-16">
-              <p className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-3">Built Different</p>
+              <p className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-3">Under the hood</p>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                Capabilities That Move the Needle
+                What you actually get
               </h2>
               <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-                Every feature engineered for performance, reliability, and the experience your players expect.
+                The specifics — how each piece works and what it does for your facility.
               </p>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-5">
               {[
-                { title: 'Instant Booking', desc: 'Three clicks from login to confirmation. 14-second average booking time. Zero friction.', metric: '14s', label: 'Avg booking', demo: 'checkout' as const },
-                { title: 'Transparent Pricing', desc: '1% processing fee, clearly displayed. No surprises, no hidden costs, no fine print.', metric: '1%', label: 'Fee cap', demo: 'pricing' as const },
-                { title: 'Smart Waitlist', desc: 'Court opens up? We instantly text the next player. Spots refill in 30 seconds.', metric: '30s', label: 'Refill time', demo: 'waitlist' as const },
-                { title: 'Conflict-Free Scheduling', desc: 'AI prevents double bookings and optimizes utilization. Smart suggestions maximize revenue.', metric: 'Zero', label: 'Conflicts', demo: 'scheduling' as const },
-                { title: 'Family Accounts', desc: 'Parents manage bookings, payments, and schedules for the whole family from one dashboard.', metric: 'Single', label: 'Dashboard', demo: 'family' as const },
-                { title: 'Live Analytics', desc: 'Real-time revenue, occupancy, and player insights. Make decisions with up-to-the-second data.', metric: 'Live', label: 'Updates', demo: 'analytics' as const },
+                { title: 'Instant Booking', desc: 'Three clicks from login to confirmation. Pick a court, pick a time, done.', metric: '3', label: 'Clicks', demo: 'checkout' as const },
+                { title: 'Transparent Pricing', desc: '1% processing fee, shown up front. No surprise charges at the end of the month.', metric: '1%', label: 'Fee', demo: 'pricing' as const },
+                { title: 'Smart Waitlist', desc: 'When a court opens up, the next person in line gets a text automatically.', metric: 'Auto', label: 'Notify', demo: 'waitlist' as const },
+                { title: 'Conflict-Free Scheduling', desc: 'The system catches double-bookings before they happen and flags gaps in your calendar.', metric: 'Zero', label: 'Conflicts', demo: 'scheduling' as const },
+                { title: 'Family Accounts', desc: 'One login to manage bookings, payments, and schedules for the whole family.', metric: '1', label: 'Login', demo: 'family' as const },
+                { title: 'Live Analytics', desc: 'Revenue, occupancy, and player trends — updating in real time.', metric: 'Live', label: 'Data', demo: 'analytics' as const },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -285,15 +264,15 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
               Simple Plans, No Surprises
             </h2>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Every plan includes full platform access. Pick what fits your facility.
+              Full platform access on every plan. Pick the one that matches your facility size.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {[
-              { name: 'Starter', price: '$99', period: '/mo', desc: 'For small facilities getting started', features: ['Up to 5 courts', 'Unlimited bookings', 'Basic analytics', 'Email support'], popular: false },
-              { name: 'Professional', price: '$199', period: '/mo', desc: 'For growing multi-court facilities', features: ['Up to 15 courts', 'Advanced analytics', 'Event management', 'Priority support', 'Custom branding'], popular: true },
-              { name: 'Enterprise', price: 'Custom', period: '', desc: 'For large-scale operations', features: ['Unlimited courts', 'Multi-location', 'Dedicated support', 'Custom integrations', 'SLA guarantee'], popular: false },
+              { name: 'Starter', price: '$179', period: '/mo', desc: 'For small facilities getting started', features: ['Up to 6 courts', 'Unlimited bookings', 'Player matching', 'Analytics dashboard', 'Email support'], popular: false },
+              { name: 'Professional', price: '$349', period: '/mo', desc: 'For growing multi-court facilities', features: ['Up to 15 courts', 'Advanced analytics', 'Event & league management', 'Priority support', 'Custom branding', 'CourtReserve sync'], popular: true },
+              { name: 'Enterprise', price: '$599', period: '/mo', desc: 'For large-scale & multi-location operations', features: ['Unlimited courts', 'Multi-location support', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee', 'API access'], popular: false },
             ].map((plan, i) => (
               <motion.div
                 key={i}
@@ -325,25 +304,19 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   ))}
                 </ul>
 
-                {plan.name === 'Enterprise' ? (
-                  <a
-                    href="mailto:Justin@j20solutions.com?subject=PaddleGrid%20Enterprise%20Inquiry"
-                    className="block w-full py-3.5 rounded-xl font-semibold text-center transition-all bg-slate-100 hover:bg-slate-200 text-slate-900"
-                  >
-                    Contact Sales
-                  </a>
-                ) : (
-                  <button
-                    onClick={() => onAuthRequired('facility')}
-                    className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
-                      plan.popular
-                        ? 'bg-green-700 hover:bg-green-800 text-white shadow-sm'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
-                    }`}
-                  >
-                    Start Free Trial
-                  </button>
-                )}
+                <button
+                  onClick={() => plan.name === 'Enterprise'
+                    ? window.location.href = 'mailto:Justin@j20solutions.com?subject=PaddleGrid%20Enterprise%20Inquiry'
+                    : onAuthRequired('facility')
+                  }
+                  className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
+                    plan.popular
+                      ? 'bg-green-700 hover:bg-green-800 text-white shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                  }`}
+                >
+                  {plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
+                </button>
               </motion.div>
             ))}
           </div>
@@ -351,44 +324,6 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
           <motion.p variants={fadeUp} className="text-center text-sm text-slate-500 mt-6">
             All plans include a 14-day free trial. No credit card required.
           </motion.p>
-        </AnimatedSection>
-
-        {/* ══════════════════ TESTIMONIALS ══════════════════ */}
-        <AnimatedSection className="max-w-6xl mx-auto px-6 py-16 lg:py-24">
-          <motion.div variants={fadeUp} className="text-center mb-12">
-            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Venue success stories</p>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              Venues That Switched See Results Fast
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { name: 'Mike Rodriguez', role: 'Facility owner, Scottsdale AZ', metric: '+89%', metricLabel: 'court utilization', text: 'Our court utilization went from 60% to 89% in the first month. The automated waitlist alone has been a game-changer for filling empty slots.' },
-              { name: 'Tom Whitfield', role: 'Venue manager, Austin TX', metric: '+35%', metricLabel: 'revenue increase', text: 'Revenue is up 35% since we switched. The analytics dashboard shows me exactly where the money is coming from and which time slots to push.' },
-              { name: 'Jenny Park', role: 'Club organizer, Portland OR', metric: '200+', metricLabel: 'members managed', text: 'Managing our 200-member club used to be chaos. PaddleGrid handles registration, court assignments, and payments. I actually enjoy running events now.' },
-            ].map((t, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 h-full">
-                  <div className="bg-green-50 rounded-xl p-3 mb-4 inline-block">
-                    <div className="text-2xl font-extrabold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{t.metric}</div>
-                    <div className="text-xs text-green-600 font-medium">{t.metricLabel}</div>
-                  </div>
-                  <div className="flex gap-0.5 mb-3">
-                    {Array.from({ length: 5 }).map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
-                  </div>
-                  <p className="text-sm text-slate-600 leading-relaxed mb-4">"{t.text}"</p>
-                  <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
-                    <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500">{t.name[0]}</div>
-                    <div>
-                      <div className="text-sm font-semibold text-slate-800">{t.name}</div>
-                      <div className="text-xs text-slate-400">{t.role}</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </AnimatedSection>
 
         {/* ══════════════════ COMPARISON TABLE ══════════════════ */}
@@ -401,14 +336,14 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
               </h2>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="rounded-2xl border border-slate-200/60 overflow-hidden">
-              <table className="w-full text-sm">
+            <motion.div variants={fadeUp} className="rounded-2xl border border-slate-200/60 overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+              <table className="w-full text-sm min-w-[520px]">
                 <thead>
                   <tr className="bg-slate-50">
-                    <th className="text-left p-4 font-semibold text-slate-500 w-[40%]">Capability</th>
-                    <th className="p-4 font-bold text-green-700 text-center" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</th>
-                    <th className="p-4 font-semibold text-slate-400 text-center">Spreadsheets</th>
-                    <th className="p-4 font-semibold text-slate-400 text-center">Generic SaaS</th>
+                    <th className="text-left p-3 sm:p-4 font-semibold text-slate-500 w-[40%]">Capability</th>
+                    <th className="p-3 sm:p-4 font-bold text-green-700 text-center" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</th>
+                    <th className="p-3 sm:p-4 font-semibold text-slate-400 text-center">Spreadsheets</th>
+                    <th className="p-3 sm:p-4 font-semibold text-slate-400 text-center">Generic SaaS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -425,10 +360,10 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                     { feature: 'Setup in under 10 min', pg: true, ss: true, gen: false },
                   ].map((row, i) => (
                     <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
-                      <td className="p-4 text-slate-700 font-medium">{row.feature}</td>
-                      <td className="p-4 text-center">{row.pg ? <Check className="w-5 h-5 text-green-600 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
-                      <td className="p-4 text-center">{row.ss ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
-                      <td className="p-4 text-center">{row.gen ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                      <td className="p-3 sm:p-4 text-slate-700 font-medium">{row.feature}</td>
+                      <td className="p-3 sm:p-4 text-center">{row.pg ? <Check className="w-5 h-5 text-green-600 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                      <td className="p-3 sm:p-4 text-center">{row.ss ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
+                      <td className="p-3 sm:p-4 text-center">{row.gen ? <Check className="w-5 h-5 text-slate-400 mx-auto" /> : <X className="w-5 h-5 text-slate-300 mx-auto" />}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -449,7 +384,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
           <div className="space-y-3">
             {[
               { q: 'How long does setup take?', a: 'Most venues are live within 10 minutes. Add your courts, set pricing, and you\'re ready to accept bookings. Our team is available to help with migration from existing systems.' },
-              { q: 'What does it cost?', a: 'Plans start at $99/month with a 14-day free trial. No credit card required. Players never pay a fee — you only pay the subscription. Processing fees are 1%, the lowest in the industry.' },
+              { q: 'What does it cost?', a: 'Plans start at $179/month with a 14-day free trial. No credit card required. Players never pay a fee — you only pay the subscription. Processing fees are 1%, the lowest in the industry.' },
               { q: 'Can I import from CourtReserve?', a: 'Yes. We offer full bi-directional sync with CourtReserve. Import your courts, schedules, members, and booking history. We handle the migration at no extra cost.' },
               { q: 'How do payments work?', a: 'Payments go through Stripe Connect. Players pay at booking, and funds are deposited directly to your bank account on a rolling basis. You see every transaction in your dashboard.' },
               { q: 'What if I need more than 15 courts?', a: 'Our Enterprise plan supports unlimited courts and multiple locations. Contact us for custom pricing — we\'ll build a plan that fits your operation.' },
@@ -474,10 +409,10 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
             <AnimatedSection className="max-w-4xl mx-auto px-6 py-20 lg:py-28 text-center">
               <motion.div variants={fadeUp}>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-6" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                  Ready to Modernize Your Courts?
+                  See it for yourself.
                 </h2>
                 <p className="text-lg text-green-100 mb-8 max-w-xl mx-auto">
-                  Join hundreds of facilities that switched to PaddleGrid. Setup takes less than 10 minutes.
+                  14-day free trial, no credit card. Most venues are live in under 10 minutes.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
