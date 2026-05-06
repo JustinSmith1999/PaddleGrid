@@ -65,16 +65,24 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </div>
       </nav>
 
-      {/* ─── Hero ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-green-900">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full opacity-[0.08]"
-            style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)', transform: 'translate(30%, -40%)' }} />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-[0.05]"
-            style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)', transform: 'translate(-30%, 40%)' }} />
-        </div>
+      {/* ─── Hero with Video ─── */}
+      <section className="relative min-h-[85vh] flex items-center overflow-hidden">
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'%3E%3Crect fill='%230f172a' width='1920' height='1080'/%3E%3C/svg%3E"
+        >
+          <source src="https://videos.pexels.com/video-files/8224653/8224653-uhd_2560_1440_30fps.mp4" type="video/mp4" />
+        </video>
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-24 sm:pt-28 sm:pb-32 md:pt-36 md:pb-40">
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/50" />
+
+        <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 md:py-36 w-full">
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -93,8 +101,10 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               className="text-[2.5rem] sm:text-5xl md:text-[3.75rem] font-extrabold leading-[1.06] tracking-tight text-white"
               style={{ fontFamily: 'Manrope, sans-serif' }}
             >
-              The pickleball app{' '}
-              <span className="text-green-300">that actually works</span>
+              Book courts.{' '}
+              <span className="text-green-300">Find players.</span>
+              <br />
+              Own your game.
             </motion.h1>
 
             <motion.p
@@ -103,7 +113,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="mt-6 text-lg sm:text-xl text-white/70 leading-relaxed max-w-lg"
             >
-              Book courts, find players at your level, and connect with your local pickleball community. No more group texts. No more phone calls.
+              The all-in-one platform for pickleball — instant court bookings, skill-matched partners, and a community built around your local scene.
             </motion.p>
 
             <motion.div
@@ -114,14 +124,14 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
             >
               <button
                 onClick={() => onAuthRequired('signup')}
-                className="group inline-flex items-center justify-center gap-2.5 bg-white text-green-800 font-semibold text-base px-8 py-4 rounded-xl shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/15 hover:bg-green-50 transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold text-base px-8 py-4 rounded-xl shadow-lg shadow-green-900/30 hover:shadow-xl transition-all duration-200"
               >
                 Create free account
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </button>
               <button
                 onClick={() => onAuthRequired('facility')}
-                className="inline-flex items-center justify-center gap-2 text-white font-semibold text-base px-8 py-4 rounded-xl border border-white/20 hover:border-white/40 hover:bg-white/10 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 text-white font-semibold text-base px-8 py-4 rounded-xl border border-white/20 hover:border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
               >
                 I manage a venue
               </button>
