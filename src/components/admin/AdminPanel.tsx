@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import AdminLayout from './AdminLayout';
 import { AdminDashboard } from './AdminDashboard';
 import { AdminReporting } from './AdminReporting';
@@ -19,8 +19,18 @@ import BookingNotificationTest from './BookingNotificationTest';
 import SignedWaiversPanel from './SignedWaiversPanel';
 import ClubAchievementsManager from './ClubAchievementsManager';
 import PodPlaySync from './PodPlaySync';
+import SmartAnalytics from './SmartAnalytics';
+import MembershipsPage from './MembershipsPage';
+import CampaignsPage from './CampaignsPage';
+import DynamicPricing from './DynamicPricing';
+import SmartFill from './SmartFill';
+import EngagementScoring from './EngagementScoring';
+import ChurnAlerts from './ChurnAlerts';
+import WaitlistManager from './WaitlistManager';
+import NotificationTemplates from './NotificationTemplates';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { Loader2 } from 'lucide-react';
 
 export function AdminPanel() {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -102,6 +112,13 @@ export function AdminPanel() {
     }
   };
 
+  const LoadingFallback = () => (
+    <div className="flex flex-col items-center justify-center py-24 gap-3">
+      <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+      <p className="text-sm text-slate-500">Loading...</p>
+    </div>
+  );
+
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
@@ -123,19 +140,35 @@ export function AdminPanel() {
       case 'pre-registered':
         return <PreRegisteredUsers />;
       case 'transactions':
-        return facilityId ? <TransactionsSync facilityId={facilityId} /> : <div className="p-8 text-center text-stone-600">Loading facility...</div>;
+        return facilityId ? <TransactionsSync facilityId={facilityId} /> : <LoadingFallback />;
       case 'podplay':
         return <PodPlaySync />;
       case 'waivers':
         return <SignedWaiversPanel />;
       case 'notifications':
-        return <BookingNotificationTest />;
+        return <NotificationTemplates />;
       case 'achievements':
-        return facilityId ? <ClubAchievementsManager facilityId={facilityId} /> : <div className="p-8 text-center text-gray-600">Loading facility...</div>;
+        return facilityId ? <ClubAchievementsManager facilityId={facilityId} /> : <LoadingFallback />;
       case 'analytics':
+        return <SmartAnalytics facilityId={facilityId} />;
+      case 'reporting':
         return <AdminReporting />;
       case 'settings':
         return <AdminSettings />;
+      case 'memberships':
+        return <MembershipsPage />;
+      case 'campaigns':
+        return <CampaignsPage />;
+      case 'dynamic-pricing':
+        return <DynamicPricing facilityId={facilityId} />;
+      case 'smart-fill':
+        return <SmartFill />;
+      case 'engagement':
+        return <EngagementScoring facilityId={facilityId} />;
+      case 'churn-alerts':
+        return <ChurnAlerts />;
+      case 'waitlist':
+        return <WaitlistManager />;
       default:
         return <AdminDashboard onViewChange={setCurrentView} />;
     }

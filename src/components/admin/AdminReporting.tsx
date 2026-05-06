@@ -361,7 +361,7 @@ export function AdminReporting() {
 
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-emerald-700 transition"
           >
             <Download className="w-4 h-4" />
             Export
@@ -378,8 +378,8 @@ export function AdminReporting() {
                 ${revenueMetrics.total_revenue.toFixed(2)}
               </p>
             </div>
-            <div className="p-3 bg-emerald-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-emerald-600" />
+            <div className="p-3 bg-green-50 rounded-lg">
+              <DollarSign className="w-6 h-6 text-green-700" />
             </div>
           </div>
         </div>
@@ -430,7 +430,7 @@ export function AdminReporting() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
+            <TrendingUp className="w-5 h-5 text-green-700" />
             Booking Trends
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -460,7 +460,7 @@ export function AdminReporting() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-emerald-600" />
+            <DollarSign className="w-5 h-5 text-green-700" />
             Revenue Trends
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -483,7 +483,7 @@ export function AdminReporting() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-emerald-600" />
+            <BarChart3 className="w-5 h-5 text-green-700" />
             Court Utilization
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -501,7 +501,7 @@ export function AdminReporting() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-emerald-600" />
+            <Clock className="w-5 h-5 text-green-700" />
             Peak Hours
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -518,7 +518,7 @@ export function AdminReporting() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-emerald-600" />
+            <Users className="w-5 h-5 text-green-700" />
             Age Demographics
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -543,7 +543,7 @@ export function AdminReporting() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-emerald-600" />
+            <Clock className="w-5 h-5 text-green-700" />
             Average Playtime by Age
           </h2>
           <ResponsiveContainer width="100%" height={300}>

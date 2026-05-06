@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Building2, Clock, DollarSign, Bell, Shield, Mail, Save, Key, AlertCircle } from 'lucide-react';
+import { Building2, Clock, DollarSign, Bell, Shield, Mail, Save, Key, AlertCircle, CheckCircle, Globe, Palette, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
+type SettingsTab = 'general' | 'notifications' | 'integrations' | 'booking' | 'branding';
+
 export default function AdminSettings() {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<SettingsTab>('general');
   const [facilityId, setFacilityId] = useState<string | null>(null);
   const [courtreserveOrgId, setCourtreserveOrgId] = useState('');
   const [courtreserveApiKey, setCourtreserveApiKey] = useState('');
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [settings, setSettings] = useState({
-    clubName: 'PaddleGrid Club',
-    email: 'contact@paddlegrid.com',
-    phone: '(555) 123-4567',
-    address: '123 Court Street, Sportsville, ST 12345',
+    clubName: '',
+    email: '',
+    phone: '',
+    address: '',
     openTime: '06:00',
     closeTime: '22:00',
     bookingAdvanceDays: 14,
@@ -23,8 +27,10 @@ export default function AdminSettings() {
     depositPercent: 50,
     emailNotifications: true,
     smsNotifications: false,
+    pushNotifications: true,
     autoConfirm: true,
     requireDeposit: true,
+    allowWaitlist: true,
   });
 
   useEffect(() => {
@@ -33,7 +39,6 @@ export default function AdminSettings() {
 
   const loadFacilitySettings = async () => {
     if (!user) return;
-
     try {
       const { data: facilityUser } = await supabase
         .from('facility_users')
@@ -45,6 +50,7 @@ export default function AdminSettings() {
       if (facilityUser?.facilities) {
         const facility = facilityUser.facilities as any;
         setFacilityId(facility.id);
+        setSettings(prev => ({ ...prev, clubName: facility.name || '' }));
         setCourtreserveOrgId(facility.settings?.courtreserve_org_id || '');
         setCourtreserveApiKey(facility.settings?.courtreserve_api_key || '');
       }
@@ -58,10 +64,8 @@ export default function AdminSettings() {
       setMessage({ type: 'error', text: 'No facility found' });
       return;
     }
-
     setSaving(true);
     setMessage(null);
-
     try {
       const { data: facility } = await supabase
         .from('facilities')
@@ -81,278 +85,279 @@ export default function AdminSettings() {
         .eq('id', facilityId);
 
       if (error) throw error;
-
-      setMessage({ type: 'success', text: 'CourtReserve credentials saved successfully' });
+      setMessage({ type: 'success', text: 'Credentials saved successfully' });
     } catch (error) {
-      console.error('Error saving credentials:', error);
       setMessage({ type: 'error', text: 'Failed to save credentials' });
     } finally {
       setSaving(false);
     }
   };
 
-  const handleSave = () => {
-    console.log('Settings saved:', settings);
+  const handleSaveGeneral = async () => {
+    setSaving(true);
+    setMessage(null);
+    try {
+      if (facilityId) {
+        await supabase.from('facilities').update({ name: settings.clubName }).eq('id', facilityId);
+      }
+      setMessage({ type: 'success', text: 'Settings saved' });
+    } catch {
+      setMessage({ type: 'error', text: 'Failed to save' });
+    } finally {
+      setSaving(false);
+    }
   };
 
+  const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
+    { id: 'general', label: 'General', icon: <Building2 className="w-4 h-4" /> },
+    { id: 'booking', label: 'Booking Rules', icon: <Clock className="w-4 h-4" /> },
+    { id: 'notifications', label: 'Notifications', icon: <Bell className="w-4 h-4" /> },
+    { id: 'integrations', label: 'Integrations', icon: <Key className="w-4 h-4" /> },
+    { id: 'branding', label: 'Branding', icon: <Palette className="w-4 h-4" /> },
+  ];
+
+  const InputField = ({ label, value, onChange, type = 'text', placeholder = '' }: {
+    label: string; value: string | number; onChange: (val: any) => void; type?: string; placeholder?: string;
+  }) => (
+    <div>
+      <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={e => onChange(type === 'number' ? Number(e.target.value) : e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 transition-all"
+      />
+    </div>
+  );
+
+  const Toggle = ({ label, description, enabled, onChange }: {
+    label: string; description?: string; enabled: boolean; onChange: (val: boolean) => void;
+  }) => (
+    <div className="flex items-center justify-between py-3">
+      <div>
+        <p className="text-sm font-medium text-slate-700">{label}</p>
+        {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+      </div>
+      <button
+        onClick={() => onChange(!enabled)}
+        className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? 'bg-green-600' : 'bg-slate-200'}`}
+      >
+        <motion.div
+          animate={{ x: enabled ? 20 : 2 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
+        />
+      </button>
+    </div>
+  );
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border-2 border-stone-200">
-        <div className="p-6 border-b-2 border-stone-200">
-          <div className="flex items-center space-x-3">
-            <Key className="w-6 h-6 text-emerald-600" />
-            <h2 className="text-2xl font-bold text-stone-800">CourtReserve Integration</h2>
-          </div>
-        </div>
-        <div className="p-6 space-y-4">
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
-            <div className="flex gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-800">
-                <p className="font-semibold mb-1">CourtReserve API Credentials:</p>
-                <p>Enter your CourtReserve Organization ID and API Key below. These credentials are securely stored and used to sync events, bookings, and transactions from CourtReserve.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">
-                Organization ID
-              </label>
-              <input
-                type="text"
-                value={courtreserveOrgId}
-                onChange={(e) => setCourtreserveOrgId(e.target.value)}
-                placeholder="e.g., Org_13321"
-                className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">
-                API Key
-              </label>
-              <input
-                type="password"
-                value={courtreserveApiKey}
-                onChange={(e) => setCourtreserveApiKey(e.target.value)}
-                placeholder="Enter your API key"
-                className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-          </div>
-
-          {message && (
-            <div className={`p-3 rounded-lg ${message.type === 'success' ? 'bg-green-50 text-green-800 border-2 border-green-200' : 'bg-red-50 text-red-800 border-2 border-red-200'}`}>
-              {message.text}
-            </div>
-          )}
-
-          <button
-            onClick={handleSaveApiKey}
-            disabled={saving || !courtreserveOrgId || !courtreserveApiKey}
-            className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            {saving ? 'Saving...' : 'Save Credentials'}
-          </button>
-        </div>
+    <div className="space-y-5">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Settings</h1>
+        <p className="text-slate-500 text-sm mt-0.5">Manage your facility configuration</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border-2 border-stone-200">
-        <div className="p-6 border-b-2 border-stone-200">
-          <div className="flex items-center space-x-3">
-            <Building2 className="w-6 h-6 text-emerald-600" />
-            <h2 className="text-2xl font-bold text-stone-800">Club Information</h2>
-          </div>
+      <div className="flex gap-6">
+        {/* Sidebar Tabs */}
+        <div className="w-48 flex-shrink-0 hidden lg:block">
+          <nav className="space-y-1">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setMessage(null); }}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-green-50 text-green-700'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                }`}
+              >
+                <span className={activeTab === tab.id ? 'text-green-600' : 'text-slate-400'}>{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
-        <div className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-2">Club Name</label>
-            <input
-              type="text"
-              value={settings.clubName}
-              onChange={(e) => setSettings({...settings, clubName: e.target.value})}
-              className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">Email</label>
-              <input
-                type="email"
-                value={settings.email}
-                onChange={(e) => setSettings({...settings, email: e.target.value})}
-                className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">Phone</label>
-              <input
-                type="tel"
-                value={settings.phone}
-                onChange={(e) => setSettings({...settings, phone: e.target.value})}
-                className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-2">Address</label>
-            <input
-              type="text"
-              value={settings.address}
-              onChange={(e) => setSettings({...settings, address: e.target.value})}
-              className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl shadow-sm border-2 border-stone-200">
-        <div className="p-6 border-b-2 border-stone-200">
-          <div className="flex items-center space-x-3">
-            <Clock className="w-6 h-6 text-emerald-600" />
-            <h2 className="text-2xl font-bold text-stone-800">Operating Hours</h2>
+        {/* Mobile Tabs */}
+        <div className="lg:hidden w-full">
+          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl overflow-x-auto mb-4">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setMessage(null); }}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                  activeTab === tab.id ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
-        <div className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">Opening Time</label>
-              <input
-                type="time"
-                value={settings.openTime}
-                onChange={(e) => setSettings({...settings, openTime: e.target.value})}
-                className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-stone-700 mb-2">Closing Time</label>
-              <input
-                type="time"
-                value={settings.closeTime}
-                onChange={(e) => setSettings({...settings, closeTime: e.target.value})}
-                className="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl shadow-sm border-2 border-stone-200">
-        <div className="p-6 border-b-2 border-stone-200">
-          <div className="flex items-center space-x-3">
-            <DollarSign className="w-6 h-6 text-emerald-600" />
-            <h2 className="text-2xl font-bold text-stone-800">Booking Policies</h2>
-          </div>
-        </div>
-        <div className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-2">
-              Booking Advance Days
-              <span className="text-stone-500 font-normal ml-2">(How far in advance can members book?)</span>
-            </label>
-            <input
-              type="number"
-              value={settings.bookingAdvanceDays}
-              onChange={(e) => setSettings({...settings, bookingAdvanceDays: parseInt(e.target.value)})}
-              className="w-full md:w-48 px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-2">
-              Cancellation Notice (Hours)
-              <span className="text-stone-500 font-normal ml-2">(Minimum hours before booking to cancel)</span>
-            </label>
-            <input
-              type="number"
-              value={settings.cancellationHours}
-              onChange={(e) => setSettings({...settings, cancellationHours: parseInt(e.target.value)})}
-              className="w-full md:w-48 px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-2">
-              Deposit Percentage
-              <span className="text-stone-500 font-normal ml-2">(% required upfront)</span>
-            </label>
-            <input
-              type="number"
-              value={settings.depositPercent}
-              onChange={(e) => setSettings({...settings, depositPercent: parseInt(e.target.value)})}
-              className="w-full md:w-48 px-4 py-2 border-2 border-stone-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="requireDeposit"
-              checked={settings.requireDeposit}
-              onChange={(e) => setSettings({...settings, requireDeposit: e.target.checked})}
-              className="w-5 h-5 text-emerald-600 border-2 border-stone-300 rounded focus:ring-2 focus:ring-emerald-500"
-            />
-            <label htmlFor="requireDeposit" className="text-sm font-semibold text-stone-700">
-              Require deposit for all bookings
-            </label>
-          </div>
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="autoConfirm"
-              checked={settings.autoConfirm}
-              onChange={(e) => setSettings({...settings, autoConfirm: e.target.checked})}
-              className="w-5 h-5 text-emerald-600 border-2 border-stone-300 rounded focus:ring-2 focus:ring-emerald-500"
-            />
-            <label htmlFor="autoConfirm" className="text-sm font-semibold text-stone-700">
-              Auto-confirm bookings after payment
-            </label>
-          </div>
-        </div>
-      </div>
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+            >
+              {/* General Tab */}
+              {activeTab === 'general' && (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 mb-1">Facility Information</h3>
+                    <p className="text-xs text-slate-400">Basic details about your club</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField label="Club Name" value={settings.clubName} onChange={v => setSettings({ ...settings, clubName: v })} placeholder="Pickleball Heaven" />
+                    <InputField label="Email" value={settings.email} onChange={v => setSettings({ ...settings, email: v })} type="email" placeholder="info@yourclub.com" />
+                    <InputField label="Phone" value={settings.phone} onChange={v => setSettings({ ...settings, phone: v })} placeholder="(555) 123-4567" />
+                    <InputField label="Address" value={settings.address} onChange={v => setSettings({ ...settings, address: v })} placeholder="123 Court St" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputField label="Opening Time" value={settings.openTime} onChange={v => setSettings({ ...settings, openTime: v })} type="time" />
+                    <InputField label="Closing Time" value={settings.closeTime} onChange={v => setSettings({ ...settings, closeTime: v })} type="time" />
+                  </div>
+                  <button onClick={handleSaveGeneral} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-colors disabled:opacity-50">
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Changes
+                  </button>
+                </div>
+              )}
 
-      <div className="bg-white rounded-xl shadow-sm border-2 border-stone-200">
-        <div className="p-6 border-b-2 border-stone-200">
-          <div className="flex items-center space-x-3">
-            <Bell className="w-6 h-6 text-emerald-600" />
-            <h2 className="text-2xl font-bold text-stone-800">Notifications</h2>
-          </div>
-        </div>
-        <div className="p-6 space-y-4">
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="emailNotifications"
-              checked={settings.emailNotifications}
-              onChange={(e) => setSettings({...settings, emailNotifications: e.target.checked})}
-              className="w-5 h-5 text-emerald-600 border-2 border-stone-300 rounded focus:ring-2 focus:ring-emerald-500"
-            />
-            <label htmlFor="emailNotifications" className="text-sm font-semibold text-stone-700">
-              Send email notifications for bookings and updates
-            </label>
-          </div>
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="smsNotifications"
-              checked={settings.smsNotifications}
-              onChange={(e) => setSettings({...settings, smsNotifications: e.target.checked})}
-              className="w-5 h-5 text-emerald-600 border-2 border-stone-300 rounded focus:ring-2 focus:ring-emerald-500"
-            />
-            <label htmlFor="smsNotifications" className="text-sm font-semibold text-stone-700">
-              Send SMS notifications (additional charges apply)
-            </label>
-          </div>
-        </div>
-      </div>
+              {/* Booking Rules Tab */}
+              {activeTab === 'booking' && (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 mb-1">Booking Rules</h3>
+                    <p className="text-xs text-slate-400">Configure how members book courts</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField label="Advance Booking (days)" value={settings.bookingAdvanceDays} onChange={v => setSettings({ ...settings, bookingAdvanceDays: v })} type="number" />
+                    <InputField label="Cancellation Window (hours)" value={settings.cancellationHours} onChange={v => setSettings({ ...settings, cancellationHours: v })} type="number" />
+                    <InputField label="Deposit (%)" value={settings.depositPercent} onChange={v => setSettings({ ...settings, depositPercent: v })} type="number" />
+                  </div>
+                  <div className="border-t border-slate-100 pt-4 space-y-1">
+                    <Toggle label="Auto-confirm bookings" description="Automatically confirm when payment received" enabled={settings.autoConfirm} onChange={v => setSettings({ ...settings, autoConfirm: v })} />
+                    <Toggle label="Require deposit" description="Require partial payment to hold slot" enabled={settings.requireDeposit} onChange={v => setSettings({ ...settings, requireDeposit: v })} />
+                    <Toggle label="Enable waitlist" description="Allow members to join waitlist for full slots" enabled={settings.allowWaitlist} onChange={v => setSettings({ ...settings, allowWaitlist: v })} />
+                  </div>
+                  <button onClick={handleSaveGeneral} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-colors disabled:opacity-50">
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Rules
+                  </button>
+                </div>
+              )}
 
-      <div className="flex justify-end">
-        <button
-          onClick={handleSave}
-          className="flex items-center space-x-2 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold shadow-sm"
-        >
-          <Save className="w-5 h-5" />
-          <span>Save Settings</span>
-        </button>
+              {/* Notifications Tab */}
+              {activeTab === 'notifications' && (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 mb-1">Notification Preferences</h3>
+                    <p className="text-xs text-slate-400">Control what notifications are sent</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Toggle label="Email notifications" description="Booking confirmations, reminders, and updates" enabled={settings.emailNotifications} onChange={v => setSettings({ ...settings, emailNotifications: v })} />
+                    <Toggle label="Push notifications" description="Mobile push for immediate alerts" enabled={settings.pushNotifications} onChange={v => setSettings({ ...settings, pushNotifications: v })} />
+                    <Toggle label="SMS notifications" description="Text messages for critical updates" enabled={settings.smsNotifications} onChange={v => setSettings({ ...settings, smsNotifications: v })} />
+                  </div>
+                  <button onClick={handleSaveGeneral} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-colors disabled:opacity-50">
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Preferences
+                  </button>
+                </div>
+              )}
+
+              {/* Integrations Tab */}
+              {activeTab === 'integrations' && (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 mb-1">CourtReserve Integration</h3>
+                    <p className="text-xs text-slate-400">Connect to sync events, bookings, and members</p>
+                  </div>
+
+                  <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4">
+                    <div className="flex gap-3">
+                      <AlertCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-blue-700 leading-relaxed">
+                        Enter your CourtReserve credentials to enable automatic syncing of events, transactions, and member data.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField label="Organization ID" value={courtreserveOrgId} onChange={setCourtreserveOrgId} placeholder="e.g., Org_13321" />
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">API Key</label>
+                      <input
+                        type="password"
+                        value={courtreserveApiKey}
+                        onChange={e => setCourtreserveApiKey(e.target.value)}
+                        placeholder="Enter your API key"
+                        className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleSaveApiKey}
+                    disabled={saving || !courtreserveOrgId || !courtreserveApiKey}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-colors disabled:opacity-50"
+                  >
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Credentials
+                  </button>
+                </div>
+              )}
+
+              {/* Branding Tab */}
+              {activeTab === 'branding' && (
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 mb-1">Branding</h3>
+                    <p className="text-xs text-slate-400">Customize the look of your club portal</p>
+                  </div>
+
+                  <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-center">
+                    <Palette className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="text-sm text-slate-500 font-medium">Logo & branding customization</p>
+                    <p className="text-xs text-slate-400 mt-1">Upload your club logo and set brand colors</p>
+                    <button className="mt-4 px-4 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
+                      Upload Logo
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Status Message */}
+          <AnimatePresence>
+            {message && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className={`mt-4 p-3 rounded-xl flex items-center gap-2 text-sm ${
+                  message.type === 'success'
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}
+              >
+                {message.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                {message.text}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
-import { getSeriesStats } from '../../lib/seriesUtils';
-import { Calendar, Users, DollarSign, TrendingUp, Plus, Search, Filter, Archive, Edit, Copy, Eye, Lock } from 'lucide-react';
+import { Calendar, Users, DollarSign, TrendingUp, Plus, Search, Filter, Archive, Edit, Eye, Lock, CalendarRange, Loader2, Tag, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Series {
   id: string;
@@ -16,6 +16,7 @@ interface Series {
   created_at: string;
   synced_from_courtreserve?: boolean;
   courtreserve_event_id?: string;
+  max_participants?: number;
 }
 
 interface SeriesManagementProps {
@@ -24,16 +25,17 @@ interface SeriesManagementProps {
   onViewDetails: (seriesId: string) => void;
 }
 
+type FilterTab = 'all' | 'published' | 'draft' | 'archived';
+
 export default function SeriesManagement({ onCreateNew, onEdit, onViewDetails }: SeriesManagementProps) {
   const [series, setSeries] = useState<Series[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'published' | 'draft' | 'archived'>('all');
-  const [stats, setStats] = useState<Record<string, any>>({});
+  const [filterType, setFilterType] = useState<FilterTab>('all');
+  const [participantCounts, setParticipantCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     loadSeries();
-    loadOverallStats();
   }, [filterType]);
 
   async function loadSeries() {
@@ -55,13 +57,21 @@ export default function SeriesManagement({ onCreateNew, onEdit, onViewDetails }:
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
-
       setSeries(data || []);
 
-      for (const s of data || []) {
-        loadSeriesStats(s.id);
+      // Load participant counts
+      if (data && data.length > 0) {
+        const { data: signups } = await supabase
+          .from('series_signups')
+          .select('series_id')
+          .in('series_id', data.map(s => s.id));
+
+        const counts: Record<string, number> = {};
+        signups?.forEach(s => {
+          counts[s.series_id] = (counts[s.series_id] || 0) + 1;
+        });
+        setParticipantCounts(counts);
       }
     } catch (error) {
       console.error('Error loading series:', error);
@@ -70,351 +80,220 @@ export default function SeriesManagement({ onCreateNew, onEdit, onViewDetails }:
     }
   }
 
-  async function loadSeriesStats(seriesId: string) {
-    try {
-      const seriesStats = await getSeriesStats(seriesId);
-      setStats(prev => ({ ...prev, [seriesId]: seriesStats }));
-    } catch (error) {
-      console.error('Error loading stats:', error);
+  const filteredSeries = useMemo(() => {
+    if (!searchTerm) return series;
+    const term = searchTerm.toLowerCase();
+    return series.filter(s =>
+      s.title?.toLowerCase().includes(term) ||
+      s.event_type?.toLowerCase().includes(term) ||
+      s.description?.toLowerCase().includes(term)
+    );
+  }, [series, searchTerm]);
+
+  const getEventTypeConfig = (type: string) => {
+    switch (type?.toLowerCase()) {
+      case 'league': return { icon: <Zap className="w-4 h-4" />, color: 'bg-violet-50 text-violet-600', gradient: 'from-violet-500 to-purple-600' };
+      case 'tournament': return { icon: <TrendingUp className="w-4 h-4" />, color: 'bg-blue-50 text-blue-600', gradient: 'from-blue-500 to-blue-700' };
+      case 'clinic': return { icon: <Users className="w-4 h-4" />, color: 'bg-amber-50 text-amber-600', gradient: 'from-amber-500 to-orange-600' };
+      case 'social': return { icon: <CalendarRange className="w-4 h-4" />, color: 'bg-teal-50 text-teal-600', gradient: 'from-teal-500 to-teal-700' };
+      default: return { icon: <Calendar className="w-4 h-4" />, color: 'bg-green-50 text-green-600', gradient: 'from-green-500 to-green-700' };
     }
-  }
-
-  async function loadOverallStats() {
-    try {
-      const { data: allSeries } = await supabase
-        .from('event_series')
-        .select('id')
-        .eq('is_archived', false);
-
-      const { data: upcomingOccurrences } = await supabase
-        .from('event_series_occurrences')
-        .select('id')
-        .gte('occurrence_date', new Date().toISOString().split('T')[0])
-        .eq('status', 'scheduled');
-
-      const { data: totalRegistrations } = await supabase
-        .from('event_series_registrations')
-        .select('id, amount_paid')
-        .in('status', ['registered', 'attended']);
-
-      const totalRevenue = totalRegistrations?.reduce((sum, reg) => sum + (parseFloat(reg.amount_paid as any) || 0), 0) || 0;
-
-      setStats(prev => ({
-        ...prev,
-        overall: {
-          totalSeries: allSeries?.length || 0,
-          upcomingSessions: upcomingOccurrences?.length || 0,
-          totalRegistrations: totalRegistrations?.length || 0,
-          totalRevenue
-        }
-      }));
-    } catch (error) {
-      console.error('Error loading overall stats:', error);
-    }
-  }
-
-  async function duplicateSeries(seriesId: string) {
-    try {
-      const { data: original, error: fetchError } = await supabase
-        .from('event_series')
-        .select('*')
-        .eq('id', seriesId)
-        .single();
-
-      if (fetchError || !original) throw fetchError;
-
-      if (original.synced_from_courtreserve) {
-        alert('Cannot duplicate events synced from CourtReserve. Please create duplicates in CourtReserve instead.');
-        return;
-      }
-
-      const { title, id, created_at, updated_at, synced_from_courtreserve, courtreserve_event_id, ...restData } = original;
-
-      const { error: insertError } = await supabase
-        .from('event_series')
-        .insert({
-          ...restData,
-          title: `${title} (Copy)`,
-          is_published: false
-        });
-
-      if (insertError) throw insertError;
-
-      loadSeries();
-    } catch (error) {
-      console.error('Error duplicating series:', error);
-      alert('Failed to duplicate series');
-    }
-  }
-
-  async function archiveSeries(seriesId: string) {
-    if (!confirm('Are you sure you want to archive this series?')) return;
-
-    try {
-      const { error } = await supabase
-        .from('event_series')
-        .update({ is_archived: true })
-        .eq('id', seriesId);
-
-      if (error) throw error;
-
-      loadSeries();
-    } catch (error) {
-      console.error('Error archiving series:', error);
-      alert('Failed to archive series');
-    }
-  }
-
-  const filteredSeries = series.filter(s =>
-    s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const getEventTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      open_play: 'Open Play',
-      clinic: 'Clinic',
-      tournament: 'Tournament',
-      league: 'League',
-      social: 'Social'
-    };
-    return labels[type] || type;
   };
 
-  const getEventTypeColor = (type: string) => {
-    const colors: Record<string, string> = {
-      open_play: 'bg-blue-100 text-blue-800',
-      clinic: 'bg-green-100 text-green-800',
-      tournament: 'bg-purple-100 text-purple-800',
-      league: 'bg-orange-100 text-orange-800',
-      social: 'bg-pink-100 text-pink-800'
-    };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+  const getSkillLabel = (min: number, max: number) => {
+    if (min <= 1 && max >= 5) return 'All Levels';
+    if (min <= 2 && max <= 3) return 'Beginner';
+    if (min >= 3 && max <= 4) return 'Intermediate';
+    if (min >= 4) return 'Advanced';
+    return `${min}-${max}`;
   };
+
+  const tabs: { id: FilterTab; label: string }[] = [
+    { id: 'all', label: 'Active' },
+    { id: 'published', label: 'Published' },
+    { id: 'draft', label: 'Drafts' },
+    { id: 'archived', label: 'Archived' },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Event Series Management</h1>
-          <p className="text-gray-600 mt-1">Create and manage recurring events and programs</p>
+          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Events & Leagues
+          </h1>
+          <p className="text-slate-500 text-sm mt-0.5">
+            {series.length} {filterType === 'all' ? 'active' : filterType} events
+          </p>
         </div>
         <button
           onClick={onCreateNew}
-          className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-700 text-white text-sm font-medium rounded-xl hover:bg-green-800 transition-all shadow-sm hover:shadow-md"
         >
-          <Plus className="w-5 h-5" />
-          Create New Series
+          <Plus className="w-4 h-4" />
+          New Event
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Calendar className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Active Series</p>
-              <p className="text-2xl font-bold">{stats.overall?.totalSeries || 0}</p>
-            </div>
-          </div>
+      {/* Tabs + Search */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setFilterType(tab.id)}
+              className={`px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                filterType === tab.id
+                  ? 'bg-white text-green-700 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Upcoming Sessions</p>
-              <p className="text-2xl font-bold">{stats.overall?.upcomingSessions || 0}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Users className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Registrations</p>
-              <p className="text-2xl font-bold">{stats.overall?.totalRegistrations || 0}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold">${stats.overall?.totalRevenue?.toFixed(2) || '0.00'}</p>
-            </div>
-          </div>
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl bg-white text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 transition-all"
+          />
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex flex-col md:flex-row gap-4 justify-between">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search series..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilterType('all')}
-                className={`px-4 py-2 rounded-lg transition ${
-                  filterType === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setFilterType('published')}
-                className={`px-4 py-2 rounded-lg transition ${
-                  filterType === 'published'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Published
-              </button>
-              <button
-                onClick={() => setFilterType('draft')}
-                className={`px-4 py-2 rounded-lg transition ${
-                  filterType === 'draft'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Draft
-              </button>
-              <button
-                onClick={() => setFilterType('archived')}
-                className={`px-4 py-2 rounded-lg transition ${
-                  filterType === 'archived'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Archived
-              </button>
-            </div>
-          </div>
+      {/* Loading */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <Loader2 className="w-6 h-6 text-green-700 animate-spin" />
+          <p className="text-sm text-slate-500">Loading events...</p>
         </div>
+      ) : (
+        /* Event Cards Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <AnimatePresence mode="popLayout">
+            {filteredSeries.map((event, index) => {
+              const config = getEventTypeConfig(event.event_type);
+              const participants = participantCounts[event.id] || 0;
+              const maxP = event.max_participants || 16;
+              const fillPercent = Math.min((participants / maxP) * 100, 100);
 
-        <div className="divide-y divide-gray-200">
-          {loading ? (
-            <div className="p-12 text-center text-gray-500">
-              Loading series...
-            </div>
-          ) : filteredSeries.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No series found</p>
+              return (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.15, delay: index * 0.03 }}
+                  layout
+                  className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-green-100 transition-all group cursor-pointer overflow-hidden"
+                  onClick={() => onViewDetails(event.id)}
+                >
+                  {/* Color Header Bar */}
+                  <div className={`h-1.5 bg-gradient-to-r ${config.gradient}`} />
+
+                  <div className="p-5">
+                    {/* Top Row */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className={`w-9 h-9 rounded-xl ${config.color} flex items-center justify-center`}>
+                        {config.icon}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {!event.is_published && (
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">DRAFT</span>
+                        )}
+                        {event.synced_from_courtreserve && (
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">SYNCED</span>
+                        )}
+                        {event.is_published && (
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700">LIVE</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-sm font-semibold text-slate-900 mb-1 line-clamp-1 group-hover:text-green-700 transition-colors">
+                      {event.title}
+                    </h3>
+
+                    {/* Meta */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-xs text-slate-400 capitalize">{event.event_type || 'Event'}</span>
+                      <span className="text-xs text-slate-300">·</span>
+                      <span className="text-xs text-slate-400">{getSkillLabel(event.skill_level_min, event.skill_level_max)}</span>
+                    </div>
+
+                    {/* Participant Progress */}
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <Users className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-xs font-medium text-slate-600">{participants}/{maxP}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400">{fillPercent.toFixed(0)}% filled</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${fillPercent}%` }}
+                          transition={{ duration: 0.5, delay: index * 0.05 }}
+                          className={`h-full rounded-full bg-gradient-to-r ${config.gradient}`}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="w-3.5 h-3.5 text-green-600" />
+                        <span className="text-sm font-semibold text-green-700">
+                          {event.price_per_session > 0 ? `$${event.price_per_session}` : 'Free'}
+                        </span>
+                        {event.price_per_session > 0 && (
+                          <span className="text-[10px] text-slate-400">/session</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={e => { e.stopPropagation(); onEdit(event.id); }}
+                          className="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors"
+                          title="Edit"
+                        >
+                          <Edit className="w-3.5 h-3.5 text-slate-400" />
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); onViewDetails(event.id); }}
+                          className="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors"
+                          title="View"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-slate-400" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+
+          {filteredSeries.length === 0 && !loading && (
+            <div className="col-span-full text-center py-16">
+              <CalendarRange className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+              <p className="text-sm text-slate-500 font-medium">No events found</p>
               <button
                 onClick={onCreateNew}
-                className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+                className="mt-3 text-sm text-green-700 font-medium hover:text-green-800"
               >
-                Create your first series
+                Create your first event →
               </button>
             </div>
-          ) : (
-            filteredSeries.map((s) => (
-              <div key={s.id} className="p-6 hover:bg-gray-50 transition">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold">{s.title}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEventTypeColor(s.event_type)}`}>
-                        {getEventTypeLabel(s.event_type)}
-                      </span>
-                      {!s.is_published && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                          Draft
-                        </span>
-                      )}
-                      {s.is_archived && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                          Archived
-                        </span>
-                      )}
-                      {s.synced_from_courtreserve && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 flex items-center gap-1">
-                          <Lock className="w-3 h-3" />
-                          CourtReserve
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{s.description}</p>
-
-                    <div className="flex items-center gap-6 text-sm text-gray-600">
-                      <span>Skill Level: {s.skill_level_min} - {s.skill_level_max}</span>
-                      <span>${s.price_per_session}/session</span>
-                      {stats[s.id] && (
-                        <>
-                          <span>{stats[s.id].upcomingOccurrences} upcoming</span>
-                          <span>{stats[s.id].totalRegistrations} registrations</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 ml-4">
-                    <button
-                      onClick={() => onViewDetails(s.id)}
-                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
-                      title="View Details"
-                    >
-                      <Eye className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => onEdit(s.id)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                      title={s.synced_from_courtreserve ? "View (Read-Only)" : "Edit"}
-                    >
-                      <Edit className="w-5 h-5" />
-                    </button>
-                    {!s.synced_from_courtreserve && (
-                      <button
-                        onClick={() => duplicateSeries(s.id)}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                        title="Duplicate"
-                      >
-                        <Copy className="w-5 h-5" />
-                      </button>
-                    )}
-                    {!s.is_archived && (
-                      <button
-                        onClick={() => archiveSeries(s.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Archive"
-                      >
-                        <Archive className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

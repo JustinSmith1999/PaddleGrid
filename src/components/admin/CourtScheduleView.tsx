@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, X, ChevronLeft, ChevronRight, MapPin, User, Phone, DollarSign } from 'lucide-react';
+import { Calendar, Clock, Users, X, ChevronLeft, ChevronRight, MapPin, User, Phone, DollarSign, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { sortCourtsByNumber } from '../../lib/courtUtils';
 
@@ -36,28 +36,16 @@ interface AvailabilityBlock {
   player_count?: number;
 }
 
-interface CourtStatus {
-  court: Court;
-  isOpen: boolean;
-  currentBooking?: Booking;
-  nextBooking?: Booking;
-  todayBookings: Booking[];
-}
-
-const TIME_SLOTS = Array.from({ length: 28 }, (_, i) => {
-  const hour = Math.floor(i / 2) + 6;
-  const minute = i % 2 === 0 ? '00' : '30';
-  return `${hour.toString().padStart(2, '0')}:${minute}`;
-});
+const HOURS = Array.from({ length: 17 }, (_, i) => i + 6); // 6am - 10pm
 
 export default function CourtScheduleView() {
   const [courts, setCourts] = useState<Court[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availabilityBlocks, setAvailabilityBlocks] = useState<AvailabilityBlock[]>([]);
-  const [courtStatuses, setCourtStatuses] = useState<CourtStatus[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedCourt, setSelectedCourt] = useState<CourtStatus | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<'timeline' | 'cards'>('timeline');
 
   useEffect(() => {
     loadCourts();
@@ -78,12 +66,6 @@ export default function CourtScheduleView() {
     };
   }, [selectedDate]);
 
-  useEffect(() => {
-    if (courts.length > 0 && (bookings.length >= 0 || availabilityBlocks.length >= 0)) {
-      calculateCourtStatuses();
-    }
-  }, [courts, bookings, availabilityBlocks]);
-
   const loadCourts = async () => {
     const { data } = await supabase
       .from('courts')
@@ -98,10 +80,7 @@ export default function CourtScheduleView() {
     const [bookingsRes, blocksRes] = await Promise.all([
       supabase
         .from('bookings')
-        .select(`
-          *,
-          profiles:user_id (full_name)
-        `)
+        .select(`*, profiles:user_id (full_name)`)
         .eq('booking_date', selectedDate)
         .neq('status', 'cancelled'),
       supabase
@@ -125,65 +104,14 @@ export default function CourtScheduleView() {
     setLoading(false);
   };
 
-  const calculateCourtStatuses = () => {
-    const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 5);
-    const today = now.toISOString().split('T')[0];
-    const isToday = selectedDate === today;
-
-    const statuses: CourtStatus[] = courts.map(court => {
-      const courtBookings = bookings.filter(b => b.court_id === court.id);
-
-      const courtBlocks: Booking[] = availabilityBlocks
-        .filter(b => b.court_id === court.id)
-        .map(block => ({
-          id: block.id,
-          court_id: block.court_id,
-          user_id: '',
-          start_time: block.start_time,
-          end_time: block.end_time,
-          booking_date: block.block_date,
-          status: 'confirmed',
-          total_amount: 0,
-          user_name: block.notes || 'CourtReserve Booking',
-          booking_type: block.block_type,
-          player_count: block.player_count
-        }));
-
-      const allBookings = [...courtBookings, ...courtBlocks];
-
-      let currentBooking: Booking | undefined;
-      let nextBooking: Booking | undefined;
-
-      if (isToday) {
-        currentBooking = allBookings.find(b =>
-          b.start_time <= currentTime && b.end_time > currentTime
-        );
-
-        nextBooking = allBookings
-          .filter(b => b.start_time > currentTime)
-          .sort((a, b) => a.start_time.localeCompare(b.start_time))[0];
-      } else {
-        nextBooking = allBookings
-          .sort((a, b) => a.start_time.localeCompare(b.start_time))[0];
-      }
-
-      return {
-        court,
-        isOpen: !currentBooking,
-        currentBooking,
-        nextBooking,
-        todayBookings: allBookings.sort((a, b) => a.start_time.localeCompare(b.start_time))
-      };
-    });
-
-    setCourtStatuses(statuses);
-  };
-
   const handleDateChange = (days: number) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
     setSelectedDate(newDate.toISOString().split('T')[0]);
+  };
+
+  const goToToday = () => {
+    setSelectedDate(new Date().toISOString().split('T')[0]);
   };
 
   const formatTime = (time: string) => {
@@ -194,8 +122,14 @@ export default function CourtScheduleView() {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
+  const formatHourShort = (hour: number) => {
+    const ampm = hour >= 12 ? 'p' : 'a';
+    const h = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    return `${h}${ampm}`;
+  };
+
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    const date = new Date(dateStr + 'T00:00:00');
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
@@ -203,376 +137,431 @@ export default function CourtScheduleView() {
     });
   };
 
-  const getBookingPosition = (startTime: string, endTime: string) => {
-    const startIndex = TIME_SLOTS.indexOf(startTime);
-    const endIndex = TIME_SLOTS.indexOf(endTime);
-    const left = (startIndex / TIME_SLOTS.length) * 100;
-    const width = ((endIndex - startIndex) / TIME_SLOTS.length) * 100;
-    return { left: `${left}%`, width: `${width}%` };
+  const formatDateShort = (dateStr: string) => {
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-500';
-      case 'pending':
-        return 'bg-yellow-500';
-      case 'completed':
-        return 'bg-gray-400';
-      default:
-        return 'bg-blue-500';
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+
+  // Get all bookings for a specific court (merge bookings + availability blocks)
+  const getCourtBookings = (courtId: string): Booking[] => {
+    const courtBookings = bookings.filter(b => b.court_id === courtId);
+    const courtBlocks = availabilityBlocks
+      .filter(b => b.court_id === courtId)
+      .map(block => ({
+        id: block.id,
+        court_id: block.court_id,
+        user_id: '',
+        start_time: block.start_time,
+        end_time: block.end_time,
+        booking_date: block.block_date,
+        status: 'confirmed',
+        total_amount: 0,
+        user_name: block.notes || 'Reserved',
+        booking_type: block.block_type,
+        player_count: block.player_count
+      }));
+    return [...courtBookings, ...courtBlocks].sort((a, b) => a.start_time.localeCompare(b.start_time));
+  };
+
+  const getBookingColor = (booking: Booking) => {
+    const type = booking.booking_type || booking.status;
+    switch (type) {
+      case 'reservation': return { bg: 'bg-green-600', light: 'bg-green-50', text: 'text-green-700', border: 'border-green-600' };
+      case 'event': return { bg: 'bg-violet-600', light: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-600' };
+      case 'tournament': return { bg: 'bg-blue-600', light: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-600' };
+      case 'lesson': return { bg: 'bg-amber-500', light: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-500' };
+      case 'maintenance': return { bg: 'bg-red-500', light: 'bg-red-50', text: 'text-red-700', border: 'border-red-500' };
+      case 'pending': return { bg: 'bg-amber-400', light: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-400' };
+      default: return { bg: 'bg-green-600', light: 'bg-green-50', text: 'text-green-700', border: 'border-green-600' };
     }
   };
 
-  if (loading) {
+  const getBookingPosition = (startTime: string, endTime: string) => {
+    const [startH, startM] = startTime.split(':').map(Number);
+    const [endH, endM] = endTime.split(':').map(Number);
+    const startMinutes = (startH - 6) * 60 + startM;
+    const endMinutes = (endH - 6) * 60 + endM;
+    const totalMinutes = 17 * 60; // 6am to 11pm
+    const top = (startMinutes / totalMinutes) * 100;
+    const height = ((endMinutes - startMinutes) / totalMinutes) * 100;
+    return { top: `${top}%`, height: `${Math.max(height, 2)}%` };
+  };
+
+  // Current time indicator position
+  const getCurrentTimePosition = () => {
+    if (!isToday) return null;
+    const now = new Date();
+    const hour = now.getHours();
+    const min = now.getMinutes();
+    if (hour < 6 || hour >= 23) return null;
+    const minutes = (hour - 6) * 60 + min;
+    const totalMinutes = 17 * 60;
+    return `${(minutes / totalMinutes) * 100}%`;
+  };
+
+  const currentTimePos = getCurrentTimePosition();
+
+  // Stats
+  const totalBookingsToday = bookings.length + availabilityBlocks.length;
+  const totalRevenue = bookings.reduce((sum, b) => sum + (b.total_amount || 0), 0);
+  const bookedCourts = new Set([...bookings.map(b => b.court_id), ...availabilityBlocks.map(b => b.court_id)]).size;
+
+  if (loading && courts.length === 0) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+      <div className="flex flex-col justify-center items-center py-24 gap-3">
+        <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
+        <p className="text-sm text-slate-500">Loading schedule...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Court Schedule</h1>
-          <p className="text-gray-600 mt-1">Real-time court availability and bookings</p>
+          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Court Scheduler
+          </h1>
+          <p className="text-slate-500 text-sm mt-0.5">
+            {totalBookingsToday} bookings · {bookedCourts}/{courts.length} courts active
+          </p>
         </div>
 
-        <div className="flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
-          <button
-            onClick={() => handleDateChange(-1)}
-            className="p-3 hover:bg-gray-50 transition-colors text-gray-600"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <div className="px-6 py-3 border-x border-gray-200">
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-5 h-5 text-emerald-600" />
-              <span className="font-medium text-gray-900">{formatDate(selectedDate)}</span>
-            </div>
+        <div className="flex items-center gap-3">
+          {/* View Toggle */}
+          <div className="flex items-center p-1 bg-slate-100 rounded-lg">
+            <button
+              onClick={() => setView('timeline')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                view === 'timeline' ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Timeline
+            </button>
+            <button
+              onClick={() => setView('cards')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                view === 'cards' ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Cards
+            </button>
           </div>
-          <button
-            onClick={() => handleDateChange(1)}
-            className="p-3 hover:bg-gray-50 transition-colors text-gray-600"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+
+          {/* Date Navigation */}
+          <div className="flex items-center bg-white rounded-xl border border-slate-200 shadow-sm">
+            <button
+              onClick={() => handleDateChange(-1)}
+              className="p-2.5 hover:bg-slate-50 transition-colors text-slate-500 rounded-l-xl"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={goToToday}
+              className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors border-x border-slate-100"
+            >
+              {isToday ? 'Today' : formatDateShort(selectedDate)}
+            </button>
+            <button
+              onClick={() => handleDateChange(1)}
+              className="p-2.5 hover:bg-slate-50 transition-colors text-slate-500 rounded-r-xl"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Court Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {courtStatuses.map((courtStatus) => (
-          <div
-            key={courtStatus.court.id}
-            onClick={() => setSelectedCourt(courtStatus)}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-          >
-            {/* Court Header */}
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">{courtStatus.court.name}</h3>
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  courtStatus.isOpen 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {courtStatus.isOpen ? 'Available' : 'In Use'}
-                </div>
+      {/* Date Display */}
+      <div className="flex items-center gap-2">
+        <Calendar className="w-4 h-4 text-green-600" />
+        <span className="text-sm font-medium text-slate-700">{formatDate(selectedDate)}</span>
+        {isToday && (
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+            TODAY
+          </span>
+        )}
+      </div>
+
+      {/* Timeline View */}
+      {view === 'timeline' && (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
+              {/* Court Headers */}
+              <div className="flex border-b border-slate-100 sticky top-0 bg-white z-20">
+                <div className="w-16 flex-shrink-0 border-r border-slate-100" />
+                {courts.map(court => (
+                  <div key={court.id} className="flex-1 min-w-[140px] px-3 py-3 border-r border-slate-50 last:border-r-0">
+                    <p className="text-xs font-semibold text-slate-700 truncate">{court.name}</p>
+                    <p className="text-[10px] text-slate-400">${court.hourly_rate}/hr</p>
+                  </div>
+                ))}
               </div>
-              <p className="text-sm text-gray-500 mt-1">${courtStatus.court.hourly_rate}/hour</p>
-            </div>
 
-            {/* Court Status */}
-            <div className="p-4">
-              {courtStatus.currentBooking ? (
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Currently Playing</span>
+              {/* Time Grid */}
+              <div className="relative" style={{ height: `${HOURS.length * 64}px` }}>
+                {/* Hour lines */}
+                {HOURS.map((hour, i) => (
+                  <div
+                    key={hour}
+                    className="absolute left-0 right-0 border-b border-slate-50 flex"
+                    style={{ top: `${(i / HOURS.length) * 100}%`, height: `${100 / HOURS.length}%` }}
+                  >
+                    <div className="w-16 flex-shrink-0 border-r border-slate-100 flex items-start justify-end pr-2 pt-1">
+                      <span className="text-[10px] font-medium text-slate-400">
+                        {formatHourShort(hour)}
+                      </span>
+                    </div>
+                    {courts.map(court => (
+                      <div key={court.id} className="flex-1 min-w-[140px] border-r border-slate-50/50 last:border-r-0" />
+                    ))}
                   </div>
-                  <p className="font-medium text-gray-900">{courtStatus.currentBooking.user_name}</p>
-                  <p className="text-sm text-gray-600">
-                    Until {formatTime(courtStatus.currentBooking.end_time)}
-                  </p>
-                </div>
-              ) : (
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Available Now</span>
-                  </div>
-                  <p className="text-gray-600">Ready for booking</p>
-                </div>
-              )}
+                ))}
 
-              {/* Next Booking */}
-              {courtStatus.nextBooking && (
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Clock className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm font-medium text-gray-700">Next Up</span>
+                {/* Current Time Line */}
+                {currentTimePos && (
+                  <div
+                    className="absolute left-16 right-0 z-30 pointer-events-none"
+                    style={{ top: currentTimePos }}
+                  >
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 rounded-full bg-red-500 -ml-1" />
+                      <div className="flex-1 h-[1.5px] bg-red-500/70" />
+                    </div>
                   </div>
-                  <p className="font-medium text-gray-900">{courtStatus.nextBooking.user_name}</p>
-                  <p className="text-sm text-gray-600">
-                    {formatTime(courtStatus.nextBooking.start_time)} - {formatTime(courtStatus.nextBooking.end_time)}
-                  </p>
-                </div>
-              )}
+                )}
 
-              {/* Daily Summary */}
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Today's Bookings</span>
-                  <span className="text-sm font-semibold text-gray-900">{courtStatus.todayBookings.length}</span>
-                </div>
+                {/* Booking Blocks */}
+                {courts.map((court, courtIndex) => {
+                  const courtBookings = getCourtBookings(court.id);
+                  const leftOffset = 64 + (courtIndex * ((100 - 4) / courts.length)); // approximate
+
+                  return courtBookings.map(booking => {
+                    const pos = getBookingPosition(booking.start_time, booking.end_time);
+                    const color = getBookingColor(booking);
+                    const courtWidth = `calc((100% - 64px) / ${courts.length})`;
+                    const courtLeft = `calc(64px + ${courtIndex} * (100% - 64px) / ${courts.length})`;
+
+                    return (
+                      <div
+                        key={booking.id}
+                        className={`absolute rounded-lg ${color.bg} cursor-pointer hover:opacity-90 transition-all hover:shadow-md group overflow-hidden`}
+                        style={{
+                          top: pos.top,
+                          height: pos.height,
+                          left: courtLeft,
+                          width: courtWidth,
+                          padding: '0 4px',
+                        }}
+                        onClick={() => setSelectedBooking(booking)}
+                      >
+                        <div className="h-full mx-1 my-0.5 flex flex-col justify-center px-2 py-1 overflow-hidden">
+                          <p className="text-[11px] font-semibold text-white truncate leading-tight">
+                            {booking.user_name}
+                          </p>
+                          <p className="text-[9px] text-white/80 truncate">
+                            {formatTime(booking.start_time)} – {formatTime(booking.end_time)}
+                          </p>
+                          {booking.player_count && (
+                            <p className="text-[9px] text-white/70">
+                              {booking.player_count}p
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })}
               </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Court Detail Modal */}
-      {selectedCourt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            {/* Modal Header */}
-            <div className="bg-emerald-600 text-white p-6">
+          {/* Legend */}
+          <div className="px-6 py-3 border-t border-slate-100 flex items-center gap-4 flex-wrap">
+            <span className="text-[10px] text-slate-400 font-medium">Type:</span>
+            {[
+              { label: 'Reservation', color: 'bg-green-600' },
+              { label: 'Event', color: 'bg-violet-600' },
+              { label: 'Tournament', color: 'bg-blue-600' },
+              { label: 'Lesson', color: 'bg-amber-500' },
+              { label: 'Maintenance', color: 'bg-red-500' },
+            ].map(item => (
+              <div key={item.label} className="flex items-center gap-1.5">
+                <div className={`w-3 h-3 rounded-sm ${item.color}`} />
+                <span className="text-[10px] text-slate-500">{item.label}</span>
+              </div>
+            ))}
+            {isToday && (
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-0.5 bg-red-500 rounded" />
+                <span className="text-[10px] text-slate-500">Now</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Cards View */}
+      {view === 'cards' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {courts.map(court => {
+            const courtBookings = getCourtBookings(court.id);
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5);
+            const isActive = isToday && courtBookings.some(b => b.start_time <= currentTime && b.end_time > currentTime);
+            const currentBooking = isToday ? courtBookings.find(b => b.start_time <= currentTime && b.end_time > currentTime) : null;
+            const nextBooking = isToday
+              ? courtBookings.find(b => b.start_time > currentTime)
+              : courtBookings[0];
+
+            return (
+              <div key={court.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                {/* Status Bar */}
+                <div className={`h-1 ${isActive ? 'bg-red-400' : courtBookings.length > 0 ? 'bg-green-500' : 'bg-slate-200'}`} />
+
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-slate-900">{court.name}</h3>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      isActive ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'
+                    }`}>
+                      {isActive ? 'IN USE' : 'OPEN'}
+                    </span>
+                  </div>
+
+                  {/* Current / Next */}
+                  {currentBooking ? (
+                    <div className="mb-3 p-3 rounded-xl bg-red-50/50 border border-red-100">
+                      <p className="text-[10px] font-medium text-red-500 uppercase tracking-wide mb-1">Playing Now</p>
+                      <p className="text-sm font-medium text-slate-900 truncate">{currentBooking.user_name}</p>
+                      <p className="text-xs text-slate-500">Until {formatTime(currentBooking.end_time)}</p>
+                    </div>
+                  ) : nextBooking ? (
+                    <div className="mb-3 p-3 rounded-xl bg-green-50/50 border border-green-100">
+                      <p className="text-[10px] font-medium text-green-600 uppercase tracking-wide mb-1">Next Up</p>
+                      <p className="text-sm font-medium text-slate-900 truncate">{nextBooking.user_name}</p>
+                      <p className="text-xs text-slate-500">{formatTime(nextBooking.start_time)} – {formatTime(nextBooking.end_time)}</p>
+                    </div>
+                  ) : (
+                    <div className="mb-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                      <p className="text-xs text-slate-400 text-center">No bookings</p>
+                    </div>
+                  )}
+
+                  {/* Mini timeline */}
+                  <div className="flex items-center gap-0.5 h-6 mt-2">
+                    {HOURS.map(hour => {
+                      const hasBooking = courtBookings.some(b => {
+                        const startH = parseInt(b.start_time.split(':')[0]);
+                        const endH = parseInt(b.end_time.split(':')[0]);
+                        return hour >= startH && hour < endH;
+                      });
+                      const isCurrent = isToday && hour === now.getHours();
+
+                      return (
+                        <div
+                          key={hour}
+                          className={`flex-1 rounded-sm h-full transition-colors ${
+                            hasBooking ? 'bg-green-500' : 'bg-slate-100'
+                          } ${isCurrent ? 'ring-1 ring-red-400' : ''}`}
+                          title={`${formatHourShort(hour)} ${hasBooking ? '(Booked)' : '(Open)'}`}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-50">
+                    <span className="text-xs text-slate-400">{courtBookings.length} booking{courtBookings.length !== 1 ? 's' : ''}</span>
+                    <span className="text-xs font-medium text-slate-500">${court.hourly_rate}/hr</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Booking Detail Modal */}
+      {selectedBooking && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+            <div className={`px-6 py-4 rounded-t-2xl ${getBookingColor(selectedBooking).bg}`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold">{selectedCourt.court.name}</h3>
-                  <p className="text-emerald-100">{formatDate(selectedDate)} Schedule</p>
+                  <p className="text-white/70 text-xs font-medium uppercase tracking-wide">
+                    {selectedBooking.booking_type || 'Reservation'}
+                  </p>
+                  <h3 className="text-lg font-semibold text-white mt-0.5">{selectedBooking.user_name}</h3>
                 </div>
                 <button
-                  onClick={() => setSelectedCourt(null)}
-                  className="p-2 hover:bg-emerald-700 rounded-lg transition-colors"
+                  onClick={() => setSelectedBooking(null)}
+                  className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-4 h-4 text-white" />
                 </button>
               </div>
             </div>
 
-            {/* Calendar-Style Day View */}
-            <div className="p-6 max-h-[80vh] overflow-y-auto">
-              <h4 className="text-lg font-bold text-stone-800 mb-6">Daily Schedule</h4>
-
-              {selectedCourt.todayBookings.length === 0 ? (
-                <div className="text-center py-20 bg-stone-50 rounded-xl border-2 border-stone-200">
-                  <Calendar className="w-20 h-20 text-stone-300 mx-auto mb-4" />
-                  <p className="text-stone-600 font-medium text-xl">No bookings scheduled</p>
-                  <p className="text-stone-500 text-sm mt-2">This court is available all day</p>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-[10px] font-medium text-slate-400 uppercase">Time</span>
+                  </div>
+                  <p className="text-sm font-medium text-slate-900">
+                    {formatTime(selectedBooking.start_time)} – {formatTime(selectedBooking.end_time)}
+                  </p>
                 </div>
-              ) : (
-                <div className="relative">
-                  {/* Time Grid */}
-                  <div className="flex">
-                    {/* Time Labels Column */}
-                    <div className="w-24 flex-shrink-0">
-                      {Array.from({ length: 15 }, (_, i) => {
-                        const hour = i + 6;
-                        const displayHour = hour > 12 ? hour - 12 : hour;
-                        const ampm = hour >= 12 ? 'PM' : 'AM';
-                        return (
-                          <div key={i} className="h-20 flex items-start justify-end pr-4">
-                            <span className="text-sm font-semibold text-stone-600">
-                              {displayHour}:00 {ampm}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Schedule Column */}
-                    <div className="flex-1 relative border-l-2 border-stone-300">
-                      {/* Hour Rows with 30-min dividers */}
-                      {Array.from({ length: 15 }, (_, i) => (
-                        <div key={i}>
-                          <div className="h-10 border-b border-stone-200 bg-white"></div>
-                          <div className="h-10 border-b border-stone-100 bg-stone-50/30"></div>
-                        </div>
-                      ))}
-
-                      {/* Current Time Indicator */}
-                      {selectedDate === new Date().toISOString().split('T')[0] && (() => {
-                        const now = new Date();
-                        const currentHour = now.getHours();
-                        const currentMinute = now.getMinutes();
-                        if (currentHour >= 6 && currentHour < 20) {
-                          const minutesSince6AM = (currentHour - 6) * 60 + currentMinute;
-                          const topPosition = (minutesSince6AM / 60) * 80;
-
-                          return (
-                            <div
-                              className="absolute left-0 right-0 z-30"
-                              style={{ top: `${topPosition}px` }}
-                            >
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-red-600 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
-                                <div className="flex-1 h-0.5 bg-red-600 shadow-md"></div>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })()}
-
-                      {/* Booking Blocks */}
-                      {selectedCourt.todayBookings.map((booking) => {
-                        const [startHour, startMin] = booking.start_time.split(':').map(Number);
-                        const [endHour, endMin] = booking.end_time.split(':').map(Number);
-
-                        const startMinutes = (startHour - 6) * 60 + startMin;
-                        const endMinutes = (endHour - 6) * 60 + endMin;
-                        const duration = endMinutes - startMinutes;
-
-                        const topPosition = (startMinutes / 60) * 80;
-                        const height = (duration / 60) * 80;
-
-                        const getBookingColor = (booking: Booking) => {
-                          const type = booking.booking_type || booking.status;
-                          const colorMap: Record<string, any> = {
-                            'reservation': {
-                              bg: 'bg-gradient-to-br from-emerald-500 to-emerald-700',
-                              border: 'border-emerald-700',
-                              label: 'Court Reservation'
-                            },
-                            'event': {
-                              bg: 'bg-gradient-to-br from-purple-500 to-purple-700',
-                              border: 'border-purple-700',
-                              label: 'Event'
-                            },
-                            'tournament': {
-                              bg: 'bg-gradient-to-br from-blue-500 to-blue-700',
-                              border: 'border-blue-700',
-                              label: 'Tournament'
-                            },
-                            'lesson': {
-                              bg: 'bg-gradient-to-br from-orange-500 to-orange-700',
-                              border: 'border-orange-700',
-                              label: 'Lesson'
-                            },
-                            'maintenance': {
-                              bg: 'bg-gradient-to-br from-red-500 to-red-700',
-                              border: 'border-red-700',
-                              label: 'Maintenance'
-                            },
-                            'pending': {
-                              bg: 'bg-gradient-to-br from-amber-400 to-orange-500',
-                              border: 'border-orange-600',
-                              label: 'Pending'
-                            },
-                            'completed': {
-                              bg: 'bg-gradient-to-br from-stone-400 to-stone-600',
-                              border: 'border-stone-600',
-                              label: 'Completed'
-                            }
-                          };
-                          return colorMap[type] || colorMap['reservation'];
-                        };
-
-                        const config = getBookingColor(booking);
-
-                        return (
-                          <div
-                            key={booking.id}
-                            className={`absolute left-2 right-2 ${config.bg} ${config.border} border-l-4 rounded-lg shadow-lg hover:shadow-xl transition-all cursor-pointer z-10 group overflow-visible`}
-                            style={{
-                              top: `${topPosition}px`,
-                              height: `${Math.max(height - 4, 80)}px`,
-                            }}
-                          >
-                            <div className="h-full flex flex-col text-white p-3 overflow-y-auto">
-                              <div className="font-bold text-base mb-1">{booking.user_name}</div>
-
-                              <div className="text-sm font-medium opacity-95 flex items-center space-x-1 mb-1">
-                                <Clock className="w-3 h-3 flex-shrink-0" />
-                                <span className="whitespace-nowrap">{formatTime(booking.start_time)} - {formatTime(booking.end_time)}</span>
-                              </div>
-
-                              {booking.total_amount > 0 && (
-                                <div className="text-sm font-semibold flex items-center space-x-1 mb-1">
-                                  <DollarSign className="w-3 h-3 flex-shrink-0" />
-                                  <span>${booking.total_amount.toFixed(2)}</span>
-                                </div>
-                              )}
-
-                              {booking.player_count && (
-                                <div className="text-sm flex items-center space-x-1 mb-1">
-                                  <Users className="w-3 h-3 flex-shrink-0" />
-                                  <span>{booking.player_count} player{booking.player_count !== 1 ? 's' : ''}</span>
-                                </div>
-                              )}
-
-                              {booking.email && (
-                                <div className="text-xs opacity-90 mb-1 truncate" title={booking.email}>
-                                  {booking.email}
-                                </div>
-                              )}
-
-                              {booking.phone && (
-                                <div className="text-xs opacity-90 flex items-center space-x-1 mb-1">
-                                  <Phone className="w-3 h-3 flex-shrink-0" />
-                                  <span>{booking.phone}</span>
-                                </div>
-                              )}
-
-                              <div className="mt-auto pt-2 flex items-center justify-between gap-2 flex-wrap">
-                                <span className="inline-block text-xs px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full whitespace-nowrap">
-                                  {config.label}
-                                </span>
-                                <span className="inline-block text-xs px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full whitespace-nowrap">
-                                  {booking.status.toUpperCase()}
-                                </span>
-                              </div>
-                              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity rounded-lg pointer-events-none"></div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-[10px] font-medium text-slate-400 uppercase">Court</span>
                   </div>
+                  <p className="text-sm font-medium text-slate-900">
+                    {courts.find(c => c.id === selectedBooking.court_id)?.name || 'Unknown'}
+                  </p>
+                </div>
+              </div>
 
-                  {/* Legend */}
-                  <div className="mt-8 pt-6 border-t-2 border-stone-200">
-                    <h5 className="text-sm font-bold text-stone-800 mb-3 text-center">Booking Type Legend</h5>
-                    <div className="flex items-center justify-center flex-wrap gap-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded border-l-4 border-emerald-700 shadow-md" />
-                        <span className="text-stone-700 font-semibold text-sm">Reservation</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-700 rounded border-l-4 border-purple-700 shadow-md" />
-                        <span className="text-stone-700 font-semibold text-sm">Event</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-700 rounded border-l-4 border-blue-700 shadow-md" />
-                        <span className="text-stone-700 font-semibold text-sm">Tournament</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gradient-to-br from-orange-500 to-orange-700 rounded border-l-4 border-orange-700 shadow-md" />
-                        <span className="text-stone-700 font-semibold text-sm">Lesson</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gradient-to-br from-red-500 to-red-700 rounded border-l-4 border-red-700 shadow-md" />
-                        <span className="text-stone-700 font-semibold text-sm">Maintenance</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gradient-to-br from-amber-400 to-orange-500 rounded border-l-4 border-orange-600 shadow-md" />
-                        <span className="text-stone-700 font-semibold text-sm">Pending</span>
-                      </div>
-                      {selectedDate === new Date().toISOString().split('T')[0] && (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse" />
-                          <span className="text-stone-700 font-semibold text-sm">Current Time</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+              {selectedBooking.player_count && (
+                <div className="flex items-center gap-3 px-1">
+                  <Users className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-slate-600">{selectedBooking.player_count} players</span>
                 </div>
               )}
+
+              {selectedBooking.total_amount > 0 && (
+                <div className="flex items-center gap-3 px-1">
+                  <DollarSign className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-slate-600">${selectedBooking.total_amount.toFixed(2)}</span>
+                </div>
+              )}
+
+              {selectedBooking.phone && (
+                <div className="flex items-center gap-3 px-1">
+                  <Phone className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-slate-600">{selectedBooking.phone}</span>
+                </div>
+              )}
+
+              <div className="pt-3 border-t border-slate-100">
+                <button
+                  onClick={() => setSelectedBooking(null)}
+                  className="w-full py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
