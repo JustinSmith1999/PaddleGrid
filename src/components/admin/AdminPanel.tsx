@@ -28,6 +28,7 @@ import EngagementScoring from './EngagementScoring';
 import ChurnAlerts from './ChurnAlerts';
 import WaitlistManager from './WaitlistManager';
 import NotificationTemplates from './NotificationTemplates';
+import RevenueCharts from './RevenueCharts';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Loader2 } from 'lucide-react';
@@ -151,6 +152,8 @@ export function AdminPanel() {
         return facilityId ? <ClubAchievementsManager facilityId={facilityId} /> : <LoadingFallback />;
       case 'analytics':
         return <SmartAnalytics facilityId={facilityId} />;
+      case 'revenue':
+        return <RevenueCharts facilityId={facilityId} />;
       case 'reporting':
         return <AdminReporting />;
       case 'settings':

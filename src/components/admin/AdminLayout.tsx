@@ -67,6 +67,7 @@ const navigationSections: NavSection[] = [
   {
     label: 'FINANCE',
     items: [
+      { id: 'revenue', label: 'Revenue', icon: <BarChart3 className="w-[18px] h-[18px]" /> },
       { id: 'transactions', label: 'Transactions', icon: <DollarSign className="w-[18px] h-[18px]" /> },
       { id: 'memberships', label: 'Memberships', icon: <CreditCard className="w-[18px] h-[18px]" /> },
       { id: 'dynamic-pricing', label: 'Dynamic Pricing', icon: <Zap className="w-[18px] h-[18px]" />, badge: 'AI' },
