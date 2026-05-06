@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.paddlegrid.app',
+  appId: 'com.j20solutions.paddlegrid',
   appName: 'PaddleGrid',
   webDir: 'dist',
   server: {
@@ -9,25 +9,31 @@ const config: CapacitorConfig = {
     iosScheme: 'https'
   },
   ios: {
-    contentInset: 'automatic'
+    contentInset: 'automatic',
+    scheme: 'PaddleGrid',
+    preferredContentMode: 'mobile'
+  },
+  android: {
+    allowMixedContent: false
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
-      backgroundColor: '#10B981',
+      launchAutoHide: true,
+      backgroundColor: '#1B2A4A',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
       iosSpinnerStyle: 'small',
-      spinnerColor: '#ffffff'
+      spinnerColor: '#6DB33F'
     },
     StatusBar: {
       style: 'LIGHT',
-      backgroundColor: '#10B981'
+      backgroundColor: '#1B2A4A'
     },
     Keyboard: {
       resize: 'body',
-      style: 'DARK',
+      style: 'LIGHT',
       resizeOnFullScreen: true
     },
     PushNotifications: {

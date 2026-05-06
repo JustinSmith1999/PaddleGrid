@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { Capacitor } from '@capacitor/core';
 
 interface Profile {
   id: string;
@@ -213,11 +214,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        return { error: new Error(error.message || 'Sign up failed') };
+      }
 
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred during sign up';
+      return { error: new Error(message) };
     }
   };
 
@@ -308,42 +312,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        return { error: new Error(error.message || 'Sign in failed') };
+      }
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred during sign in';
+      return { error: new Error(message) };
     }
+  };
+
+  const getOAuthRedirectUrl = () => {
+    if (Capacitor.isNativePlatform()) {
+      return 'https://paddlegrid.com';
+    }
+    return `${window.location.origin}`;
   };
 
   const signInWithApple = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}`,
+          redirectTo: getOAuthRedirectUrl(),
+          queryParams: {
+            response_mode: 'fragment',
+          },
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        return { error: new Error(error.message || 'Apple sign in failed') };
+      }
+
+      if (Capacitor.isNativePlatform() && data?.url) {
+        window.open(data.url, '_blank');
+      }
+
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      const message = error instanceof Error ? error.message : 'Apple sign in failed';
+      return { error: new Error(message) };
     }
   };
 
   const signInWithGoogle = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}`,
+          redirectTo: getOAuthRedirectUrl(),
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        return { error: new Error(error.message || 'Google sign in failed') };
+      }
+
+      if (Capacitor.isNativePlatform() && data?.url) {
+        window.open(data.url, '_blank');
+      }
+
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      const message = error instanceof Error ? error.message : 'Google sign in failed';
+      return { error: new Error(message) };
     }
   };
 
@@ -358,10 +395,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      if (error) throw error;
+      if (error) {
+        return { error: new Error(error.message || 'Password reset failed') };
+      }
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return { error: new Error(message) };
     }
   };
 

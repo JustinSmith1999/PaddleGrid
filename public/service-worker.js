@@ -4,7 +4,7 @@ const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 
 const STATIC_ASSETS = [
   '/manifest.json',
-  '/untitled_design__2_-removebg-preview.png'
+  '/logo.png'
 ];
 
 self.addEventListener('install', (event) => {

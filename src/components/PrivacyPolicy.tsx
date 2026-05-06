@@ -1,153 +1,166 @@
-import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PrivacyPolicy() {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
-        <p className="text-gray-600 mb-8">Last updated: {new Date().toLocaleDateString()}</p>
+    <div className="min-h-screen bg-white">
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
+        <div className="max-w-3xl mx-auto flex items-center gap-4 px-6 py-3">
+          <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="PaddleGrid" className="h-8 w-8 object-contain" />
+            <span className="text-lg font-bold tracking-tight">
+              <span className="text-[#1B2A4A]">Paddle</span>
+              <span className="text-[#6DB33F]">Grid</span>
+            </span>
+          </div>
+        </div>
+      </nav>
 
-        <div className="bg-white rounded-lg shadow-sm p-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        <h1 className="text-3xl font-extrabold text-[#1B2A4A] mb-2">Privacy Policy</h1>
+        <p className="text-sm text-gray-400 mb-10">Last updated: May 2, 2026</p>
+
+        <div className="space-y-8 text-[15px] leading-relaxed text-gray-600">
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Introduction</h2>
-            <p className="text-gray-700 leading-relaxed">
-              Welcome to PaddleGrid. We respect your privacy and are committed to protecting your personal
-              data. This privacy policy will inform you about how we look after your personal data when you
-              visit our website or use our mobile application and tell you about your privacy rights and how
-              the law protects you.
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">1. Introduction</h2>
+            <p>
+              PaddleGrid (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is operated by J20 Solutions LLC. This Privacy Policy explains how we collect,
+              use, disclose, and safeguard your information when you use the PaddleGrid mobile application and website
+              (collectively, the &quot;Service&quot;). By using the Service, you agree to the collection and use of information in
+              accordance with this policy.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Information We Collect</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              We collect and process the following types of information:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li><strong>Identity Data:</strong> First name, last name, username</li>
-              <li><strong>Contact Data:</strong> Email address, phone number</li>
-              <li><strong>Profile Data:</strong> Profile picture, skill level, preferences</li>
-              <li><strong>Booking Data:</strong> Court reservations, event registrations</li>
-              <li><strong>Social Data:</strong> Posts, comments, likes you create on our platform</li>
-              <li><strong>Payment Data:</strong> Payment card details (processed securely by Stripe)</li>
-              <li><strong>Technical Data:</strong> IP address, browser type, device information</li>
-              <li><strong>Usage Data:</strong> How you use our website and mobile app</li>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">2. Information We Collect</h2>
+            <h3 className="text-sm font-semibold text-[#1B2A4A] mt-4 mb-2">2.1 Information You Provide</h3>
+            <p className="mb-2">When you create an account or use our Service, you may provide:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Name, email address, and profile photo</li>
+              <li>Phone number (optional)</li>
+              <li>Skill level and playing preferences</li>
+              <li>Payment information (processed securely via Stripe — we never store card numbers)</li>
+              <li>Venue and facility information (for venue operators)</li>
+              <li>Content you post in community feeds, messages, and match results</li>
+            </ul>
+
+            <h3 className="text-sm font-semibold text-[#1B2A4A] mt-4 mb-2">2.2 Information Collected Automatically</h3>
+            <p className="mb-2">When you use the Service, we automatically collect:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Device information (device type, operating system, unique device identifiers)</li>
+              <li>Usage data (features used, pages viewed, actions taken)</li>
+              <li>Location data (only with your explicit permission, to show nearby courts)</li>
+              <li>Log data (IP address, browser type, access times)</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">How We Use Your Information</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              We use your personal data for the following purposes:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>To create and manage your account</li>
-              <li>To process your court bookings and event registrations</li>
-              <li>To process payments through our secure payment processor</li>
-              <li>To provide customer support</li>
-              <li>To send you booking confirmations and important notifications</li>
-              <li>To improve our services and user experience</li>
-              <li>To maintain the security and integrity of our platform</li>
-              <li>To comply with legal obligations</li>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">3. How We Use Your Information</h2>
+            <p className="mb-2">We use the information we collect to:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Provide, maintain, and improve the Service</li>
+              <li>Process court bookings and payments</li>
+              <li>Match you with players at your skill level</li>
+              <li>Send booking confirmations, reminders, and notifications</li>
+              <li>Display nearby courts and venues</li>
+              <li>Track your playing statistics and achievements</li>
+              <li>Respond to your requests and provide customer support</li>
+              <li>Detect, prevent, and address technical issues and fraud</li>
+              <li>Comply with legal obligations</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Data Sharing and Disclosure</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              We do not sell your personal information. We may share your data with:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li><strong>Facilities:</strong> When you book a court, the facility owner receives your booking details</li>
-              <li><strong>Payment Processors:</strong> Stripe processes your payment information securely</li>
-              <li><strong>Service Providers:</strong> Companies that help us operate our platform (hosting, analytics)</li>
-              <li><strong>Legal Authorities:</strong> When required by law or to protect rights and safety</li>
-              <li><strong>Other Users:</strong> Your public profile information and posts are visible to other users</li>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">4. Third-Party Services</h2>
+            <p className="mb-2">We use the following third-party services that may collect information:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>Supabase</strong> — Authentication and database hosting with row-level security.</li>
+              <li><strong>Stripe</strong> — Payment processing. Stripe&apos;s privacy policy governs payment data.</li>
+              <li><strong>Apple Sign In / Google Sign In</strong> — Optional authentication, subject to their respective privacy policies.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Data Security</h2>
-            <p className="text-gray-700 leading-relaxed">
-              We implement appropriate technical and organizational measures to protect your personal data
-              against unauthorized access, alteration, disclosure, or destruction. This includes:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mt-4">
-              <li>Encryption of data in transit using SSL/TLS</li>
-              <li>Encryption of sensitive data at rest</li>
-              <li>Regular security assessments and updates</li>
-              <li>Access controls and authentication requirements</li>
-              <li>Secure payment processing through PCI-compliant providers</li>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">5. Data Sharing</h2>
+            <p className="mb-2">We do not sell your personal information. We may share your information only:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>With venue operators</strong> — when you book a court, the venue receives your name and booking details.</li>
+              <li><strong>With other players</strong> — your profile name, skill level, and match history may be visible to other users.</li>
+              <li><strong>Service providers</strong> — companies that help operate our Service (hosting, analytics, payment processing).</li>
+              <li><strong>Legal requirements</strong> — when required by law, regulation, or legal process.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Rights</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Under data protection laws, you have rights including:
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">6. Data Security</h2>
+            <p>
+              We implement industry-standard security measures including encryption in transit (TLS/SSL),
+              encryption at rest, row-level security policies, and PCI-compliant payment processing through Stripe.
+              No method of electronic storage is 100% secure, and we cannot guarantee absolute security.
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li><strong>Right to Access:</strong> Request copies of your personal data</li>
-              <li><strong>Right to Rectification:</strong> Correct inaccurate or incomplete data</li>
-              <li><strong>Right to Erasure:</strong> Request deletion of your personal data</li>
-              <li><strong>Right to Restrict Processing:</strong> Limit how we use your data</li>
-              <li><strong>Right to Data Portability:</strong> Receive your data in a portable format</li>
-              <li><strong>Right to Object:</strong> Object to certain types of processing</li>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">7. Your Rights</h2>
+            <p className="mb-2">You have the right to:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>Access</strong> — request a copy of the personal data we hold about you.</li>
+              <li><strong>Correction</strong> — update or correct inaccurate information in your profile.</li>
+              <li><strong>Deletion</strong> — request deletion of your account and associated data via Settings &gt; Account &gt; Delete Account. There is a 30-day grace period during which you can cancel.</li>
+              <li><strong>Data portability</strong> — request your data in a machine-readable format.</li>
+              <li><strong>Opt-out</strong> — disable notifications, location services, or marketing communications at any time.</li>
             </ul>
-            <p className="text-gray-700 leading-relaxed mt-4">
-              To exercise these rights, please contact us at privacy@paddlegrid.com
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">8. Data Retention</h2>
+            <p>
+              We retain your personal data for as long as your account is active. When you delete your account,
+              we delete or anonymize your data within 30 days, except where retention is required for legal or
+              legitimate business purposes (e.g., transaction records for tax compliance).
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">User-Generated Content</h2>
-            <p className="text-gray-700 leading-relaxed">
-              PaddleGrid includes user-generated content features such as social posts, comments, and reviews.
-              When you post content, it may be visible to other users. We have content moderation systems in
-              place, including the ability for users to report inappropriate content. Content with multiple
-              reports may be automatically hidden pending review.
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">9. Children&apos;s Privacy</h2>
+            <p>
+              The Service is not intended for children under 13. We do not knowingly collect personal information
+              from children under 13. If you believe we have collected information from a child under 13, please
+              contact us immediately.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Cookies and Tracking</h2>
-            <p className="text-gray-700 leading-relaxed">
-              We use cookies and similar tracking technologies to improve your experience, analyze usage, and
-              maintain security. You can control cookie settings through your browser, but some features may
-              not function properly if cookies are disabled.
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">10. Changes to This Policy</h2>
+            <p>
+              We may update this Privacy Policy from time to time. We will notify you of material changes by
+              posting the new policy on this page and updating the &quot;Last updated&quot; date. Continued use of the
+              Service after changes constitutes acceptance.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Children's Privacy</h2>
-            <p className="text-gray-700 leading-relaxed">
-              Our services are not directed to children under 13. We do not knowingly collect personal
-              information from children under 13. If you believe we have collected information from a child
-              under 13, please contact us immediately.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Changes to This Policy</h2>
-            <p className="text-gray-700 leading-relaxed">
-              We may update this privacy policy from time to time. We will notify you of any changes by
-              posting the new privacy policy on this page and updating the "Last updated" date. We encourage
-              you to review this privacy policy periodically.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Us</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              If you have any questions about this privacy policy or our privacy practices, please contact us:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-gray-700"><strong>Email:</strong> privacy@paddlegrid.com</p>
-              <p className="text-gray-700"><strong>Mail:</strong> PaddleGrid, Inc.</p>
+            <h2 className="text-lg font-bold text-[#1B2A4A] mb-3">11. Contact Us</h2>
+            <p className="mb-3">If you have questions about this Privacy Policy or your personal data, contact us:</p>
+            <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
+              <p className="font-semibold text-[#1B2A4A]">J20 Solutions LLC</p>
+              <p>Email: <a href="mailto:Justin@j20solutions.com" className="text-[#6DB33F] hover:underline">Justin@j20solutions.com</a></p>
             </div>
           </section>
         </div>
       </div>
+
+      <footer className="bg-[#1B2A4A] text-white mt-16">
+        <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row justify-between items-center text-xs text-white/40 gap-2">
+          <span>&copy; {new Date().getFullYear()} PaddleGrid. All rights reserved.</span>
+          <span>J20 Solutions LLC</span>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -354,7 +354,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                             />
                           ) : (
                             <img
-                              src="/untitled_design__2_-removebg-preview.png"
+                              src="/logo.png"
                               alt={facility.name}
                               className="w-full h-full object-contain"
                             />
