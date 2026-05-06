@@ -45,16 +45,49 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
   return (
     <>
       <div className="min-h-screen bg-[#F8F9FC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-        {/* ══════════════════ HERO ══════════════════ */}
-        <div className="relative min-h-[90vh] flex items-center overflow-hidden">
-          {/* Background image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: "url('/hero-bg.jpg')" }}
-          />
+        {/* ══════════════════ NAV ══════════════════ */}
+        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3.5">
+            <a href="/" className="flex items-center gap-2.5">
+              <img src="/logo.png" alt="PaddleGrid" className="h-8 w-8 object-contain" />
+              <span className="text-lg font-bold tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <span className="text-slate-800">Paddle</span>
+                <span className="text-green-700">Grid</span>
+              </span>
+            </a>
+            <div className="flex items-center gap-1 sm:gap-3">
+              <a href="/#players" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Players</a>
+              <a href="/#venues" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Venues</a>
+              <a href="#pricing" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Pricing</a>
+              <button
+                onClick={() => onAuthRequired('login')}
+                className="text-sm font-medium text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl transition-colors"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => onAuthRequired('facility')}
+                className="bg-green-700 hover:bg-green-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-200"
+              >
+                Start free trial
+              </button>
+            </div>
+          </div>
+        </nav>
 
-          {/* Dark overlay with green tint */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-green-950/85 to-slate-900/80" />
+        {/* ══════════════════ HERO ══════════════════ */}
+        <div className="relative min-h-[90vh] flex items-center overflow-hidden bg-[#0a0f1a]">
+          {/* Gradient mesh background */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 via-transparent to-emerald-900/30" />
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-green-600/10 blur-[120px]" style={{ transform: 'translate(20%, -30%)' }} />
+            <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] rounded-full bg-emerald-500/8 blur-[100px]" style={{ transform: 'translate(-50%, 30%)' }} />
+          </div>
+          {/* Dot grid pattern */}
+          <div className="absolute inset-0 opacity-[0.04]" style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }} />
 
           <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32 w-full">
             <motion.div
@@ -93,11 +126,11 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => setShowDemo('checkout')}
+                  onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                   className="bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all border border-white/20 flex items-center justify-center gap-2"
                 >
                   <Play className="w-5 h-5" />
-                  Watch Demo
+                  See How It Works
                 </button>
               </motion.div>
 
@@ -146,7 +179,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         </AnimatedSection>
 
         {/* ══════════════════ FEATURES GRID ══════════════════ */}
-        <AnimatedSection className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
+        <AnimatedSection id="features" className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
           <motion.div variants={fadeUp} className="text-center mb-14">
             <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Platform Features</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -245,7 +278,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         </div>
 
         {/* ══════════════════ PRICING ══════════════════ */}
-        <AnimatedSection className="max-w-7xl mx-auto px-6 py-20 lg:py-28">
+        <AnimatedSection id="pricing" className="max-w-7xl mx-auto px-6 py-20 lg:py-28">
           <motion.div variants={fadeUp} className="text-center mb-14">
             <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Pricing</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -292,16 +325,25 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   ))}
                 </ul>
 
-                <button
-                  onClick={() => plan.name !== 'Enterprise' ? onAuthRequired('facility') : undefined}
-                  className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
-                    plan.popular
-                      ? 'bg-green-700 hover:bg-green-800 text-white shadow-sm'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
-                  }`}
-                >
-                  {plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
-                </button>
+                {plan.name === 'Enterprise' ? (
+                  <a
+                    href="mailto:Justin@j20solutions.com?subject=PaddleGrid%20Enterprise%20Inquiry"
+                    className="block w-full py-3.5 rounded-xl font-semibold text-center transition-all bg-slate-100 hover:bg-slate-200 text-slate-900"
+                  >
+                    Contact Sales
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => onAuthRequired('facility')}
+                    className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
+                      plan.popular
+                        ? 'bg-green-700 hover:bg-green-800 text-white shadow-sm'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                    }`}
+                  >
+                    Start Free Trial
+                  </button>
+                )}
               </motion.div>
             ))}
           </div>
@@ -330,17 +372,60 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                     Get Started Free
                     <ArrowRight className="w-5 h-5" />
                   </button>
-                  <button
-                    onClick={() => setShowDemo('checkout')}
-                    className="border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all"
+                  <a
+                    href="mailto:Justin@j20solutions.com?subject=PaddleGrid%20Demo%20Request"
+                    className="border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all inline-flex items-center justify-center"
                   >
                     Schedule a Demo
-                  </button>
+                  </a>
                 </div>
               </motion.div>
             </AnimatedSection>
           </div>
         </div>
+
+        {/* ══════════════════ FOOTER ══════════════════ */}
+        <footer className="bg-slate-900 text-white">
+          <div className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+              <div className="col-span-2 md:col-span-1">
+                <a href="/" className="flex items-center gap-2 mb-4">
+                  <img src="/logo.png" alt="PaddleGrid" className="h-8 w-8 object-contain" />
+                  <span className="text-base font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</span>
+                </a>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  The platform for pickleball players and venues.
+                </p>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Product</h4>
+                <ul className="space-y-2.5 text-sm">
+                  <li><a href="/#players" className="text-slate-400 hover:text-white transition-colors">Players</a></li>
+                  <li><a href="/#venues" className="text-slate-400 hover:text-white transition-colors">Venues</a></li>
+                  <li><a href="#pricing" className="text-slate-400 hover:text-white transition-colors">Pricing</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Company</h4>
+                <ul className="space-y-2.5 text-sm">
+                  <li><a href="/support" className="text-slate-400 hover:text-white transition-colors">Support</a></li>
+                  <li><a href="mailto:Justin@j20solutions.com" className="text-slate-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Legal</h4>
+                <ul className="space-y-2.5 text-sm">
+                  <li><a href="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy policy</a></li>
+                  <li><a href="/terms" className="text-slate-400 hover:text-white transition-colors">Terms of service</a></li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
+              <span>&copy; {new Date().getFullYear()} PaddleGrid. All rights reserved.</span>
+              <span>J20 Solutions LLC</span>
+            </div>
+          </div>
+        </footer>
 
         {/* Demo Modals */}
         {showDemo === 'checkout' && <ThreeClickCheckout onClose={() => setShowDemo(null)} />}

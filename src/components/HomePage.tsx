@@ -48,7 +48,10 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               <span className="text-green-700">Grid</span>
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
+            <a href="#players" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Players</a>
+            <a href="#venues" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Venues</a>
+            <a href="/sales" className="hidden sm:inline text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Pricing</a>
             <button
               onClick={() => onAuthRequired('login')}
               className="text-sm font-medium text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl transition-colors"
@@ -66,15 +69,19 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       </nav>
 
       {/* ─── Hero ─── */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-        {/* Background image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/hero-bg.jpg')" }}
-        />
+      <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#0a0f1a]">
+        {/* Gradient mesh background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 via-transparent to-emerald-900/30" />
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-green-600/10 blur-[120px]" style={{ transform: 'translate(20%, -30%)' }} />
+          <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] rounded-full bg-emerald-500/8 blur-[100px]" style={{ transform: 'translate(-50%, 30%)' }} />
+        </div>
 
-        {/* Dark overlay — heavy enough for white text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/85 to-slate-900/75" />
+        {/* Dot grid pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }} />
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 md:py-36 w-full">
           <div className="max-w-3xl">
