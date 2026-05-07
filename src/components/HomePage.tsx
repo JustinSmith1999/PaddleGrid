@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Users, ArrowRight, Trophy, MessageSquare,
   TrendingUp, Shield, Check, Clock, CreditCard,
-  BarChart3, Bell, Search, ChevronDown, Globe,
-  Zap, Star
+  Search, ChevronDown, Zap, Star
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -60,15 +59,12 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
 
               <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
                 className="mt-5 text-base sm:text-lg text-white/70 leading-relaxed max-w-lg">
-                Find open courts, book instantly, get matched with players at your level. Venues get a dashboard that replaces spreadsheets and phone calls.
+                Find open courts, book instantly, get matched with players at your level. No group texts, no calling the front desk.
               </motion.p>
 
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="mt-8 flex flex-col sm:flex-row gap-3">
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="mt-8">
                 <button onClick={() => onAuthRequired('signup')} className="group inline-flex items-center justify-center gap-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-green-900/30 hover:shadow-xl transition-all duration-200">
                   Create free account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-                <button onClick={() => onAuthRequired('facility')} className="inline-flex items-center justify-center gap-2 text-white font-semibold text-base px-7 py-3.5 rounded-xl border border-white/20 hover:border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all duration-200">
-                  I manage a venue
                 </button>
               </motion.div>
 
@@ -352,78 +348,6 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </div>
       </section>
 
-      {/* FOR VENUES — teaser, not full pitch */}
-      <section className="bg-slate-900 py-16 sm:py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                Venue operator? Your courts deserve better.
-              </h2>
-              <p className="text-slate-400 leading-relaxed mb-6">
-                Online bookings, automated waitlists, player matching, real-time analytics, Stripe payouts with only 1% processing. Plans start at $179/month.
-              </p>
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                {[
-                  { icon: Zap, label: 'Online bookings' },
-                  { icon: TrendingUp, label: 'Revenue tracking' },
-                  { icon: Users, label: 'Player discovery' },
-                  { icon: BarChart3, label: 'Usage analytics' },
-                  { icon: Globe, label: 'Custom branding' },
-                  { icon: Shield, label: 'Stripe Connect' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2.5 text-sm text-slate-300">
-                    <item.icon className="w-4 h-4 text-green-400 flex-shrink-0" />
-                    {item.label}
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button onClick={() => onAuthRequired('facility')} className="group inline-flex items-center justify-center gap-2 bg-green-700 hover:bg-green-600 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-sm transition-all">
-                  Start free trial <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-                <a href="/sales" className="inline-flex items-center justify-center gap-2 text-green-400 hover:text-green-300 font-semibold text-sm px-6 py-3.5 rounded-xl border border-white/[0.08] hover:bg-white/[0.04] transition-all">
-                  See pricing & features
-                </a>
-              </div>
-            </div>
-
-            {/* Quick stats mockup */}
-            <div className="bg-white/[0.04] backdrop-blur-sm rounded-2xl border border-white/[0.06] p-6">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-white">This Week</span>
-                <span className="text-xs text-slate-500">Dashboard preview</span>
-              </div>
-              <div className="grid grid-cols-3 gap-4 mb-5">
-                <div>
-                  <div className="text-2xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>84%</div>
-                  <div className="text-xs text-slate-500">Utilization</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-400" style={{ fontFamily: 'Manrope, sans-serif' }}>$4.2K</div>
-                  <div className="text-xs text-slate-500">Revenue</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>127</div>
-                  <div className="text-xs text-slate-500">Active players</div>
-                </div>
-              </div>
-              <div className="flex items-end gap-2">
-                {[45, 72, 58, 81, 93, 96, 88].map((pct, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                    <div
-                      className={`w-full rounded-md ${pct > 85 ? 'bg-green-400' : pct > 65 ? 'bg-green-500' : 'bg-green-600'}`}
-                      style={{ height: `${Math.round(pct * 0.9)}px`, minHeight: '4px' }}
-                    />
-                    <span className="text-[10px] text-slate-500 font-medium">{['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section className="py-16 sm:py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -448,8 +372,6 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 { q: 'How do I book a court?', a: 'Search for courts near you, pick a time slot, and pay through Stripe. You\'ll get a confirmation email and a reminder before your session.' },
                 { q: 'What if the court I want is full?', a: 'Join the waitlist. If someone cancels, you get notified immediately and can grab the slot.' },
                 { q: 'How does player matching work?', a: 'You set your skill level when you sign up. As you log matches, your rating adjusts. We match you with players at a similar level so games are competitive.' },
-                { q: 'I run a venue — how much does it cost?', a: 'Plans start at $179/month. 14-day free trial, no credit card required to start. Every plan includes unlimited bookings, analytics, player matching, and CourtReserve sync. See the pricing page for details.' },
-                { q: 'Can I import data from CourtReserve?', a: 'Yes — full bi-directional sync. Import courts, schedules, members, and booking history. We help with the migration at no extra cost.' },
                 { q: 'Is my payment info safe?', a: 'Payments go through Stripe, which is PCI Level 1 certified. We never see or store your card number.' },
               ].map((faq, i) => (
                 <div key={i} className="px-6">
@@ -468,16 +390,11 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
             See it for yourself.
           </h2>
           <p className="text-green-100/80 mb-8">
-            Free for players. 14-day free trial for venues. No credit card required.
+            Free forever. No credit card required.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={() => onAuthRequired('signup')} className="group inline-flex items-center justify-center gap-2.5 bg-white text-green-800 font-bold text-base px-8 py-4 rounded-xl shadow-lg hover:bg-green-50 transition-all duration-200">
-              Create free account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-            <button onClick={() => onAuthRequired('facility')} className="inline-flex items-center justify-center gap-2 text-white font-semibold text-base px-8 py-4 rounded-xl border border-white/25 hover:border-white/40 hover:bg-white/[0.05] transition-all duration-200">
-              I manage a venue
-            </button>
-          </div>
+          <button onClick={() => onAuthRequired('signup')} className="group inline-flex items-center justify-center gap-2.5 bg-white text-green-800 font-bold text-base px-8 py-4 rounded-xl shadow-lg hover:bg-green-50 transition-all duration-200">
+            Create free account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          </button>
         </div>
       </section>
 
@@ -490,7 +407,6 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               <span className="text-sm font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-slate-500">
-              <a href="/sales" className="hover:text-slate-300 transition-colors">Pricing</a>
               <a href="/privacy" className="hover:text-slate-300 transition-colors">Privacy</a>
               <a href="/terms" className="hover:text-slate-300 transition-colors">Terms</a>
               <a href="/support" className="hover:text-slate-300 transition-colors">Support</a>

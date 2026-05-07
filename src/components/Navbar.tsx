@@ -104,7 +104,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                       : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
-                  Facilities Manager
+                  For Venues
                 </button>
               </div>
             )}
