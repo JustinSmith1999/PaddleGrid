@@ -207,27 +207,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         </div>
       </section>
 
-      {/* MID-PAGE CTA */}
-      <section className="py-16 sm:py-20">
-        <Reveal>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <div className="bg-gradient-to-br from-green-700 to-green-800 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
-              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '20px 20px' }} />
-              <div className="relative">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                  Try it free
-                </h2>
-                <p className="text-green-100/80 text-base mb-6 max-w-md mx-auto">
-                  Players never pay. Create an account in under 2 minutes and see what's available near you.
-                </p>
-                <button onClick={() => onAuthRequired('signup')} className="group bg-white text-green-800 font-bold text-base px-8 py-4 rounded-xl hover:bg-green-50 shadow-lg transition-all inline-flex items-center gap-2.5">
-                  Get started <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      {/* Mid-page CTA removed — hero already has signup */}
 
       {/* FOR VENUES */}
       <section id="venues" className="py-16 sm:py-24 bg-slate-900 relative overflow-hidden">
