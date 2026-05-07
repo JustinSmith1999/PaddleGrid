@@ -83,13 +83,28 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
       const sixtyDaysAgo = new Date(today);
       sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-      // Fetch all bookings from last 60 days for trend analysis
-      const { data: bookings } = await supabase
+      // Helper to fetch ALL rows with pagination (Supabase defaults to 1000 max)
+      const fetchAllRows = async (buildQuery: () => any) => {
+        const PAGE_SIZE = 1000;
+        let allData: any[] = [];
+        let from = 0;
+        let hasMore = true;
+        while (hasMore) {
+          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
+          if (error || !data || data.length === 0) { hasMore = false; }
+          else { allData = allData.concat(data); hasMore = data.length === PAGE_SIZE; from += PAGE_SIZE; }
+        }
+        return allData;
+      };
+
+      // Fetch all bookings from last 60 days for trend analysis (paginated)
+      const bookingsData = await fetchAllRows(() => supabase
         .from('court_availability_blocks')
         .select('block_date, start_time, end_time, court_id, notes, courts(name, hourly_rate)')
         .eq('block_type', 'reservation')
         .gte('block_date', sixtyDaysAgo.toISOString().split('T')[0])
-        .order('block_date', { ascending: true });
+        .order('block_date', { ascending: true }));
+      const bookings = bookingsData;
 
       const { data: courts } = await supabase
         .from('courts')

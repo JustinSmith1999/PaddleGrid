@@ -34,19 +34,32 @@ export function AdminAnalytics() {
     try {
       const today = new Date().toISOString().split('T')[0];
 
+      // Helper to fetch ALL rows with pagination (Supabase defaults to 1000 max)
+      const fetchAllRows = async (buildQuery: () => any) => {
+        const PAGE_SIZE = 1000;
+        let allData: any[] = [];
+        let from = 0;
+        let hasMore = true;
+        while (hasMore) {
+          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
+          if (error || !data || data.length === 0) {
+            hasMore = false;
+          } else {
+            allData = allData.concat(data);
+            hasMore = data.length === PAGE_SIZE;
+            from += PAGE_SIZE;
+          }
+        }
+        return allData;
+      };
+
       const [
-        { data: reservations },
-        { data: allReservationsWithCourts },
-        { data: todayReservationsWithCourts },
         { data: users },
         { data: members },
         { data: todayReservations },
         { data: courts },
         { data: events },
       ] = await Promise.all([
-        supabase.from('court_availability_blocks').select('court_id').eq('block_type', 'reservation'),
-        supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation'),
-        supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').eq('block_date', today),
         supabase.from('profiles').select('id'),
         supabase.from('user_memberships').select('id').eq('status', 'active'),
         supabase
@@ -62,6 +75,13 @@ export function AdminAnalytics() {
           .gte('start_datetime', new Date().toISOString()),
       ]);
 
+      // Fetch with pagination to avoid Supabase 1000-row limit
+      const [reservations, allReservationsWithCourts, todayReservationsWithCourts] = await Promise.all([
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('court_id').eq('block_type', 'reservation')),
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation')),
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').eq('block_date', today)),
+      ]);
+
       const calculateRevenue = (reservations: any[]) => {
         return reservations?.reduce((sum, res) => {
           const startTime = new Date(`2000-01-01T${res.start_time}`);
@@ -72,8 +92,8 @@ export function AdminAnalytics() {
         }, 0) || 0;
       };
 
-      const totalRevenue = calculateRevenue(allReservationsWithCourts || []);
-      const revenueToday = calculateRevenue(todayReservationsWithCourts || []);
+      const totalRevenue = calculateRevenue(allReservationsWithCourts);
+      const revenueToday = calculateRevenue(todayReservationsWithCourts);
 
       const courtCounts: Record<string, number> = {};
       reservations?.forEach((reservation) => {

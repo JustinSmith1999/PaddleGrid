@@ -151,14 +151,29 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
       const monthAgoDateStr = monthAgo.toISOString().split('T')[0];
       const monthAgoTimestamp = monthAgo.toISOString();
 
+      // Helper to fetch ALL rows with pagination (Supabase defaults to 1000 max)
+      const fetchAllRows = async (buildQuery: () => any) => {
+        const PAGE_SIZE = 1000;
+        let allData: any[] = [];
+        let from = 0;
+        let hasMore = true;
+        while (hasMore) {
+          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
+          if (error || !data || data.length === 0) {
+            hasMore = false;
+          } else {
+            allData = allData.concat(data);
+            hasMore = data.length === PAGE_SIZE;
+            from += PAGE_SIZE;
+          }
+        }
+        return allData;
+      };
+
       const [
         bookingsResult,
         usersResult,
-        allReservationsWithCourts,
         todayBookingsResult,
-        todayReservationsWithCourts,
-        weekReservationsWithCourts,
-        monthReservationsWithCourts,
         courtsResult,
         todayCourtsResult,
         recentBlocksResult,
@@ -166,15 +181,19 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
       ] = await Promise.all([
         supabase.from('court_availability_blocks').select('*', { count: 'exact', head: true }).eq('block_type', 'reservation').gte('block_date', monthAgoDateStr),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation'),
         supabase.from('court_availability_blocks').select('*', { count: 'exact', head: true }).eq('block_type', 'reservation').eq('block_date', todayDateStr),
-        supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').eq('block_date', todayDateStr),
-        supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').gte('block_date', weekAgoDateStr),
-        supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').gte('block_date', monthAgoDateStr),
         supabase.from('courts').select('*', { count: 'exact', head: true }),
-        supabase.from('court_availability_blocks').select('court_id').eq('block_type', 'reservation').eq('block_date', todayDateStr),
+        supabase.from('court_availability_blocks').select('court_id').eq('block_type', 'reservation').eq('block_date', todayDateStr).limit(5000),
         supabase.from('court_availability_blocks').select('id, block_date, start_time, end_time, block_type, notes, courts(name), created_at').eq('block_type', 'reservation').order('created_at', { ascending: false }).limit(8),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', monthAgoTimestamp)
+      ]);
+
+      // Fetch revenue data with pagination to avoid Supabase 1000-row default limit
+      const [allReservationsData, weekReservationsData, monthReservationsData, todayReservationsData] = await Promise.all([
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation')),
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').gte('block_date', weekAgoDateStr)),
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').gte('block_date', monthAgoDateStr)),
+        fetchAllRows(() => supabase.from('court_availability_blocks').select('start_time, end_time, courts(hourly_rate)').eq('block_type', 'reservation').eq('block_date', todayDateStr)),
       ]);
 
       const calculateRevenue = (reservations: any[]) => {
@@ -187,9 +206,9 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
         }, 0) || 0;
       };
 
-      const totalRevenue = calculateRevenue(allReservationsWithCourts.data || []);
-      const weekRevenue = calculateRevenue(weekReservationsWithCourts.data || []);
-      const monthRevenue = calculateRevenue(monthReservationsWithCourts.data || []);
+      const totalRevenue = calculateRevenue(allReservationsData);
+      const weekRevenue = calculateRevenue(weekReservationsData);
+      const monthRevenue = calculateRevenue(monthReservationsData);
 
       const totalCourts = courtsResult.count || 1;
       const uniqueCourtsToday = new Set(todayCourtsResult.data?.map((b: any) => b.court_id)).size;

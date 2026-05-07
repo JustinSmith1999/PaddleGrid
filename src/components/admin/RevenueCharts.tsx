@@ -45,12 +45,25 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
       const prevStartDate = new Date();
       prevStartDate.setDate(prevStartDate.getDate() - days * 2);
 
-      // Load bookings
-      const { data: bookings } = await supabase
+      // Load bookings (paginated to avoid Supabase 1000-row default limit)
+      const fetchAllRows = async (buildQuery: () => any) => {
+        const PAGE_SIZE = 1000;
+        let allData: any[] = [];
+        let from = 0;
+        let hasMore = true;
+        while (hasMore) {
+          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
+          if (error || !data || data.length === 0) { hasMore = false; }
+          else { allData = allData.concat(data); hasMore = data.length === PAGE_SIZE; from += PAGE_SIZE; }
+        }
+        return allData;
+      };
+
+      const bookings = await fetchAllRows(() => supabase
         .from('court_availability_blocks')
         .select('block_date, court_id, courts(hourly_rate)')
         .eq('block_type', 'reservation')
-        .gte('block_date', prevStartDate.toISOString().split('T')[0]);
+        .gte('block_date', prevStartDate.toISOString().split('T')[0]));
 
       // Load event signups
       const { data: signups } = await supabase
