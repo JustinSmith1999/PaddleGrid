@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, TrendingDown, Users, Mail, Bell, Zap, Clock, Calendar, ArrowRight, Loader2, CheckCircle, X, UserMinus, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface ChurnRiskMember {
   id: string;
@@ -30,11 +30,11 @@ export default function ChurnAlerts() {
 
   const analyzeChurnRisk = async () => {
     try {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email, created_at');
+      const profiles = await fetchAllRows(() =>
+        supabase.from('profiles').select('id, full_name, avatar_url, email, created_at')
+      );
 
-      if (!profiles) { setLoading(false); return; }
+      if (!profiles.length) { setLoading(false); return; }
 
       const now = new Date();
       const thirtyDaysAgo = new Date();
@@ -45,16 +45,17 @@ export default function ChurnAlerts() {
       ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
       // Get all bookings in last 90 days
-      const { data: bookings } = await supabase
-        .from('court_availability_blocks')
-        .select('block_date, booked_by')
-        .eq('block_type', 'reservation')
-        .gte('block_date', ninetyDaysAgo.toISOString().split('T')[0]);
+      const bookings = await fetchAllRows(() =>
+        supabase.from('court_availability_blocks')
+          .select('block_date, booked_by')
+          .eq('block_type', 'reservation')
+          .gte('block_date', ninetyDaysAgo.toISOString().split('T')[0])
+      );
 
       // Calculate booking patterns per user
       const userPatterns: Record<string, { recent: number; mid: number; old: number; lastDate: string }> = {};
 
-      bookings?.forEach(b => {
+      bookings.forEach(b => {
         if (!b.booked_by) return;
         if (!userPatterns[b.booked_by]) userPatterns[b.booked_by] = { recent: 0, mid: 0, old: 0, lastDate: '' };
 

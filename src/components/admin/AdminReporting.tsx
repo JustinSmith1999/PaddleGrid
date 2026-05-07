@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, TrendingUp, Users, DollarSign, Clock, BarChart3, Download } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   LineChart,
@@ -123,20 +123,18 @@ export function AdminReporting() {
 
   async function loadBookingTrends(facilityId: string) {
     const dateFilter = getDateFilter();
-    let query = supabase
-      .from('bookings')
-      .select('booking_date, total_amount')
-      .eq('facility_id', facilityId)
-      .eq('status', 'confirmed')
-      .order('booking_date');
+    const data = await fetchAllRows(() => {
+      let query = supabase
+        .from('bookings')
+        .select('booking_date, total_amount')
+        .eq('facility_id', facilityId)
+        .eq('status', 'confirmed')
+        .order('booking_date');
+      if (dateFilter) query = query.gte('booking_date', dateFilter);
+      return query;
+    });
 
-    if (dateFilter) {
-      query = query.gte('booking_date', dateFilter);
-    }
-
-    const { data } = await query;
-
-    if (data) {
+    if (data.length) {
       const grouped = data.reduce((acc, booking) => {
         const date = booking.booking_date;
         if (!acc[date]) {
@@ -153,19 +151,17 @@ export function AdminReporting() {
 
   async function loadCourtUtilization(facilityId: string) {
     const dateFilter = getDateFilter();
-    let query = supabase
-      .from('bookings')
-      .select('court_id, duration_hours, courts(name)')
-      .eq('facility_id', facilityId)
-      .eq('status', 'confirmed');
+    const data = await fetchAllRows(() => {
+      let query = supabase
+        .from('bookings')
+        .select('court_id, duration_hours, courts(name)')
+        .eq('facility_id', facilityId)
+        .eq('status', 'confirmed');
+      if (dateFilter) query = query.gte('booking_date', dateFilter);
+      return query;
+    });
 
-    if (dateFilter) {
-      query = query.gte('booking_date', dateFilter);
-    }
-
-    const { data } = await query;
-
-    if (data) {
+    if (data.length) {
       const courtStats = data.reduce((acc, booking) => {
         const courtName = (booking.courts as any)?.name || 'Unknown';
         if (!acc[courtName]) {
@@ -189,19 +185,17 @@ export function AdminReporting() {
 
   async function loadPeakHours(facilityId: string) {
     const dateFilter = getDateFilter();
-    let query = supabase
-      .from('bookings')
-      .select('start_time')
-      .eq('facility_id', facilityId)
-      .eq('status', 'confirmed');
+    const data = await fetchAllRows(() => {
+      let query = supabase
+        .from('bookings')
+        .select('start_time')
+        .eq('facility_id', facilityId)
+        .eq('status', 'confirmed');
+      if (dateFilter) query = query.gte('booking_date', dateFilter);
+      return query;
+    });
 
-    if (dateFilter) {
-      query = query.gte('booking_date', dateFilter);
-    }
-
-    const { data } = await query;
-
-    if (data) {
+    if (data.length) {
       const hourCounts = data.reduce((acc, booking) => {
         const hour = booking.start_time.split(':')[0];
         const hourNum = parseInt(hour);
@@ -226,23 +220,21 @@ export function AdminReporting() {
 
   async function loadAgeDemographics(facilityId: string) {
     const dateFilter = getDateFilter();
-    let query = supabase
-      .from('bookings')
-      .select(`
-        user_id,
-        duration_hours,
-        profiles!inner(date_of_birth)
-      `)
-      .eq('facility_id', facilityId)
-      .eq('status', 'confirmed');
+    const data = await fetchAllRows(() => {
+      let query = supabase
+        .from('bookings')
+        .select(`
+          user_id,
+          duration_hours,
+          profiles!inner(date_of_birth)
+        `)
+        .eq('facility_id', facilityId)
+        .eq('status', 'confirmed');
+      if (dateFilter) query = query.gte('booking_date', dateFilter);
+      return query;
+    });
 
-    if (dateFilter) {
-      query = query.gte('booking_date', dateFilter);
-    }
-
-    const { data } = await query;
-
-    if (data) {
+    if (data.length) {
       const ageGroups = data.reduce((acc, booking) => {
         const dob = (booking.profiles as any)?.date_of_birth;
         if (!dob) return acc;
@@ -280,19 +272,17 @@ export function AdminReporting() {
 
   async function loadRevenueMetrics(facilityId: string) {
     const dateFilter = getDateFilter();
-    let query = supabase
-      .from('bookings')
-      .select('total_amount, duration_hours')
-      .eq('facility_id', facilityId)
-      .eq('status', 'confirmed');
+    const data = await fetchAllRows(() => {
+      let query = supabase
+        .from('bookings')
+        .select('total_amount, duration_hours')
+        .eq('facility_id', facilityId)
+        .eq('status', 'confirmed');
+      if (dateFilter) query = query.gte('booking_date', dateFilter);
+      return query;
+    });
 
-    if (dateFilter) {
-      query = query.gte('booking_date', dateFilter);
-    }
-
-    const { data } = await query;
-
-    if (data && data.length > 0) {
+    if (data.length > 0) {
       const totalRevenue = data.reduce((sum, b) => sum + Number(b.total_amount || 0), 0);
       const totalHours = data.reduce((sum, b) => sum + Number(b.duration_hours || 0), 0);
 

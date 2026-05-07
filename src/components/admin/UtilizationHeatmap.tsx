@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Calendar, TrendingUp, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface HeatmapCell {
   day: number;
@@ -39,15 +39,16 @@ export default function UtilizationHeatmap({ facilityId }: UtilizationHeatmapPro
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const { data: bookings } = await supabase
-        .from('court_availability_blocks')
-        .select('block_date, start_time')
-        .eq('block_type', 'reservation')
-        .gte('block_date', thirtyDaysAgo.toISOString().split('T')[0]);
+      const bookings = await fetchAllRows(() =>
+        supabase.from('court_availability_blocks')
+          .select('block_date, start_time')
+          .eq('block_type', 'reservation')
+          .gte('block_date', thirtyDaysAgo.toISOString().split('T')[0])
+      );
 
       // Build counts
       const counts: Record<string, number> = {};
-      bookings?.forEach(b => {
+      bookings.forEach(b => {
         const date = new Date(b.block_date + 'T00:00:00');
         const day = date.getDay();
         const hour = parseInt(b.start_time.split(':')[0]);

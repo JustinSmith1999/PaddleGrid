@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Upload, UserPlus, CheckCircle, XCircle, Trash2, Download, Search, TrendingUp, Users } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface PreRegisteredUser {
@@ -58,20 +58,23 @@ export default function PreRegisteredUsers() {
 
     setLoading(true);
     try {
-      let query = supabase
-        .from('pre_memberships')
-        .select('*')
-        .eq('facility_id', facilityId)
-        .order('"Created At"', { ascending: false });
+      const buildQuery = () => {
+        let query = supabase
+          .from('pre_memberships')
+          .select('*')
+          .eq('facility_id', facilityId)
+          .order('"Created At"', { ascending: false });
 
-      if (filterStatus === 'claimed') {
-        query = query.eq('claimed', true);
-      } else if (filterStatus === 'unclaimed') {
-        query = query.eq('claimed', false);
-      }
+        if (filterStatus === 'claimed') {
+          query = query.eq('claimed', true);
+        } else if (filterStatus === 'unclaimed') {
+          query = query.eq('claimed', false);
+        }
 
-      const { data, error } = await query;
-      if (error) throw error;
+        return query;
+      };
+
+      const data = await fetchAllRows(buildQuery);
 
       // Map the data to match the expected interface
       const mappedData = (data || []).map((row: any) => ({

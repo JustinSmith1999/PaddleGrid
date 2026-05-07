@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter, Loader2, Calendar as CalendarIcon } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface AvailabilityBlock {
@@ -65,36 +65,37 @@ export function AvailabilityBlocksList() {
 
   const fetchBlocks = async () => {
     setLoading(true);
-    let query = supabase
-      .from('court_availability_blocks')
-      .select(`
-        *,
-        court:courts(name)
-      `)
-      .order('block_date', { ascending: false })
-      .order('start_time');
+    const buildQuery = () => {
+      let query = supabase
+        .from('court_availability_blocks')
+        .select(`
+          *,
+          court:courts(name)
+        `)
+        .order('block_date', { ascending: false })
+        .order('start_time');
 
-    if (filterCourt) {
-      query = query.eq('court_id', filterCourt);
-    }
+      if (filterCourt) {
+        query = query.eq('court_id', filterCourt);
+      }
 
-    if (filterType) {
-      query = query.eq('block_type', filterType);
-    }
+      if (filterType) {
+        query = query.eq('block_type', filterType);
+      }
 
-    if (dateFrom) {
-      query = query.gte('block_date', dateFrom);
-    }
+      if (dateFrom) {
+        query = query.gte('block_date', dateFrom);
+      }
 
-    if (dateTo) {
-      query = query.lte('block_date', dateTo);
-    }
+      if (dateTo) {
+        query = query.lte('block_date', dateTo);
+      }
 
-    const { data, error } = await query;
+      return query;
+    };
 
-    if (!error && data) {
-      setBlocks(data as AvailabilityBlock[]);
-    }
+    const data = await fetchAllRows<AvailabilityBlock>(buildQuery);
+    setBlocks(data);
 
     setLoading(false);
   };

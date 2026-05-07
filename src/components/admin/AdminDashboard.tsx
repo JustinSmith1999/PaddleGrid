@@ -6,7 +6,7 @@ import {
   ArrowUpRight, ArrowDownRight, Activity, Zap, Target, CalendarDays,
   ChevronRight
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface DashboardStats {
@@ -151,24 +151,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
       const monthAgoDateStr = monthAgo.toISOString().split('T')[0];
       const monthAgoTimestamp = monthAgo.toISOString();
 
-      // Helper to fetch ALL rows with pagination (Supabase defaults to 1000 max)
-      const fetchAllRows = async (buildQuery: () => any) => {
-        const PAGE_SIZE = 1000;
-        let allData: any[] = [];
-        let from = 0;
-        let hasMore = true;
-        while (hasMore) {
-          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
-          if (error || !data || data.length === 0) {
-            hasMore = false;
-          } else {
-            allData = allData.concat(data);
-            hasMore = data.length === PAGE_SIZE;
-            from += PAGE_SIZE;
-          }
-        }
-        return allData;
-      };
+      // fetchAllRows imported from ../../lib/supabase to bypass 1000-row limit
 
       const [
         bookingsResult,

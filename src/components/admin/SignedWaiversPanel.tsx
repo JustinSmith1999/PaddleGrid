@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileText, Download, Search, Calendar, User, Mail, Phone, X } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface SignedWaiver {
@@ -48,23 +48,22 @@ export default function SignedWaiversPanel() {
       const facilityIds = facilityUsers.map(fu => fu.facility_id);
 
       // Get signed waivers for those facilities
-      const { data, error } = await supabase
-        .from('signed_waivers')
-        .select(`
-          *,
-          facility_waivers (
-            title
-          )
-        `)
-        .in('facility_id', facilityIds)
-        .order('signed_at', { ascending: false });
+      const data = await fetchAllRows(() =>
+        supabase.from('signed_waivers')
+          .select(`
+            *,
+            facility_waivers (
+              title
+            )
+          `)
+          .in('facility_id', facilityIds)
+          .order('signed_at', { ascending: false })
+      );
 
-      if (error) throw error;
-
-      const waiversWithTitle = data?.map((w: any) => ({
+      const waiversWithTitle = data.map((w: any) => ({
         ...w,
         waiver_title: w.facility_waivers?.title || 'Liability Waiver'
-      })) || [];
+      }));
 
       setWaivers(waiversWithTitle);
     } catch (err) {

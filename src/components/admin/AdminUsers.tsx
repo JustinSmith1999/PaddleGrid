@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Users as UsersIcon, Mail, Phone, Shield, Loader2 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface Profile {
   id: string;
@@ -21,13 +21,10 @@ export function AdminUsers() {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProfiles(data || []);
+      const data = await fetchAllRows<Profile>(() =>
+        supabase.from('profiles').select('*').order('created_at', { ascending: false })
+      );
+      setProfiles(data);
     } catch (error) {
       console.error('Error fetching profiles:', error);
     } finally {

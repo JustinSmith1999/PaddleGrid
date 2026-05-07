@@ -5,7 +5,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface RevenueChartsProps {
   facilityId: string | null;
@@ -44,20 +44,6 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
       startDate.setDate(startDate.getDate() - days);
       const prevStartDate = new Date();
       prevStartDate.setDate(prevStartDate.getDate() - days * 2);
-
-      // Load bookings (paginated to avoid Supabase 1000-row default limit)
-      const fetchAllRows = async (buildQuery: () => any) => {
-        const PAGE_SIZE = 1000;
-        let allData: any[] = [];
-        let from = 0;
-        let hasMore = true;
-        while (hasMore) {
-          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
-          if (error || !data || data.length === 0) { hasMore = false; }
-          else { allData = allData.concat(data); hasMore = data.length === PAGE_SIZE; from += PAGE_SIZE; }
-        }
-        return allData;
-      };
 
       const bookings = await fetchAllRows(() => supabase
         .from('court_availability_blocks')

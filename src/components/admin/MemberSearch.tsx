@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Search, Users, Mail, Phone, Calendar, UserPlus, Eye, Filter, X, Activity, TrendingUp, TrendingDown, Minus, ChevronDown, Loader2, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface Member {
   id: string;
@@ -33,21 +33,21 @@ export default function MemberSearch() {
   }, []);
 
   const loadMembers = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const data = await fetchAllRows(() =>
+      supabase.from('profiles').select('*').order('created_at', { ascending: false })
+    );
 
-    if (data) {
+    if (data.length) {
       // Enrich with booking counts
-      const { data: bookingCounts } = await supabase
-        .from('court_availability_blocks')
-        .select('notes')
-        .eq('block_type', 'reservation')
-        .gte('block_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+      const bookingCounts = await fetchAllRows(() =>
+        supabase.from('court_availability_blocks')
+          .select('notes')
+          .eq('block_type', 'reservation')
+          .gte('block_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+      );
 
       const countMap: Record<string, number> = {};
-      bookingCounts?.forEach(b => {
+      bookingCounts.forEach(b => {
         const name = b.notes || '';
         countMap[name] = (countMap[name] || 0) + 1;
       });

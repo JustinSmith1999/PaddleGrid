@@ -5,7 +5,7 @@ import {
   Target, Zap, ArrowUpRight, BarChart3, Activity, Brain,
   ThermometerSun, DollarSign, UserMinus, Lightbulb, Loader2
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface SmartAnalyticsProps {
@@ -82,20 +82,6 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const sixtyDaysAgo = new Date(today);
       sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-
-      // Helper to fetch ALL rows with pagination (Supabase defaults to 1000 max)
-      const fetchAllRows = async (buildQuery: () => any) => {
-        const PAGE_SIZE = 1000;
-        let allData: any[] = [];
-        let from = 0;
-        let hasMore = true;
-        while (hasMore) {
-          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
-          if (error || !data || data.length === 0) { hasMore = false; }
-          else { allData = allData.concat(data); hasMore = data.length === PAGE_SIZE; from += PAGE_SIZE; }
-        }
-        return allData;
-      };
 
       // Fetch all bookings from last 60 days for trend analysis (paginated)
       const bookingsData = await fetchAllRows(() => supabase

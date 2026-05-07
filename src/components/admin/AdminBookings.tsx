@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Calendar, Clock, DollarSign, MapPin, Loader2, User, Search, Download, X, Mail, Phone, CheckCircle2, XCircle, AlertCircle, Filter, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface Booking {
   id: string;
@@ -33,14 +33,13 @@ export function AdminBookings() {
 
   const fetchBookings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`*, courts (name), profiles (full_name, email, phone)`)
-        .order('booking_date', { ascending: false })
-        .order('start_time', { ascending: false });
-
-      if (error) throw error;
-      setBookings(data || []);
+      const data = await fetchAllRows<Booking>(() =>
+        supabase.from('bookings')
+          .select(`*, courts (name), profiles (full_name, email, phone)`)
+          .order('booking_date', { ascending: false })
+          .order('start_time', { ascending: false })
+      );
+      setBookings(data);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {

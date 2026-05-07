@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Zap, Calendar, Clock, Users, CheckCircle, X, ArrowRight, Loader2, Sparkles, Target, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface SmartFillSuggestion {
   id: string;
@@ -36,11 +36,12 @@ export default function SmartFill() {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const { data: bookings } = await supabase
-        .from('court_availability_blocks')
-        .select('block_date, start_time, court_id, courts(name)')
-        .eq('block_type', 'reservation')
-        .gte('block_date', thirtyDaysAgo.toISOString().split('T')[0]);
+      const bookings = await fetchAllRows(() =>
+        supabase.from('court_availability_blocks')
+          .select('block_date, start_time, court_id, courts(name)')
+          .eq('block_type', 'reservation')
+          .gte('block_date', thirtyDaysAgo.toISOString().split('T')[0])
+      );
 
       const { data: courts } = await supabase.from('courts').select('id, name, hourly_rate');
 
@@ -50,7 +51,7 @@ export default function SmartFill() {
       const heatmap: Record<string, Record<number, number>> = {};
       DAYS.forEach(day => { heatmap[day] = {}; });
 
-      bookings?.forEach(b => {
+      bookings.forEach(b => {
         const date = new Date(b.block_date + 'T00:00:00');
         const dayName = DAYS[date.getDay()];
         const hour = parseInt(b.start_time.split(':')[0]);

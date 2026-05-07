@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, TrendingUp, TrendingDown, Minus, Activity, Calendar, Target, Zap, Crown, AlertTriangle, Loader2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface MemberEngagement {
   id: string;
@@ -43,12 +43,11 @@ export default function EngagementScoring({ facilityId }: EngagementScoringProps
   const loadEngagementData = async () => {
     try {
       // Load members
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email, created_at')
-        .order('full_name');
+      const profiles = await fetchAllRows(() =>
+        supabase.from('profiles').select('id, full_name, avatar_url, email, created_at').order('full_name')
+      );
 
-      if (!profiles) { setLoading(false); return; }
+      if (!profiles.length) { setLoading(false); return; }
 
       // Load bookings for scoring
       const now = new Date();
@@ -57,11 +56,12 @@ export default function EngagementScoring({ facilityId }: EngagementScoringProps
       const sixtyDaysAgo = new Date();
       sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-      const { data: bookings } = await supabase
-        .from('court_availability_blocks')
-        .select('block_date, booked_by')
-        .eq('block_type', 'reservation')
-        .gte('block_date', sixtyDaysAgo.toISOString().split('T')[0]);
+      const bookings = await fetchAllRows(() =>
+        supabase.from('court_availability_blocks')
+          .select('block_date, booked_by')
+          .eq('block_type', 'reservation')
+          .gte('block_date', sixtyDaysAgo.toISOString().split('T')[0])
+      );
 
       // Load event attendance
       const { data: signups } = await supabase
@@ -70,7 +70,7 @@ export default function EngagementScoring({ facilityId }: EngagementScoringProps
 
       // Build engagement map
       const bookingsByUser: Record<string, { thisMonth: number; lastMonth: number; lastDate: string }> = {};
-      bookings?.forEach(b => {
+      bookings.forEach(b => {
         const userId = b.booked_by;
         if (!userId) return;
         if (!bookingsByUser[userId]) bookingsByUser[userId] = { thisMonth: 0, lastMonth: 0, lastDate: '' };

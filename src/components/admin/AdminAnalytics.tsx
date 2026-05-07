@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, Users, Calendar, TrendingUp, Loader2, Trophy } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface AnalyticsData {
   totalRevenue: number;
@@ -33,25 +33,6 @@ export function AdminAnalytics() {
   const fetchAnalytics = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-
-      // Helper to fetch ALL rows with pagination (Supabase defaults to 1000 max)
-      const fetchAllRows = async (buildQuery: () => any) => {
-        const PAGE_SIZE = 1000;
-        let allData: any[] = [];
-        let from = 0;
-        let hasMore = true;
-        while (hasMore) {
-          const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
-          if (error || !data || data.length === 0) {
-            hasMore = false;
-          } else {
-            allData = allData.concat(data);
-            hasMore = data.length === PAGE_SIZE;
-            from += PAGE_SIZE;
-          }
-        }
-        return allData;
-      };
 
       const [
         { data: users },

@@ -58,6 +58,34 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+/**
+ * Fetch ALL rows from a Supabase query, bypassing the default 1000-row limit.
+ * Pass a factory function that builds a fresh query each call (required because
+ * .range() mutates the builder).
+ *
+ * Usage:
+ *   const rows = await fetchAllRows(() =>
+ *     supabase.from('my_table').select('*').eq('status', 'active')
+ *   );
+ */
+export const fetchAllRows = async <T = any>(buildQuery: () => any): Promise<T[]> => {
+  const PAGE_SIZE = 1000;
+  let allData: T[] = [];
+  let from = 0;
+  let hasMore = true;
+  while (hasMore) {
+    const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
+    if (error || !data || data.length === 0) {
+      hasMore = false;
+    } else {
+      allData = allData.concat(data);
+      hasMore = data.length === PAGE_SIZE;
+      from += PAGE_SIZE;
+    }
+  }
+  return allData;
+};
+
 export type Database = {
   public: {
     Tables: {
