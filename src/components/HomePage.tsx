@@ -162,29 +162,37 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   No more group chat coordination, no more calling the front desk, no more showing up to find the court's already taken.
                 </p>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6">
-                <div className="text-xs font-semibold text-slate-400 mb-4">AVAILABLE NOW NEAR YOU</div>
-                <div className="space-y-3">
-                  {[
-                    { venue: 'Pickleball Heaven', courts: '3 open', distance: '0.8 mi', price: '$12/hr', hot: true },
-                    { venue: 'Central Rec Center', courts: '1 open', distance: '1.2 mi', price: '$8/hr', hot: false },
-                    { venue: 'Sunset Sports Club', courts: '5 open', distance: '2.4 mi', price: '$15/hr', hot: false },
-                  ].map((v, i) => (
-                    <div key={i} className={`flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm ${i === 0 ? 'ring-2 ring-green-200' : ''}`}>
-                      <div className={`w-9 h-9 rounded-lg ${i === 0 ? 'bg-green-100' : 'bg-slate-100'} flex items-center justify-center flex-shrink-0`}>
-                        <MapPin className={`w-4 h-4 ${i === 0 ? 'text-green-700' : 'text-slate-400'}`} />
-                      </div>
+              {/* Matches real CourtCard styling: white card, green-700 accents, availability header */}
+              <div className="space-y-3">
+                {[
+                  { venue: 'Pickleball Heaven', court: 'Court 3', price: '$12', available: true, next: '6:00 PM' },
+                  { venue: 'Central Rec Center', court: 'Court 1', price: '$8', available: true, next: '7:30 PM' },
+                  { venue: 'Sunset Sports Club', court: 'Court 5', price: '$15', available: false, next: null },
+                ].map((v, i) => (
+                  <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div className={`px-4 py-2 flex items-center gap-2 ${v.available ? 'bg-green-700' : 'bg-slate-300'}`}>
+                      <Clock className="w-3 h-3 text-white" />
+                      <span className="text-xs font-medium text-white">{v.available ? `Next Available · ${v.next}` : 'Fully Booked'}</span>
+                    </div>
+                    <div className="px-4 py-3 flex items-center gap-3">
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-slate-900">{v.venue}</div>
-                        <div className="text-xs text-slate-400">{v.courts} · {v.distance}</div>
+                        <div className="text-sm font-semibold text-slate-900">{v.court}</div>
+                        <div className="text-xs text-slate-400">{v.venue}</div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold text-slate-900">{v.price}</div>
-                        {v.hot && <div className="text-[10px] text-green-600 font-medium">Book now</div>}
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 text-green-700">
+                          <CreditCard className="w-3.5 h-3.5" />
+                          <span className="text-sm font-bold">{v.price}/hr</span>
+                        </div>
+                        {v.available ? (
+                          <span className="text-xs font-semibold bg-green-700 text-white px-3 py-1.5 rounded-lg">Book Now</span>
+                        ) : (
+                          <span className="text-xs font-semibold bg-slate-100 text-slate-400 px-3 py-1.5 rounded-lg">Booked</span>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -208,26 +216,39 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   As you log matches, your rating adjusts automatically. No more lopsided games because someone said they were "intermediate."
                 </p>
               </div>
-              <div className="lg:order-1 bg-slate-50 rounded-2xl p-6">
-                <div className="text-xs font-semibold text-slate-400 mb-4">MATCHED FOR TUESDAY 6 PM</div>
-                <div className="space-y-3">
+              {/* Matches real PlayerCard: emerald gradient, frosted glass stat boxes */}
+              <div className="lg:order-1 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 rounded-2xl p-6 shadow-xl">
+                <div className="text-xs font-semibold text-white/60 mb-4">MATCHED FOR TUESDAY 6 PM — COURT 2</div>
+                <div className="space-y-2.5">
                   {[
-                    { name: 'Sarah M.', rating: '3.5', color: 'bg-blue-500', status: 'Confirmed' },
-                    { name: 'Jake P.', rating: '3.5', color: 'bg-amber-500', status: 'Confirmed' },
-                    { name: 'Tom R.', rating: '3.5', color: 'bg-rose-500', status: 'Confirmed' },
-                    { name: 'You', rating: '3.5', color: 'bg-green-600', status: 'Joined' },
+                    { name: 'Sarah M.', rating: '3.5', color: 'bg-blue-400', status: 'Confirmed' },
+                    { name: 'Jake P.', rating: '3.5', color: 'bg-amber-400', status: 'Confirmed' },
+                    { name: 'Tom R.', rating: '3.5', color: 'bg-rose-400', status: 'Confirmed' },
+                    { name: 'You', rating: '3.5', color: 'bg-white', textColor: 'text-emerald-700', status: 'Joined' },
                   ].map((p, i) => (
-                    <div key={i} className={`flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm ${i === 3 ? 'ring-2 ring-green-200' : ''}`}>
-                      <div className={`w-9 h-9 rounded-full ${p.color} flex items-center justify-center text-xs font-bold text-white`}>
+                    <div key={i} className={`flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 ${i === 3 ? 'ring-2 ring-white/30' : ''}`}>
+                      <div className={`w-9 h-9 rounded-full ${p.color} flex items-center justify-center text-xs font-bold ${'textColor' in p ? p.textColor : 'text-white'}`}>
                         {p.name.split(' ').map(n => n[0]).join('')}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-slate-900">{p.name}</div>
-                        <div className="text-xs text-slate-400">{p.rating} DUPR</div>
+                        <div className="text-sm font-medium text-white">{p.name}</div>
+                        <div className="text-xs text-white/50">{p.rating} DUPR</div>
                       </div>
                       <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        p.status === 'Joined' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500'
+                        p.status === 'Joined' ? 'bg-white/20 text-white' : 'bg-white/10 text-white/60'
                       }`}>{p.status}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-white/10">
+                  {[
+                    { icon: Trophy, label: 'Avg Rating', value: '3.5' },
+                    { icon: Users, label: 'Players', value: '4/4' },
+                    { icon: Clock, label: 'Duration', value: '1.5 hrs' },
+                  ].map((s, i) => (
+                    <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-2.5 text-center">
+                      <div className="text-sm font-bold text-white">{s.value}</div>
+                      <div className="text-[10px] text-white/50">{s.label}</div>
                     </div>
                   ))}
                 </div>
@@ -254,38 +275,51 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   Follow local clubs, coordinate meetups, share results. A community feed built for pickleball — not a repurposed Facebook group.
                 </p>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-sm font-bold text-white">JM</div>
-                  <div>
-                    <div className="text-sm font-semibold text-slate-900">Jamie Martinez</div>
-                    <div className="text-xs text-slate-400">3.5 DUPR · 47 matches</div>
+              {/* Matches real PlayerCard gradient + ActivityCard styling */}
+              <div className="space-y-3">
+                {/* Player card — emerald gradient like real PlayerCard */}
+                <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 rounded-2xl p-5 shadow-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-14 h-14 rounded-full bg-white border-[3px] border-white flex items-center justify-center text-base font-bold text-emerald-700">JM</div>
+                    <div>
+                      <div className="text-base font-semibold text-white">Jamie Martinez</div>
+                      <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full mt-1">
+                        <span className="text-xs font-semibold text-white">3.5</span>
+                        <span className="text-[10px] text-white/60">DUPR</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { icon: Trophy, value: '32', label: 'Wins' },
+                      { icon: TrendingUp, value: '68%', label: 'Win Rate' },
+                      { icon: Zap, value: '5', label: 'Streak' },
+                    ].map((s, i) => (
+                      <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                        <s.icon className="w-3.5 h-3.5 text-white/60 mx-auto mb-1" />
+                        <div className="text-lg font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>{s.value}</div>
+                        <div className="text-[10px] text-white/50">{s.label}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-3 mb-5">
-                  <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-                    <div className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>32</div>
-                    <div className="text-[10px] text-slate-400 font-medium">Wins</div>
+
+                {/* Activity feed items — matches real ActivityCard */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-[10px] font-bold text-white">SM</div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-slate-900">Won vs. Sarah M.</div>
+                      <div className="text-xs text-slate-400">Singles · 11-7, 11-9</div>
+                    </div>
+                    <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
+                      <TrendingUp className="w-3 h-3 text-green-600" />
+                      <span className="text-[10px] font-semibold text-green-700">+0.02</span>
+                    </div>
                   </div>
-                  <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-                    <div className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>15</div>
-                    <div className="text-[10px] text-slate-400 font-medium">Losses</div>
-                  </div>
-                  <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-                    <div className="text-xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>68%</div>
-                    <div className="text-[10px] text-slate-400 font-medium">Win rate</div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-2.5 shadow-sm">
-                    <Star className="w-4 h-4 text-amber-400" />
-                    <div className="text-xs text-slate-600"><span className="font-medium text-slate-900">Won vs. Sarah M.</span> · 11-7, 11-9</div>
-                    <span className="ml-auto text-[10px] text-slate-400">2h ago</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-2.5 shadow-sm">
-                    <MessageSquare className="w-4 h-4 text-blue-400" />
-                    <div className="text-xs text-slate-600"><span className="font-medium text-slate-900">Sunset Club</span> posted: "Thursday 6 PM open play"</div>
-                    <span className="ml-auto text-[10px] text-slate-400">4h ago</span>
+                  <div className="flex items-center gap-3 text-xs text-slate-400">
+                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Pickleball Heaven</span>
+                    <span>2h ago</span>
                   </div>
                 </div>
               </div>
@@ -391,24 +425,38 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-10" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            Common questions
-          </h2>
+      <section className="py-16 sm:py-24 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-16">
+            {/* Left column: heading + support link */}
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Common questions
+              </h2>
+              <p className="text-slate-500 text-sm leading-relaxed mb-5">
+                Can't find what you're looking for? Reach out and we'll get back to you within a few hours.
+              </p>
+              <a href="mailto:Justin@j20solutions.com" className="inline-flex items-center gap-2 text-green-700 font-semibold text-sm hover:text-green-900 transition-colors">
+                <MessageSquare className="w-4 h-4" /> Contact support
+              </a>
+            </div>
 
-          <div>
-            {[
-              { q: 'Is PaddleGrid really free for players?', a: 'Yes. Players don\'t pay us anything — no subscription, no platform fee. You just pay the venue for your court time. We make money from venue subscriptions.' },
-              { q: 'How do I book a court?', a: 'Search for courts near you, pick a time slot, and pay through Stripe. You\'ll get a confirmation email and a reminder before your session.' },
-              { q: 'What if the court I want is full?', a: 'Join the waitlist. If someone cancels, you get notified immediately and can grab the slot.' },
-              { q: 'How does player matching work?', a: 'You set your skill level when you sign up. As you log matches, your rating adjusts. We match you with players at a similar level so games are competitive.' },
-              { q: 'I run a venue — how much does it cost?', a: 'Plans start at $179/month. 14-day free trial, no credit card required to start. Every plan includes unlimited bookings, analytics, player matching, and CourtReserve sync. See the pricing page for details.' },
-              { q: 'Can I import data from CourtReserve?', a: 'Yes — full bi-directional sync. Import courts, schedules, members, and booking history. We help with the migration at no extra cost.' },
-              { q: 'Is my payment info safe?', a: 'Payments go through Stripe, which is PCI Level 1 certified. We never see or store your card number.' },
-            ].map((faq, i) => (
-              <FaqItem key={i} q={faq.q} a={faq.a} />
-            ))}
+            {/* Right column: FAQ cards */}
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm divide-y divide-slate-100 overflow-hidden">
+              {[
+                { q: 'Is PaddleGrid really free for players?', a: 'Yes. Players don\'t pay us anything — no subscription, no platform fee. You just pay the venue for your court time. We make money from venue subscriptions.' },
+                { q: 'How do I book a court?', a: 'Search for courts near you, pick a time slot, and pay through Stripe. You\'ll get a confirmation email and a reminder before your session.' },
+                { q: 'What if the court I want is full?', a: 'Join the waitlist. If someone cancels, you get notified immediately and can grab the slot.' },
+                { q: 'How does player matching work?', a: 'You set your skill level when you sign up. As you log matches, your rating adjusts. We match you with players at a similar level so games are competitive.' },
+                { q: 'I run a venue — how much does it cost?', a: 'Plans start at $179/month. 14-day free trial, no credit card required to start. Every plan includes unlimited bookings, analytics, player matching, and CourtReserve sync. See the pricing page for details.' },
+                { q: 'Can I import data from CourtReserve?', a: 'Yes — full bi-directional sync. Import courts, schedules, members, and booking history. We help with the migration at no extra cost.' },
+                { q: 'Is my payment info safe?', a: 'Payments go through Stripe, which is PCI Level 1 certified. We never see or store your card number.' },
+              ].map((faq, i) => (
+                <div key={i} className="px-6">
+                  <FaqItem q={faq.q} a={faq.a} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
