@@ -230,15 +230,14 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
         preRegisteredTotal = totalPreMembershipsResult.count || 0;
 
         if (preRegisteredTotal > 0) {
-          const preMembershipsResult = await supabase
+          const claimedResult = await supabase
             .from('pre_memberships')
-            .select('claimed')
-            .eq('facility_id', profile.facility_id);
+            .select('*', { count: 'exact', head: true })
+            .eq('facility_id', profile.facility_id)
+            .eq('claimed', true);
 
-          if (!preMembershipsResult.error) {
-            preRegisteredClaimed = preMembershipsResult.data?.filter(m => m.claimed === true).length || 0;
-            adoptionRate = Math.round((preRegisteredClaimed / preRegisteredTotal) * 100);
-          }
+          preRegisteredClaimed = claimedResult.count || 0;
+          adoptionRate = Math.round((preRegisteredClaimed / preRegisteredTotal) * 100);
         }
       }
 

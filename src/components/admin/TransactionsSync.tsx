@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Download, RefreshCw, Calendar, Filter, CheckCircle2, XCircle, Clock, TrendingUp, Users } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, fetchAllRows } from '../../lib/supabase';
 
 interface Transaction {
   id: string;
@@ -85,15 +85,13 @@ export default function TransactionsSync({ facilityId }: TransactionsSyncProps) 
   const loadTransactions = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('courtreserve_transactions')
-        .select('*')
-        .eq('facility_id', facilityId)
-        .order('transaction_date', { ascending: false })
-        .limit(100);
-
-      if (error) throw error;
-      setTransactions(data || []);
+      const data = await fetchAllRows(() =>
+        supabase.from('courtreserve_transactions')
+          .select('*')
+          .eq('facility_id', facilityId)
+          .order('transaction_date', { ascending: false })
+      );
+      setTransactions(data);
     } catch (error) {
       console.error('Error loading transactions:', error);
     } finally {
