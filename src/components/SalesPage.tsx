@@ -47,6 +47,16 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                     </a>
                   </div>
                   <p className="mt-4 text-sm text-green-200/60">14-day trial · No credit card · Live in 10 minutes</p>
+                  <div className="mt-6 flex items-center gap-3 text-sm text-green-200/50">
+                    <div className="flex -space-x-1.5">
+                      {['bg-blue-400', 'bg-amber-400', 'bg-rose-400', 'bg-teal-400', 'bg-purple-400'].map((c, i) => (
+                        <div key={i} className={`w-6 h-6 rounded-full ${c} border-2 border-green-700 text-[9px] font-bold text-white flex items-center justify-center`}>
+                          {['R', 'S', 'M', 'D', 'J'][i]}
+                        </div>
+                      ))}
+                    </div>
+                    <span>Trusted by venues across the US</span>
+                  </div>
                 </motion.div>
               </div>
 
