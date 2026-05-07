@@ -408,15 +408,13 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   <div className="text-xs text-slate-500">Active players</div>
                 </div>
               </div>
-              <div className="flex items-end gap-2" style={{ height: '96px' }}>
+              <div className="flex items-end gap-2">
                 {[45, 72, 58, 81, 93, 96, 88].map((pct, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1.5" style={{ height: '100%' }}>
-                    <div className="flex-1 w-full flex items-end">
-                      <div
-                        className={`w-full rounded-md ${pct > 85 ? 'bg-green-400' : pct > 65 ? 'bg-green-500' : 'bg-green-600'}`}
-                        style={{ height: `${pct}%` }}
-                      />
-                    </div>
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                    <div
+                      className={`w-full rounded-md ${pct > 85 ? 'bg-green-400' : pct > 65 ? 'bg-green-500' : 'bg-green-600'}`}
+                      style={{ height: `${Math.round(pct * 0.9)}px`, minHeight: '4px' }}
+                    />
                     <span className="text-[10px] text-slate-500 font-medium">{['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]}</span>
                   </div>
                 ))}

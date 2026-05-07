@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'paddlegrid-v9';
+const CACHE_VERSION = 'paddlegrid-v10';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 
