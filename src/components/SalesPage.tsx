@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
-import { Calendar, Clock, MapPin, TrendingUp, Users, Shield, Zap, Check, ArrowRight, Trophy, CreditCard, BarChart3, Smartphone, Globe, Play, ChevronRight, X, ChevronDown, HelpCircle } from 'lucide-react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { Check, ArrowRight, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { ThreeClickCheckout } from './ThreeClickCheckout';
 import { TransparentPricing } from './TransparentPricing';
@@ -13,40 +13,21 @@ interface SalesPageProps {
   onAuthRequired: (mode?: 'login' | 'signup' | 'facility') => void;
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+const fade = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-function AnimatedSection({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      variants={stagger}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 export function SalesPage({ onAuthRequired }: SalesPageProps) {
   const { user } = useAuth();
   const [showDemo, setShowDemo] = useState<'checkout' | 'pricing' | 'waitlist' | 'analytics' | 'family' | 'scheduling' | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
     <>
-      <div className="min-h-screen bg-[#F8F9FC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-        {/* ══════════════════ NAV ══════════════════ */}
-        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="min-h-screen bg-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        {/* NAV */}
+        <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
           <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3.5">
             <a href="/" className="flex items-center gap-2.5">
               <img src="/logo.png" alt="PaddleGrid" className="h-8 w-8 object-contain" />
@@ -55,310 +36,230 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 <span className="text-green-700">Grid</span>
               </span>
             </a>
-            {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-1">
-              <a href="/#players" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Players</a>
-              <a href="/#venues" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Venues</a>
-              <a href="#pricing" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-xl transition-colors">Pricing</a>
+              <a href="/#players" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-lg transition-colors">Players</a>
+              <a href="/#venues" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-lg transition-colors">Venues</a>
+              <a href="#pricing" className="text-sm font-medium text-slate-500 hover:text-slate-800 px-3 py-2 rounded-lg transition-colors">Pricing</a>
             </div>
-            <div className="flex items-center gap-1 sm:gap-3">
-              <button
-                onClick={() => onAuthRequired('login')}
-                className="text-sm font-medium text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl transition-colors"
-              >
+            <div className="flex items-center gap-3">
+              <button onClick={() => onAuthRequired('login')} className="text-sm font-medium text-slate-500 hover:text-slate-800 px-4 py-2 transition-colors">
                 Sign in
               </button>
-              <button
-                onClick={() => onAuthRequired('facility')}
-                className="bg-green-700 hover:bg-green-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-200"
-              >
+              <button onClick={() => onAuthRequired('facility')} className="bg-green-700 hover:bg-green-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-colors">
                 Start free trial
               </button>
             </div>
           </div>
         </nav>
 
-        {/* ══════════════════ HERO ══════════════════ */}
-        <div className="relative min-h-[70vh] sm:min-h-[80vh] flex items-center overflow-hidden bg-[#0a0f1a]">
-          {/* Gradient mesh background */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 via-transparent to-emerald-900/30" />
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-green-600/10 blur-[120px]" style={{ transform: 'translate(20%, -30%)' }} />
-            <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] rounded-full bg-emerald-500/8 blur-[100px]" style={{ transform: 'translate(-50%, 30%)' }} />
-          </div>
-          {/* Dot grid pattern */}
-          <div className="absolute inset-0 opacity-[0.04]" style={{
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }} />
-
-          <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32 w-full">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={stagger}
-              className="max-w-3xl"
-            >
-              <motion.h1
-                variants={fadeUp}
-                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
-              >
-                Stop managing courts
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-emerald-400">
-                  with spreadsheets.
-                </span>
-              </motion.h1>
-
-              <motion.p variants={fadeUp} className="text-lg sm:text-xl text-slate-300 leading-relaxed mb-8 max-w-xl">
-                PaddleGrid handles bookings, payments, waitlists, and player matching so you can focus on running your facility — not chasing down reservations.
-              </motion.p>
-
-              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => onAuthRequired('facility')}
-                  className="bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-200 shadow-lg shadow-green-900/30 hover:shadow-green-900/40 flex items-center justify-center gap-2"
-                >
-                  Start Free Trial
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all border border-white/20 flex items-center justify-center gap-2"
-                >
-                  <Play className="w-5 h-5" />
-                  See How It Works
-                </button>
-              </motion.div>
-
-              <motion.div variants={fadeUp} className="flex flex-wrap gap-6 mt-8 text-sm text-slate-400">
-                <span className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400" />
-                  14-day free trial
-                </span>
-                <span className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400" />
-                  No credit card required
-                </span>
-                <span className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400" />
-                  Setup in under 10 minutes
-                </span>
-              </motion.div>
-            </motion.div>
-          </div>
-
-          {/* Curved bottom edge */}
-          <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-            <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block">
-              <path d="M0 48V20C360 0 720 40 1080 20C1260 10 1380 20 1440 28V48H0Z" fill="#F8F9FC" />
-            </svg>
-          </div>
-        </div>
-
-        {/* ══════════════════ FEATURES GRID ══════════════════ */}
-        <AnimatedSection id="features" className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
-          <motion.div variants={fadeUp} className="text-center mb-14">
-            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Platform Features</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              What's included
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Court reservations, memberships, events, analytics, and a player portal — all in one place.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { icon: Calendar, title: 'Court Reservations', desc: 'Visual booking calendar with real-time availability. Players book in seconds.', features: ['Real-time availability', 'Conflict prevention', 'Flexible scheduling'] },
-              { icon: Users, title: 'Memberships', desc: 'Flexible tiers with automated billing and credits. Grow recurring revenue.', features: ['Multiple tiers', 'Auto-renewal', 'Benefits tracking'] },
-              { icon: Trophy, title: 'Events & Leagues', desc: 'Tournaments, clinics, leagues — full registration and payment flow.', features: ['Tournament brackets', 'Online registration', 'Capacity management'] },
-              { icon: BarChart3, title: 'Analytics', desc: 'Real-time insights into revenue, utilization, and player behavior.', features: ['Revenue tracking', 'Court utilization', 'Custom reports'] },
-              { icon: Smartphone, title: 'Mobile-First', desc: 'Responsive design that works perfectly on every device. Book on the go.', features: ['Mobile-optimized', 'Touch-friendly', 'Works offline'] },
-              { icon: Globe, title: 'Player Portal', desc: 'Profiles with stats, achievements, and booking history. Players love it.', features: ['Activity tracking', 'Achievements', 'Social features'] },
-            ].map((f, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-7 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center mb-5 group-hover:bg-green-100 transition-colors">
-                  <f.icon className="w-6 h-6 text-green-700" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>{f.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed mb-4">{f.desc}</p>
-                <ul className="space-y-1.5">
-                  {f.features.map((item, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm text-slate-600">
-                      <Check className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </AnimatedSection>
-
-        {/* ══════════════════ CAPABILITIES ══════════════════ */}
-        <div className="bg-slate-900 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-            backgroundSize: '32px 32px',
-          }} />
-
-          <AnimatedSection className="max-w-7xl mx-auto px-6 py-20 lg:py-32 relative">
-            <motion.div variants={fadeUp} className="text-center mb-16">
-              <p className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-3">Under the hood</p>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                What you actually get
-              </h2>
-              <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-                The specifics — how each piece works and what it does for your facility.
+        {/* HERO — clean, no gimmicks */}
+        <section className="bg-slate-900 py-20 lg:py-28">
+          <div className="max-w-6xl mx-auto px-6">
+            <motion.div initial="hidden" animate="visible" variants={fade} className="max-w-2xl">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] tracking-tight mb-6" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Stop managing courts with spreadsheets.
+              </h1>
+              <p className="text-lg text-slate-400 leading-relaxed mb-8 max-w-lg">
+                PaddleGrid handles bookings, payments, waitlists, and player matching so you can focus on running your facility.
               </p>
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <button onClick={() => onAuthRequired('facility')} className="bg-green-600 hover:bg-green-500 text-white px-7 py-3.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                  Start Free Trial <ArrowRight className="w-4 h-4" />
+                </button>
+                <a href="mailto:Justin@j20solutions.com?subject=PaddleGrid%20Demo%20Request" className="text-white/70 hover:text-white px-7 py-3.5 rounded-lg font-medium transition-colors border border-white/20 hover:border-white/40 text-center">
+                  Schedule a Demo
+                </a>
+              </div>
+              <p className="text-sm text-slate-500">14-day free trial. No credit card. Setup in under 10 minutes.</p>
             </motion.div>
+          </div>
+        </section>
 
-            <div className="grid md:grid-cols-2 gap-5">
-              {[
-                { title: 'Instant Booking', desc: 'Three clicks from login to confirmation. Pick a court, pick a time, done.', metric: '3', label: 'Clicks', demo: 'checkout' as const },
-                { title: 'Transparent Pricing', desc: '1% processing fee, shown up front. No surprise charges at the end of the month.', metric: '1%', label: 'Fee', demo: 'pricing' as const },
-                { title: 'Smart Waitlist', desc: 'When a court opens up, the next person in line gets a text automatically.', metric: 'Auto', label: 'Notify', demo: 'waitlist' as const },
-                { title: 'Conflict-Free Scheduling', desc: 'The system catches double-bookings before they happen and flags gaps in your calendar.', metric: 'Zero', label: 'Conflicts', demo: 'scheduling' as const },
-                { title: 'Family Accounts', desc: 'One login to manage bookings, payments, and schedules for the whole family.', metric: '1', label: 'Login', demo: 'family' as const },
-                { title: 'Live Analytics', desc: 'Revenue, occupancy, and player trends — updating in real time.', metric: 'Live', label: 'Data', demo: 'analytics' as const },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeUp}
-                  className="bg-white/[0.04] backdrop-blur-sm rounded-2xl p-7 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>{item.title}</h3>
-                    <div className="text-right flex-shrink-0 ml-4">
-                      <div className="text-2xl font-extrabold text-green-400">{item.metric}</div>
-                      <div className="text-[10px] text-slate-500 uppercase tracking-wider">{item.label}</div>
+        {/* WHY PADDLEGRID — 3 differentiators, not 6 identical cards */}
+        <section className="py-16 lg:py-24 border-b border-slate-100">
+          <div className="max-w-6xl mx-auto px-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-12" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              What makes it different
+            </h2>
+
+            <div className="space-y-16">
+              {/* Differentiator 1 */}
+              <div className="grid lg:grid-cols-2 gap-8 items-start">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    1% processing fee. That's it.
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-4">
+                    CourtReserve and PodPlay charge 2.9%+ per transaction. On $10K/month in bookings, that's $190 extra you're giving away. PaddleGrid uses Stripe Connect at 1% — funds go straight to your bank account.
+                  </p>
+                  <button onClick={() => setShowDemo('pricing')} className="text-green-700 text-sm font-medium hover:text-green-800 transition inline-flex items-center gap-1">
+                    See the pricing breakdown <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <div className="text-sm text-slate-500 mb-3">Monthly savings on $10K revenue</div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-700">PaddleGrid (1%)</span>
+                      <span className="text-sm font-bold text-slate-900">$100</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-500">CourtReserve (2.9%+)</span>
+                      <span className="text-sm text-slate-500">$290+</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-500">PodPlay (2.9%+)</span>
+                      <span className="text-sm text-slate-500">$290+</span>
+                    </div>
+                    <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
+                      <span className="text-sm font-medium text-green-700">You keep</span>
+                      <span className="text-sm font-bold text-green-700">$190+/mo more</span>
                     </div>
                   </div>
-                  <p className="text-slate-400 leading-relaxed mb-4">{item.desc}</p>
-                  {item.demo && (
-                    <button
-                      onClick={() => setShowDemo(item.demo)}
-                      className="text-green-400 text-sm font-medium hover:text-green-300 transition inline-flex items-center gap-1.5 group/btn"
-                    >
-                      Try Interactive Demo
-                      <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
-                    </button>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </AnimatedSection>
-        </div>
-
-        {/* ══════════════════ PRICING ══════════════════ */}
-        <AnimatedSection id="pricing" className="max-w-7xl mx-auto px-6 py-20 lg:py-28">
-          <motion.div variants={fadeUp} className="text-center mb-14">
-            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">Pricing</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              Simple Plans, No Surprises
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Full platform access on every plan. Pick the one that matches your facility size.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
-            {[
-              { name: 'Starter', price: '$179', period: '/mo', desc: 'For small facilities getting started', features: ['Up to 6 courts', 'Unlimited bookings', 'Player matching', 'Analytics dashboard', 'Email support'], popular: false },
-              { name: 'Professional', price: '$349', period: '/mo', desc: 'For growing multi-court facilities', features: ['Up to 15 courts', 'Advanced analytics', 'Event & league management', 'Priority support', 'Custom branding', 'CourtReserve sync'], popular: true },
-              { name: 'Enterprise', price: '$599', period: '/mo', desc: 'For large-scale & multi-location operations', features: ['Unlimited courts', 'Multi-location support', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee', 'API access'], popular: false },
-            ].map((plan, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className={`bg-white rounded-2xl border-2 p-7 relative transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] ${
-                  plan.popular ? 'border-green-600 shadow-[0_4px_12px_rgba(0,0,0,0.06)]' : 'border-slate-200/60'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-green-700 text-white px-4 py-1 rounded-full text-xs font-bold tracking-wide">MOST POPULAR</span>
-                  </div>
-                )}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{plan.name}</h3>
-                  <div className="mt-2">
-                    <span className="text-4xl font-extrabold text-slate-900">{plan.price}</span>
-                    <span className="text-slate-500">{plan.period}</span>
-                  </div>
-                  <p className="text-sm text-slate-500 mt-2">{plan.desc}</p>
                 </div>
+              </div>
 
-                <ul className="space-y-2.5 mb-7">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-2.5 text-sm text-slate-700">
-                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+              {/* Differentiator 2 */}
+              <div className="grid lg:grid-cols-2 gap-8 items-start">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    Player matching and community built in.
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-4">
+                    CourtReserve and PodPlay are booking systems. PaddleGrid is a booking system <em>and</em> a player network. Skill-based matching, player profiles, achievements, and a social layer that keeps players coming back to your facility.
+                  </p>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <div className="text-sm text-slate-500 mb-3">Features neither competitor offers</div>
+                  <ul className="space-y-2.5">
+                    {['Skill-based player matching', 'Player profiles with stats', 'Family accounts — one login for everyone', 'Built-in community and social features'].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-sm text-slate-700">
+                        <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
 
-                <button
-                  onClick={() => plan.name === 'Enterprise'
-                    ? window.location.href = 'mailto:Justin@j20solutions.com?subject=PaddleGrid%20Enterprise%20Inquiry'
-                    : onAuthRequired('facility')
-                  }
-                  className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
-                    plan.popular
-                      ? 'bg-green-700 hover:bg-green-800 text-white shadow-sm'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+              {/* Differentiator 3 */}
+              <div className="grid lg:grid-cols-2 gap-8 items-start">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    Three clicks to book. Zero double-bookings.
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-4">
+                    Pick a court, pick a time, confirm. The system prevents conflicts automatically and texts the next person on the waitlist when a slot opens.
+                  </p>
+                  <button onClick={() => setShowDemo('checkout')} className="text-green-700 text-sm font-medium hover:text-green-800 transition inline-flex items-center gap-1">
+                    Try the booking demo <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <div className="text-sm text-slate-500 mb-3">Also included</div>
+                  <ul className="space-y-2.5">
+                    {['Real-time court availability calendar', 'Automated SMS waitlist notifications', 'Event & league management', 'Live analytics dashboard', 'CourtReserve data import'].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-sm text-slate-700">
+                        <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PRICING */}
+        <section id="pricing" className="py-16 lg:py-24 border-b border-slate-100">
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Pricing
+              </h2>
+              <p className="text-slate-500">
+                Full platform access on every plan. No feature gates, no surprises.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              {[
+                { name: 'Starter', price: '$179', desc: 'Up to 6 courts', features: ['Unlimited bookings', 'Player matching', 'Analytics dashboard', 'Waitlist with SMS', 'Email support'], popular: false },
+                { name: 'Professional', price: '$349', desc: 'Up to 15 courts', features: ['Everything in Starter', 'Event & league management', 'Priority support', 'Custom branding', 'CourtReserve sync'], popular: true },
+                { name: 'Enterprise', price: '$599', desc: 'Unlimited courts', features: ['Everything in Professional', 'Multi-location support', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee', 'API access'], popular: false },
+              ].map((plan, i) => (
+                <div
+                  key={i}
+                  className={`rounded-xl border p-6 relative ${
+                    plan.popular ? 'border-green-600 bg-green-50/30 ring-1 ring-green-600' : 'border-slate-200 bg-white'
                   }`}
                 >
-                  {plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
-                </button>
-              </motion.div>
-            ))}
+                  {plan.popular && (
+                    <span className="absolute -top-2.5 left-4 bg-green-700 text-white px-3 py-0.5 rounded text-xs font-semibold">Most popular</span>
+                  )}
+                  <h3 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{plan.name}</h3>
+                  <div className="mt-1 mb-1">
+                    <span className="text-3xl font-extrabold text-slate-900">{plan.price}</span>
+                    <span className="text-slate-500 text-sm">/mo</span>
+                  </div>
+                  <p className="text-sm text-slate-500 mb-5">{plan.desc}</p>
+
+                  <ul className="space-y-2 mb-6">
+                    {plan.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm text-slate-700">
+                        <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => plan.name === 'Enterprise'
+                      ? window.location.href = 'mailto:Justin@j20solutions.com?subject=PaddleGrid%20Enterprise%20Inquiry'
+                      : onAuthRequired('facility')
+                    }
+                    className={`w-full py-3 rounded-lg font-semibold text-sm transition-colors ${
+                      plan.popular
+                        ? 'bg-green-700 hover:bg-green-800 text-white'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                    }`}
+                  >
+                    {plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-slate-400 mt-4">All plans include a 14-day free trial. No credit card required. 1% processing fee on all plans.</p>
           </div>
+        </section>
 
-          <motion.p variants={fadeUp} className="text-center text-sm text-slate-500 mt-6">
-            All plans include a 14-day free trial. No credit card required.
-          </motion.p>
-        </AnimatedSection>
-
-        {/* ══════════════════ COMPARISON TABLE ══════════════════ */}
-        <div className="bg-slate-900 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-            backgroundSize: '32px 32px',
-          }} />
-          <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 py-16 lg:py-24 relative">
-            <motion.div variants={fadeUp} className="text-center mb-12">
-              <p className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-3">How we compare</p>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        {/* COMPARISON TABLE */}
+        <section className="py-16 lg:py-24 bg-slate-50 border-b border-slate-100">
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="mb-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
                 PaddleGrid vs. CourtReserve vs. PodPlay
               </h2>
-              <p className="text-slate-400 max-w-2xl mx-auto">
-                We researched the competition so you don't have to. Here's what you actually get for your money.
-              </p>
-            </motion.div>
+              <p className="text-slate-500">Side-by-side on the things that matter.</p>
+            </div>
 
-            <motion.div variants={fadeUp} className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
               <table className="w-full text-sm min-w-[600px]">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left p-3 sm:p-4 font-semibold text-slate-400 w-[34%]"></th>
-                    <th className="p-3 sm:p-4 text-center">
-                      <div className="font-bold text-green-400 text-base" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</div>
-                      <div className="text-xs text-slate-500 mt-0.5">from $179/mo</div>
+                  <tr className="border-b border-slate-200 bg-slate-50">
+                    <th className="text-left p-4 font-medium text-slate-500 w-[36%]"></th>
+                    <th className="p-4 text-center">
+                      <div className="font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</div>
+                      <div className="text-xs text-slate-400 mt-0.5">from $179/mo</div>
                     </th>
-                    <th className="p-3 sm:p-4 text-center">
-                      <div className="font-semibold text-slate-300" style={{ fontFamily: 'Manrope, sans-serif' }}>CourtReserve</div>
-                      <div className="text-xs text-slate-500 mt-0.5">from $159/mo</div>
+                    <th className="p-4 text-center">
+                      <div className="font-medium text-slate-600" style={{ fontFamily: 'Manrope, sans-serif' }}>CourtReserve</div>
+                      <div className="text-xs text-slate-400 mt-0.5">from $159/mo</div>
                     </th>
-                    <th className="p-3 sm:p-4 text-center">
-                      <div className="font-semibold text-slate-300" style={{ fontFamily: 'Manrope, sans-serif' }}>PodPlay</div>
-                      <div className="text-xs text-slate-500 mt-0.5">$30–350/court/mo</div>
+                    <th className="p-4 text-center">
+                      <div className="font-medium text-slate-600" style={{ fontFamily: 'Manrope, sans-serif' }}>PodPlay</div>
+                      <div className="text-xs text-slate-400 mt-0.5">$30–350/court/mo</div>
                     </th>
                   </tr>
                 </thead>
@@ -377,15 +278,15 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                     { feature: 'Free trial', pg: '14 days', cr: 'Demo only', pp: 'Demo only' },
                     { feature: 'Long-term contract', pg: 'None', cr: 'Annual', pp: 'Annual' },
                   ].map((row, i) => (
-                    <tr key={i} className="border-b border-white/[0.05] hover:bg-white/[0.02] transition-colors">
-                      <td className="p-3 sm:p-4 text-slate-300 font-medium">{row.feature}</td>
-                      {['pg', 'cr', 'pp'].map((col) => {
-                        const val = row[col as keyof typeof row];
+                    <tr key={i} className={`border-b border-slate-100 ${i % 2 === 0 ? '' : 'bg-slate-50/50'}`}>
+                      <td className="p-4 text-slate-700 font-medium">{row.feature}</td>
+                      {(['pg', 'cr', 'pp'] as const).map((col) => {
+                        const val = row[col];
                         return (
-                          <td key={col} className="p-3 sm:p-4 text-center">
-                            {val === true ? <Check className={`w-5 h-5 mx-auto ${col === 'pg' ? 'text-green-400' : 'text-slate-500'}`} /> :
-                             val === false ? <X className="w-5 h-5 text-slate-600 mx-auto" /> :
-                             <span className={`text-sm font-medium ${col === 'pg' ? 'text-green-400' : 'text-slate-400'}`}>{val as string}</span>}
+                          <td key={col} className="p-4 text-center">
+                            {val === true ? <Check className={`w-4 h-4 mx-auto ${col === 'pg' ? 'text-green-600' : 'text-slate-400'}`} /> :
+                             val === false ? <X className="w-4 h-4 text-slate-300 mx-auto" /> :
+                             <span className={`text-sm font-medium ${col === 'pg' ? 'text-green-700' : 'text-slate-500'}`}>{val}</span>}
                           </td>
                         );
                       })}
@@ -393,112 +294,101 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   ))}
                 </tbody>
               </table>
-            </motion.div>
-            <motion.p variants={fadeUp} className="text-xs text-slate-500 mt-4 text-center">
+            </div>
+            <p className="text-xs text-slate-400 mt-3">
               Competitor pricing and features based on publicly available information as of 2025. Subject to change.
-            </motion.p>
-          </AnimatedSection>
-        </div>
+            </p>
+          </div>
+        </section>
 
-        {/* ══════════════════ FAQ ══════════════════ */}
-        <AnimatedSection className="max-w-3xl mx-auto px-6 py-16 lg:py-24">
-          <motion.div variants={fadeUp} className="text-center mb-12">
-            <p className="text-sm font-semibold text-green-700 uppercase tracking-wider mb-3">FAQ</p>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              Questions from Venue Operators
+        {/* FAQ */}
+        <section className="py-16 lg:py-24 border-b border-slate-100">
+          <div className="max-w-3xl mx-auto px-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              Common questions
             </h2>
-          </motion.div>
 
-          <div className="space-y-3">
-            {[
-              { q: 'How long does setup take?', a: 'Most venues are live within 10 minutes. Add your courts, set pricing, and you\'re ready to accept bookings. Our team is available to help with migration from existing systems.' },
-              { q: 'What does it cost?', a: 'Plans start at $179/month with a 14-day free trial. No credit card required. Players never pay a fee — you only pay the subscription. Processing fees are 1%, the lowest in the industry.' },
-              { q: 'Can I import from CourtReserve?', a: 'Yes. We offer full bi-directional sync with CourtReserve. Import your courts, schedules, members, and booking history. We handle the migration at no extra cost.' },
-              { q: 'How do payments work?', a: 'Payments go through Stripe Connect. Players pay at booking, and funds are deposited directly to your bank account on a rolling basis. You see every transaction in your dashboard.' },
-              { q: 'What if I need more than 15 courts?', a: 'Our Enterprise plan supports unlimited courts and multiple locations. Contact us for custom pricing — we\'ll build a plan that fits your operation.' },
-              { q: 'Is there a long-term contract?', a: 'No. All plans are month-to-month. You can cancel anytime. We earn your business every month — no lock-in, no cancellation fees.' },
-            ].map((faq, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <details className="group bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
-                  <summary className="flex items-center justify-between p-5 cursor-pointer hover:bg-slate-50/50 transition-colors">
-                    <span className="text-[15px] font-semibold text-slate-800 pr-4" style={{ fontFamily: 'Manrope, sans-serif' }}>{faq.q}</span>
-                    <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 group-open:rotate-180" />
-                  </summary>
-                  <div className="px-5 pb-5 text-sm text-slate-500 leading-relaxed">{faq.a}</div>
-                </details>
-              </motion.div>
-            ))}
-          </div>
-        </AnimatedSection>
-
-        {/* ══════════════════ FINAL CTA ══════════════════ */}
-        <div className="relative overflow-hidden">
-          <div className="bg-gradient-to-br from-green-700 via-green-800 to-green-900">
-            <AnimatedSection className="max-w-4xl mx-auto px-6 py-20 lg:py-28 text-center">
-              <motion.div variants={fadeUp}>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-6" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                  See it for yourself.
-                </h2>
-                <p className="text-lg text-green-100 mb-8 max-w-xl mx-auto">
-                  14-day free trial, no credit card. Most venues are live in under 10 minutes.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="divide-y divide-slate-200">
+              {[
+                { q: 'How long does setup take?', a: 'Most venues are live within 10 minutes. Add your courts, set pricing, and you\'re ready. We handle migration from CourtReserve at no extra cost.' },
+                { q: 'What does it cost?', a: 'Plans start at $179/month. 14-day free trial, no credit card required. Players never pay a fee — you pay the subscription plus a 1% processing fee, the lowest in the industry.' },
+                { q: 'Can I import from CourtReserve?', a: 'Yes. Full bi-directional sync. Courts, schedules, members, booking history — we migrate everything.' },
+                { q: 'How do payments work?', a: 'Stripe Connect. Players pay at booking, funds go to your bank account on a rolling basis. Every transaction is visible in your dashboard.' },
+                { q: 'What if I need more than 15 courts?', a: 'Enterprise plan — unlimited courts and locations. Contact us for custom pricing.' },
+                { q: 'Is there a contract?', a: 'No. Month-to-month. Cancel anytime, no fees.' },
+              ].map((faq, i) => (
+                <div key={i}>
                   <button
-                    onClick={() => onAuthRequired('facility')}
-                    className="bg-white text-green-800 px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-50 transition-all shadow-lg flex items-center justify-center gap-2"
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="flex items-center justify-between w-full py-4 text-left hover:text-slate-900 transition-colors"
                   >
-                    Get Started Free
-                    <ArrowRight className="w-5 h-5" />
+                    <span className="text-[15px] font-medium text-slate-800 pr-4">{faq.q}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`} />
                   </button>
-                  <a
-                    href="mailto:Justin@j20solutions.com?subject=PaddleGrid%20Demo%20Request"
-                    className="border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all inline-flex items-center justify-center"
-                  >
-                    Schedule a Demo
-                  </a>
+                  {openFaq === i && (
+                    <p className="pb-4 text-sm text-slate-500 leading-relaxed">{faq.a}</p>
+                  )}
                 </div>
-              </motion.div>
-            </AnimatedSection>
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* ══════════════════ FOOTER ══════════════════ */}
-        <footer className="bg-slate-900 text-white">
-          <div className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+        {/* CTA */}
+        <section className="bg-slate-900 py-16 lg:py-20">
+          <div className="max-w-3xl mx-auto px-6 text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              See it for yourself.
+            </h2>
+            <p className="text-slate-400 mb-8">
+              14-day free trial, no credit card. Most venues are live in under 10 minutes.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button onClick={() => onAuthRequired('facility')} className="bg-green-600 hover:bg-green-500 text-white px-7 py-3.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                Get Started Free <ArrowRight className="w-4 h-4" />
+              </button>
+              <a href="mailto:Justin@j20solutions.com?subject=PaddleGrid%20Demo%20Request" className="border border-white/20 hover:border-white/40 text-white px-7 py-3.5 rounded-lg font-medium transition-colors text-center">
+                Schedule a Demo
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="bg-slate-900 border-t border-slate-800 text-white">
+          <div className="max-w-6xl mx-auto px-6 py-12">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
               <div className="col-span-2 md:col-span-1">
-                <a href="/" className="flex items-center gap-2 mb-4">
+                <a href="/" className="flex items-center gap-2 mb-3">
                   <img src="/logo.png" alt="PaddleGrid" className="h-8 w-8 object-contain" />
                   <span className="text-base font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</span>
                 </a>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  The platform for pickleball players and venues.
-                </p>
+                <p className="text-sm text-slate-400">The platform for pickleball players and venues.</p>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Product</h4>
-                <ul className="space-y-2.5 text-sm">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Product</h4>
+                <ul className="space-y-2 text-sm">
                   <li><a href="/#players" className="text-slate-400 hover:text-white transition-colors">Players</a></li>
                   <li><a href="/#venues" className="text-slate-400 hover:text-white transition-colors">Venues</a></li>
                   <li><a href="#pricing" className="text-slate-400 hover:text-white transition-colors">Pricing</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Company</h4>
-                <ul className="space-y-2.5 text-sm">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Company</h4>
+                <ul className="space-y-2 text-sm">
                   <li><a href="/support" className="text-slate-400 hover:text-white transition-colors">Support</a></li>
                   <li><a href="mailto:Justin@j20solutions.com" className="text-slate-400 hover:text-white transition-colors">Contact</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>Legal</h4>
-                <ul className="space-y-2.5 text-sm">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Legal</h4>
+                <ul className="space-y-2 text-sm">
                   <li><a href="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy policy</a></li>
                   <li><a href="/terms" className="text-slate-400 hover:text-white transition-colors">Terms of service</a></li>
                 </ul>
               </div>
             </div>
-            <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
+            <div className="mt-10 pt-5 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
               <span>&copy; {new Date().getFullYear()} PaddleGrid. All rights reserved.</span>
               <span>J20 Solutions LLC</span>
             </div>
