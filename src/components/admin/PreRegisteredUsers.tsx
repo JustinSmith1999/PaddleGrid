@@ -438,7 +438,7 @@ export default function PreRegisteredUsers() {
               <h3 className="text-2xl font-bold">Adoption Score</h3>
             </div>
             <p className="text-emerald-50 text-sm">
-              {stats.claimed} of {stats.total} CourtReserve members have created PaddleGrid accounts
+              {stats.claimed.toLocaleString()} of {stats.total.toLocaleString()} CourtReserve members have created PaddleGrid accounts
             </p>
           </div>
           <div className="text-right">
@@ -462,28 +462,28 @@ export default function PreRegisteredUsers() {
             <Users className="w-5 h-5 text-gray-400" />
             <div className="text-sm text-gray-600">Total Members</div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">{stats.total}</div>
+          <div className="text-3xl font-bold text-gray-900">{stats.total.toLocaleString()}</div>
         </div>
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle className="w-5 h-5 text-green-500" />
             <div className="text-sm text-gray-600">Active</div>
           </div>
-          <div className="text-3xl font-bold text-green-600">{stats.activeMembers}</div>
+          <div className="text-3xl font-bold text-green-600">{stats.activeMembers.toLocaleString()}</div>
         </div>
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle className="w-5 h-5 text-emerald-500" />
             <div className="text-sm text-gray-600">Claimed</div>
           </div>
-          <div className="text-3xl font-bold text-emerald-600">{stats.claimed}</div>
+          <div className="text-3xl font-bold text-emerald-600">{stats.claimed.toLocaleString()}</div>
         </div>
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <XCircle className="w-5 h-5 text-gray-400" />
             <div className="text-sm text-gray-600">Unclaimed</div>
           </div>
-          <div className="text-3xl font-bold text-gray-600">{stats.unclaimed}</div>
+          <div className="text-3xl font-bold text-gray-600">{stats.unclaimed.toLocaleString()}</div>
         </div>
       </div>
 

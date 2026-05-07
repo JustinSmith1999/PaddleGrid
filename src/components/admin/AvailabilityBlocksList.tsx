@@ -135,7 +135,7 @@ export function AvailabilityBlocksList() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Availability Blocks</h2>
-          <p className="text-sm text-gray-600">Total: {filteredBlocks.length} blocks</p>
+          <p className="text-sm text-gray-600">Total: {filteredBlocks.length.toLocaleString()} blocks</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}

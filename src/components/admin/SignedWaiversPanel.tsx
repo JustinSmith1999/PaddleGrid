@@ -143,7 +143,7 @@ This is a legally binding electronic signature.
           </p>
         </div>
         <div className="text-sm text-slate-600 dark:text-slate-400">
-          Total: {waivers.length}
+          Total: {waivers.length.toLocaleString()}
         </div>
       </div>
 
