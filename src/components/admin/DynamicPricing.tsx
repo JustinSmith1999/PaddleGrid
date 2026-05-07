@@ -185,7 +185,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
             <div>
               <p className="text-green-100 text-xs font-medium">Estimated Weekly Revenue Impact</p>
               <p className="text-2xl font-bold text-white mt-0.5">
-                {estimatedWeeklyImpact >= 0 ? '+' : ''}${Math.abs(estimatedWeeklyImpact).toFixed(0)}/week
+                {estimatedWeeklyImpact >= 0 ? '+' : ''}${Math.round(Math.abs(estimatedWeeklyImpact)).toLocaleString()}/week
               </p>
             </div>
           </div>
@@ -271,7 +271,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
                   {/* Price Preview */}
                   <div className="text-right flex-shrink-0">
                     <p className={`text-sm font-bold ${rule.multiplier > 1 ? 'text-red-600' : rule.multiplier < 1 ? 'text-green-700' : 'text-slate-900'}`}>
-                      ${(baseRate * rule.multiplier).toFixed(0)}/hr
+                      ${Math.round(baseRate * rule.multiplier).toLocaleString()}/hr
                     </p>
                   </div>
 
@@ -332,7 +332,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
                       key={`${dayIndex}-${hour}`}
                       className={`text-center py-2 rounded-lg text-[10px] font-medium ${cellColor} transition-colors duration-150`}
                     >
-                      ${price.toFixed(0)}
+                      ${Math.round(price).toLocaleString()}
                     </div>
                   );
                 })}

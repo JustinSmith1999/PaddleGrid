@@ -313,7 +313,7 @@ export default function CourtScheduleView() {
           {totalRevenue > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 border border-green-100">
               <DollarSign className="w-3.5 h-3.5 text-green-600" />
-              <span className="text-xs font-medium text-green-700">${totalRevenue.toFixed(0)}</span>
+              <span className="text-xs font-medium text-green-700">${Math.round(totalRevenue).toLocaleString()}</span>
             </div>
           )}
         </div>

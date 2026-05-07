@@ -247,7 +247,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
       const recommendations: string[] = [];
       if (deadSpots.length > 5) {
         const topDead = deadSpots[0];
-        recommendations.push(`${topDead.day}s at ${topDead.hour}:00 has $${topDead.potentialRevenue.toFixed(0)}/week in untapped revenue. Consider a promo or open play session.`);
+        recommendations.push(`${topDead.day}s at ${topDead.hour}:00 has $${Math.round(topDead.potentialRevenue).toLocaleString()}/week in untapped revenue. Consider a promo or open play session.`);
       }
       if (atRiskPlayers.length > 3) {
         recommendations.push(`${atRiskPlayers.length} members are showing declining activity. A re-engagement email with a discount could bring them back.`);
@@ -460,7 +460,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
                     return (
                       <div key={week.week} className="flex-1 flex flex-col items-center gap-1 group relative">
                         <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 shadow-lg">
-                          {week.bookings} bookings &middot; ${week.revenue.toFixed(0)}
+                          {week.bookings} bookings &middot; ${Math.round(week.revenue).toLocaleString()}
                         </div>
                         <motion.div
                           initial={{ height: 0 }}
@@ -566,7 +566,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
                             >
                               {spot && (
                                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-800 text-white text-[10px] px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20 shadow-lg">
-                                  ${spot.potentialRevenue.toFixed(0)}/week potential
+                                  ${Math.round(spot.potentialRevenue).toLocaleString()}/week potential
                                 </div>
                               )}
                             </div>
@@ -631,7 +631,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-bold text-green-700">
-                        +${spot.potentialRevenue.toFixed(0)}
+                        +${Math.round(spot.potentialRevenue).toLocaleString()}
                       </p>
                       <p className="text-[10px] text-slate-400 mt-0.5">potential/week</p>
                     </div>
@@ -758,7 +758,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
                           )}
                         </div>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          {player.preferredDay}s at {formatHour(parseInt(player.preferredTime))} &middot; ${player.avgSpend.toFixed(0)} spent
+                          {player.preferredDay}s at {formatHour(parseInt(player.preferredTime))} &middot; ${Math.round(player.avgSpend).toLocaleString()} spent
                         </p>
                       </div>
                       <div className="text-right">
@@ -837,7 +837,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
                   {data.deadSpots.length > 0
-                    ? `You have ${data.deadSpots.length} under-utilized time slots. Reducing rates by 20-30% during dead spots could generate an estimated $${(data.deadSpots.slice(0, 5).reduce((s, d) => s + d.potentialRevenue * 0.3, 0)).toFixed(0)}/week in new bookings.`
+                    ? `You have ${data.deadSpots.length} under-utilized time slots. Reducing rates by 20-30% during dead spots could generate an estimated $${Math.round(data.deadSpots.slice(0, 5).reduce((s, d) => s + d.potentialRevenue * 0.3, 0)).toLocaleString()}/week in new bookings.`
                     : 'Your courts are well-utilized! Consider premium pricing during peak hours.'}
                 </p>
                 <div className="flex items-center gap-2">

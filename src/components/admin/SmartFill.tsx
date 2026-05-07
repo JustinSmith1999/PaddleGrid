@@ -217,7 +217,7 @@ export default function SmartFill() {
           </div>
           <div>
             <p className="text-green-100 text-xs font-medium">Untapped Weekly Revenue</p>
-            <p className="text-2xl font-bold text-white mt-0.5">${totalPotentialRevenue.toFixed(0)}</p>
+            <p className="text-2xl font-bold text-white mt-0.5">${Math.round(totalPotentialRevenue).toLocaleString()}</p>
           </div>
           <div className="ml-auto text-right">
             <p className="text-green-100 text-xs font-medium">{suggestions.length - publishedIds.size} suggestions</p>
@@ -285,7 +285,7 @@ export default function SmartFill() {
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-slate-400">~{suggestion.estimatedPlayers} players</span>
-                      <span className="text-xs font-semibold text-green-700">${suggestion.estimatedRevenue.toFixed(0)}/week</span>
+                      <span className="text-xs font-semibold text-green-700">${Math.round(suggestion.estimatedRevenue).toLocaleString()}/week</span>
                     </div>
                   </div>
 

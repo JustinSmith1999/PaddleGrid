@@ -115,7 +115,7 @@ export function AdminAnalytics() {
   const stats = [
     {
       title: 'Total Revenue',
-      value: `$${analytics.totalRevenue.toFixed(2)}`,
+      value: `$${analytics.totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: DollarSign,
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50',
@@ -123,7 +123,7 @@ export function AdminAnalytics() {
     },
     {
       title: 'Total Bookings',
-      value: analytics.totalBookings.toString(),
+      value: analytics.totalBookings.toLocaleString(),
       icon: Calendar,
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50',
@@ -131,7 +131,7 @@ export function AdminAnalytics() {
     },
     {
       title: 'Total Users',
-      value: analytics.totalUsers.toString(),
+      value: analytics.totalUsers.toLocaleString(),
       icon: Users,
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
@@ -139,7 +139,7 @@ export function AdminAnalytics() {
     },
     {
       title: 'Active Members',
-      value: analytics.activeMembers.toString(),
+      value: analytics.activeMembers.toLocaleString(),
       icon: TrendingUp,
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-orange-50',
@@ -150,7 +150,7 @@ export function AdminAnalytics() {
   const todayStats = [
     {
       label: 'Revenue Today',
-      value: `$${analytics.revenueToday.toFixed(2)}`,
+      value: `$${analytics.revenueToday.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: DollarSign,
     },
     {

@@ -170,7 +170,7 @@ export function AdminBookings() {
             Reservations
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            {stats.total} total · ${stats.totalRevenue.toFixed(0)} revenue
+            {stats.total.toLocaleString()} total · ${Math.round(stats.totalRevenue).toLocaleString()} revenue
           </p>
         </div>
       </div>
@@ -300,7 +300,7 @@ export function AdminBookings() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-900">
-                      {booking.total_amount > 0 ? `$${booking.total_amount.toFixed(2)}` : '—'}
+                      {booking.total_amount > 0 ? `$${booking.total_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
                     </p>
                   </div>
                   <div>

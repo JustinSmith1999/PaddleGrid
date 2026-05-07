@@ -422,8 +422,8 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
       badgeColor: 'text-emerald-600 bg-emerald-50',
       metric: `$${stats.monthRevenue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
       label: 'Monthly Revenue',
-      subLeft: `7-day: $${stats.weekRevenue.toFixed(0)}`,
-      subRight: `All-time: $${stats.totalRevenue.toFixed(0)}`,
+      subLeft: `7-day: $${Math.round(stats.weekRevenue).toLocaleString()}`,
+      subRight: `All-time: $${Math.round(stats.totalRevenue).toLocaleString()}`,
     },
     {
       icon: CalendarDays,
@@ -566,8 +566,8 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
                 <h3 className="text-sm font-bold text-green-100 uppercase tracking-wider">Platform Adoption</h3>
               </div>
               <p className="text-white/90 text-base leading-relaxed">
-                <span className="font-semibold text-white">{stats.claimedPreRegistered}</span> of{' '}
-                <span className="font-semibold text-white">{stats.totalPreRegistered}</span> CourtReserve members migrated
+                <span className="font-semibold text-white">{stats.claimedPreRegistered.toLocaleString()}</span> of{' '}
+                <span className="font-semibold text-white">{stats.totalPreRegistered.toLocaleString()}</span> CourtReserve members migrated
               </p>
             </div>
             <div className="text-right pl-8">

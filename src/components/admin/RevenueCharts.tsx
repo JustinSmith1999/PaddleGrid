@@ -270,11 +270,11 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
+              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${Number(v).toLocaleString()}`} />
               <Tooltip
                 contentStyle={{ borderRadius: '16px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
                 labelFormatter={formatDate}
-                formatter={(value: number) => [`$${value}`, '']}
+                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
               />
               <Area type="monotone" dataKey="bookings" name="Bookings" stroke={COLORS.bookings} fill="url(#gradBookings)" strokeWidth={2} />
               <Area type="monotone" dataKey="events" name="Events" stroke={COLORS.events} fill="url(#gradEvents)" strokeWidth={2} />
@@ -310,7 +310,7 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
               </Pie>
               <Tooltip
                 contentStyle={{ borderRadius: '16px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
-                formatter={(value: number) => [`$${value}`, '']}
+                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -344,11 +344,11 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
           <BarChart data={dailyData.slice(-14)} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
+            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${Number(v).toLocaleString()}`} />
             <Tooltip
               contentStyle={{ borderRadius: '16px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
               labelFormatter={formatDate}
-              formatter={(value: number) => [`$${value}`, '']}
+              formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
             />
             <Bar dataKey="bookings" name="Bookings" fill={COLORS.bookings} radius={[4, 4, 0, 0]} stackId="stack" />
             <Bar dataKey="events" name="Events" fill={COLORS.events} radius={[0, 0, 0, 0]} stackId="stack" />
