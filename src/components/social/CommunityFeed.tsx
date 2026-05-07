@@ -234,137 +234,119 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
       <div className="flex justify-center w-full relative z-10 min-h-screen">
         {/* Left Sidebar Navigation */}
         {shouldShowSidebar && (
-        <div className="hidden lg:flex w-[240px] xl:w-[260px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1400px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/60 px-4 pb-6 overflow-y-auto pt-4 z-40 bg-white/98 backdrop-blur-sm">
-            {/* Navigation Links */}
-            <nav className="space-y-0.5 pt-2 pb-2 px-2">
-            {navItems.map((item, index) => (
-              <motion.div
-                key={item.view}
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05, duration: 0.25 }}
+        <div className="hidden lg:flex w-[240px] xl:w-[260px] flex-shrink-0 flex-col fixed left-[max(0px,calc((100vw-1400px)/2))] top-[56px] max-h-[calc(100vh-3.5rem)] border-r border-slate-200/60 px-3 pb-6 overflow-y-auto pt-3 z-40 bg-white/98 backdrop-blur-sm justify-between">
+          <div>
+            {/* New Post Button */}
+            {user && (
+              <motion.button
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onCreatePost}
+                className="w-full py-2.5 px-4 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold text-sm shadow-sm transition-all duration-200 flex items-center justify-center gap-2 mb-3"
               >
+                <PlusCircle className="w-4 h-4" />
+                <span>New Post</span>
+              </motion.button>
+            )}
+
+            {/* Primary Navigation */}
+            <nav className="space-y-0.5 px-1">
+              {navItems.map((item) => (
                 <button
+                  key={item.view}
                   onClick={() => setActiveView(item.view)}
-                  className={`flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200 w-full text-left group ${
-                    activeView === item.view ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-700'
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 w-full text-left group ${
+                    activeView === item.view
+                      ? 'bg-green-50 text-green-700'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
                   }`}
                 >
-                  <item.icon className={`w-5 h-5 ${activeView === item.view ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
-                  <span className={`text-sm ${activeView === item.view ? 'font-bold text-green-700' : 'font-semibold text-slate-500 group-hover:text-slate-700'} transition-colors`}>{item.label}</span>
+                  <item.icon className={`w-[18px] h-[18px] ${activeView === item.view ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
+                  <span className={`text-[13px] ${activeView === item.view ? 'font-bold' : 'font-medium'} transition-colors`}>{item.label}</span>
                 </button>
-              </motion.div>
-            ))}
+              ))}
 
-            <motion.div
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15, duration: 0.25 }}
-            >
               <button
                 onClick={() => user ? onProfileClick?.(user.id) : null}
-                className="flex items-center gap-4 px-4 py-2.5 rounded-xl hover:bg-slate-50/50 hover:text-slate-700 transition-all duration-200 w-full text-left group text-slate-500"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 w-full text-left group text-slate-600"
               >
-                <User className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Profile</span>
+                <User className="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600 transition-colors" />
+                <span className="text-[13px] font-medium group-hover:text-slate-800 transition-colors">Profile</span>
               </button>
-            </motion.div>
 
-            {profile?.role === 'admin' && (
-              <motion.div
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, duration: 0.25 }}
-              >
+              {profile?.role === 'admin' && (
                 <button
                   onClick={() => window.location.href = '/admin'}
-                  className="flex items-center gap-4 px-4 py-2.5 rounded-xl hover:bg-slate-50/50 hover:text-slate-700 transition-all duration-200 w-full text-left group text-slate-500"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 w-full text-left group text-slate-600"
                 >
-                  <Shield className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                  <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Admin</span>
+                  <Shield className="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600 transition-colors" />
+                  <span className="text-[13px] font-medium group-hover:text-slate-800 transition-colors">Admin</span>
                 </button>
-              </motion.div>
-            )}
+              )}
+            </nav>
 
+            {/* Divider */}
+            {user && <div className="mx-3 my-2 border-t border-slate-100" />}
+
+            {/* Secondary Navigation */}
             {user && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25, duration: 0.25 }}
+              <nav className="space-y-0.5 px-1">
+                <button
+                  onClick={() => setShowNotificationsPanel(true)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 w-full text-left group relative text-slate-600"
                 >
-                  <button
-                    onClick={() => setShowNotificationsPanel(true)}
-                    className="flex items-center gap-4 px-4 py-2.5 rounded-xl hover:bg-slate-50/50 hover:text-slate-700 transition-all duration-200 w-full text-left group relative text-slate-500"
-                  >
-                    <Bell className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                    <span className="text-sm font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Notifications</span>
-                    {unreadNotifications > 0 && (
-                      <span className="absolute top-2 left-7 w-2 h-2 bg-green-700 rounded-full"></span>
-                    )}
-                  </button>
-                </motion.div>
+                  <Bell className="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600 transition-colors" />
+                  <span className="text-[13px] font-medium group-hover:text-slate-800 transition-colors">Notifications</span>
+                  {unreadNotifications > 0 && (
+                    <span className="ml-auto min-w-[18px] h-[18px] bg-green-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">{unreadNotifications > 99 ? '99+' : unreadNotifications}</span>
+                  )}
+                </button>
 
-                <motion.div
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3, duration: 0.25 }}
+                <button
+                  onClick={() => setActiveView('messages')}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 w-full text-left group ${
+                    activeView === 'messages' ? 'bg-green-50 text-green-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                  }`}
                 >
-                  <button
-                    onClick={() => setActiveView('messages')}
-                    className={`flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200 w-full text-left group ${
-                      activeView === 'messages' ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-700'
-                    }`}
-                  >
-                    <MessageCircle className={`w-5 h-5 ${activeView === 'messages' ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
-                    <span className={`text-sm ${activeView === 'messages' ? 'font-bold text-green-700' : 'font-semibold text-slate-500 group-hover:text-slate-700'} transition-colors`}>Messages</span>
-                  </button>
-                </motion.div>
+                  <MessageCircle className={`w-[18px] h-[18px] ${activeView === 'messages' ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
+                  <span className={`text-[13px] ${activeView === 'messages' ? 'font-bold' : 'font-medium'} transition-colors`}>Messages</span>
+                </button>
 
-                <motion.div
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.35, duration: 0.25 }}
+                <button
+                  onClick={() => setActiveView('bookmarks')}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 w-full text-left group ${
+                    activeView === 'bookmarks' ? 'bg-green-50 text-green-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                  }`}
                 >
-                  <button
-                    onClick={() => setActiveView('bookmarks')}
-                    className={`flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200 w-full text-left group ${
-                      activeView === 'bookmarks' ? 'bg-green-50 text-green-700 font-bold' : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-700'
-                    }`}
-                  >
-                    <Bookmark className={`w-5 h-5 ${activeView === 'bookmarks' ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
-                    <span className={`text-sm ${activeView === 'bookmarks' ? 'font-bold text-green-700' : 'font-semibold text-slate-500 group-hover:text-slate-700'} transition-colors`}>Bookmarks</span>
-                  </button>
-                </motion.div>
-              </>
+                  <Bookmark className={`w-[18px] h-[18px] ${activeView === 'bookmarks' ? 'text-green-700' : 'text-slate-400 group-hover:text-slate-600'} transition-colors`} />
+                  <span className={`text-[13px] ${activeView === 'bookmarks' ? 'font-bold' : 'font-medium'} transition-colors`}>Bookmarks</span>
+                </button>
+              </nav>
             )}
-          </nav>
 
-          {/* Local Clubs */}
-          <div className="mt-3 mb-2">
-            <div>
-              <div className="px-6 py-3 border-t border-slate-200/60">
-                <h2 className="text-xs font-bold text-slate-400 tracking-wider uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Local Clubs</h2>
-              </div>
-              <div className="px-2">
-                {facilities.map((facility, index) => (
-                  <motion.div
-                    key={facility.id}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + index * 0.05, duration: 0.25 }}
-                  >
+            {/* Local Clubs */}
+            {facilities.length > 0 && (
+              <div className="mt-2">
+                <div className="mx-3 mb-1 border-t border-slate-100" />
+                <div className="px-4 pt-2 pb-1">
+                  <h2 className="text-[11px] font-bold text-slate-400 tracking-wider uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Your Clubs</h2>
+                </div>
+                <div className="px-1">
+                  {facilities.map((facility) => (
                     <button
+                      key={facility.id}
                       onClick={() => onClubClick?.(facility.slug)}
-                      className="w-full px-4 py-2.5 hover:bg-slate-50/50 rounded-xl transition-all duration-200 text-left group"
+                      className="w-full px-3 py-2 hover:bg-slate-50 rounded-lg transition-all duration-150 text-left group"
                     >
-                      <div className="flex items-start gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 p-1">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200/60 flex items-center justify-center flex-shrink-0 p-0.5 overflow-hidden">
                           {facility.logo_url ? (
                             <img
                               src={facility.logo_url}
                               alt={facility.name}
-                              className="w-full h-full object-contain rounded-lg"
+                              className="w-full h-full object-contain rounded"
                               style={{ mixBlendMode: 'multiply' }}
                             />
                           ) : (
@@ -376,19 +358,41 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-bold text-slate-800 text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>{facility.name}</div>
-                          <div className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            <span>{facility.memberCount} {facility.memberCount === 1 ? 'member' : 'members'}</span>
+                          <div className="font-semibold text-slate-700 text-[13px] truncate group-hover:text-slate-900 transition-colors" style={{ fontFamily: 'Manrope, sans-serif' }}>{facility.name}</div>
+                          <div className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
+                            <Users className="w-2.5 h-2.5" />
+                            <span>{facility.memberCount}</span>
                           </div>
                         </div>
                       </div>
                     </button>
-                  </motion.div>
-                ))}
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom: User Profile Card */}
+          {user && profile && (
+            <div className="mt-auto pt-3">
+              <div className="mx-1 border-t border-slate-100 pt-3">
+                <button
+                  onClick={() => onProfileClick?.(user.id)}
+                  className="w-full px-3 py-2 rounded-lg hover:bg-slate-50 transition-all duration-150 text-left group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {(profile.first_name?.[0] || '').toUpperCase()}{(profile.last_name?.[0] || '').toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-slate-700 truncate">{profile.first_name} {profile.last_name}</div>
+                      <div className="text-[11px] text-slate-400 truncate">@{profile.first_name?.toLowerCase()}{profile.last_name?.toLowerCase()}</div>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
-          </div>
+          )}
         </div>
         )}
 
@@ -681,20 +685,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                 ))}
               </div>
             </div>
-
-            {/* Post Button */}
-            {user && (
-              <div className="px-4 mt-4">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onCreatePost}
-                  className="w-full py-3 px-6 bg-green-700 hover:bg-green-800 text-white rounded-xl font-semibold text-sm shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
-                >
-                  <span>Post</span>
-                </motion.button>
-              </div>
-            )}
 
             {/* Footer Links */}
             <div className="px-4 py-4 pb-6">
