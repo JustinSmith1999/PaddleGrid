@@ -96,10 +96,6 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
         .from('courts')
         .select('id, name, hourly_rate');
 
-      const { data: members } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, created_at');
-
       const totalCourts = courts?.length || 1;
       const allBookings = bookings || [];
       const thirtyDayStr = thirtyDaysAgo.toISOString().split('T')[0];
