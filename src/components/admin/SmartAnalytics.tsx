@@ -83,31 +83,40 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
       const sixtyDaysAgo = new Date(today);
       sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-      // Fetch all bookings from last 60 days for trend analysis (paginated)
-      const bookingsData = await fetchAllRows(() => supabase
-        .from('court_availability_blocks')
-        .select('block_date, start_time, end_time, court_id, notes, courts(name, hourly_rate)')
-        .eq('block_type', 'reservation')
-        .gte('block_date', sixtyDaysAgo.toISOString().split('T')[0])
-        .order('block_date', { ascending: true }));
-      const bookings = bookingsData;
-
-      const { data: courts } = await supabase
-        .from('courts')
-        .select('id, name, hourly_rate');
-
-      const totalCourts = courts?.length || 1;
-      const allBookings = bookings || [];
+      const sixtyDayStr = sixtyDaysAgo.toISOString().split('T')[0];
       const thirtyDayStr = thirtyDaysAgo.toISOString().split('T')[0];
+
+      // Fetch ALL block types (not just 'reservation') — includes tournaments, leagues, clinics, etc.
+      // Exclude maintenance & staff blocks since those aren't real bookings
+      const [blocksData, userBookingsData, courtsResult] = await Promise.all([
+        fetchAllRows(() => supabase
+          .from('court_availability_blocks')
+          .select('block_date, start_time, end_time, court_id, notes, block_type, courts(name, hourly_rate)')
+          .not('block_type', 'in', '("maintenance","staff_block")')
+          .gte('block_date', sixtyDayStr)
+          .order('block_date', { ascending: true })),
+        // Also fetch from bookings table — has user_id → profiles for real player names
+        fetchAllRows(() => supabase
+          .from('bookings')
+          .select('booking_date, start_time, end_time, court_id, notes, status, profiles(full_name, email)')
+          .gte('booking_date', sixtyDayStr)
+          .order('booking_date', { ascending: true })),
+        supabase.from('courts').select('id, name, hourly_rate'),
+      ]);
+
+      const courts = courtsResult.data;
+      const totalCourts = courts?.length || 1;
+      const allBlocks = blocksData || [];
+      const allUserBookings = (userBookingsData || []).filter((b: any) => b.status !== 'cancelled');
 
       // --- DEAD SPOT ANALYSIS ---
       const heatmap: Record<string, number[]> = {};
       DAYS.forEach(day => { heatmap[day] = new Array(17).fill(0); });
 
-      const recentBookings = allBookings.filter(b => b.block_date >= thirtyDayStr);
-      const olderBookings = allBookings.filter(b => b.block_date < thirtyDayStr);
+      const recentBlocks = allBlocks.filter(b => b.block_date >= thirtyDayStr);
+      const olderBlocks = allBlocks.filter(b => b.block_date < thirtyDayStr);
 
-      recentBookings.forEach(b => {
+      recentBlocks.forEach(b => {
         const date = new Date(b.block_date + 'T00:00:00');
         const dayName = DAYS[date.getDay()];
         const hour = parseInt(b.start_time.split(':')[0]);
@@ -139,7 +148,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
 
       // --- PEAK HOURS ---
       const hourlyTotals: { bookings: number; count: number }[] = new Array(17).fill(null).map(() => ({ bookings: 0, count: 0 }));
-      recentBookings.forEach(b => {
+      recentBlocks.forEach(b => {
         const hour = parseInt(b.start_time.split(':')[0]);
         if (hour >= 6 && hour <= 22) {
           hourlyTotals[hour - 6].bookings++;
@@ -155,49 +164,87 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
       })).sort((a, b) => b.utilization - a.utilization);
 
       // --- PLAYER TENDENCY ANALYSIS ---
-      const playerBookings: Record<string, { recent: number; older: number; times: number[]; days: number[] }> = {};
+      // Use bookings table (has real user profiles) as primary source for player insights
+      const playerBookings: Record<string, { recent: number; older: number; times: number[]; days: number[]; email: string; lastSeen: string }> = {};
 
-      recentBookings.forEach(b => {
-        const name = b.notes || 'Unknown';
-        if (!playerBookings[name]) playerBookings[name] = { recent: 0, older: 0, times: [], days: [] };
-        playerBookings[name].recent++;
-        playerBookings[name].times.push(parseInt(b.start_time.split(':')[0]));
-        const date = new Date(b.block_date + 'T00:00:00');
-        playerBookings[name].days.push(date.getDay());
+      // Helper to extract player name from notes field (handles various formats)
+      const extractPlayerName = (notes: string | null): string => {
+        if (!notes) return 'Unknown';
+        // Format: "[CR#123] Type - PlayerName"
+        const crMatch = notes.match(/-\s*(.+)$/);
+        if (crMatch && crMatch[1].trim().length > 1) return crMatch[1].trim();
+        // If notes is a generic type name, skip it
+        const genericTypes = ['court reserved', 'reservation', 'open play', 'user booking', 'event', 'reserved'];
+        if (genericTypes.includes(notes.toLowerCase().trim())) return 'Unknown';
+        return notes;
+      };
+
+      // Primary: use bookings table with real profile names
+      allUserBookings.forEach((b: any) => {
+        const name = b.profiles?.full_name || 'Unknown';
+        const email = b.profiles?.email || '';
+        const dateStr = b.booking_date;
+        if (!playerBookings[name]) playerBookings[name] = { recent: 0, older: 0, times: [], days: [], email, lastSeen: '' };
+        if (dateStr >= thirtyDayStr) {
+          playerBookings[name].recent++;
+          playerBookings[name].times.push(parseInt(b.start_time?.split(':')[0] || '12'));
+          const date = new Date(dateStr + 'T00:00:00');
+          playerBookings[name].days.push(date.getDay());
+        } else {
+          playerBookings[name].older++;
+        }
+        if (!playerBookings[name].lastSeen || dateStr > playerBookings[name].lastSeen) {
+          playerBookings[name].lastSeen = dateStr;
+        }
+        if (email) playerBookings[name].email = email;
       });
 
-      olderBookings.forEach(b => {
-        const name = b.notes || 'Unknown';
-        if (!playerBookings[name]) playerBookings[name] = { recent: 0, older: 0, times: [], days: [] };
-        playerBookings[name].older++;
+      // Secondary: supplement with court_availability_blocks notes (for data not in bookings table)
+      allBlocks.forEach(b => {
+        const name = extractPlayerName(b.notes);
+        if (name === 'Unknown') return;
+        // Skip if we already have this player from bookings table
+        if (playerBookings[name]) return;
+        if (!playerBookings[name]) playerBookings[name] = { recent: 0, older: 0, times: [], days: [], email: '', lastSeen: '' };
+        if (b.block_date >= thirtyDayStr) {
+          playerBookings[name].recent++;
+          playerBookings[name].times.push(parseInt(b.start_time.split(':')[0]));
+          const date = new Date(b.block_date + 'T00:00:00');
+          playerBookings[name].days.push(date.getDay());
+        } else {
+          playerBookings[name].older++;
+        }
+        if (!playerBookings[name].lastSeen || b.block_date > playerBookings[name].lastSeen) {
+          playerBookings[name].lastSeen = b.block_date;
+        }
       });
 
       const playerInsights: PlayerInsight[] = Object.entries(playerBookings)
         .filter(([name]) => name !== 'Unknown' && name !== 'Reserved')
-        .map(([name, data]) => {
-          const avgTime = data.times.length > 0
-            ? Math.round(data.times.reduce((s, t) => s + t, 0) / data.times.length)
+        .map(([name, pData]) => {
+          const avgTime = pData.times.length > 0
+            ? Math.round(pData.times.reduce((s, t) => s + t, 0) / pData.times.length)
             : 12;
-          const avgDay = data.days.length > 0
-            ? Math.round(data.days.reduce((s, d) => s + d, 0) / data.days.length)
+          const avgDay = pData.days.length > 0
+            ? Math.round(pData.days.reduce((s, d) => s + d, 0) / pData.days.length)
             : 3;
 
           let trend: 'rising' | 'declining' | 'stable' | 'churning' = 'stable';
-          if (data.recent > data.older * 1.3) trend = 'rising';
-          else if (data.recent < data.older * 0.5) trend = 'declining';
-          else if (data.older > 2 && data.recent === 0) trend = 'churning';
+          if (pData.recent > pData.older * 1.3) trend = 'rising';
+          else if (pData.recent < pData.older * 0.5) trend = 'declining';
+          else if (pData.older > 2 && pData.recent === 0) trend = 'churning';
 
           return {
             id: name,
             name,
-            email: '',
-            bookingsLastMonth: data.older,
-            bookingsThisMonth: data.recent,
+            email: pData.email,
+            bookingsLastMonth: pData.older,
+            bookingsThisMonth: pData.recent,
             trend,
             preferredTime: `${avgTime}:00`,
             preferredDay: DAYS[avgDay] || 'Wednesday',
-            avgSpend: data.recent * avgHourlyRate,
-            lastSeen: '',
+            avgSpend: pData.recent * avgHourlyRate,
+            lastSeen: pData.lastSeen,
           };
         });
 
@@ -212,7 +259,7 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
 
       // --- WEEKLY TREND ---
       const weeklyMap: Record<string, { bookings: number; revenue: number }> = {};
-      allBookings.forEach(b => {
+      allBlocks.forEach(b => {
         const date = new Date(b.block_date + 'T00:00:00');
         const weekStart = new Date(date);
         weekStart.setDate(date.getDate() - date.getDay());
@@ -224,18 +271,18 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
 
       const weeklyTrend = Object.entries(weeklyMap)
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([week, data]) => ({ week, ...data }));
+        .map(([week, wData]) => ({ week, ...wData }));
 
       // --- SCORES ---
       const totalSlots = totalCourts * 17 * 7 * weeksInPeriod;
-      const courtEfficiency = Math.min((recentBookings.length / totalSlots) * 100, 100);
+      const courtEfficiency = Math.min((recentBlocks.length / totalSlots) * 100, 100);
 
       const returningPlayers = playerInsights.filter(p => p.bookingsThisMonth > 0 && p.bookingsLastMonth > 0).length;
       const totalActivePlayers = playerInsights.filter(p => p.bookingsLastMonth > 0).length;
       const memberRetention = totalActivePlayers > 0 ? (returningPlayers / totalActivePlayers) * 100 : 0;
 
-      const recentRevenue = recentBookings.length * avgHourlyRate;
-      const olderRevenue = olderBookings.length * avgHourlyRate;
+      const recentRevenue = recentBlocks.length * avgHourlyRate;
+      const olderRevenue = olderBlocks.length * avgHourlyRate;
       const revenueGrowth = olderRevenue > 0 ? ((recentRevenue - olderRevenue) / olderRevenue) * 100 : 0;
 
       const overallScore = Math.round((courtEfficiency * 0.4 + memberRetention * 0.3 + Math.min(Math.max(revenueGrowth + 50, 0), 100) * 0.3));
