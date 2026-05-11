@@ -61,7 +61,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
   }
 
   return (
-    <nav className="bg-white/98 backdrop-blur-xl sticky top-0 z-40 border-b border-slate-200/60">
+    <nav role="navigation" aria-label="Main navigation" className="bg-white/98 backdrop-blur-xl sticky top-0 z-40 border-b border-slate-200/60">
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-2">
         <div className="flex items-center justify-between h-12">
           <div className="flex items-center gap-6">
@@ -115,6 +115,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
               <>
                 <button
                   onClick={() => setShowNotifications(true)}
+                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
                   className="relative p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all duration-300"
                 >
                   <Bell className="w-5 h-5" />
@@ -127,6 +128,9 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                 <div className="relative" data-profile-menu>
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    aria-expanded={showProfileMenu}
+                    aria-haspopup="true"
+                    aria-label="User menu"
                     className="group"
                   >
                     {profile?.profile_picture_url ? (

@@ -86,6 +86,8 @@ export default function MobileMenu({
       {activeView !== 'messages' && (
         <button
           onClick={() => setIsOpen(true)}
+          aria-expanded={isOpen}
+          aria-label="Open navigation menu"
           className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-green-700 text-white rounded-full flex items-center justify-center hover:bg-green-600 transition-all shadow-lg hover:scale-110 z-40"
         >
           <Menu className="w-6 h-6" />
@@ -108,6 +110,8 @@ export default function MobileMenu({
 
             {/* Slide-out Menu Panel */}
             <motion.div
+              role="dialog"
+              aria-label="Navigation menu"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -137,6 +141,7 @@ export default function MobileMenu({
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}
+                    aria-label="Close navigation menu"
                     className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                   >
                     <X className="w-5 h-5 text-slate-500" />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Building2, User, Check, AlertCircle, Mail, Eye, EyeOff, ArrowRight, Shield, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -63,6 +63,53 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [formOpenTime, setFormOpenTime] = useState<number>(0);
   const { signIn, signUp, signUpWithFacility, signInWithApple, signInWithGoogle, profile, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap: keep focus inside modal when open
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const modal = modalRef.current;
+    if (!modal) return;
+
+    const focusable = modal.querySelectorAll<HTMLElement>(
+      'button, [href], input:not([type="hidden"]):not([tabindex="-1"]), select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, [onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus the modal on open
+      setTimeout(() => {
+        const modal = modalRef.current;
+        if (modal) {
+          const firstInput = modal.querySelector<HTMLElement>('input:not([tabindex="-1"]), button');
+          firstInput?.focus();
+        }
+      }, 100);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, handleKeyDown]);
 
   useEffect(() => {
     if (isOpen) {
@@ -248,8 +295,13 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
           exit="exit"
           transition={{ duration: 0.2 }}
           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
           <motion.div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-modal-heading"
             variants={modalVariants}
             initial="hidden"
             animate="visible"
@@ -261,6 +313,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
             {/* Close Button */}
             <button
               onClick={onClose}
+              aria-label="Close dialog"
               className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors shadow-sm border border-slate-100"
             >
               <X className="w-4 h-4 text-slate-500" />
@@ -301,6 +354,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                       <Mail className="w-7 h-7 text-green-700" />
                     </div>
                     <h2
+                      id="auth-modal-heading"
                       className="text-2xl font-bold text-slate-800 mb-1"
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
@@ -321,15 +375,18 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="Your email"
+                          aria-label="Email address"
                           className={inputClasses}
                         />
 
+                        <div aria-live="polite">
                         <AnimatePresence>
                           {error && (
                             <motion.div
                               initial={{ opacity: 0, y: -4 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -4 }}
+                              role="alert"
                               className="flex items-start gap-2 p-3 bg-red-50 border border-red-200/60 rounded-xl"
                             >
                               <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
@@ -337,6 +394,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             </motion.div>
                           )}
                         </AnimatePresence>
+                        </div>
 
                         <motion.button
                           type="submit"
@@ -382,6 +440,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                       Join PaddleGrid
                     </div>
                     <h2
+                      id="auth-modal-heading"
                       className="text-2xl font-bold text-slate-800 mb-2"
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
@@ -448,6 +507,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   {/* Header */}
                   <div className="px-8 pt-10 pb-6 text-center">
                     <h2
+                      id="auth-modal-heading"
                       className="text-2xl font-bold text-slate-800 mb-1"
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
@@ -654,6 +714,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             placeholder="First Name"
+                            aria-label="First Name"
                             className={inputClasses}
                             required
                           />
@@ -662,6 +723,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             placeholder="Last Name"
+                            aria-label="Last Name"
                             className={inputClasses}
                             required
                           />
@@ -674,6 +736,8 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email"
+                        aria-label="Email"
+                        aria-invalid={error && error.toLowerCase().includes('email') ? true : undefined}
                         className={inputClasses}
                         required
                       />
@@ -685,12 +749,15 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Password"
+                          aria-label="Password"
+                          aria-invalid={error && error.toLowerCase().includes('password') ? true : undefined}
                           className={`${inputClasses} pr-12`}
                           required
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
                           className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -715,12 +782,14 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                       )}
 
                       {/* Error */}
+                      <div aria-live="polite">
                       <AnimatePresence>
                         {error && (
                           <motion.div
                             initial={{ opacity: 0, y: -4 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -4 }}
+                            role="alert"
                             className="flex items-start gap-2.5 p-3 bg-red-50 border border-red-200/60 rounded-xl"
                           >
                             <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
@@ -728,6 +797,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                           </motion.div>
                         )}
                       </AnimatePresence>
+                      </div>
 
                       {/* Submit */}
                       <motion.button

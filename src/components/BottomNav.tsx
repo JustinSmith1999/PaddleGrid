@@ -43,7 +43,7 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
   }
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/98 backdrop-blur-2xl border-t border-slate-200/60 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] z-50 safe-area-bottom">
+    <nav role="navigation" aria-label="Quick navigation" className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/98 backdrop-blur-2xl border-t border-slate-200/60 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] z-50 safe-area-bottom">
       <div className="flex items-center justify-around max-w-2xl mx-auto px-2 py-1.5">
         {navItems.map(({ view, icon: Icon, label }) => {
           const isActive = currentView === view;
@@ -53,6 +53,8 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
               key={view}
               onClick={() => onViewChange(view)}
               whileTap={{ scale: 0.92 }}
+              aria-current={isActive ? 'page' : undefined}
+              aria-label={label}
               className="relative flex-1 flex flex-col items-center justify-center py-2 px-3 gap-1"
             >
               {isActive && (

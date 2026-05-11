@@ -16,7 +16,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-slate-200/60">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left group">
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="w-full flex items-center justify-between py-5 text-left group">
         <span className="text-[15px] font-semibold text-slate-800 pr-4 group-hover:text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{q}</span>
         <ChevronDown className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -63,7 +63,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
               </motion.p>
 
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="mt-8">
-                <button onClick={() => onAuthRequired('signup')} className="group inline-flex items-center justify-center gap-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-green-900/30 hover:shadow-xl transition-all duration-200">
+                <button onClick={() => onAuthRequired('signup')} aria-label="Create a free PaddleGrid account" className="group inline-flex items-center justify-center gap-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-green-900/30 hover:shadow-xl transition-all duration-200">
                   Create free account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </motion.div>
@@ -327,7 +327,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       {/* ALSO FREE — quick feature list */}
       <section className="py-14 bg-[#F8F9FC]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h3 className="text-base font-bold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>Also included, free for every player</h3>
+          <h2 className="text-base font-bold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>Also included, free for every player</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
             {[
               'Waitlist with instant alerts',
@@ -392,7 +392,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           <p className="text-green-100/80 mb-8">
             Free forever. No credit card required.
           </p>
-          <button onClick={() => onAuthRequired('signup')} className="group inline-flex items-center justify-center gap-2.5 bg-white text-green-800 font-bold text-base px-8 py-4 rounded-xl shadow-lg hover:bg-green-50 transition-all duration-200">
+          <button onClick={() => onAuthRequired('signup')} aria-label="Create a free PaddleGrid account" className="group inline-flex items-center justify-center gap-2.5 bg-white text-green-800 font-bold text-base px-8 py-4 rounded-xl shadow-lg hover:bg-green-50 transition-all duration-200">
             Create free account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>

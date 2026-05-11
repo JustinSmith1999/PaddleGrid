@@ -1,0 +1,84 @@
+# CI/CD Pipeline — Vite + React + TypeScript
+#
+# Runs the full quality gate on every push/PR to main:
+#   checkout → setup node → cache → install → typecheck → lint → test → build
+#
+# Secrets required (set in repo Settings → Secrets):
+#   VITE_SUPABASE_URL       — Supabase project URL
+#   VITE_SUPABASE_ANON_KEY  — Supabase anonymous/public key
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same branch/PR to save minutes
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    env:
+      # Supabase env vars needed by the Vite build
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Node.js ───────────────────────────────────────────────
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm            # caches ~/.npm based on package-lock.json
+
+      # ── Install ───────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Type-check ────────────────────────────────────────────
+      - name: Typecheck
+        run: npm run typecheck
+
+      # ── Lint ──────────────────────────────────────────────────
+      - name: Lint
+        run: npm run lint
+
+      # ── Unit / Integration tests ──────────────────────────────
+      - name: Test
+        run: npm run test:run
+
+      # ── Production build ──────────────────────────────────────
+      - name: Build
+        run: npm run build
+
+      # ── Upload build artifact (useful for deploy jobs) ────────
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+      # ── Playwright E2E (disabled until configured) ────────────
+      # To enable:
+      #   1. Install Playwright:  npm i -D @playwright/test
+      #   2. Add a "test:e2e" script to package.json
+      #   3. Remove the `if: false` line below
+      - name: Install Playwright browsers
+        if: false  # Enable when Playwright is configured
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        if: false  # Enable when Playwright is configured
+        run: npm run test:e2e

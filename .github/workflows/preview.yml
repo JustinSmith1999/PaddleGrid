@@ -1,0 +1,42 @@
+# PR Preview — fast feedback on pull requests
+#
+# Runs only the lightweight checks (no build/deploy) so PR authors
+# get quick signal on type safety, lint, and test results.
+
+name: PR Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR to save minutes
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Typecheck + Lint + Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test:run

@@ -1,5 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
+import { createRequestLogger } from '../_shared/logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +15,8 @@ interface ExtendBookingRequest {
 }
 
 Deno.serve(async (req: Request) => {
+  const log = createRequestLogger('extend-booking', req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -54,6 +57,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const { booking_id, duration_hours = 1, accept_alternative = true }: ExtendBookingRequest = await req.json();
+
+    log.info('Extension requested', { booking_id, duration_hours, accept_alternative, user_id: user.id });
 
     // Get the original booking
     const { data: originalBooking, error: bookingError } = await supabaseAdmin
@@ -119,6 +124,8 @@ Deno.serve(async (req: Request) => {
           processed_at: new Date().toISOString()
         });
 
+      log.info('Extended on same court', { booking_id, new_booking_id: newBooking.id, cost });
+
       extensionResult = {
         success: true,
         extension_type: 'same_court',
@@ -147,6 +154,8 @@ Deno.serve(async (req: Request) => {
             processed_at: new Date().toISOString(),
             metadata: { reason: 'no_availability' }
           });
+
+        log.warn('No courts available for extension', { booking_id });
 
         extensionResult = {
           success: false,
@@ -189,6 +198,13 @@ Deno.serve(async (req: Request) => {
             processed_at: new Date().toISOString()
           });
 
+        log.info('Extended on alternative court', {
+          booking_id,
+          new_booking_id: newBooking.id,
+          alternative_court_id: altCourt.court_id,
+          cost,
+        });
+
         extensionResult = {
           success: true,
           extension_type: 'alternative_court',
@@ -228,7 +244,7 @@ Deno.serve(async (req: Request) => {
       }
     );
   } catch (error: any) {
-    console.error('Error extending booking:', error);
+    log.error('Error extending booking', { error });
     return new Response(
       JSON.stringify({
         success: false,

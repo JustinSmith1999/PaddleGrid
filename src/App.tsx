@@ -8,6 +8,7 @@ import { AuthModal } from './components/AuthModal';
 import { NotFound } from './components/NotFound';
 import LoadingScreen from './components/LoadingScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { A11yAnnouncerProvider } from './components/A11yAnnouncer';
 import InstallPWA from './components/InstallPWA';
 import AchievementCelebrationModal from './components/AchievementCelebrationModal';
 import { useAchievementNotifications } from './hooks/useAchievementNotifications';
@@ -133,6 +134,12 @@ function AppContent() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded focus:shadow-lg focus:text-green-700 focus:font-semibold"
+        >
+          Skip to content
+        </a>
         <ScrollToTop />
         <Navbar
           onAuthClick={() => {
@@ -142,6 +149,7 @@ function AppContent() {
           onViewChange={handleViewChange}
         />
 
+        <main id="main-content">
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
         <Route path="/" element={
@@ -271,6 +279,7 @@ function AppContent() {
         <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      </main>
 
       <BottomNav onViewChange={handleViewChange} />
 
@@ -491,7 +500,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <A11yAnnouncerProvider>
+          <AppContent />
+        </A11yAnnouncerProvider>
       </AuthProvider>
     </BrowserRouter>
   );

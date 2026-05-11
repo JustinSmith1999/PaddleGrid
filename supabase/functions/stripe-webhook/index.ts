@@ -1,6 +1,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Stripe from 'npm:stripe@17.7.0';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
+import { createRequestLogger, type RequestLogger } from '../_shared/logger.ts';
 
 const stripeSecret = Deno.env.get('STRIPE_SECRET_KEY')!;
 const stripeWebhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')!;
@@ -14,6 +15,8 @@ const stripe = new Stripe(stripeSecret, {
 const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
 Deno.serve(async (req) => {
+  const log = createRequestLogger('stripe-webhook', req);
+
   try {
     // Handle OPTIONS request for CORS preflight
     if (req.method === 'OPTIONS') {
@@ -28,6 +31,7 @@ Deno.serve(async (req) => {
     const signature = req.headers.get('stripe-signature');
 
     if (!signature) {
+      log.warn('No stripe-signature header found');
       return new Response('No signature found', { status: 400 });
     }
 
@@ -40,20 +44,22 @@ Deno.serve(async (req) => {
     try {
       event = await stripe.webhooks.constructEventAsync(body, signature, stripeWebhookSecret);
     } catch (error: any) {
-      console.error(`Webhook signature verification failed: ${error.message}`);
+      log.error('Webhook signature verification failed', { error });
       return new Response(`Webhook signature verification failed: ${error.message}`, { status: 400 });
     }
 
-    EdgeRuntime.waitUntil(handleEvent(event));
+    log.info('Webhook event received', { event_type: event.type, event_id: event.id });
+
+    EdgeRuntime.waitUntil(handleEvent(event, log));
 
     return Response.json({ received: true });
   } catch (error: any) {
-    console.error('Error processing webhook:', error);
+    log.error('Error processing webhook', { error });
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
 
-async function handleEvent(event: Stripe.Event) {
+async function handleEvent(event: Stripe.Event, log: RequestLogger) {
   const stripeData = event?.data?.object ?? {};
 
   if (!stripeData) {
@@ -72,7 +78,7 @@ async function handleEvent(event: Stripe.Event) {
   const { customer: customerId } = stripeData;
 
   if (!customerId || typeof customerId !== 'string') {
-    console.error(`No customer received on event: ${JSON.stringify(event)}`);
+    log.error('No customer received on event', { event_type: event.type, event_id: event.id });
   } else {
     let isSubscription = true;
 
@@ -81,14 +87,14 @@ async function handleEvent(event: Stripe.Event) {
 
       isSubscription = mode === 'subscription';
 
-      console.info(`Processing ${isSubscription ? 'subscription' : 'one-time payment'} checkout session`);
+      log.info(`Processing ${isSubscription ? 'subscription' : 'one-time payment'} checkout session`, { customer_id: customerId });
     }
 
     const { mode, payment_status } = stripeData as Stripe.Checkout.Session;
 
     if (isSubscription) {
-      console.info(`Starting subscription sync for customer: ${customerId}`);
-      await syncCustomerFromStripe(customerId);
+      log.info('Starting subscription sync', { customer_id: customerId });
+      await syncCustomerFromStripe(customerId, log);
     } else if (mode === 'payment' && payment_status === 'paid') {
       try {
         // Extract the necessary information from the session
@@ -110,9 +116,9 @@ async function handleEvent(event: Stripe.Event) {
             });
 
           if (participantError && participantError.code !== '23505') {
-            console.error('Error adding match participant:', participantError);
+            log.error('Error adding match participant', { error: participantError, post_id: metadata.post_id });
           } else {
-            console.info(`Successfully added user ${metadata.user_id} to match ${metadata.post_id}`);
+            log.info('Successfully added user to match', { user_id: metadata.user_id, post_id: metadata.post_id });
           }
 
           const { error: paymentError } = await supabase
@@ -127,9 +133,9 @@ async function handleEvent(event: Stripe.Event) {
             });
 
           if (paymentError) {
-            console.error('Error recording match payment:', paymentError);
+            log.error('Error recording match payment', { error: paymentError, post_id: metadata.post_id });
           } else {
-            console.info(`Successfully recorded payment for match ${metadata.post_id}`);
+            log.info('Successfully recorded payment for match', { post_id: metadata.post_id });
           }
 
           try {
@@ -147,7 +153,7 @@ async function handleEvent(event: Stripe.Event) {
               });
             }
           } catch (notifError) {
-            console.warn('Failed to create match join notification:', notifError);
+            log.warn('Failed to create match join notification', { error: notifError });
           }
         } else if (metadata?.booking_id) {
           const { error: bookingError } = await supabase
@@ -160,9 +166,9 @@ async function handleEvent(event: Stripe.Event) {
             .eq('id', metadata.booking_id);
 
           if (bookingError) {
-            console.error('Error updating booking:', bookingError);
+            log.error('Error updating booking', { error: bookingError, booking_id: metadata.booking_id });
           } else {
-            console.info(`Successfully confirmed booking: ${metadata.booking_id}`);
+            log.info('Successfully confirmed booking', { booking_id: metadata.booking_id });
           }
         }
 
@@ -179,19 +185,19 @@ async function handleEvent(event: Stripe.Event) {
         });
 
         if (orderError) {
-          console.error('Error inserting order:', orderError);
+          log.error('Error inserting order', { error: orderError, checkout_session_id });
           return;
         }
-        console.info(`Successfully processed one-time payment for session: ${checkout_session_id}`);
+        log.info('Successfully processed one-time payment', { checkout_session_id });
       } catch (error) {
-        console.error('Error processing one-time payment:', error);
+        log.error('Error processing one-time payment', { error });
       }
     }
   }
 }
 
 // based on the excellent https://github.com/t3dotgg/stripe-recommendations
-async function syncCustomerFromStripe(customerId: string) {
+async function syncCustomerFromStripe(customerId: string, log: RequestLogger) {
   try {
     // fetch latest subscription data from Stripe
     const subscriptions = await stripe.subscriptions.list({
@@ -203,7 +209,7 @@ async function syncCustomerFromStripe(customerId: string) {
 
     // TODO verify if needed
     if (subscriptions.data.length === 0) {
-      console.info(`No active subscriptions found for customer: ${customerId}`);
+      log.info('No active subscriptions found for customer', { customer_id: customerId });
       const { error: noSubError } = await supabase.from('stripe_subscriptions').upsert(
         {
           customer_id: customerId,
@@ -215,7 +221,7 @@ async function syncCustomerFromStripe(customerId: string) {
       );
 
       if (noSubError) {
-        console.error('Error updating subscription status:', noSubError);
+        log.error('Error updating subscription status', { error: noSubError, customer_id: customerId });
         throw new Error('Failed to update subscription status in database');
       }
     }
@@ -246,12 +252,12 @@ async function syncCustomerFromStripe(customerId: string) {
     );
 
     if (subError) {
-      console.error('Error syncing subscription:', subError);
+      log.error('Error syncing subscription', { error: subError, customer_id: customerId });
       throw new Error('Failed to sync subscription in database');
     }
-    console.info(`Successfully synced subscription for customer: ${customerId}`);
+    log.info('Successfully synced subscription', { customer_id: customerId });
   } catch (error) {
-    console.error(`Failed to sync subscription for customer ${customerId}:`, error);
+    log.error('Failed to sync subscription', { error, customer_id: customerId });
     throw error;
   }
 }

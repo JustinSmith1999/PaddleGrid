@@ -1,5 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
+import { createRequestLogger } from '../_shared/logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,6 +22,8 @@ interface ExpiringBooking {
 }
 
 Deno.serve(async (req: Request) => {
+  const log = createRequestLogger('booking-expiry-check', req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -47,7 +50,7 @@ Deno.serve(async (req: Request) => {
       .rpc('get_expiring_bookings', { p_minutes_before: minutesBefore });
 
     if (bookingsError) {
-      console.error('Error fetching expiring bookings:', bookingsError);
+      log.error('Error fetching expiring bookings', { error: bookingsError });
       throw bookingsError;
     }
 
@@ -89,7 +92,7 @@ Deno.serve(async (req: Request) => {
         .single();
 
       if (notifError) {
-        console.error('Error creating notification record:', notifError);
+        log.error('Error creating notification record', { error: notifError, booking_id: booking.booking_id });
         continue;
       }
 
@@ -120,6 +123,12 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    log.info('Booking expiry check completed', {
+      expiring_bookings: expiringBookings.length,
+      notifications_created: notifications.length,
+      push_notifications_queued: pushNotifications.length,
+    });
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -144,7 +153,7 @@ Deno.serve(async (req: Request) => {
       }
     );
   } catch (error: any) {
-    console.error('Error in booking-expiry-check:', error);
+    log.error('Error in booking-expiry-check', { error });
     return new Response(
       JSON.stringify({
         success: false,
