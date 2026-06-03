@@ -16,6 +16,7 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp } from '@capacitor/app';
 import { supabase } from './lib/supabase';
+import DemoChooser from './components/DemoChooser';
 
 const HomePage = lazy(() => import('./components/HomePage').then(m => ({ default: m.HomePage })));
 const SalesPage = lazy(() => import('./components/SalesPage').then(m => ({ default: m.SalesPage })));
@@ -161,12 +162,7 @@ function AppContent() {
               }}
             />
           ) : (
-            <HomePage
-              onAuthRequired={(mode = 'login') => {
-                setAuthMode(mode);
-                setShowAuthModal(true);
-              }}
-            />
+            <DemoChooser />
           )
         } />
 
