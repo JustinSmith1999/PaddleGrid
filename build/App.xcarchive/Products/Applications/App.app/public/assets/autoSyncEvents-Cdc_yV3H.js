@@ -1,2 +1,0 @@
-const o="courtreserve_events_last_sync",r="bfb8aa81-fca9-48d9-b697-d13bba78430e";async function u(){const e=localStorage.getItem(o),s=e?parseInt(e):0,t=Date.now();if(!(t-s<36e5))try{const a=`undefined/functions/v1/courtreserve-event-sync?facility_id=${r}`;(await fetch(a,{method:"GET",headers:{Authorization:"Bearer undefined","Content-Type":"application/json"}})).ok&&localStorage.setItem(o,t.toString())}catch(n){console.error("Auto-sync error:",n)}}export{u as a};
-//# sourceMappingURL=autoSyncEvents-Cdc_yV3H.js.map
