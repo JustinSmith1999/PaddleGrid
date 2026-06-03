@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SponsorSlot from '../SponsorSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield, Menu, X } from 'lucide-react';
 import { SocialPost, getFeedPosts, getNotifications, Notification, getBookmarkedPosts } from '../../lib/socialUtils';
@@ -400,7 +401,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[620px]'} ${shouldShowSidebar ? 'lg:ml-[240px] xl:ml-[260px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/60' : ''} min-h-screen bg-[#F8F9FC] relative`}>
           {/* Sticky Header */}
           {activeView !== 'messages' && (
-            <div className="sticky top-[56px] z-10 bg-white/98 backdrop-blur-xl border-b border-slate-200/60">
+            <div className="sticky top-[56px] z-10 bg-white border-b will-change-transform border-slate-200/60">
               {activeView !== 'feed' && (
                 <div className="pt-4 pb-4 lg:pb-5 px-4 flex items-center gap-3">
                   <button
@@ -500,6 +501,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Content Area */}
           {activeView === 'feed' && (
             <>
+              <SponsorSlot location="feed_top" />
               {/* Posts Feed */}
               {posts.length > 0 ? (
                 <div className="pt-3 px-0 lg:px-0">

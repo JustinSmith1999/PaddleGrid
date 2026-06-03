@@ -21,3 +21,12 @@ dist-ssr
 *.sln
 *.sw?
 .env
+build/
+ios/App/App/public/
+ios/App/App/public
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/CapApp-SPM/.swiftpm/
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
+schema_dump.sql
