@@ -5,6 +5,7 @@ import { SocialPost, toggleLike, joinMatch, leaveMatch, formatTimeAgo, deletePos
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import MatchPaymentModal from './MatchPaymentModal';
+import PollPost from './PollPost';
 
 interface PostCardProps {
   post: SocialPost;
@@ -678,7 +679,15 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-[15px] leading-relaxed text-slate-700 whitespace-pre-wrap">{post.content}</p>
+                  {(post.link_preview as any)?.type === 'poll' ? (
+                    <PollPost
+                      postId={post.id}
+                      question={(post.link_preview as any).question || post.content}
+                      options={((post.link_preview as any).options || []) as string[]}
+                    />
+                  ) : (
+                    <p className="text-[15px] leading-relaxed text-slate-700 whitespace-pre-wrap">{post.content}</p>
+                  )}
 
                   {/* Media Grid */}
                   {post.media_urls && post.media_urls.length > 0 && (
