@@ -478,10 +478,9 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
   ];
 
   return (
-    <>
+    <div className="space-y-8" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       <InvestorTour />
       <InsightsCard />
-          <div className="space-y-8" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -635,9 +634,6 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
                   'bg-green-300';
 
                 return (
-    <>
-      <InvestorTour />
-      <InsightsCard />
                         <motion.div
                     key={slot.hour}
                     initial={{ height: 0 }}
