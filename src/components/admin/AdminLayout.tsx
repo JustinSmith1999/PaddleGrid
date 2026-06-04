@@ -80,6 +80,7 @@ const navigationSections: NavSection[] = [
     items: [
       { id: 'sponsors', label: 'Sponsors', icon: <DollarSign className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'group-blast', label: 'Reach Out to Groups', icon: <MessageSquare className="w-[18px] h-[18px]" />, badge: 'NEW' },
+      { id: 'partnerships', label: 'Partnerships', icon: <Building2 className="w-[18px] h-[18px]" />, badge: 'NEW' },
     ]
   },
   {

@@ -31,6 +31,7 @@ import NotificationTemplates from './NotificationTemplates';
 import RevenueCharts from './RevenueCharts';
 import AdminSponsors from './AdminSponsors';
 import AdminGroupBlast from './AdminGroupBlast';
+import AdminPartnerships from './AdminPartnerships';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Loader2 } from 'lucide-react';
@@ -178,6 +179,8 @@ export function AdminPanel() {
         return <AdminSponsors facilityId={facilityId} />;
       case 'group-blast':
         return <AdminGroupBlast facilityId={facilityId} />;
+      case 'partnerships':
+        return <AdminPartnerships facilityId={facilityId} />;
       default:
         return <AdminDashboard onViewChange={setCurrentView} />;
     }
