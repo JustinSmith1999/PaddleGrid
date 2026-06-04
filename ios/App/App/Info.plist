@@ -2,12 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CAPACITOR_DEBUG</key>
+	<key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>PaddleGrid</string>
+	<string>PaddleGrid</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,9 +21,26 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>12</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>PaddleGrid needs access to your camera to take photos for posts and profile pictures.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>PaddleGrid uses your location to find nearby courts and facilities.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>PaddleGrid needs access to your microphone to record videos for posts.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>PaddleGrid needs permission to save photos to your library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PaddleGrid needs access to your photo library to upload images for posts and profile pictures.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>PaddleGrid uses tracking to provide personalized content and improve your experience.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -47,22 +64,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>PaddleGrid needs access to your camera to take photos for posts and profile pictures.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>PaddleGrid needs access to your photo library to upload images for posts and profile pictures.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>PaddleGrid needs permission to save photos to your library.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>PaddleGrid uses your location to find nearby courts and facilities.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>PaddleGrid uses tracking to provide personalized content and improve your experience.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>PaddleGrid needs access to your microphone to record videos for posts.</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>remote-notification</string>
-	</array>
 </dict>
 </plist>

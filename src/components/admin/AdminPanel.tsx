@@ -29,6 +29,8 @@ import ChurnAlerts from './ChurnAlerts';
 import WaitlistManager from './WaitlistManager';
 import NotificationTemplates from './NotificationTemplates';
 import RevenueCharts from './RevenueCharts';
+import AdminSponsors from './AdminSponsors';
+import AdminGroupBlast from './AdminGroupBlast';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Loader2 } from 'lucide-react';
@@ -172,6 +174,10 @@ export function AdminPanel() {
         return <ChurnAlerts />;
       case 'waitlist':
         return <WaitlistManager />;
+      case 'sponsors':
+        return <AdminSponsors facilityId={facilityId} />;
+      case 'group-blast':
+        return <AdminGroupBlast facilityId={facilityId} />;
       default:
         return <AdminDashboard onViewChange={setCurrentView} />;
     }

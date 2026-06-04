@@ -200,7 +200,7 @@ async function enrichPostsWithInteractions(posts: SocialPost[]): Promise<SocialP
 }
 
 export async function getFeedPosts(filter: {
-  type?: 'my_clubs' | 'following' | 'all_local';
+  type?: 'my_clubs' | 'following' | 'all_local' | 'trending';
   facilityIds?: string[];
   limit?: number;
   offset?: number;
@@ -215,7 +215,20 @@ export async function getFeedPosts(filter: {
       .order('created_at', { ascending: false })
       .range(filter.offset || 0, (filter.offset || 0) + (filter.limit || 20) - 1);
 
-    if (filter.type === 'my_clubs' && filter.facilityIds && filter.facilityIds.length > 0) {
+    if (filter.type === 'trending') {
+      // 7-day engagement-sorted feed
+      const cutoff = new Date(Date.now() - 7 * 86400000).toISOString();
+      query = query
+        .gte('created_at', cutoff)
+        .order('like_count', { ascending: false, nullsFirst: false })
+        .order('comment_count', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
+      if (user.user) {
+        query = query.or(`visibility.eq.public,visibility.eq.facility,author_id.eq.${user.user.id}`);
+      } else {
+        query = query.eq('visibility', 'public');
+      }
+    } else if if (filter.type === 'my_clubs' && filter.facilityIds && filter.facilityIds.length > 0) {
       if (!user.user) return [];
       query = query.in('facility_id', filter.facilityIds);
     } else if (filter.type === 'following') {

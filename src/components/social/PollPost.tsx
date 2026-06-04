@@ -51,11 +51,13 @@ export default function PollPost({ postId, question, options }: PollPostProps) {
     if (myVote === optionIndex) return;
     setSubmitting(optionIndex);
     const prevVote = myVote;
+    // Optimistic update
     const next = [...tallies];
     if (prevVote !== null) next[prevVote] = Math.max(0, next[prevVote] - 1);
     next[optionIndex] = next[optionIndex] + 1;
     setTallies(next);
     setMyVote(optionIndex);
+    // Upsert by (post_id, user_id) unique key
     const { error } = await supabase
       .from('poll_votes')
       .upsert(
@@ -63,6 +65,7 @@ export default function PollPost({ postId, question, options }: PollPostProps) {
         { onConflict: 'post_id,user_id' }
       );
     if (error) {
+      // Rollback
       setTallies(tallies);
       setMyVote(prevVote);
       console.error('Vote failed', error);
@@ -102,6 +105,7 @@ export default function PollPost({ postId, question, options }: PollPostProps) {
                 ${disabled && !selected ? 'opacity-80' : ''}
                 ${!user ? 'cursor-default' : 'cursor-pointer'}`}
             >
+              {/* Fill bar */}
               {showResults && (
                 <motion.div
                   className={`absolute inset-y-0 left-0 ${selected ? 'bg-emerald-100' : 'bg-slate-100'}`}

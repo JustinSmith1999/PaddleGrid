@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import InvestorTour from '../InvestorTour';
+import InsightsCard from './InsightsCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2, X, User, Mail, Phone, Calendar, Clock, DollarSign,
@@ -289,7 +291,10 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center py-24 gap-3" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <>
+      <InvestorTour />
+      <InsightsCard />
+            <div className="flex flex-col justify-center items-center py-24 gap-3" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
         <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
         <p className="text-sm text-slate-500">Loading dashboard...</p>
       </div>
@@ -472,7 +477,10 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
   ];
 
   return (
-    <div className="space-y-8" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <>
+      <InvestorTour />
+      <InsightsCard />
+          <div className="space-y-8" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -626,11 +634,14 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
                   'bg-green-300';
 
                 return (
-                  <motion.div
+    <>
+      <InvestorTour />
+      <InsightsCard />
+                        <motion.div
                     key={slot.hour}
                     initial={{ height: 0 }}
                     animate={{ height: 'auto' }}
-                    className="flex-1 flex flex-col items-center gap-1 group relative"
+                    className="flex-1 h-full flex flex-col items-center gap-1 group relative"
                   >
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-lg">
                       {slot.hour} - {slot.bookings} {slot.bookings === 1 ? 'booking' : 'bookings'}

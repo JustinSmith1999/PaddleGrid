@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SponsorSlot from '../SponsorSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, TrendingUp, Users, Calendar, MapPin, Building2, Home, Search, Bell, MessageCircle, User, Bookmark, PlusCircle, Shield, Menu, X } from 'lucide-react';
 import { SocialPost, getFeedPosts, getNotifications, Notification, getBookmarkedPosts } from '../../lib/socialUtils';
@@ -28,7 +29,7 @@ interface CommunityFeedProps {
 export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick, onViewChange }: CommunityFeedProps) {
   const { user, profile } = useAuth();
   const [activeView, setActiveView] = useState<'feed' | 'explore' | 'search' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
-  const [activeTab, setActiveTab] = useState<'my_clubss' | 'following' | 'all_local'>('all_local');
+  const [activeTab, setActiveTab] = useState<'trending' | 'following' | 'my_clubs'>('trending');
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -179,7 +180,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     try {
       const feedPosts = await getFeedPosts({
         type: activeTab,
-        facilityIds: activeTab === 'my_clubss' ? userFacilityIds : undefined,
+        facilityIds: activeTab === 'my_clubs' ? userFacilityIds : undefined,
         limit: 100
       });
 
@@ -400,7 +401,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
         <div className={`w-full ${isFullWidthView ? 'max-w-none' : 'max-w-[620px]'} ${shouldShowSidebar ? 'lg:ml-[240px] xl:ml-[260px]' : ''} ${!isFullWidthView && shouldShowSidebar ? 'border-r border-slate-200/60' : ''} min-h-screen bg-[#F8F9FC] relative`}>
           {/* Sticky Header */}
           {activeView !== 'messages' && (
-            <div className="sticky top-[56px] z-10 bg-white/98 backdrop-blur-xl border-b border-slate-200/60">
+            <div className="sticky top-[56px] z-10 bg-white border-b will-change-transform border-slate-200/60">
               {activeView !== 'feed' && (
                 <div className="pt-4 pb-4 lg:pb-5 px-4 flex items-center gap-3">
                   <button
@@ -422,52 +423,27 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {/* Feed Tabs */}
             {activeView === 'feed' && (
               <>
-                <div className="flex">
-                  <button
-                    onClick={() => setActiveTab('all_local')}
-                    className={`flex-1 px-4 py-3 text-sm font-semibold hover:bg-slate-50/50 transition-all duration-200 relative ${
-                      activeTab === 'all_local'
-                        ? 'text-slate-800'
-                        : 'text-slate-400'
-                    }`}
-                  >
-                    For You
-                    {activeTab === 'all_local' && (
-                      <motion.div layoutId="feedTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-700 rounded-full" />
-                    )}
-                  </button>
-
-                  {user && userFacilityIds.length > 0 && (
-                    <button
-                      onClick={() => setActiveTab('my_clubs')}
-                      className={`flex-1 px-4 py-3 text-sm font-semibold hover:bg-slate-50/50 transition-all duration-200 relative ${
-                        activeTab === 'my_clubs'
-                          ? 'text-slate-800'
-                          : 'text-slate-400'
-                      }`}
-                    >
-                      My Clubs
-                      {activeTab === 'my_clubs' && (
-                        <motion.div layoutId="feedTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-700 rounded-full" />
-                      )}
-                    </button>
-                  )}
-
-                  {user && (
-                    <button
-                      onClick={() => setActiveTab('following')}
-                      className={`flex-1 px-4 py-3 text-sm font-semibold hover:bg-slate-50/50 transition-all duration-200 relative ${
-                        activeTab === 'following'
-                          ? 'text-slate-800'
-                          : 'text-slate-400'
-                      }`}
-                    >
-                      Following
-                      {activeTab === 'following' && (
-                        <motion.div layoutId="feedTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-700 rounded-full" />
-                      )}
-                    </button>
-                  )}
+                <div className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white border-b border-slate-100">
+                  {([
+                    { id: 'trending',  label: 'Trending'  },
+                    { id: 'following', label: 'Following' },
+                    { id: 'my_clubs',  label: 'My Clubs'  },
+                  ] as const).map((t) => {
+                    const isActive = activeTab === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => setActiveTab(t.id)}
+                        className={`relative px-4 py-1.5 rounded-full text-[13px] font-bold transition-all ${
+                          isActive
+                            ? 'bg-emerald-700 text-white shadow-sm'
+                            : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -500,6 +476,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Content Area */}
           {activeView === 'feed' && (
             <>
+              <SponsorSlot location="feed_top" />
               {/* Posts Feed */}
               {posts.length > 0 ? (
                 <div className="pt-3 px-0 lg:px-0">

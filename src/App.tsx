@@ -42,6 +42,9 @@ const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'))
 const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
 const MerchShop = lazy(() => import('./components/MerchShop'));
+const GroupsList = lazy(() => import('./components/groups/GroupsList'));
+const GroupDetail = lazy(() => import('./components/groups/GroupDetail'));
+const MatchRequestsBoard = lazy(() => import('./components/social/MatchRequestsBoard'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -123,6 +126,12 @@ function AppContent() {
       case 'rewards':
         navigate('/rewards');
         break;
+      case 'groups':
+        navigate('/groups');
+        break;
+      case 'match-requests':
+        navigate('/match-requests');
+        break;
       case 'community':
       default:
         navigate('/');
@@ -192,6 +201,15 @@ function AppContent() {
           user ? (
             <div className="min-h-screen bg-gray-50 pb-20">
               <div className="max-w-2xl mx-auto">
+                                <a href="/groups" className="block mb-3 rounded-2xl bg-white border border-slate-200/60 px-4 py-3.5 shadow-sm hover:border-emerald-300 hover:shadow-md transition group">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase tracking-wider text-emerald-700 font-bold">My Groups</div>
+                      <div className="text-sm font-bold text-slate-900 mt-0.5">Thursday Night Crew, Drill Squad, and more →</div>
+                    </div>
+                    <div className="hidden sm:block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">Open</div>
+                  </div>
+                </a>
                 <PlayerDiscovery
                   onProfileClick={(userId) => navigate(`/player/${userId}`)}
                 />
@@ -212,7 +230,16 @@ function AppContent() {
 
         <Route path="/browse" element={
           <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 py-8 pb-24">
-            <BrowseCourts />
+                          <a href="/match-requests" className="block mb-3 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-900 text-white px-4 py-3.5 shadow-sm hover:shadow-md transition group">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-[10px] uppercase tracking-wider text-white/70 font-bold">Looking for someone to play with?</div>
+                    <div className="text-sm font-bold mt-0.5">Browse open match requests →</div>
+                  </div>
+                  <div className="hidden sm:block px-3 py-1 rounded-full bg-white/95 text-emerald-900 text-xs font-bold">Open court board</div>
+                </div>
+              </a>
+              <BrowseCourts />
           </div>
         } />
 
@@ -271,6 +298,29 @@ function AppContent() {
         } />
 
         <Route path="/merch" element={<MerchShop />} />
+
+        
+        <Route path="/groups" element={
+          user ? (
+            <div className="min-h-screen bg-gray-50 pb-24">
+              <div className="max-w-3xl mx-auto">
+                <GroupsList onOpenGroup={(id) => navigate('/groups/' + id)} />
+              </div>
+            </div>
+          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
+
+        <Route path="/groups/:groupId" element={<GroupDetailRoute />} />
+
+        <Route path="/match-requests" element={
+          user ? (
+            <div className="min-h-screen bg-gray-50 pb-24">
+              <div className="max-w-3xl mx-auto">
+                <MatchRequestsBoard />
+              </div>
+            </div>
+          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+        } />
 
         <Route path="*" element={<NotFound />} />
         </Routes>
@@ -490,6 +540,14 @@ function SeriesRegistrationRoute() {
 function MySeriesRoute() {
   const navigate = useNavigate();
   return <MySeries onSeriesClick={(seriesId) => navigate(`/series/${seriesId}`)} />;
+}
+
+
+function GroupDetailRoute() {
+  const { groupId } = useParams<{ groupId: string }>();
+  const navigate = useNavigate();
+  if (!groupId) return <NotFound />;
+  return <GroupDetail groupId={groupId} onBack={() => navigate('/groups')} />;
 }
 
 function App() {

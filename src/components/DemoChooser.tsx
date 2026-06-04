@@ -8,15 +8,17 @@ const DEMO_ACCOUNTS = {
     email: 'demo-admin@paddlegrid.com',
     password: 'DemoAdmin2024!',
     label: 'Facility Owner',
-    description: 'Admin dashboard, member analytics, court bookings, revenue reports, and the full back-of-house view.',
-    cta: 'Tour as admin',
+    description:
+      'The command center. Member retention, court utilization, revenue by hour, smart insights, and the back-of-house everything.',
+    cta: 'Tour as owner',
   },
   player: {
     email: 'demo-player@paddlegrid.com',
     password: 'DemoPlayer2024!',
-    label: 'Player',
-    description: 'Community feed, stories, court bookings, messaging, and what a member sees every day.',
-    cta: 'Tour as player',
+    label: 'Member',
+    description:
+      'The social side of the club. Live feed with stories, polls, achievements, court bookings, and the daily rhythm of a thriving facility.',
+    cta: 'Tour as member',
   },
 } as const;
 
@@ -43,25 +45,31 @@ export default function DemoChooser() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-slate-50 to-emerald-50/40 flex items-center justify-center px-4 py-12">
+    <div
+      className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12"
+      style={{ background: 'linear-gradient(160deg, #FBF8F2 0%, #FFFFFF 60%, #F2F6F3 100%)' }}
+    >
       <div className="w-full max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.3 }}
           className="text-center mb-10"
         >
-          <div className="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold tracking-wide uppercase mb-4">
-            Investor Preview
+          <div
+            className="inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-[0.18em] uppercase mb-5"
+            style={{ backgroundColor: '#F4ECD9', color: '#7D673F' }}
+          >
+            Investor Preview · Pickleball Heaven
           </div>
           <h1
             className="text-4xl sm:text-5xl font-bold text-slate-900 mb-3"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
+            style={{ fontFamily: "'Cinzel', 'Manrope', serif", letterSpacing: '0.02em' }}
           >
-            Welcome to PaddleGrid
+            The Pickleball Palace, Online.
           </h1>
-          <p className="text-slate-600 text-base max-w-xl mx-auto">
-            Choose how you'd like to explore the product. You can switch perspectives anytime by signing out.
+          <p className="text-slate-600 text-base max-w-2xl mx-auto leading-relaxed">
+            PaddleGrid is the operating system for the new generation of premium paddle facilities — multi-court, F&B-included, social-first. Take it from either side.
           </p>
         </motion.div>
 
@@ -76,29 +84,40 @@ export default function DemoChooser() {
                 key={role}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.05 + i * 0.05 }}
-                whileHover={!isDisabled ? { y: -2 } : {}}
+                transition={{ duration: 0.3, delay: 0.08 + i * 0.06 }}
+                whileHover={!isDisabled ? { y: -3 } : {}}
                 whileTap={!isDisabled ? { scale: 0.99 } : {}}
                 onClick={() => signInAs(role)}
                 disabled={isDisabled}
-                className={`group relative flex flex-col items-start text-left p-6 sm:p-7 rounded-2xl border bg-white shadow-sm transition-all duration-200 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-lg hover:border-emerald-300'} border-slate-200`}
+                className={`group relative flex flex-col items-start text-left p-7 sm:p-8 rounded-2xl bg-white shadow-sm transition-all duration-200 border
+                  ${isDisabled ? 'opacity-60 cursor-not-allowed border-slate-200' : 'hover:shadow-xl cursor-pointer'}
+                `}
+                style={{
+                  borderColor: isDisabled ? undefined : '#E6D5B0',
+                  background: 'linear-gradient(140deg, #FFFFFF 0%, #FBF8F2 100%)',
+                }}
               >
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${role === 'admin' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}`}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                  style={{
+                    backgroundColor: role === 'admin' ? '#2D4A38' : '#B59866',
+                    color: '#FFFFFF',
+                  }}
                 >
                   <Icon className="w-6 h-6" />
                 </div>
                 <h2
-                  className="text-xl sm:text-2xl font-bold text-slate-900 mb-1.5"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                  className="text-xl sm:text-2xl font-bold text-slate-900 mb-2"
+                  style={{ fontFamily: "'Cinzel', 'Manrope', serif", letterSpacing: '0.01em' }}
                 >
                   {account.label}
                 </h2>
-                <p className="text-slate-500 text-sm leading-relaxed mb-5">
+                <p className="text-slate-600 text-sm leading-relaxed mb-6">
                   {account.description}
                 </p>
                 <div
-                  className={`mt-auto inline-flex items-center gap-2 text-sm font-semibold ${role === 'admin' ? 'text-emerald-700' : 'text-sky-700'}`}
+                  className="mt-auto inline-flex items-center gap-2 text-sm font-semibold"
+                  style={{ color: role === 'admin' ? '#2D4A38' : '#7D673F' }}
                 >
                   {isLoading ? (
                     <>
@@ -124,7 +143,7 @@ export default function DemoChooser() {
         )}
 
         <p className="mt-10 text-center text-xs text-slate-400">
-          This is a preview environment with sample data. Nothing here affects production.
+          Preview environment · Sample data only · Nothing here affects production.
         </p>
       </div>
     </div>
