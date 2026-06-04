@@ -1,86 +1,85 @@
-/** @type {import('tailwindcss').Config} */
-export default {
+/** PaddleGrid brand palette v3 — extracted from the new logo
+ *  Forest #16291E + Cream #E5DACE + Taupe #B5A896
+ *
+ *  We remap green/emerald/teal to the new forest scale so every existing
+ *  bg-green-700 / text-emerald-600 reference adopts the new palette
+ *  without touching component files.
+ */
+
+const forest = {
+  50:  '#EEF1EF',
+  100: '#D4DCD7',
+  200: '#A8B8AE',
+  300: '#7D9485',
+  400: '#52715C',
+  500: '#3A5A45',
+  600: '#2A4232',
+  700: '#1F3024',
+  800: '#162820',
+  900: '#0F1B14',
+  950: '#0A130D',
+};
+
+const cream = {
+  50:  '#FAF7F2',
+  100: '#F4EDE2',
+  200: '#E5DACE',
+  300: '#D8C8B6',
+  400: '#C6B49C',
+  500: '#B5A896',
+};
+
+const taupe = {
+  50:  '#F5F2EE',
+  100: '#E8E1D7',
+  200: '#D0C5B5',
+  300: '#B5A896',
+  400: '#9A8B77',
+  500: '#7D6E5C',
+  600: '#5F5345',
+  700: '#443B30',
+};
+
+// Warm slate — replaces cold slate-* with a parchment-leaning neutral.
+// Most existing UI uses slate-50..slate-900; we keep the scale names so
+// the existing classes look right with the warm cast.
+const warmSlate = {
+  50:  '#FAF7F2',
+  100: '#F2EDE3',
+  200: '#E5DDD0',
+  300: '#CBBFAE',
+  400: '#A89B89',
+  500: '#7D6E5C',
+  600: '#5F5345',
+  700: '#443B30',
+  800: '#2E2820',
+  900: '#1C1813',
+  950: '#0E0B08',
+};
+
+module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'class',
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-        display: ['Cinzel', 'Trajan Pro', 'Optima', 'Times New Roman', 'serif'],
-      },
-      fontWeight: {
-        normal: '400',
-        medium: '500',
-        extrabold: '800',
-      },
       colors: {
-        primary: 'rgb(var(--color-primary) / <alpha-value>)',
-        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
-        accent: 'rgb(var(--color-accent) / <alpha-value>)',
-        success: 'rgb(var(--color-success) / <alpha-value>)',
-        warning: 'rgb(var(--color-warning) / <alpha-value>)',
-        error: 'rgb(var(--color-error) / <alpha-value>)',
-        // --- Brand: forest green (overrides Tailwind defaults) ---
-        green: {
-          50:  '#F2F6F3',
-          100: '#D9E5DC',
-          200: '#B0C6B5',
-          300: '#82A48B',
-          400: '#54836A',
-          500: '#366450',
-          600: '#2D4A38',
-          700: '#243B2D',
-          800: '#1A2C21',
-          900: '#111E16',
-        },
-        emerald: {
-          50:  '#F2F6F3',
-          100: '#D9E5DC',
-          200: '#B0C6B5',
-          300: '#82A48B',
-          400: '#54836A',
-          500: '#366450',
-          600: '#2D4A38',
-          700: '#243B2D',
-          800: '#1A2C21',
-          900: '#111E16',
-        },
-        // --- Brand: antique gold (new palette, additive) ---
-        gold: {
-          50:  '#FBF8F2',
-          100: '#F4ECD9',
-          200: '#E6D5B0',
-          300: '#D5BC87',
-          400: '#C4A370',
-          500: '#B59866',
-          600: '#9A7F50',
-          700: '#7D673F',
-          800: '#5E4D30',
-          900: '#3F3320',
-        },
-        // --- Brand: explicit name for components opting in to the new palette ---
-        'paddlegrid-green': '#2D4A38',
-        'paddlegrid-gold':  '#B59866',
-        'paddlegrid-cream': '#EBE4D2',
+        green:   forest,
+        emerald: forest,
+        teal:    forest,
+        slate:   warmSlate,
+        gray:    warmSlate,
+        forest,
+        cream,
+        taupe,
+        'paddlegrid-forest': '#16291E',
+        'paddlegrid-cream':  '#E5DACE',
+        'paddlegrid-taupe':  '#B5A896',
       },
-      animation: {
-        'fade-in': 'fadeIn 0.3s ease-in-out',
-        'slide-in': 'slideIn 0.3s ease-out',
-        'slide-up': 'slideUp 0.3s ease-out',
+      fontFamily: {
+        display: ['Cinzel', '"Trajan Pro"', 'Optima', 'Georgia', 'serif'],
+        sans:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideIn: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(0)' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
+      backgroundImage: {
+        'paper': 'radial-gradient(ellipse at top, #F4EDE2 0%, #E5DACE 100%)',
       },
     },
   },
