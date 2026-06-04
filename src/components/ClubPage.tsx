@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import SlotBoard from './SlotBoard';
+import PartnershipsStrip from './PartnershipsStrip';
+import CoachesSection from './CoachesSection';
+import RequestModal from './RequestModal';
 import { ArrowLeft, Calendar, MapPin, Users, Clock, MessageSquare, UserPlus, UserCheck, Phone, Mail, Globe, Activity, TrendingUp, ExternalLink, FileText, CheckCircle, AlertCircle, ShoppingBag, Plus, Minus, CreditCard, Utensils } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,6 +76,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
   const [nextAvailableTime, setNextAvailableTime] = useState<string | null>(null);
   const [availableCourtsAtTime, setAvailableCourtsAtTime] = useState<Court[]>([]);
   const [hasSignedWaiver, setHasSignedWaiver] = useState(false);
+  const [requestModalKind, setRequestModalKind] = useState<null | 'lesson' | 'clinic'>(null);
+  const [requestProId, setRequestProId] = useState<string | null>(null);
+  const [requestProName, setRequestProName] = useState<string | null>(null);
   const [hasActiveWaiver, setHasActiveWaiver] = useState(false);
   const [merchProducts, setMerchProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
@@ -599,7 +605,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               </div>
               <div>
                 <span className="text-xl font-bold text-slate-800 block leading-tight">{followerCount}</span>
-                <span className="text-xs text-slate-500 font-medium">Members</span>
+                <span className="text-xs text-slate-500 font-medium">Followers</span>
               </div>
             </div>
             <div className="flex items-center gap-3 px-6">
@@ -796,6 +802,27 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                       setShowScheduler(true);
                     }}
                   />
+
+                  <PartnershipsStrip
+                    sponsoredId={facility.id}
+                    sponsoredType="facility"
+                    sponsoredName={facility.name}
+                  />
+
+                  <CoachesSection
+                    facilityId={facility.id}
+                    onRequestLesson={(proId, proName) => {
+                      setRequestProId(proId);
+                      setRequestProName(proName);
+                      setRequestModalKind('lesson');
+                    }}
+                    onRequestClinic={(proId, proName) => {
+                      setRequestProId(proId);
+                      setRequestProName(proName);
+                      setRequestModalKind('clinic');
+                    }}
+                    onOpenProfile={(id) => { /* TODO: navigate to /player/:id */ console.log('open pro', id); }}
+                  />
                 </motion.div>
               )}
 
@@ -861,6 +888,16 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           </div>
         </div>
       </div>
+
+      <RequestModal
+        open={!!requestModalKind}
+        onClose={() => setRequestModalKind(null)}
+        proId={requestProId || undefined}
+        proName={requestProName || undefined}
+        facilityId={facility?.id}
+        facilityName={facility?.name}
+        kind={(requestModalKind || 'lesson') as any}
+      />
 
       {showScheduler && user && (
         <CourtScheduler
