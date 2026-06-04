@@ -291,13 +291,14 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
 
   if (loading) {
     return (
-    <>
-      <InvestorTour />
-      <InsightsCard />
-            <div className="flex flex-col justify-center items-center py-24 gap-3" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-        <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
-        <p className="text-sm text-slate-500">Loading dashboard...</p>
-      </div>
+      <>
+        <InvestorTour />
+        <InsightsCard />
+        <div className="flex flex-col justify-center items-center py-24 gap-3" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+          <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
+          <p className="text-sm text-slate-500">Loading dashboard...</p>
+        </div>
+      </>
     );
   }
 
