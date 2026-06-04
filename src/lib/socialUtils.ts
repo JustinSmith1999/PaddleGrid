@@ -228,7 +228,7 @@ export async function getFeedPosts(filter: {
       } else {
         query = query.eq('visibility', 'public');
       }
-    } else if if (filter.type === 'my_clubs' && filter.facilityIds && filter.facilityIds.length > 0) {
+    } else if (filter.type === 'my_clubs' && filter.facilityIds && filter.facilityIds.length > 0) {
       if (!user.user) return [];
       query = query.in('facility_id', filter.facilityIds);
     } else if (filter.type === 'following') {
