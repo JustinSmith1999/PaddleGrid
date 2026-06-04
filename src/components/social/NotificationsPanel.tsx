@@ -133,7 +133,7 @@ export default function NotificationsPanel({ onClose, onNotificationClick }: Not
       >
         {/* Header */}
         <div className="bg-white px-5 py-4 border-b border-slate-200/60 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h2 className="text-lg font-bold text-slate-800">
             Notifications
           </h2>
           <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export default function NotificationsPanel({ onClose, onNotificationClick }: Not
               <div className="w-16 h-16 bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex items-center justify-center mx-auto mb-4">
                 <Check className="w-7 h-7 text-green-700" />
               </div>
-              <p className="text-sm font-semibold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>All caught up</p>
+              <p className="text-sm font-semibold text-slate-800">All caught up</p>
               <p className="text-xs text-slate-400 mt-1">No new notifications</p>
             </div>
           ) : (

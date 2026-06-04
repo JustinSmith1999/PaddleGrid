@@ -375,7 +375,6 @@ export default function SmartAnalytics({ facilityId }: SmartAnalyticsProps) {
           <div className="flex items-center gap-2.5">
             <h1
               className="text-2xl font-bold text-slate-900 tracking-tight"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
             >
               Smart Analytics
             </h1>

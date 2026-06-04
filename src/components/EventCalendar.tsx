@@ -218,7 +218,6 @@ export default function EventCalendar({ facilityId, onEventClick }: EventCalenda
           </button>
           <h3
             className="text-lg font-bold text-slate-800 min-w-[180px] text-center"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </h3>
@@ -292,7 +291,6 @@ export default function EventCalendar({ facilityId, onEventClick }: EventCalenda
                     </div>
                     <h4
                       className="font-semibold text-slate-800 mb-1.5 text-sm group-hover:text-green-700 transition-colors"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       {event.event_series.title}
                     </h4>

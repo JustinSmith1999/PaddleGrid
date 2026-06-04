@@ -161,7 +161,7 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
     return (
       <div className="text-center py-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
         <User className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <p className="text-slate-500 text-lg" style={{ fontFamily: 'Manrope, sans-serif' }}>Unable to load profile</p>
+        <p className="text-slate-500 text-lg">Unable to load profile</p>
       </div>
     );
   }
@@ -201,7 +201,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
           transition={{ duration: 0.3 }}
           onClick={onBack}
           className="flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-6 transition font-medium"
-          style={{ fontFamily: 'Manrope, sans-serif' }}
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -237,7 +236,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                     {/* Name */}
                     <h1
                       className="text-2xl font-bold text-slate-900 mb-1"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       {profile.full_name}
                     </h1>
@@ -260,7 +258,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                       <button
                         onClick={handleStartMessage}
                         className="px-4 py-2 rounded-xl font-semibold transition flex items-center gap-2 flex-shrink-0 text-sm border border-slate-200 text-slate-700 hover:bg-slate-50"
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         <MessageSquare className="w-4 h-4" />
                         <span className="hidden sm:inline">Message</span>
@@ -273,7 +270,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                             ? 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                             : 'bg-green-700 hover:bg-green-800 text-white'
                         }`}
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         {followLoading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -328,7 +324,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
               <Target className="w-6 h-6 text-green-700" />
               <h2
                 className="text-xl font-bold text-slate-900"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 DUPR Performance
               </h2>
@@ -366,7 +361,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
         >
           <h2
             className="text-xl font-bold text-slate-900 mb-4"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Statistics
           </h2>
@@ -384,7 +378,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
                 </div>
                 <h3
                   className="text-slate-500 text-xs font-semibold uppercase tracking-wide mb-1"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {stat.label}
                 </h3>
@@ -403,7 +396,6 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
         >
           <h3
             className="text-xl font-bold text-slate-900 mb-5 flex items-center"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             <Trophy className="w-6 h-6 mr-2 text-green-700" />
             Achievements
@@ -426,7 +418,7 @@ export function PublicPlayerProfile({ userId, onBack }: PublicPlayerProfileProps
           ) : (
             <div className="text-center py-12 bg-slate-50 rounded-xl">
               <Trophy className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 font-medium" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <p className="text-slate-500 font-medium">
                 No achievements yet
               </p>
             </div>

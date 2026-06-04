@@ -71,12 +71,9 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
             >
               <img
                 src="/logo.png"
-                alt="PaddleGrid Logo"
-                className="h-9 w-9 object-contain group-hover:scale-105 transition-all duration-300"
+                alt="PaddleGrid"
+                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-[1.03]"
               />
-              <span className="hidden sm:block text-lg font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                PaddleGrid
-              </span>
             </button>
             {!user && (
               <div className="hidden sm:flex items-center gap-1 bg-slate-100 rounded-xl p-1">

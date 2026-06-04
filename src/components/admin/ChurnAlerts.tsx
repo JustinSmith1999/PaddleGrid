@@ -191,7 +191,7 @@ export default function ChurnAlerts() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Churn Alerts
           </h1>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white tracking-wide">

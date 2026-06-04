@@ -332,7 +332,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <div className="mt-2">
                 <div className="mx-3 mb-1 border-t border-slate-100" />
                 <div className="px-4 pt-2 pb-1">
-                  <h2 className="text-[11px] font-bold text-slate-400 tracking-wider uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>Your Clubs</h2>
+                  <h2 className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">Your Clubs</h2>
                 </div>
                 <div className="px-1">
                   {facilities.map((facility) => (
@@ -359,7 +359,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-slate-700 text-[13px] truncate group-hover:text-slate-900 transition-colors" style={{ fontFamily: 'Manrope, sans-serif' }}>{facility.name}</div>
+                          <div className="font-semibold text-slate-700 text-[13px] truncate group-hover:text-slate-900 transition-colors">{facility.name}</div>
                           <div className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
                             <Users className="w-2.5 h-2.5" />
                             <span>{facility.memberCount}</span>
@@ -411,7 +411,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   >
                     <Menu className="w-5 h-5 text-slate-500" />
                   </button>
-                  <h1 className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h1 className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">
                     {activeView === 'explore' && 'Courts'}
                     {activeView === 'search' && 'Search Players'}
                     {activeView === 'notifications' && 'Notifications'}
@@ -519,7 +519,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     <div className="text-5xl mb-4">
                       {activeTab === 'my_clubs' ? '🏢' : activeTab === 'following' ? '👥' : '📣'}
                     </div>
-                    <p className="text-slate-800 font-bold text-lg mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    <p className="text-slate-800 font-bold text-lg mb-2">
                       {activeTab === 'my_clubs'
                         ? 'No posts from your clubs yet'
                         : activeTab === 'following'
@@ -610,7 +610,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     <div className="w-16 h-16 bg-[#F8F9FC] rounded-2xl border border-slate-200/60 flex items-center justify-center mx-auto mb-4">
                       <Bookmark className="w-7 h-7 text-slate-300" />
                     </div>
-                    <h2 className="text-lg font-bold text-slate-800 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>No Bookmarks Yet</h2>
+                    <h2 className="text-lg font-bold text-slate-800 mb-2">No Bookmarks Yet</h2>
                     <p className="text-sm text-slate-400 max-w-sm mx-auto">
                       Save posts you want to revisit later by clicking the bookmark icon
                     </p>
@@ -637,7 +637,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {/* Trending Topics */}
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
               <div className="px-4 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Trending</h2>
+                <h2 className="text-sm font-bold text-slate-800">Trending</h2>
               </div>
               <div className="divide-y divide-slate-100">
                 {[
@@ -657,7 +657,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                       <item.icon className="w-3.5 h-3.5" />
                       <span>{item.label}</span>
                     </div>
-                    <div className="text-sm font-bold text-slate-800 mb-0.5" style={{ fontFamily: 'Manrope, sans-serif' }}>{item.title}</div>
+                    <div className="text-sm font-bold text-slate-800 mb-0.5">{item.title}</div>
                     <div className="text-[11px] text-slate-400">{item.count}</div>
                   </motion.button>
                 ))}

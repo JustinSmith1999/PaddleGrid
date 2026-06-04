@@ -148,7 +148,7 @@ export default function WaitlistManager() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Waitlist
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">

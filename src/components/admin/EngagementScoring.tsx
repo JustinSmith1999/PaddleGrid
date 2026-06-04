@@ -183,7 +183,7 @@ export default function EngagementScoring({ facilityId }: EngagementScoringProps
       {/* Header */}
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Engagement Scoring
           </h1>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white tracking-wide">
@@ -209,7 +209,7 @@ export default function EngagementScoring({ facilityId }: EngagementScoringProps
           className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow duration-200 p-6"
         >
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h3 className="text-sm font-semibold text-slate-900">
               Community Health
             </h3>
             <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
@@ -263,7 +263,7 @@ export default function EngagementScoring({ facilityId }: EngagementScoringProps
           transition={{ duration: 0.35 }}
           className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow duration-200 p-6"
         >
-          <h3 className="text-sm font-semibold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h3 className="text-sm font-semibold text-slate-900 mb-5">
             Tier Distribution
           </h3>
           <div className="space-y-3.5">

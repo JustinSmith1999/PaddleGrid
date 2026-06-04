@@ -236,7 +236,6 @@ export default function LoyaltyRewards() {
           </div>
           <h2
             className="text-2xl font-bold text-slate-800 mb-2"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Join a Facility
           </h2>
@@ -264,7 +263,6 @@ export default function LoyaltyRewards() {
               <div>
                 <h2
                   className="text-xl font-bold text-slate-800"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   Loyalty Rewards
                 </h2>
@@ -285,7 +283,7 @@ export default function LoyaltyRewards() {
               className="bg-gradient-to-br from-green-50 to-green-50/50 rounded-2xl p-5 border border-green-100/60"
             >
               <div className="text-sm text-slate-500 mb-1 font-medium">Current Balance</div>
-              <div className="text-3xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{account.points_balance}</div>
+              <div className="text-3xl font-bold text-green-700">{account.points_balance}</div>
               <div className="text-sm text-slate-400 mt-0.5">points</div>
             </motion.div>
 
@@ -296,7 +294,7 @@ export default function LoyaltyRewards() {
               className="bg-gradient-to-br from-slate-50 to-slate-50/50 rounded-2xl p-5 border border-slate-100/60"
             >
               <div className="text-sm text-slate-500 mb-1 font-medium">Lifetime Earned</div>
-              <div className="text-3xl font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{account.lifetime_points_earned}</div>
+              <div className="text-3xl font-bold text-slate-800">{account.lifetime_points_earned}</div>
               <div className="text-sm text-slate-400 mt-0.5">total points</div>
             </motion.div>
 
@@ -309,7 +307,7 @@ export default function LoyaltyRewards() {
               <div className="text-sm text-slate-500 mb-1 font-medium">Next Tier</div>
               {getNextTierPoints(account.tier, account.lifetime_points_earned) ? (
                 <>
-                  <div className="text-2xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <div className="text-2xl font-bold text-green-700">
                     {getNextTierPoints(account.tier, account.lifetime_points_earned)?.remaining}
                   </div>
                   <div className="text-sm text-slate-400 mt-0.5">
@@ -317,7 +315,7 @@ export default function LoyaltyRewards() {
                   </div>
                 </>
               ) : (
-                <div className="text-xl font-bold text-green-700 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Max Tier!</div>
+                <div className="text-xl font-bold text-green-700 mt-2">Max Tier!</div>
               )}
             </motion.div>
           </div>
@@ -388,7 +386,6 @@ export default function LoyaltyRewards() {
                   <div>
                     <h3
                       className="text-lg font-semibold mb-4 text-slate-800"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       How to Earn Points
                     </h3>
@@ -402,7 +399,7 @@ export default function LoyaltyRewards() {
                         <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3">
                           <Star className="w-5 h-5 text-green-700" />
                         </div>
-                        <h4 className="font-semibold text-slate-800 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>Book Courts</h4>
+                        <h4 className="font-semibold text-slate-800 mb-1">Book Courts</h4>
                         <p className="text-sm text-slate-400">Earn 10 points per hour of court time</p>
                       </motion.div>
                       <motion.div
@@ -414,7 +411,7 @@ export default function LoyaltyRewards() {
                         <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3">
                           <Trophy className="w-5 h-5 text-green-700" />
                         </div>
-                        <h4 className="font-semibold text-slate-800 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>Welcome Bonus</h4>
+                        <h4 className="font-semibold text-slate-800 mb-1">Welcome Bonus</h4>
                         <p className="text-sm text-slate-400">Get 50 points when you join</p>
                       </motion.div>
                     </div>
@@ -423,7 +420,6 @@ export default function LoyaltyRewards() {
                   <div>
                     <h3
                       className="text-lg font-semibold mb-4 text-slate-800"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       Tier Benefits
                     </h3>
@@ -445,7 +441,7 @@ export default function LoyaltyRewards() {
                             <Award className={`w-5 h-5 ${tier.iconColor}`} />
                           </div>
                           <div className="flex-1">
-                            <div className={`font-semibold ${tier.nameColor}`} style={{ fontFamily: 'Manrope, sans-serif' }}>{tier.name} Tier</div>
+                            <div className={`font-semibold ${tier.nameColor}`}>{tier.name} Tier</div>
                             <div className={`text-sm ${tier.rangeColor}`}>{tier.range}</div>
                           </div>
                         </motion.div>
@@ -476,11 +472,11 @@ export default function LoyaltyRewards() {
                         >
                           <div className="flex justify-between items-start mb-4">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{reward.name}</h4>
+                              <h4 className="font-semibold text-slate-800">{reward.name}</h4>
                               <p className="text-sm text-slate-400 mt-1">{reward.description}</p>
                             </div>
                             <div className="text-right ml-4">
-                              <div className="text-2xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{reward.points_cost}</div>
+                              <div className="text-2xl font-bold text-green-700">{reward.points_cost}</div>
                               <div className="text-xs text-slate-400">points</div>
                             </div>
                           </div>
@@ -570,7 +566,7 @@ export default function LoyaltyRewards() {
                         >
                           <div className="flex justify-between items-start mb-4">
                             <div>
-                              <h4 className="font-semibold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{redemption.loyalty_rewards.name}</h4>
+                              <h4 className="font-semibold text-slate-800">{redemption.loyalty_rewards.name}</h4>
                               <p className="text-sm text-slate-400">{redemption.loyalty_rewards.description}</p>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${

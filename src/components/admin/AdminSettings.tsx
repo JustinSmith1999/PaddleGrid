@@ -156,7 +156,7 @@ export default function AdminSettings() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Settings</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
         <p className="text-slate-500 text-sm mt-0.5">Manage your facility configuration</p>
       </div>
 

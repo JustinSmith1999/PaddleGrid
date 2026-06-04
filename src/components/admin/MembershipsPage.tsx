@@ -78,7 +78,7 @@ export default function MembershipsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Memberships
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">

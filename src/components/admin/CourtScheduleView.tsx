@@ -229,7 +229,6 @@ export default function CourtScheduleView() {
         <div>
           <h1
             className="text-2xl font-bold text-slate-900 tracking-tight"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Court Scheduler
           </h1>
@@ -582,7 +581,7 @@ export default function CourtScheduleView() {
                     <p className="text-white/70 text-[11px] font-semibold uppercase tracking-wider">
                       {selectedBooking.booking_type || 'Reservation'}
                     </p>
-                    <h3 className="text-lg font-bold text-white mt-1" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    <h3 className="text-lg font-bold text-white mt-1">
                       {selectedBooking.user_name}
                     </h3>
                   </div>

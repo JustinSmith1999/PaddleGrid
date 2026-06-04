@@ -491,7 +491,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
                 <Menu className="w-5 h-5 text-slate-400" />
               </button>
             )}
-            <h2 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Messages</h2>
+            <h2 className="text-lg font-bold text-slate-800">Messages</h2>
           </div>
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -536,7 +536,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
                   </div>
                   <div className="flex-1 text-left min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <span className="font-semibold text-slate-800 flex-1 truncate text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                      <span className="font-semibold text-slate-800 flex-1 truncate text-sm">
                         {conv.other_user_name}
                       </span>
                       {conv.unread_count > 0 && (
@@ -557,7 +557,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
               <div className="w-14 h-14 rounded-2xl bg-[#F8F9FC] border border-slate-200/60 flex items-center justify-center mx-auto mb-3">
                 <MessageCircle className="w-6 h-6 text-green-700" />
               </div>
-              <p className="text-sm font-semibold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>No conversations yet</p>
+              <p className="text-sm font-semibold text-slate-800">No conversations yet</p>
               <p className="text-xs text-slate-400 mt-1">Start a conversation with someone</p>
             </div>
           )}
@@ -590,7 +590,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 ring-2 ring-white rounded-full" />
             </div>
             <div>
-              <span className="font-semibold text-slate-800 block text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <span className="font-semibold text-slate-800 block text-sm">
                 {conversations.find(c => c.id === selectedConversation)?.other_user_name}
               </span>
               <span className="text-[10px] text-green-600 font-medium">Online</span>
@@ -661,7 +661,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
                   <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex items-center justify-center mx-auto mb-4">
                     <MessageCircle className="w-7 h-7 text-green-700" />
                   </div>
-                  <p className="font-semibold text-slate-800 text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>Start the conversation</p>
+                  <p className="font-semibold text-slate-800 text-sm">Start the conversation</p>
                   <p className="text-xs text-slate-400 mt-1">
                     Send a message to begin chatting
                   </p>
@@ -674,7 +674,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
                 <div className="w-20 h-20 rounded-2xl bg-white border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex items-center justify-center mx-auto mb-4">
                   <MessageCircle className="w-9 h-9 text-green-700" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-1.5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h3 className="text-lg font-bold text-slate-800 mb-1.5">
                   Select a conversation
                 </h3>
                 <p className="text-sm text-slate-400">
@@ -765,7 +765,7 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
                   <div className="w-8 h-8 rounded-xl bg-green-700/10 flex items-center justify-center">
                     <Users className="w-4 h-4 text-green-700" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h3 className="text-base font-bold text-slate-800">
                     Start New Conversation
                   </h3>
                 </div>

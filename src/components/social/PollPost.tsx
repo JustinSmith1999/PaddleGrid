@@ -84,7 +84,6 @@ export default function PollPost({ postId, question, options }: PollPostProps) {
       </div>
       <p
         className="text-[15px] sm:text-base font-semibold text-slate-900 leading-snug"
-        style={{ fontFamily: 'Manrope, sans-serif' }}
       >
         {question}
       </p>

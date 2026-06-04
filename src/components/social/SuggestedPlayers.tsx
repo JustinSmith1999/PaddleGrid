@@ -136,7 +136,7 @@ export default function SuggestedPlayers({ onProfileClick }: SuggestedPlayersPro
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="px-5 pt-5 pb-3">
-        <h2 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h2 className="text-base font-bold text-slate-900">
           Who to Follow
         </h2>
       </div>

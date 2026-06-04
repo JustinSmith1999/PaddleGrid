@@ -193,7 +193,7 @@ export default function SmartFill() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Smart Fill
           </h1>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white tracking-wide">
@@ -265,7 +265,7 @@ export default function SmartFill() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-sm font-semibold text-slate-900 mb-1.5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-1.5">
                     {suggestion.title}
                   </h3>
                   <p className="text-xs text-slate-500 mb-4 line-clamp-2 leading-relaxed">{suggestion.description}</p>

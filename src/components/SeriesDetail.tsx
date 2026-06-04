@@ -160,7 +160,6 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                 </div>
                 <h1
                   className="text-2xl font-bold text-slate-900 mb-2"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {series.title}
                 </h1>
@@ -212,7 +211,6 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
                 <div className="flex items-center justify-between">
                   <h2
                     className="text-lg font-bold text-slate-900"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     Select Sessions
                   </h2>
@@ -335,7 +333,6 @@ export default function SeriesDetail({ seriesId, onBack, onRegister }: SeriesDet
               <div className="p-6 border-b border-slate-100">
                 <h3
                   className="text-lg font-bold text-slate-900 mb-4"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   Registration Summary
                 </h3>

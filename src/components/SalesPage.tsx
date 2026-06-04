@@ -20,7 +20,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   return (
     <div className="border-b border-slate-200/60">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left group">
-        <span className="text-[15px] font-semibold text-slate-800 pr-4 group-hover:text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{q}</span>
+        <span className="text-[15px] font-semibold text-slate-800 pr-4 group-hover:text-slate-900">{q}</span>
         <ChevronDown className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       <AnimatePresence>
@@ -56,7 +56,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 </motion.div>
 
                 <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                  className="text-3xl sm:text-5xl lg:text-[3.5rem] font-extrabold leading-[1.1] tracking-tight text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  className="text-3xl sm:text-5xl lg:text-[3.5rem] font-extrabold leading-[1.1] tracking-tight text-white">
                   The pickleball platform<br />
                   <span className="text-green-300">your players will actually use.</span>
                 </motion.h1>
@@ -167,7 +167,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
                     <Users className="w-3.5 h-3.5" /> Only on PaddleGrid
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                     Players find games, not just open courts.
                   </h2>
                   <p className="text-slate-500 leading-relaxed mb-3">
@@ -216,7 +216,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
                     <Zap className="w-3.5 h-3.5" /> Automated
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                     Cancellations fill themselves. Bookings take three clicks.
                   </h2>
                   <p className="text-slate-500 leading-relaxed mb-3">
@@ -276,7 +276,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
                     <BarChart3 className="w-3.5 h-3.5" /> Real-time
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                     Know exactly which courts make money and which sit empty.
                   </h2>
                   <p className="text-slate-500 leading-relaxed mb-3">
@@ -312,15 +312,15 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                   </div>
                   <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-slate-200">
                     <div>
-                      <div className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>76%</div>
+                      <div className="text-xl font-bold text-slate-900">76%</div>
                       <div className="text-xs text-slate-400">Avg utilization</div>
                     </div>
                     <div>
-                      <div className="text-xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>$4,218</div>
+                      <div className="text-xl font-bold text-green-700">$4,218</div>
                       <div className="text-xs text-slate-400">Revenue</div>
                     </div>
                     <div>
-                      <div className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>3.2%</div>
+                      <div className="text-xl font-bold text-slate-900">3.2%</div>
                       <div className="text-xs text-slate-400">No-show rate</div>
                     </div>
                   </div>
@@ -333,7 +333,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         {/* COST COMPARISON — dark section */}
         <section className="bg-slate-900 text-white py-16 lg:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight mb-3">
               You're giving away $2,280/year in processing fees.
             </h2>
             <p className="text-slate-400 mb-10 max-w-lg">
@@ -342,18 +342,18 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="bg-green-600 rounded-2xl p-6 ring-2 ring-green-400 ring-offset-2 ring-offset-slate-900">
-                <div className="text-green-100 text-sm mb-1">PaddleGrid</div>
-                <div className="text-3xl font-extrabold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>$279<span className="text-base font-normal text-green-200">/mo</span></div>
+                <img src="/logo.png" alt="PaddleGrid" className="h-6 w-6 object-contain mb-1 opacity-90" />
+                <div className="text-3xl font-extrabold text-white">$279<span className="text-base font-normal text-green-200">/mo</span></div>
                 <div className="text-green-200 text-sm mt-2">$179 plan + 1% processing</div>
               </div>
               <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6">
                 <div className="text-slate-500 text-sm mb-1">CourtReserve</div>
-                <div className="text-3xl font-extrabold text-slate-400" style={{ fontFamily: 'Manrope, sans-serif' }}>$449<span className="text-base font-normal text-slate-500">+</span></div>
+                <div className="text-3xl font-extrabold text-slate-400">$449<span className="text-base font-normal text-slate-500">+</span></div>
                 <div className="text-slate-500 text-sm mt-2">$159 plan + 2.9% processing</div>
               </div>
               <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6">
                 <div className="text-slate-500 text-sm mb-1">PodPlay</div>
-                <div className="text-3xl font-extrabold text-slate-400" style={{ fontFamily: 'Manrope, sans-serif' }}>$500<span className="text-base font-normal text-slate-500">+</span></div>
+                <div className="text-3xl font-extrabold text-slate-400">$500<span className="text-base font-normal text-slate-500">+</span></div>
                 <div className="text-slate-500 text-sm mt-2">Per-court + 2.9% processing</div>
               </div>
             </div>
@@ -364,7 +364,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         {/* ALSO INCLUDED */}
         <section className="bg-white py-14 border-b border-slate-100">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <h3 className="text-base font-bold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>Everything else that's included</h3>
+            <h3 className="text-base font-bold text-slate-900 mb-5">Everything else that's included</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
               {[
                 'Family accounts & sub-profiles',
@@ -393,7 +393,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         {/* PRICING */}
         <section id="pricing" className="bg-[#F8F9FC] py-20 lg:py-28">
           <div className="max-w-[960px] mx-auto px-4 sm:px-6">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-2">
               Simple pricing
             </h2>
             <p className="text-slate-500 mb-10">Every feature on every plan. 1% processing. No upsells.</p>
@@ -407,7 +407,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
                 <div key={i} className={`rounded-2xl p-7 flex flex-col ${plan.popular ? 'bg-green-700 text-white ring-4 ring-green-200 shadow-xl' : 'bg-white border border-slate-200 shadow-sm'}`}>
                   <div className={`text-sm font-medium mb-1 ${plan.popular ? 'text-green-200' : 'text-slate-400'}`}>{plan.name}</div>
                   <div className="flex items-baseline gap-1 mb-1">
-                    <span className="text-3xl font-extrabold" style={{ fontFamily: 'Manrope, sans-serif' }}>{plan.price}</span>
+                    <span className="text-3xl font-extrabold">{plan.price}</span>
                     <span className={`text-sm ${plan.popular ? 'text-green-200' : 'text-slate-400'}`}>/mo</span>
                   </div>
                   <div className={`text-sm mb-6 ${plan.popular ? 'text-green-200' : 'text-slate-500'}`}>{plan.courts}</div>
@@ -442,7 +442,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-16">
               <div className="lg:sticky lg:top-24 lg:self-start">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-3">
                   Questions
                 </h2>
                 <p className="text-slate-500 text-sm leading-relaxed mb-5">
@@ -474,7 +474,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
         {/* CTA */}
         <section className="bg-green-700 py-16 lg:py-20">
           <div className="max-w-[640px] mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4">
               See it for yourself.
             </h2>
             <p className="text-green-100/80 mb-8">14-day trial, no credit card. Most venues go live in under 10 minutes.</p>
@@ -495,7 +495,7 @@ export function SalesPage({ onAuthRequired }: SalesPageProps) {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <img src="/logo.png" alt="PaddleGrid" className="h-6 w-6 object-contain" />
-                <span className="text-sm font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</span>
+  
               </div>
               <div className="flex items-center gap-6 text-sm text-slate-500">
                 <a href="/privacy" className="hover:text-slate-300 transition-colors">Privacy</a>

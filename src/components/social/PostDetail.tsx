@@ -263,7 +263,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-base font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Post</h1>
+            <h1 className="text-base font-bold text-slate-800">Post</h1>
           </div>
         </div>
 
@@ -315,7 +315,6 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                         }
                       }}
                       className="font-bold text-lg text-slate-800 hover:text-green-700 text-left transition-colors"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       {post.posted_as_facility === true && post.facilities?.name
                         ? post.facilities.name
@@ -377,7 +376,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
             {/* Match Invite Section */}
             {post.post_type === 'match_invite' && (
               <div className="bg-[#F8F9FC] rounded-2xl p-5 sm:p-6 mb-5 border border-slate-200/60">
-                <div className="flex items-center gap-2.5 text-lg font-bold text-slate-800 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <div className="flex items-center gap-2.5 text-lg font-bold text-slate-800 mb-4">
                   <div className="w-9 h-9 rounded-xl bg-green-700/10 flex items-center justify-center">
                     <Trophy className="w-5 h-5 text-green-700" />
                   </div>
@@ -444,7 +443,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <div className="flex items-center gap-2.5 flex-wrap">
                       <Users className="w-5 h-5 text-slate-500 flex-shrink-0" />
-                      <span className="text-base font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                      <span className="text-base font-bold text-slate-800">
                         {post.spots_filled} / {post.spots_needed} players
                       </span>
                       {!isFull && (
@@ -572,7 +571,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
             className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden"
           >
             <div className="px-5 sm:px-8 pt-5 sm:pt-6 pb-3">
-              <h3 className="text-base font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Comments</h3>
+              <h3 className="text-base font-bold text-slate-800">Comments</h3>
             </div>
 
             {comments.length === 0 ? (
@@ -613,7 +612,6 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                                   }
                                 }}
                                 className="font-bold text-sm text-slate-800 hover:text-green-700 text-left transition-colors"
-                                style={{ fontFamily: 'Manrope, sans-serif' }}
                               >
                                 {comment.profiles?.full_name || 'Unknown User'}
                               </button>

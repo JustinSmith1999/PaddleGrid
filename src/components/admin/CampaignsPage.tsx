@@ -90,7 +90,7 @@ export default function CampaignsPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h1 className="text-2xl font-bold text-slate-900">
               Campaigns
             </h1>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">NEW</span>

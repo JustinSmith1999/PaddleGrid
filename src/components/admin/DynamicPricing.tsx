@@ -151,7 +151,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Dynamic Pricing
           </h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -199,7 +199,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
       {/* Pricing Rules */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h3 className="text-sm font-semibold text-slate-900">
             Active Rules
           </h3>
           <button
@@ -297,7 +297,7 @@ export default function DynamicPricing({ facilityId }: DynamicPricingProps) {
         className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
       >
         <div className="px-6 py-5 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h3 className="text-sm font-semibold text-slate-900">
             Weekly Price Preview
           </h3>
           <p className="text-xs text-slate-400 mt-1">Effective rates based on active rules</p>
