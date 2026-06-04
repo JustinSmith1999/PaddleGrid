@@ -137,7 +137,7 @@ export default function AchievementsShowcase({
     return (
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h3 className="text-lg font-bold text-slate-900">
             Featured Achievements
           </h3>
           <div className="flex items-center gap-2 text-sm text-slate-500">
@@ -179,7 +179,7 @@ export default function AchievementsShowcase({
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
           Achievements
         </h2>
 
@@ -276,7 +276,7 @@ export default function AchievementsShowcase({
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-slate-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                    <h3 className="font-bold text-slate-900 mb-1">
                       {achievement.name}
                     </h3>
                     <p className="text-xs text-slate-500 line-clamp-2">

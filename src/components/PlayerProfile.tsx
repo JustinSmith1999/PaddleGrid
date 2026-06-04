@@ -222,7 +222,6 @@ export function PlayerProfile() {
               <div className="flex-1 min-w-0">
                 <h1
                   className="text-2xl font-bold text-slate-900 mb-1"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {profile.full_name}
                 </h1>
@@ -252,7 +251,6 @@ export function PlayerProfile() {
               <div className="text-center">
                 <div
                   className="text-xl font-bold text-slate-900"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {stats.total_bookings}
                 </div>
@@ -266,7 +264,6 @@ export function PlayerProfile() {
               <div className="text-center">
                 <div
                   className="text-xl font-bold text-slate-900"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {stats.total_events_participated}
                 </div>
@@ -280,7 +277,6 @@ export function PlayerProfile() {
               <div className="text-center">
                 <div
                   className="text-xl font-bold text-slate-900"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {stats.total_matches}
                 </div>
@@ -387,7 +383,6 @@ export function PlayerProfile() {
                     </div>
                     <span
                       className={`text-2xl font-bold ${streakConfig.badgeClass}`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       {streak.current_count}
                     </span>
@@ -416,7 +411,6 @@ export function PlayerProfile() {
               </div>
               <h3
                 className="text-sm font-bold text-slate-900"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Badges
               </h3>
@@ -448,7 +442,6 @@ export function PlayerProfile() {
               </div>
               <h2
                 className="text-xl font-bold text-slate-900"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 DUPR Performance
               </h2>
@@ -468,7 +461,6 @@ export function PlayerProfile() {
                   </div>
                   <div
                     className="text-3xl font-bold text-green-700"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     {stats.dupr_rating.toFixed(2)}
                   </div>
@@ -486,7 +478,6 @@ export function PlayerProfile() {
                   </div>
                   <div
                     className="text-3xl font-bold text-slate-900"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     {stats.total_matches}
                   </div>
@@ -504,7 +495,6 @@ export function PlayerProfile() {
                   </div>
                   <div
                     className="text-3xl font-bold text-green-700"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     {stats.total_matches > 0 ? ((stats.matches_won / stats.total_matches) * 100).toFixed(0) : 0}%
                   </div>
@@ -539,7 +529,6 @@ export function PlayerProfile() {
                 <div className="sticky top-0 bg-green-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
                   <h3
                     className="text-xl font-bold text-white"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     Player Card
                   </h3>
@@ -562,7 +551,6 @@ export function PlayerProfile() {
         <motion.div variants={sectionVariants}>
           <h2
             className="text-xl font-bold text-slate-900 mb-5 flex items-center gap-3"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             <div className="w-[44px] h-[44px] rounded-xl bg-green-50 flex items-center justify-center">
               <ActivityIcon className="w-5 h-5 text-green-700" />
@@ -587,7 +575,6 @@ export function PlayerProfile() {
               <ActivityIcon className="w-16 h-16 text-slate-200 mx-auto mb-4" />
               <p
                 className="text-slate-700 font-medium mb-2"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 No activities yet
               </p>
@@ -605,7 +592,6 @@ export function PlayerProfile() {
         <motion.div variants={sectionVariants}>
           <h2
             className="text-xl font-bold text-slate-900 mb-5"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Statistics
           </h2>
@@ -630,7 +616,6 @@ export function PlayerProfile() {
                 </h3>
                 <p
                   className="text-2xl font-bold text-slate-900"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {stat.value}
                 </p>
@@ -646,7 +631,6 @@ export function PlayerProfile() {
         >
           <h3
             className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             <div className="w-[44px] h-[44px] rounded-xl bg-amber-50 flex items-center justify-center">
               <Trophy className="w-5 h-5 text-amber-600" />
@@ -676,7 +660,6 @@ export function PlayerProfile() {
               <Trophy className="w-16 h-16 text-slate-200 mx-auto mb-4" />
               <p
                 className="text-slate-600 font-medium"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 No achievements yet
               </p>
@@ -706,7 +689,6 @@ export function PlayerProfile() {
             </div>
             <h2
               className="text-xl font-bold text-slate-900"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
             >
               Settings
             </h2>
@@ -716,7 +698,6 @@ export function PlayerProfile() {
             <div className="border-t border-slate-100 pt-4">
               <h3
                 className="font-semibold text-slate-700 mb-2"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 App Performance
               </h3>

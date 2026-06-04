@@ -299,7 +299,6 @@ export default function PartnerFinder() {
               <div>
                 <h2
                   className="text-xl font-bold text-slate-800"
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   Partner Finder
                 </h2>
@@ -328,7 +327,6 @@ export default function PartnerFinder() {
                 <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/60">
                   <h3
                     className="text-lg font-semibold mb-5 text-slate-800"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     Create Partner Request
                   </h3>
@@ -516,7 +514,6 @@ export default function PartnerFinder() {
                                 </div>
                                 <h3
                                   className="font-semibold text-slate-800"
-                                  style={{ fontFamily: 'Manrope, sans-serif' }}
                                 >
                                   {request.profiles?.full_name || request.profiles?.username || 'Anonymous'}
                                 </h3>
@@ -585,7 +582,6 @@ export default function PartnerFinder() {
                               <div className="flex items-center gap-2.5 mb-3">
                                 <h3
                                   className="font-semibold text-slate-800"
-                                  style={{ fontFamily: 'Manrope, sans-serif' }}
                                 >
                                   {request.facilities.name}
                                 </h3>
@@ -653,7 +649,6 @@ export default function PartnerFinder() {
                                 </div>
                                 <h3
                                   className="font-semibold text-slate-800"
-                                  style={{ fontFamily: 'Manrope, sans-serif' }}
                                 >
                                   {match.profiles?.full_name || match.profiles?.username || 'Player'}
                                 </h3>

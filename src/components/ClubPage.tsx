@@ -492,7 +492,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
           className="absolute top-4 left-4 z-10 flex items-center gap-2 px-4 py-2.5 bg-white/95 backdrop-blur-md text-slate-700 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-semibold" style={{ fontFamily: 'Manrope, sans-serif' }}>Back</span>
+          <span className="text-sm font-semibold">Back</span>
         </button>
       </div>
 
@@ -516,7 +516,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               </div>
             )}
             <div className="flex-1 min-w-0 pt-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-1.5 line-clamp-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-1.5 line-clamp-2">
                 {facility.name}
               </h1>
               <button
@@ -597,7 +597,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 <Users className="w-5 h-5 text-green-700" />
               </div>
               <div>
-                <span className="text-xl font-bold text-slate-800 block leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>{followerCount}</span>
+                <span className="text-xl font-bold text-slate-800 block leading-tight">{followerCount}</span>
                 <span className="text-xs text-slate-500 font-medium">Members</span>
               </div>
             </div>
@@ -606,7 +606,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 <Activity className="w-5 h-5 text-slate-600" />
               </div>
               <div>
-                <span className="text-xl font-bold text-slate-800 block leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>{courts.length}</span>
+                <span className="text-xl font-bold text-slate-800 block leading-tight">{courts.length}</span>
                 <span className="text-xs text-slate-500 font-medium">Courts</span>
               </div>
             </div>
@@ -615,7 +615,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                 <Calendar className="w-5 h-5 text-green-700" />
               </div>
               <div>
-                <span className="text-xl font-bold text-slate-800 block leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>{eventsCount}</span>
+                <span className="text-xl font-bold text-slate-800 block leading-tight">{eventsCount}</span>
                 <span className="text-xs text-slate-500 font-medium">Events</span>
               </div>
             </div>
@@ -744,7 +744,6 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                     ? 'text-green-700'
                     : 'text-slate-500 hover:text-slate-700'
                 }`}
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 {currentTab === tab.key && (
                   <motion.div
@@ -784,7 +783,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
                   variants={sectionVariants}
                 >
-                  <h2 className="text-lg font-bold text-slate-800 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-lg font-bold text-slate-800 mb-5">
                     Our Courts
                   </h2>
 
@@ -799,7 +798,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                         </div>
                         <div>
                           <h3 className="font-medium text-white/70 text-xs uppercase tracking-wide mb-0.5">Next Available</h3>
-                          <p className="text-2xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>{nextAvailableTime}</p>
+                          <p className="text-2xl font-bold text-white">{nextAvailableTime}</p>
                         </div>
                       </div>
                       <p className="text-white/80 font-medium mb-4 text-sm">
@@ -822,7 +821,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                             className="bg-white rounded-xl p-3.5 transition-all duration-200 text-left group"
                           >
                             <div className="flex items-center justify-between mb-1.5">
-                              <h4 className="font-bold text-slate-800 text-sm truncate pr-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                              <h4 className="font-bold text-slate-800 text-sm truncate pr-2">
                                 {court.name}
                               </h4>
                               <span className="w-2.5 h-2.5 rounded-full bg-green-500 ring-2 ring-green-200 flex-shrink-0" />
@@ -868,7 +867,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                           >
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-slate-800 text-base truncate" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                                <h3 className="font-bold text-slate-800 text-base truncate">
                                   {court.name}
                                 </h3>
                                 {facility && (
@@ -902,7 +901,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
                   variants={sectionVariants}
                 >
-                  <h2 className="text-lg font-bold text-slate-800 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-lg font-bold text-slate-800 mb-5">
                     Community Feed
                   </h2>
 
@@ -956,7 +955,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
                   variants={sectionVariants}
                 >
-                  <h2 className="text-lg font-bold text-slate-800 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-lg font-bold text-slate-800 mb-5">
                     Shop Merch
                   </h2>
 
@@ -988,9 +987,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                             )}
                           </div>
                           <div className="p-4">
-                            <h3 className="font-semibold text-sm mb-1.5 text-slate-800 line-clamp-1" style={{ fontFamily: 'Manrope, sans-serif' }}>{product.name}</h3>
+                            <h3 className="font-semibold text-sm mb-1.5 text-slate-800 line-clamp-1">{product.name}</h3>
                             <div className="flex items-center justify-between">
-                              <span className="text-lg font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>${parseFloat(product.base_price).toFixed(2)}</span>
+                              <span className="text-lg font-bold text-green-700">${parseFloat(product.base_price).toFixed(2)}</span>
                               <span className="text-xs text-slate-400 font-medium">View</span>
                             </div>
                           </div>
@@ -1023,7 +1022,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                           </div>
                           <span className="font-bold text-base">Cart ({getCartItemCount()})</span>
                         </div>
-                        <span className="text-2xl font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                        <span className="text-2xl font-bold">
                           ${getCartTotal().toFixed(2)}
                         </span>
                       </div>
@@ -1091,7 +1090,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
                   variants={sectionVariants}
                 >
-                  <h2 className="text-lg font-bold text-slate-800 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h2 className="text-lg font-bold text-slate-800 mb-5">
                     Event Calendar
                   </h2>
                   <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4 sm:p-6">
@@ -1109,7 +1108,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               animate="visible"
               variants={sectionVariants}
             >
-              <h2 className="text-lg font-bold text-slate-800 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h2 className="text-lg font-bold text-slate-800 mb-4">
                 Upcoming Events
               </h2>
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4">
@@ -1128,7 +1127,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                   <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <UserPlus className="w-7 h-7 text-green-700" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1.5" style={{ fontFamily: 'Manrope, sans-serif' }}>Follow This Club</h3>
+                  <h3 className="text-lg font-bold text-slate-800 mb-1.5">Follow This Club</h3>
                   <p className="text-slate-500 mb-5 text-sm leading-relaxed">Stay updated on events and connect with members.</p>
                   <motion.button
                     whileHover={{ scale: 1.02 }}

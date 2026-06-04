@@ -120,7 +120,7 @@ export default function SeriesManagement({ onCreateNew, onEdit, onViewDetails }:
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Events & Leagues
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">

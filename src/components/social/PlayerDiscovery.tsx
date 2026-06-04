@@ -116,7 +116,7 @@ export default function PlayerDiscovery({ onProfileClick }: PlayerDiscoveryProps
     <div className="bg-[#F8F9FC] min-h-full">
       {/* Header */}
       <div className="bg-white border-b border-slate-200/60 p-5">
-        <h2 className="text-xl font-bold text-slate-800 mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h2 className="text-xl font-bold text-slate-800 mb-4">
           Discover Players
         </h2>
 
@@ -183,7 +183,7 @@ export default function PlayerDiscovery({ onProfileClick }: PlayerDiscoveryProps
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-slate-800 truncate text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h3 className="font-bold text-slate-800 truncate text-sm">
                   {player.full_name}
                 </h3>
                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -228,7 +228,7 @@ export default function PlayerDiscovery({ onProfileClick }: PlayerDiscoveryProps
           <div className="w-16 h-16 bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex items-center justify-center mx-auto mb-4">
             <UsersIcon className="w-7 h-7 text-slate-300" />
           </div>
-          <p className="text-slate-800 font-semibold text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>No players found</p>
+          <p className="text-slate-800 font-semibold text-sm">No players found</p>
           <p className="text-xs text-slate-400 mt-1">
             {searchTerm ? 'Try a different search term' : 'Adjust your filters to find players'}
           </p>

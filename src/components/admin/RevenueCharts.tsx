@@ -159,7 +159,7 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-slate-900">
             Revenue
           </h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -248,7 +248,7 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
           transition={{ duration: 0.4, delay: 0.1 }}
           className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow duration-200 p-6"
         >
-          <h3 className="text-sm font-semibold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h3 className="text-sm font-semibold text-slate-900 mb-5">
             Revenue Over Time
           </h3>
           <ResponsiveContainer width="100%" height={280}>
@@ -289,7 +289,7 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
           transition={{ duration: 0.4, delay: 0.15 }}
           className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow duration-200 p-6"
         >
-          <h3 className="text-sm font-semibold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h3 className="text-sm font-semibold text-slate-900 mb-5">
             Revenue Sources
           </h3>
           <ResponsiveContainer width="100%" height={200}>
@@ -336,7 +336,7 @@ export default function RevenueCharts({ facilityId }: RevenueChartsProps) {
         transition={{ duration: 0.4, delay: 0.2 }}
         className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow duration-200 p-6"
       >
-        <h3 className="text-sm font-semibold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h3 className="text-sm font-semibold text-slate-900 mb-5">
           Daily Revenue Breakdown
         </h3>
         <ResponsiveContainer width="100%" height={220}>

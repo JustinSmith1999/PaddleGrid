@@ -55,7 +55,7 @@ export default function LoadingScreen({
           <div className="absolute inset-0 border-4 border-green-100 rounded-full"></div>
           <div className="absolute inset-0 border-4 border-green-700 rounded-full border-t-transparent animate-spin"></div>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</h1>
+        <img src="/logo.png" alt="PaddleGrid" className="h-20 w-20 object-contain animate-pulse" />
         <p className="text-slate-500">{message}</p>
       </div>
     </div>

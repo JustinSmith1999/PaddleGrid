@@ -115,7 +115,7 @@ export default function AchievementsBadges() {
     return (
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center">
         <Trophy className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-        <p className="text-slate-700 font-medium mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <p className="text-slate-700 font-medium mb-2">
           Sign in to track achievements
         </p>
         <p className="text-sm text-slate-400">Unlock badges and earn rewards as you play</p>
@@ -130,7 +130,6 @@ export default function AchievementsBadges() {
           <div>
             <h1
               className="text-2xl sm:text-3xl font-bold text-slate-900"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
             >
               Achievements
             </h1>
@@ -263,7 +262,6 @@ export default function AchievementsBadges() {
 
                   <h3
                     className="font-semibold text-slate-900 text-xs sm:text-sm mb-1 line-clamp-1"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     {achievement.achievement_name}
                   </h3>

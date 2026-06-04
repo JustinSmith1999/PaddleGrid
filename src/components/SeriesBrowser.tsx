@@ -150,7 +150,6 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
             </div>
             <h1
               className="text-2xl font-bold text-slate-800"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
             >
               Event Series
             </h1>
@@ -280,7 +279,7 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
             <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-5">
               <Calendar className="w-10 h-10 text-slate-200" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-600 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>No series found</h3>
+            <h3 className="text-xl font-semibold text-slate-600 mb-2">No series found</h3>
             <p className="text-slate-400">Try adjusting your filters</p>
           </div>
         ) : (
@@ -314,7 +313,6 @@ export default function SeriesBrowser({ onSeriesClick }: SeriesBrowserProps) {
 
                       <h3
                         className="text-lg font-bold text-slate-800 mb-2 group-hover:text-green-700 transition-colors"
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         {s.title}
                       </h3>

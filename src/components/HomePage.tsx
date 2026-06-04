@@ -17,7 +17,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   return (
     <div className="border-b border-slate-200/60">
       <button onClick={() => setOpen(!open)} aria-expanded={open} className="w-full flex items-center justify-between py-5 text-left group">
-        <span className="text-[15px] font-semibold text-slate-800 pr-4 group-hover:text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{q}</span>
+        <span className="text-[15px] font-semibold text-slate-800 pr-4 group-hover:text-slate-900">{q}</span>
         <ChevronDown className={`w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       <AnimatePresence>
@@ -40,37 +40,72 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       {/* Nav is provided by the global Navbar component */}
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[#0a0f1a]">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 via-transparent to-emerald-900/30" />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 0%, #FAF7F2 0%, #EFE6D8 60%, #E5DACE 100%)' }} />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-14 sm:pb-20">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-6 pt-14 sm:pt-24 pb-16 sm:pb-24">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 mb-6">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-sm font-medium text-white/80">Free for players — always</span>
-              </motion.div>
+              <motion.img
+                src="/logo.png"
+                alt="PaddleGrid"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="h-20 sm:h-24 w-auto -ml-1 mb-8"
+              />
 
-              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-3xl sm:text-5xl lg:text-[3.5rem] font-extrabold leading-[1.1] tracking-tight text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                Pickleball booking<br />
-                <span className="text-green-300">that actually works.</span>
+              <motion.h1
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.08 }}
+                className="font-display text-[34px] sm:text-5xl lg:text-[3.5rem] font-semibold leading-[1.08] tracking-[-0.01em] text-emerald-900"
+              >
+                The pickleball palace,
+                <br/>
+                <span className="italic font-light text-emerald-700">online.</span>
               </motion.h1>
 
-              <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-5 text-base sm:text-lg text-white/70 leading-relaxed max-w-lg">
-                Find open courts, book instantly, get matched with players at your level. No group texts, no calling the front desk.
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="mt-6 text-[17px] sm:text-lg text-slate-600 leading-relaxed max-w-lg"
+              >
+                Find open courts, book instantly, get matched with players at your level. No group texts. No calling the front desk.
               </motion.p>
 
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="mt-8">
-                <button onClick={() => onAuthRequired('signup')} aria-label="Create a free PaddleGrid account" className="group inline-flex items-center justify-center gap-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-green-900/30 hover:shadow-xl transition-all duration-200">
-                  Create free account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.32 }}
+                className="mt-10 flex flex-wrap items-center gap-4"
+              >
+                <button
+                  onClick={() => onAuthRequired('signup')}
+                  aria-label="Create a free PaddleGrid account"
+                  className="group inline-flex items-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-[15px] px-7 py-3.5 rounded-xl transition-all duration-200"
+                >
+                  Get started — free
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
+                <button
+                  onClick={() => onAuthRequired('login')}
+                  className="text-[15px] font-semibold text-slate-700 hover:text-emerald-900 px-2 py-3.5 transition"
+                >
+                  Sign in →
                 </button>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 flex flex-wrap items-center gap-4 text-sm text-white/50">
-                <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> No credit card required</span>
-                <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-green-400" /> Payments via Stripe</span>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[13px] text-slate-500"
+              >
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-700" /> Free for players</span>
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-700" /> No credit card</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-emerald-700" /> Stripe-secured payments</span>
               </motion.div>
             </div>
 
@@ -111,7 +146,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       <section className="py-16 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">
               Three steps. That's it.
             </h2>
           </div>
@@ -129,7 +164,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                   <item.icon className="w-8 h-8 text-green-700" />
                   <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-green-700 text-white text-xs font-bold flex items-center justify-center shadow-sm">{item.step}</div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>{item.title}</h3>
+                <h3 className="text-lg font-bold text-slate-800 mb-2">{item.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed max-w-xs mx-auto">{item.desc}</p>
               </div>
             ))}
@@ -148,7 +183,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
                   <MapPin className="w-3.5 h-3.5" /> Find & book courts
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                   Stop texting around for court times.
                 </h2>
                 <p className="text-slate-500 leading-relaxed mb-3">
@@ -202,7 +237,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
                   <Users className="w-3.5 h-3.5" /> Player matching
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                   Find games, not just open courts.
                 </h2>
                 <p className="text-slate-500 leading-relaxed mb-3">
@@ -261,7 +296,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                 <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
                   <Trophy className="w-3.5 h-3.5" /> Stats & community
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                   Track your game. Find your people.
                 </h2>
                 <p className="text-slate-500 leading-relaxed mb-3">
@@ -293,7 +328,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
                     ].map((s, i) => (
                       <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
                         <s.icon className="w-3.5 h-3.5 text-white/60 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>{s.value}</div>
+                        <div className="text-lg font-bold text-white">{s.value}</div>
                         <div className="text-[10px] text-white/50">{s.label}</div>
                       </div>
                     ))}
@@ -327,7 +362,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       {/* ALSO FREE — quick feature list */}
       <section className="py-14 bg-[#F8F9FC]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="text-base font-bold text-slate-900 mb-5" style={{ fontFamily: 'Manrope, sans-serif' }}>Also included, free for every player</h2>
+          <h2 className="text-base font-bold text-slate-900 mb-5">Also included, free for every player</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
             {[
               'Waitlist with instant alerts',
@@ -354,7 +389,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
           <div className="grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-16">
             {/* Left column: heading + support link */}
             <div className="lg:sticky lg:top-24 lg:self-start">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-3" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-3">
                 Common questions
               </h2>
               <p className="text-slate-500 text-sm leading-relaxed mb-5">
@@ -386,7 +421,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
       {/* FINAL CTA */}
       <section className="bg-green-700 py-16 lg:py-20">
         <div className="max-w-[640px] mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4">
             See it for yourself.
           </h2>
           <p className="text-green-100/80 mb-8">
@@ -403,8 +438,7 @@ export function HomePage({ onAuthRequired }: HomePageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="PaddleGrid" className="h-6 w-6 object-contain" />
-              <span className="text-sm font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>PaddleGrid</span>
+              <img src="/logo.png" alt="PaddleGrid" className="h-7 w-7 object-contain" />
             </div>
             <div className="flex items-center gap-6 text-sm text-slate-500">
               <a href="/privacy" className="hover:text-slate-300 transition-colors">Privacy</a>

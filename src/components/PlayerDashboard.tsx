@@ -53,7 +53,6 @@ export function PlayerDashboard() {
         >
           <h2
             className="text-2xl font-bold text-slate-900 mb-3"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Please sign in
           </h2>
@@ -95,7 +94,6 @@ export function PlayerDashboard() {
         <motion.div className="mb-8" variants={itemVariants}>
           <h1
             className="text-3xl font-bold text-slate-900 mb-1"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Player Dashboard
           </h1>
@@ -150,7 +148,6 @@ export function PlayerDashboard() {
             <div>
               <h2
                 className="text-xl font-bold text-slate-900 mb-1"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 {tabs.find(t => t.id === activeTab)?.label}
               </h2>

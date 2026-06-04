@@ -131,7 +131,7 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
             <Activity className="w-5 h-5 text-green-700" />
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           </div>
-          <h2 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h2 className="text-base font-bold text-slate-900">
             Playing Now
           </h2>
         </div>

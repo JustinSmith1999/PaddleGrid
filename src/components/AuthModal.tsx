@@ -328,7 +328,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                   </div>
                   <h3
                     className="text-3xl font-bold text-slate-800 mb-4"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     Welcome to PaddleGrid!
                   </h3>
@@ -356,7 +355,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                     <h2
                       id="auth-modal-heading"
                       className="text-2xl font-bold text-slate-800 mb-1"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       Reset Password
                     </h2>
@@ -442,7 +440,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                     <h2
                       id="auth-modal-heading"
                       className="text-2xl font-bold text-slate-800 mb-2"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       Create Your Account
                     </h2>
@@ -461,7 +458,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             <User className="w-6 h-6 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Player Account</h3>
+                            <h3 className="text-lg font-bold text-slate-800">Player Account</h3>
                             <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">
                               Book courts, find partners, and track your progress.
                             </p>
@@ -480,7 +477,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                             <Building2 className="w-6 h-6 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Facility Account</h3>
+                            <h3 className="text-lg font-bold text-slate-800">Facility Account</h3>
                             <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">
                               Manage courts, memberships, and your club operations.
                             </p>
@@ -509,7 +506,6 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
                     <h2
                       id="auth-modal-heading"
                       className="text-2xl font-bold text-slate-800 mb-1"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       {isLogin ? 'Welcome back' : isFacilitySignup ? 'Register Your Facility' : 'Create Account'}
                     </h2>

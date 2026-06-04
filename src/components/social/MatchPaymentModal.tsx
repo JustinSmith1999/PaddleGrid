@@ -330,7 +330,7 @@ export default function MatchPaymentModal({
                   <CreditCard className="w-5 h-5 text-green-700" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>Add Payment Method</h2>
+                  <h2 className="text-lg font-bold text-slate-900">Add Payment Method</h2>
                   <p className="text-sm text-slate-500 mt-0.5">Secure card entry via Stripe</p>
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function MatchPaymentModal({
           <div className="md:w-[280px] lg:w-[320px] bg-gradient-to-br from-green-700 to-green-800 p-6 md:p-8 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between md:justify-start">
-                <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>Join & Pay</h3>
+                <h3 className="text-lg font-bold text-white">Join & Pay</h3>
                 <button onClick={onClose} className="md:hidden w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition">
                   <X className="w-4 h-4" />
                 </button>

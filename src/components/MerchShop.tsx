@@ -324,7 +324,7 @@ export default function MerchShop() {
 
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
             <div className="bg-green-700 text-white px-8 py-5">
-              <h2 className="text-2xl font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>Secure Checkout</h2>
+              <h2 className="text-2xl font-bold">Secure Checkout</h2>
               <p className="text-green-200 text-sm mt-1">Complete your purchase securely</p>
             </div>
 
@@ -334,7 +334,6 @@ export default function MerchShop() {
                   <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200/60">
                     <h3
                       className="font-bold text-lg mb-5 flex items-center gap-2 text-slate-800"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
                         <Truck className="w-4 h-4 text-green-700" />
@@ -360,7 +359,6 @@ export default function MerchShop() {
                   <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200/60">
                     <h3
                       className="font-bold text-lg mb-5 flex items-center gap-2 text-slate-800"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-green-700" />
@@ -373,7 +371,7 @@ export default function MerchShop() {
 
                 <div className="lg:col-span-2">
                   <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200/60 sticky top-4">
-                    <h3 className="font-bold text-lg mb-5 text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Order Summary</h3>
+                    <h3 className="font-bold text-lg mb-5 text-slate-800">Order Summary</h3>
                     <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
                       {cart.map((item, index) => (
                         <div key={index} className="flex gap-3 pb-3 border-b border-slate-200/60">
@@ -444,7 +442,6 @@ export default function MerchShop() {
           <div>
             <h1
               className="text-xl font-bold text-slate-800"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
             >
               Pickleball Heaven Merch
             </h1>
@@ -534,13 +531,12 @@ export default function MerchShop() {
                   <div className="p-5">
                     <h3
                       className="font-semibold text-slate-800 mb-1 group-hover:text-green-700 transition-colors"
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
                       {product.name}
                     </h3>
                     <p className="text-sm text-slate-400 mb-4 line-clamp-2">{product.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>${product.price.toFixed(2)}</span>
+                      <span className="text-xl font-bold text-green-700">${product.price.toFixed(2)}</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -578,7 +574,7 @@ export default function MerchShop() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur-lg z-10 rounded-t-2xl">
-                <h2 className="text-xl font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{selectedProduct.name}</h2>
+                <h2 className="text-xl font-bold text-slate-800">{selectedProduct.name}</h2>
                 <button onClick={() => setSelectedProduct(null)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200">
                   <X className="w-5 h-5" />
                 </button>
@@ -621,7 +617,7 @@ export default function MerchShop() {
 
                   <div className="space-y-6">
                     <div>
-                      <p className="text-3xl font-bold text-green-700" style={{ fontFamily: 'Manrope, sans-serif' }}>${selectedProduct.price.toFixed(2)}</p>
+                      <p className="text-3xl font-bold text-green-700">${selectedProduct.price.toFixed(2)}</p>
                       <p className="text-slate-500 mt-2 leading-relaxed">{selectedProduct.description}</p>
                     </div>
 
@@ -740,7 +736,7 @@ export default function MerchShop() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>Shopping Cart</h2>
+                <h2 className="text-xl font-bold text-slate-800">Shopping Cart</h2>
                 <button onClick={() => setShowCart(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200">
                   <X className="w-5 h-5" />
                 </button>

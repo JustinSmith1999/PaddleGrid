@@ -254,7 +254,7 @@ export function UserBookings() {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-green-900 font-semibold text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>Payment Successful!</h3>
+                <h3 className="text-green-900 font-semibold text-sm">Payment Successful!</h3>
                 <p className="text-green-700 text-sm mt-0.5">Your booking has been confirmed and payment processed successfully.</p>
               </div>
               <button
@@ -278,7 +278,6 @@ export function UserBookings() {
             <div>
               <h2
                 className="text-2xl font-bold text-slate-800"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 My Bookings
               </h2>
@@ -357,7 +356,6 @@ export function UserBookings() {
               </div>
               <h3
                 className="text-lg font-semibold text-slate-800 mb-1.5"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 No bookings found
               </h3>

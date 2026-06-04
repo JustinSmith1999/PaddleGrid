@@ -129,7 +129,6 @@ export function BrowseCourts() {
         </div>
         <h1
           className="text-2xl font-bold text-slate-900 mb-3"
-          style={{ fontFamily: 'Manrope, sans-serif' }}
         >
           Discover Clubs
         </h1>

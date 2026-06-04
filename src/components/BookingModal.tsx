@@ -327,7 +327,6 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
             </div>
             <h3
               className="text-2xl font-bold text-slate-800 mb-2"
-              style={{ fontFamily: 'Manrope, sans-serif' }}
             >
               Booking Confirmed!
             </h3>
@@ -369,7 +368,6 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
               </div>
               <h3
                 className="text-2xl font-bold text-slate-800 mb-2"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Complete Payment
               </h3>
@@ -426,7 +424,6 @@ export function BookingModal({ court, onClose, onSuccess }: BookingModalProps) {
             <div>
               <h2
                 className="text-xl font-bold text-slate-800"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Book {court.name}
               </h2>

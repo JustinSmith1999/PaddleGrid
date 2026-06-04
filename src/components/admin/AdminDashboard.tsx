@@ -489,7 +489,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-[28px] font-bold text-slate-900 tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-[28px] font-bold text-slate-900 tracking-tight">
             Dashboard
           </h1>
           <p className="text-slate-500 text-sm mt-1.5">
@@ -580,7 +580,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
               </p>
             </div>
             <div className="text-right pl-8">
-              <div className="text-5xl font-bold text-white tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <div className="text-5xl font-bold text-white tracking-tight">
                 {stats.adoptionRate}%
               </div>
               <p className="text-green-200 text-xs font-medium mt-1 uppercase tracking-wide">Adoption Rate</p>
@@ -610,7 +610,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
         >
           <div className="px-7 py-5 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <h3 className="text-base font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h3 className="text-base font-semibold text-slate-900">
                 Today's Court Activity
               </h3>
               <p className="text-xs text-slate-400 mt-1">Hourly booking density</p>
@@ -686,7 +686,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
           className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
         >
           <div className="px-7 py-5 border-b border-slate-100">
-            <h3 className="text-base font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h3 className="text-base font-semibold text-slate-900">
               Quick Actions
             </h3>
             <p className="text-xs text-slate-400 mt-1">Common tasks</p>
@@ -722,7 +722,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
       >
         <div className="px-7 py-5 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h3 className="text-base font-semibold text-slate-900">
               Recent Bookings
             </h3>
             <p className="text-xs text-slate-400 mt-1">Latest activity across all courts</p>
@@ -833,7 +833,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
               className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
             >
               <div className="sticky top-0 bg-white border-b border-slate-100 px-7 py-5 flex items-center justify-between rounded-t-2xl">
-                <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                <h3 className="text-lg font-bold text-slate-900">
                   Booking Details
                 </h3>
                 <button
@@ -959,7 +959,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
                   <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
                     <UserPlus className="w-5 h-5 text-green-700" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-slate-900">
                     Add Member
                   </h3>
                 </div>

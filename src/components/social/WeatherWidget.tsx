@@ -177,7 +177,7 @@ export default function WeatherWidget({ latitude, longitude, locationName }: Wea
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
       <div className="px-5 pt-5 pb-3">
-        <h2 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h2 className="text-base font-bold text-slate-900">
           Court Conditions
         </h2>
         {weather.location && (

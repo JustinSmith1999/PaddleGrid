@@ -405,7 +405,6 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                       }
                     }}
                     className="text-sm font-bold text-slate-800 hover:text-green-700 truncate transition-colors"
-                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     {post.posted_as_facility === true && post.facilities?.name
                       ? post.facilities.name
@@ -515,7 +514,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                           </div>
                         )}
                         {post.link_preview.title && (
-                          <div className="font-bold text-slate-800 mb-1 line-clamp-2 text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                          <div className="font-bold text-slate-800 mb-1 line-clamp-2 text-sm">
                             {post.link_preview.title}
                           </div>
                         )}
@@ -538,7 +537,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                         <div className="w-8 h-8 rounded-xl bg-green-700/10 flex items-center justify-center">
                           <Trophy className="w-4 h-4 text-green-700" />
                         </div>
-                        <span style={{ fontFamily: 'Manrope, sans-serif' }}>
+                        <span>
                           {post.sport?.charAt(0).toUpperCase()}{post.sport?.slice(1)} Match
                         </span>
                       </div>
@@ -747,7 +746,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                           </div>
                         )}
                         {post.link_preview.title && (
-                          <div className="font-bold text-slate-800 mb-1 line-clamp-2 text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                          <div className="font-bold text-slate-800 mb-1 line-clamp-2 text-sm">
                             {post.link_preview.title}
                           </div>
                         )}
