@@ -216,10 +216,8 @@ export async function getFeedPosts(filter: {
       .range(filter.offset || 0, (filter.offset || 0) + (filter.limit || 20) - 1);
 
     if (filter.type === 'trending') {
-      // Trending = recent posts (last 14 days), newest first.
-      // Future: rank by engagement via a custom RPC that joins social_post_likes/comments.
-      const cutoff = new Date(Date.now() - 14 * 86400000).toISOString();
-      query = query.gte('created_at', cutoff);
+      // Trending = all public/facility posts, newest first.
+      // Future: switch to engagement-ranked via an RPC join.
       if (user.user) {
         query = query.or(`visibility.eq.public,visibility.eq.facility,author_id.eq.${user.user.id}`);
       } else {
