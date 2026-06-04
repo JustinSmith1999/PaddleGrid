@@ -216,13 +216,10 @@ export async function getFeedPosts(filter: {
       .range(filter.offset || 0, (filter.offset || 0) + (filter.limit || 20) - 1);
 
     if (filter.type === 'trending') {
-      // 7-day engagement-sorted feed
-      const cutoff = new Date(Date.now() - 7 * 86400000).toISOString();
-      query = query
-        .gte('created_at', cutoff)
-        .order('like_count', { ascending: false, nullsFirst: false })
-        .order('comment_count', { ascending: false, nullsFirst: false })
-        .order('created_at', { ascending: false });
+      // Trending = recent posts (last 14 days), newest first.
+      // Future: rank by engagement via a custom RPC that joins social_post_likes/comments.
+      const cutoff = new Date(Date.now() - 14 * 86400000).toISOString();
+      query = query.gte('created_at', cutoff);
       if (user.user) {
         query = query.or(`visibility.eq.public,visibility.eq.facility,author_id.eq.${user.user.id}`);
       } else {
