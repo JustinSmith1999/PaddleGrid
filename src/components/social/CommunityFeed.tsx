@@ -476,25 +476,26 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           {/* Content Area */}
           {activeView === 'feed' && (
             <>
-              <SponsorSlot location="feed_top" />
               {/* Posts Feed */}
               {posts.length > 0 ? (
                 <div className="pt-3 px-0 lg:px-0">
                   {posts.slice(0, displayCount).map((post, index) => (
-                    <motion.div
-                      key={post.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.04, duration: 0.3 }}
-                    >
-                      <PostCard
-                        post={post}
-                        onClick={() => onPostClick(post.id)}
-                        onUpdate={() => loadPosts(true)}
-                        onClubClick={onClubClick}
-                        onProfileClick={onProfileClick}
-                      />
-                    </motion.div>
+                    <div key={post.id}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.04, duration: 0.3 }}
+                      >
+                        <PostCard
+                          post={post}
+                          onClick={() => onPostClick(post.id)}
+                          onUpdate={() => loadPosts(true)}
+                          onClubClick={onClubClick}
+                          onProfileClick={onProfileClick}
+                        />
+                      </motion.div>
+                      {index === 2 && <SponsorSlot location="feed_top" variant="post" />}
+                    </div>
                   ))}
 
                   {displayCount < posts.length && (

@@ -40,7 +40,7 @@ interface Props {
   location: SponsorLocation;
   facilityId?: string;
   /** Visual variant. 'banner' = full-width hero, 'card' = subtle inline. Default: 'banner' */
-  variant?: 'banner' | 'card';
+  variant?: 'banner' | 'card' | 'post';
   className?: string;
 }
 
@@ -123,6 +123,57 @@ export default function SponsorSlot({ location, facilityId, variant = 'banner', 
           </span>
         )}
       </a>
+    );
+  }
+
+  if (variant === 'post') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className={`relative bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden mb-3 ${className}`}
+      >
+        {/* Header — mimics PostCard avatar row */}
+        <div className="flex items-center gap-3 px-4 pt-3.5 pb-1.5">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0 ring-1 ring-slate-200">
+            {s.logo_url && <img src={s.logo_url} alt={s.name} className="w-full h-full object-cover" />}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold text-slate-900 truncate">{s.name}</span>
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[10px] font-bold text-amber-700 tracking-wide uppercase">Sponsored</span>
+            </div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Promoted post</div>
+          </div>
+        </div>
+        {/* Body */}
+        {s.tagline && (
+          <p className="px-4 pb-3 text-[15px] text-slate-800 leading-snug">{s.tagline}</p>
+        )}
+        {/* Hero image */}
+        {s.background_image_url && (
+          <a href={s.cta_url || '#'} onClick={trackClick} rel="noopener noreferrer" className="block">
+            <div className="aspect-[16/9] bg-slate-100 overflow-hidden">
+              <img src={s.background_image_url} alt="" className="w-full h-full object-cover" />
+            </div>
+          </a>
+        )}
+        {/* CTA footer */}
+        {s.cta_label && (
+          <div className="px-4 py-3 border-t border-slate-100">
+            <a
+              href={s.cta_url || '#'}
+              onClick={trackClick}
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center w-full gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-sm transition"
+            >
+              {s.cta_label}
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
+      </motion.div>
     );
   }
 
