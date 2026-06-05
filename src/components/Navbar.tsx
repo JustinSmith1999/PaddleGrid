@@ -132,7 +132,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                 <button
                   onClick={() => setShowNotifications(true)}
                   aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-                  className="relative p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all duration-300"
+                  className="relative p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (

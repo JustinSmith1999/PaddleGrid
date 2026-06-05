@@ -57,7 +57,7 @@ export function BottomNav({ onViewChange }: BottomNavProps) {
       className="lg:hidden fixed bottom-0 left-0 right-0 z-50 safe-area-bottom"
     >
       <div className="bg-white/95 backdrop-blur-xl border-t border-slate-200/60 shadow-[0_-2px_18px_rgba(0,0,0,0.04)]">
-        <div className="flex items-end justify-between px-2 pt-2 pb-2.5">
+        <div className="flex items-end justify-between px-1.5 sm:px-2 pt-2 pb-2.5 gap-0.5">
 
           <NavItem onClick={() => go('home')}      isActive={currentView === 'home'}      Icon={Home}     label="Home" />
           <NavItem onClick={() => go('play')}      isActive={currentView === 'play'}      Icon={Calendar} label="Play" />
@@ -90,7 +90,7 @@ function NavItem({
       whileTap={{ scale: 0.92 }}
       aria-current={isActive ? 'page' : undefined}
       aria-label={label}
-      className="relative flex flex-col items-center justify-end gap-0.5 w-16 pt-1.5 pb-0.5"
+      className="relative flex flex-col items-center justify-end gap-0.5 flex-1 min-w-0 max-w-[80px] pt-1.5 pb-0.5"
     >
       <Icon
         className={`w-[24px] h-[24px] transition-colors ${isActive ? 'text-emerald-900' : 'text-slate-400'}`}

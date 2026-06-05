@@ -84,7 +84,7 @@ export default function SwipePartnerDeck({ facilityId }: { facilityId?: string }
         ))}
       </div>
 
-      <div className="relative h-[480px] w-full">
+      <div className="relative h-[clamp(360px,62vh,520px)] w-full">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center text-slate-400"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : !top ? (
