@@ -44,7 +44,7 @@ export default function JuniorsLanding({ onAddChild }: { onAddChild?: () => void
     void (async () => {
       const { data: progs } = await supabase
         .from('junior_programs')
-        .select('id, name, kind, description, age_min, age_max, price_cents, schedule, capacity, enrolled, image_url, facilities!junior_programs_facility_id_fkey(id, name, slug)')
+        .select('id, name, kind, description, age_min, age_max, price_cents, schedule, capacity, enrolled, image_url, facilities:facility_id(id, name, slug)')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(40);

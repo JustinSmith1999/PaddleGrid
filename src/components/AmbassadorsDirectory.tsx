@@ -28,16 +28,17 @@ export default function AmbassadorsDirectory({ onOpenProfile, onOpenClub }: { on
 
   useEffect(() => {
     void (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ambassadors')
         .select(`
           id, title, runs_open_play, runs_events, roles,
-          facilities!ambassadors_facility_id_fkey(id, name, slug, logo_url),
-          profiles!ambassadors_pro_id_fkey(id, full_name, profile_picture_url)
+          facilities:facility_id(id, name, slug, logo_url),
+          profiles:pro_id(id, full_name, profile_picture_url)
         `)
         .eq('status', 'active')
         .order('display_order', { ascending: true })
         .limit(100);
+      if (error) console.error('Ambassadors query', error);
       setRows((data as any) || []);
       setLoading(false);
     })();

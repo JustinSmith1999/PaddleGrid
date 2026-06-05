@@ -11,8 +11,6 @@ interface Pro {
   pro_bio: string | null;
   pro_specialties: string[] | null;
   pro_hourly_rate: number | null;
-  pro_tier?: 'standard' | 'elite' | null;
-  pro_since?: string | null;
 }
 
 const SPECIALTY_FILTERS = ['All', 'Open Play', 'Skill Up', 'Strategy', 'Doubles', 'Backhand'];
@@ -28,12 +26,13 @@ export default function ProsDirectory({ onOpenProfile }: { onOpenProfile?: (id: 
 
   useEffect(() => {
     void (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, pro_bio, pro_specialties, pro_hourly_rate, pro_tier, pro_since')
+        .select('id, full_name, profile_picture_url, pro_bio, pro_specialties, pro_hourly_rate')
         .eq('is_pro', true)
-        .order('pro_since', { ascending: false, nullsFirst: false })
+        .order('pro_hourly_rate', { ascending: false, nullsFirst: false })
         .limit(100);
+      if (error) console.error('Pros query', error);
       setPros((data as any) || []);
       setLoading(false);
     })();
@@ -46,8 +45,9 @@ export default function ProsDirectory({ onOpenProfile }: { onOpenProfile?: (id: 
     return p.full_name.toLowerCase().includes(ql) || (p.pro_specialties || []).some(s => s.toLowerCase().includes(ql));
   }), [pros, chip, q]);
 
-  const featured = visible.filter(p => p.pro_tier === 'elite').slice(0, 4);
-  const allOthers = visible.filter(p => !(featured.includes(p)));
+  // Top 4 highest-paid Pros as Featured (proxy for tier until pro_tier column ships)
+  const featured = visible.slice(0, 4);
+  const allOthers = visible.slice(4);
 
   return (
     <div>
