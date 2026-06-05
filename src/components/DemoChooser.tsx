@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, User, Loader2, ArrowRight } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '../lib/supabase';
 
 const DEMO_ACCOUNTS = {
@@ -27,6 +28,12 @@ type Role = keyof typeof DEMO_ACCOUNTS;
 export default function DemoChooser() {
   const [loading, setLoading] = useState<Role | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // On the production iOS bundle, never show the demo picker.
+  // App Store reviewers should land on the real auth flow.
+  if (Capacitor.isNativePlatform() && import.meta.env.VITE_BUILD_TARGET === 'ios-prod') {
+    return null;
+  }
 
   const signInAs = async (role: Role) => {
     setLoading(role);
