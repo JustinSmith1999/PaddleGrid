@@ -423,7 +423,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {/* Feed Tabs */}
             {activeView === 'feed' && (
               <>
-                <div className="flex items-center justify-center gap-6 px-3 pt-2 pb-2 bg-white border-b border-slate-100">
+                <div className="flex items-end justify-center gap-2 sm:gap-3 px-3 pt-2.5 pb-3 bg-white border-b border-slate-100">
                   {([
                     { id: 'for_you',  label: 'For You'  },
                     { id: 'trending',  label: 'Trending'  },
@@ -431,18 +431,28 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   ] as const).map((t) => {
                     const isActive = activeTab === t.id;
                     return (
-                      <button
+                      <motion.button
                         key={t.id}
                         onClick={() => setActiveTab(t.id)}
-                        className={`relative pb-2 text-[14px] font-semibold transition-colors ${
-                          isActive
-                            ? 'text-slate-900'
-                            : 'text-slate-400 hover:text-slate-700'
-                        }`}
+                        whileTap={{ scale: 0.94 }}
+                        aria-current={isActive ? 'page' : undefined}
+                        className="relative flex items-center justify-center px-3 sm:px-4 py-1.5 min-w-[88px]"
                       >
-                        {t.label}
-                        {isActive && <span className="absolute left-0 right-0 -bottom-[2px] h-[2px] bg-slate-900 rounded-full" />}
-                      </button>
+                        <span
+                          className={`text-[13px] tracking-[0.04em] font-bold transition-colors ${
+                            isActive ? 'text-[#16291E]' : 'text-[#B5A896] hover:text-[#16291E]/70'
+                          }`}
+                        >
+                          {t.label}
+                        </span>
+                        {isActive && (
+                          <motion.span
+                            layoutId="feedTabDot"
+                            className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#16291E]"
+                            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                          />
+                        )}
+                      </motion.button>
                     );
                   })}
                 </div>
