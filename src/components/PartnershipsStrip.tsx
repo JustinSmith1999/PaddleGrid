@@ -82,13 +82,11 @@ export default function PartnershipsStrip({ sponsoredId, sponsoredType, sponsore
               title={b.tagline || b.name}
             >
               {b.logo_url ? (
-                <img
-                  src={b.logo_url}
+                <img src={b.logo_url}
                   alt={b.name}
                   className={`object-contain transition group-hover:opacity-100 ${
                     isFounding ? 'h-8 opacity-90' : 'h-7 opacity-70'
-                  }`}
-                />
+                  }`} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
               ) : (
                 <span
                   className={`px-3 py-1 rounded-md font-bold uppercase tracking-wide text-white ${
