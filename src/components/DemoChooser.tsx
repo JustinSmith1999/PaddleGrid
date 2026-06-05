@@ -60,7 +60,7 @@ export default function DemoChooser() {
             className="inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-[0.18em] uppercase mb-5"
             style={{ backgroundColor: '#F4ECD9', color: '#7D673F' }}
           >
-            Investor Preview · Pickleball Heaven
+            Demo Preview · Pickleball Heaven
           </div>
           <h1
             className="text-4xl sm:text-5xl font-bold text-slate-900 mb-3"

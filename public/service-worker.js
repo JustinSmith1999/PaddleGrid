@@ -109,3 +109,45 @@ self.addEventListener('message', (event) => {
     );
   }
 });
+
+// Append-to-bottom block for public/service-worker.js
+// Push notification handlers — fires when the server pushes to a subscribed endpoint.
+
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  let data;
+  try {
+    data = event.data.json();
+  } catch {
+    data = { title: 'PaddleGrid', body: event.data.text() };
+  }
+  const title = data.title || 'PaddleGrid';
+  const options = {
+    body:    data.body || '',
+    icon:    data.icon  || '/favicon-192.png',
+    badge:   data.badge || '/favicon-48.png',
+    tag:     data.tag   || 'paddlegrid',
+    data:    { url: data.url || '/' },
+    requireInteraction: !!data.requireInteraction,
+    silent:  !!data.silent,
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      for (const w of wins) {
+        if ('focus' in w) {
+          w.focus();
+          if ('navigate' in w) try { w.navigate(url); } catch {}
+          return;
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});
+

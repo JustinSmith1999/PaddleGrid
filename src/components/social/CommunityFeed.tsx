@@ -624,26 +624,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
       </div>
 
-      {/* Notifications Panel */}
-      {showNotificationsPanel && (
-        <NotificationsPanel
-          onClose={() => {
-            setShowNotificationsPanel(false);
-            fetchUnreadCount();
-          }}
-          onNotificationClick={(notification) => {
-            if (notification.type === 'like' || notification.type === 'comment') {
-              if (notification.data.post_id) {
-                onPostClick(notification.data.post_id);
-              }
-            } else if (notification.type === 'follow') {
-              if (notification.data.actor_id) {
-                onProfileClick?.(notification.data.actor_id);
-              }
-            }
-          }}
-        />
-      )}
+      {/* Notifications Panel — now rendered globally in App.tsx; left here as a no-op */}
 
       {/* Story Composer */}
       {showStoryComposer && (
