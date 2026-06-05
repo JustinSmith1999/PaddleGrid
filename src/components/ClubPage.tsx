@@ -895,6 +895,29 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
         </div>
       </div>
 
+      {/* QA-fix always-on sections — visible regardless of tab */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-6 space-y-6 pb-8">
+        <PartnershipsStrip
+          sponsoredId={facility.id}
+          sponsoredType="facility"
+          sponsoredName={facility.name}
+        />
+        <CoachesSection
+          facilityId={facility.id}
+          onRequestLesson={(proId, proName) => {
+            setRequestProId(proId); setRequestProName(proName); setRequestModalKind('lesson');
+          }}
+          onRequestClinic={(proId, proName) => {
+            setRequestProId(proId); setRequestProName(proName); setRequestModalKind('clinic');
+          }}
+          onOpenProfile={(id) => console.log('open pro', id)}
+        />
+        <div>
+          <h2 className="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-3">Reviews</h2>
+          <ReviewsTab facilityId={facility.id} facilityName={facility.name} />
+        </div>
+      </div>
+
       <RequestModal
         open={!!requestModalKind}
         onClose={() => setRequestModalKind(null)}
