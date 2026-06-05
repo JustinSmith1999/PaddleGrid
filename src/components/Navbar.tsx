@@ -63,7 +63,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
   return (
     <nav role="navigation" aria-label="Main navigation" className="bg-white sticky top-0 z-40 will-change-transform border-b border-slate-200/60">
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-2">
-        <div className="flex items-center justify-between h-12">
+        <div className="flex items-center justify-between h-12 relative">
           <div className="flex items-center gap-6">
             <button
               onClick={() => handleViewChange('community')}
@@ -72,9 +72,28 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
               <img
                 src="/logo.png"
                 alt="PaddleGrid"
-                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+                className="hidden sm:block h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-[1.03]"
               />
             </button>
+
+            {/* Mobile-only centered wordmark — exact font + color from the logo */}
+            <button
+              onClick={() => handleViewChange('community')}
+              aria-label="PaddleGrid"
+              className="sm:hidden absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-auto"
+            >
+              <span
+                className="text-[15px] font-semibold uppercase select-none"
+                style={{
+                  fontFamily: "'Cinzel', 'Trajan Pro', Georgia, serif",
+                  color: '#16291E',
+                  letterSpacing: '0.18em',
+                }}
+              >
+                Paddle&nbsp;Grid
+              </span>
+            </button>
+
             {!user && (
               <div className="hidden sm:flex items-center gap-1 bg-slate-100 rounded-xl p-1">
                 <button
