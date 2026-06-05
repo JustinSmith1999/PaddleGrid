@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, MapPin, Users, Activity } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import AvatarStack from '../AvatarStack';
 
 interface ActiveBooking {
   id: string;
@@ -166,24 +167,16 @@ export default function WhosPlayingNow({ onFacilityClick }: WhosPlayingNowProps)
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {booking.players.slice(0, 3).map((player) => (
-                      <div
-                        key={player.id}
-                        className="w-7 h-7 rounded-full ring-2 ring-white shadow-sm overflow-hidden bg-green-700 flex items-center justify-center"
-                      >
-                        {player.avatarUrl ? (
-                          <img
-                            src={player.avatarUrl}
-                            alt={player.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <Users className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <AvatarStack
+                    size="sm"
+                    max={3}
+                    members={booking.players.map(p => ({
+                      id: p.id,
+                      name: p.name,
+                      avatarUrl: p.avatarUrl,
+                    }))}
+                    totalCount={booking.players.length}
+                  />
                   <span className="text-xs font-medium text-slate-500">
                     {booking.players.length} {booking.players.length === 1 ? 'player' : 'players'}
                   </span>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, ChevronLeft, Crown, ShieldCheck, MessageCircle, Heart, Calendar, Trophy, Plus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import AvatarStack from '../AvatarStack';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface Group {
@@ -162,7 +163,19 @@ export default function GroupDetail({ groupId, onBack, onPostInGroup }: Props) {
         {/* Members rail */}
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-[11px] uppercase tracking-wider font-bold text-slate-500">Members</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-[11px] uppercase tracking-wider font-bold text-slate-500">Members</h2>
+              <AvatarStack
+                size="sm"
+                max={5}
+                members={members.slice(0, 5).map(m => ({
+                  id: m.user_id,
+                  name: m.profiles?.full_name || null,
+                  avatarUrl: m.profiles?.profile_picture_url || null,
+                }))}
+                totalCount={group.member_count}
+              />
+            </div>
             <button className="text-[11px] font-semibold text-emerald-700">See all</button>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 sm:mx-0 px-4 sm:px-0">
