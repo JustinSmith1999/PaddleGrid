@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
+import MobileMenu from './components/MobileMenu';
 import { AuthModal } from './components/AuthModal';
 import { NotFound } from './components/NotFound';
 import LoadingScreen from './components/LoadingScreen';
@@ -42,6 +43,7 @@ const WaitlistManagement = lazy(() => import('./components/WaitlistManagement'))
 const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
 const MerchShop = lazy(() => import('./components/MerchShop'));
+const PostComposer = lazy(() => import('./components/social/PostComposer'));
 const GroupsList = lazy(() => import('./components/groups/GroupsList'));
 const GroupDetail = lazy(() => import('./components/groups/GroupDetail'));
 const MatchRequestsBoard = lazy(() => import('./components/social/MatchRequestsBoard'));
@@ -59,11 +61,18 @@ function ScrollToTop() {
 function AppContent() {
   const { loading, isAdmin, user, profile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showComposer, setShowComposer] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'facility'>('login');
   const navigate = useNavigate();
   const location = useLocation();
   const isNative = Capacitor.isNativePlatform();
   const { currentAchievement, dismissAchievement } = useAchievementNotifications();
+
+  useEffect(() => {
+    const handler = () => setShowComposer(true);
+    window.addEventListener('pg:compose-post', handler);
+    return () => window.removeEventListener('pg:compose-post', handler);
+  }, []);
 
   useEffect(() => {
     if (isNative) {
@@ -328,6 +337,40 @@ function AppContent() {
       </main>
 
       <BottomNav onViewChange={handleViewChange} />
+
+      {/* Global modals — mounted once so they work from any route */}
+      {user && (
+        <>
+          <MobileMenu
+            activeView={(() => {
+              const p = location.pathname;
+              if (p.startsWith('/browse') || p.startsWith('/bookings') || p.startsWith('/match-requests')) return 'explore';
+              if (p.startsWith('/discover') || p.startsWith('/player/')) return 'search';
+              if (p.startsWith('/messages')) return 'messages';
+              return 'feed';
+            })()}
+            onViewChange={(view) => {
+              if (view === 'feed')       navigate('/');
+              else if (view === 'explore')  navigate('/browse');
+              else if (view === 'search')   navigate('/discover');
+              else if (view === 'messages') navigate('/messages');
+              else if (view === 'bookmarks') navigate('/profile');
+            }}
+            onNotificationsClick={() => { /* TODO: global notifications panel */ }}
+            onProfileClick={() => navigate('/profile')}
+            onClubClick={(slug) => navigate('/club/' + slug)}
+            unreadNotifications={0}
+          />
+          {showComposer && (
+            <Suspense fallback={null}>
+              <PostComposer
+                onClose={() => setShowComposer(false)}
+                onSuccess={() => setShowComposer(false)}
+              />
+            </Suspense>
+          )}
+        </>
+      )}
 
       <AuthModal
         isOpen={showAuthModal}

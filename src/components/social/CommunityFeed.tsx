@@ -624,16 +624,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
 
       </div>
 
-      {/* Mobile Menu */}
-      <MobileMenu
-        activeView={activeView}
-        onViewChange={(view) => setActiveView(view)}
-        onNotificationsClick={() => setShowNotificationsPanel(true)}
-        onProfileClick={() => onProfileClick?.(user?.id || '')}
-        onClubClick={onClubClick}
-        unreadNotifications={unreadNotifications}
-      />
-
       {/* Notifications Panel */}
       {showNotificationsPanel && (
         <NotificationsPanel
