@@ -423,7 +423,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
             {/* Feed Tabs */}
             {activeView === 'feed' && (
               <>
-                <div className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white border-b border-slate-100">
+                <div className="flex items-center justify-center gap-6 px-3 pt-2 pb-2 bg-white border-b border-slate-100">
                   {([
                     { id: 'trending',  label: 'Trending'  },
                     { id: 'following', label: 'Following' },
@@ -434,13 +434,14 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                       <button
                         key={t.id}
                         onClick={() => setActiveTab(t.id)}
-                        className={`relative px-4 py-1.5 rounded-full text-[13px] font-bold transition-all ${
+                        className={`relative pb-2 text-[14px] font-semibold transition-colors ${
                           isActive
-                            ? 'bg-emerald-700 text-white shadow-sm'
-                            : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                            ? 'text-slate-900'
+                            : 'text-slate-400 hover:text-slate-700'
                         }`}
                       >
                         {t.label}
+                        {isActive && <span className="absolute left-0 right-0 -bottom-[2px] h-[2px] bg-slate-900 rounded-full" />}
                       </button>
                     );
                   })}
@@ -621,65 +622,6 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
           )}
         </div>
 
-        {/* Right Sidebar - Trending & Suggestions */}
-        {activeView === 'feed' && (
-        <div className="hidden xl:block w-[320px] flex-shrink-0">
-          <div className="fixed right-[max(16px,calc((100vw-1400px)/2))] top-[56px] w-[300px] space-y-4 max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent pt-4">
-            {/* Weather Widget */}
-            <WeatherWidget />
-
-            {/* Who's Playing Now */}
-            <WhosPlayingNow onFacilityClick={onClubClick} />
-
-            {/* Suggested Players */}
-            {user && <SuggestedPlayers onProfileClick={onProfileClick} />}
-
-            {/* Trending Topics */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
-              <div className="px-4 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-bold text-slate-800">Trending</h2>
-              </div>
-              <div className="divide-y divide-slate-100">
-                {[
-                  { icon: TrendingUp, label: 'Pickleball · Trending', title: 'DUPR Ratings', count: '3.8K posts' },
-                  { icon: Calendar, label: 'Events · This Week', title: 'Weekend Tournaments', count: '1.4K posts' },
-                  { icon: Building2, label: 'Local · Popular', title: 'New Courts Opening', count: '2.1K posts' },
-                  { icon: TrendingUp, label: 'Equipment · Trending', title: 'Best Paddles 2025', count: '987 posts' },
-                  { icon: Users, label: 'Community · Growing', title: 'Social Mixers', count: '1.8K posts' },
-                  { icon: TrendingUp, label: 'Strategy · Hot', title: 'Third Shot Drop Tips', count: '1.5K posts' },
-                ].map((item, index) => (
-                  <motion.button
-                    key={index}
-                    whileHover={{ x: 2 }}
-                    className="w-full hover:bg-slate-50/50 transition-all duration-200 px-4 py-3 text-left group"
-                  >
-                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium mb-1 group-hover:text-green-700 transition-colors">
-                      <item.icon className="w-3.5 h-3.5" />
-                      <span>{item.label}</span>
-                    </div>
-                    <div className="text-sm font-bold text-slate-800 mb-0.5">{item.title}</div>
-                    <div className="text-[11px] text-slate-400">{item.count}</div>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-
-            {/* Footer Links */}
-            <div className="px-4 py-4 pb-6">
-              <div className="bg-white rounded-xl border border-slate-200/60 px-4 py-4 text-center">
-                <div className="text-xs font-medium text-slate-400 mb-2">
-                  <a href="#" className="hover:text-green-700 transition-colors">Terms</a>
-                  <span className="mx-1.5 text-slate-300">&middot;</span>
-                  <a href="#" className="hover:text-green-700 transition-colors">Privacy</a>
-                  <span className="mx-1.5 text-slate-300">&middot;</span>
-                  <a href="#" className="hover:text-green-700 transition-colors">Help</a>
-                </div>
-                <div className="text-xs font-semibold text-slate-500">&copy; 2026 PaddleGrid</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        )}
       </div>
 
       {/* Mobile Menu */}
