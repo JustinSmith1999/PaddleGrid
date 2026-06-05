@@ -45,6 +45,7 @@ export function AdminPanel() {
   const [seriesView, setSeriesView] = useState<'list' | 'calendar' | 'edit' | 'details'>('list');
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
   const [facilityId, setFacilityId] = useState<string | null>(null);
+  const [facilityLoading, setFacilityLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -52,32 +53,26 @@ export function AdminPanel() {
   }, [user]);
 
   const loadUserFacility = async () => {
-    if (!user) return;
+    if (!user) { setFacilityLoading(false); return; }
 
-    const { data, error } = await supabase
-      .from('facility_users')
-      .select('facility_id')
-      .eq('user_id', user.id)
-      .maybeSingle();
+    try {
+      const { data } = await supabase
+        .from('facility_users')
+        .select('facility_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    if (data) {
-      setFacilityId(data.facility_id);
+      if (data) {
+        setFacilityId(data.facility_id);
+      }
+    } finally {
+      setFacilityLoading(false);
     }
   };
 
   const renderSeriesView = () => {
     switch (seriesView) {
       case 'list':
-        // QA: friendly not-authorized state instead of a blank page
-        if (!facilityId) {
-          return (
-            <div className="px-6 py-20 text-center">
-              <p className="text-sm font-semibold text-slate-700 mb-1">Not authorized — sign in</p>
-              <p className="text-xs text-slate-500">Sign in as a facility admin to access this page.</p>
-            </div>
-          );
-        }
-
         return (
           <SeriesManagement
             onCreateNew={() => {
@@ -207,6 +202,24 @@ export function AdminPanel() {
         return <AdminDashboard onViewChange={setCurrentView} />;
     }
   };
+
+  // QA: friendly not-authorized state instead of blank page for non-admin users
+  if (facilityLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-3">
+        <Loader2 className="w-6 h-6 text-emerald-700 animate-spin" />
+        <p className="text-sm text-slate-500">Loading admin…</p>
+      </div>
+    );
+  }
+  if (!facilityId) {
+    return (
+      <div className="px-6 py-24 text-center max-w-md mx-auto">
+        <p className="text-base font-semibold text-slate-800 mb-1" style={{ fontFamily: "'Cinzel','Trajan Pro',serif" }}>Not authorized</p>
+        <p className="text-sm text-slate-500">Sign in as a facility admin to access this page. If you think you should have access, contact your facility owner.</p>
+      </div>
+    );
+  }
 
   return (
     <AdminLayout currentView={currentView} onViewChange={setCurrentView}>
