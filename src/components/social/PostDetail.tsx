@@ -1,3 +1,4 @@
+import ProBadge from './ProBadge';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Send, Heart, Users, Calendar, Clock, MapPin, Trophy, Trash2, MoreHorizontal } from 'lucide-react';
@@ -320,6 +321,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                         ? post.facilities.name
                         : (post.profiles?.full_name || 'Unknown User')}
                     </button>
+                    {!post.posted_as_facility && <ProBadge isPro={(post.profiles as any)?.is_pro} />}
                     {post.post_type === 'match_invite' && (
                       <span className="px-2.5 py-0.5 bg-green-700/10 text-green-700 text-xs font-semibold rounded-full">
                         Match Invite
@@ -615,6 +617,7 @@ export default function PostDetail({ postId, onBack, onProfileClick, onClubClick
                               >
                                 {comment.profiles?.full_name || 'Unknown User'}
                               </button>
+                              <ProBadge isPro={(comment.profiles as any)?.is_pro} />
                               <span className="text-[11px] text-slate-400">
                                 {formatTimeAgo(comment.created_at)}
                               </span>
