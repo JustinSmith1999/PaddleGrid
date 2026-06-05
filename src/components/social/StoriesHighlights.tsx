@@ -340,23 +340,23 @@ export default function StoriesHighlights({ onCreateStory }: StoriesHighlightsPr
                   className="flex flex-col items-center gap-2 group flex-shrink-0"
                 >
                   <div className="relative">
-                    <div className={`w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center ${
+                    <div className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center transition-transform group-hover:scale-[1.04] ${
                       preview.id === 'create'
-                        ? 'border-2 border-dashed border-slate-200'
+                        ? 'ring-2 ring-slate-200'
                         : preview.hasUnread
-                        ? 'ring-2 ring-green-600'
-                        : 'ring-2 ring-slate-200'
-                    } group-hover:scale-105 transition-transform`}>
+                        ? 'p-[2px] bg-gradient-to-tr from-emerald-700 via-amber-500 to-rose-400'
+                        : 'ring-1 ring-slate-200'
+                    }`}>
                       {preview.id === 'create' ? (
                         <Plus className="w-8 h-8 text-green-700" />
                       ) : preview.avatarUrl ? (
                         <img
                           src={preview.avatarUrl}
                           alt={preview.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover rounded-full bg-white"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+                        <div className="w-full h-full rounded-full bg-gradient-to-br from-emerald-700 to-emerald-900 flex items-center justify-center">
                           {preview.type === 'facility' ? (
                             <MapPin className="w-8 h-8 text-white" />
                           ) : (

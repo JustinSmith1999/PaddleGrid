@@ -360,7 +360,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
         whileHover={{ y: -1 }}
         transition={{ duration: 0.2 }}
         onClick={onClick}
-        className="bg-white cursor-pointer rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-200 mb-3 mx-3 lg:mx-0 overflow-hidden"
+        className="bg-white cursor-pointer border-b border-slate-100/80 transition-colors duration-200 overflow-hidden"
       >
         <div className="px-5 py-4 lg:px-6 lg:py-5">
           <div className="flex gap-3 lg:gap-3.5">
