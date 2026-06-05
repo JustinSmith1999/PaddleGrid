@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
 import MobileMenu from './components/MobileMenu';
+import PushOptIn from './components/PushOptIn';
 import { AuthModal } from './components/AuthModal';
 import { NotFound } from './components/NotFound';
 import LoadingScreen from './components/LoadingScreen';
@@ -44,6 +45,7 @@ const PartnerFinder = lazy(() => import('./components/PartnerFinder'));
 const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
 const MerchShop = lazy(() => import('./components/MerchShop'));
 const PostComposer = lazy(() => import('./components/social/PostComposer'));
+const NotificationsPanel = lazy(() => import('./components/social/NotificationsPanel'));
 const GroupsList = lazy(() => import('./components/groups/GroupsList'));
 const GroupDetail = lazy(() => import('./components/groups/GroupDetail'));
 const MatchRequestsBoard = lazy(() => import('./components/social/MatchRequestsBoard'));
@@ -62,6 +64,7 @@ function AppContent() {
   const { loading, isAdmin, user, profile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'facility'>('login');
   const navigate = useNavigate();
   const location = useLocation();
@@ -356,7 +359,7 @@ function AppContent() {
               else if (view === 'messages') navigate('/messages');
               else if (view === 'bookmarks') navigate('/profile');
             }}
-            onNotificationsClick={() => { /* TODO: global notifications panel */ }}
+            onNotificationsClick={() => setShowNotifications(true)}
             onProfileClick={() => navigate('/profile')}
             onClubClick={(slug) => navigate('/club/' + slug)}
             unreadNotifications={0}
@@ -369,6 +372,22 @@ function AppContent() {
               />
             </Suspense>
           )}
+          {showNotifications && (
+            <Suspense fallback={null}>
+              <NotificationsPanel
+                onClose={() => setShowNotifications(false)}
+                onNotificationClick={(n) => {
+                  if ((n.type === 'like' || n.type === 'comment') && n.data?.post_id) {
+                    navigate('/post/' + n.data.post_id);
+                  } else if (n.type === 'follow' && n.data?.actor_id) {
+                    navigate('/player/' + n.data.actor_id);
+                  }
+                  setShowNotifications(false);
+                }}
+              />
+            </Suspense>
+          )}
+          <PushOptIn />
         </>
       )}
 
@@ -598,7 +617,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <A11yAnnouncerProvider>
-          <AppContent />
+          <Sentry.ErrorBoundary fallback={<div style={{ padding: 32, textAlign: 'center', fontFamily: 'system-ui' }}>Something went wrong. Please reload.</div>}>
+            <AppContent />
+          </Sentry.ErrorBoundary>
         </A11yAnnouncerProvider>
       </AuthProvider>
     </BrowserRouter>

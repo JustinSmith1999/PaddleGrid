@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import InvestorTour from '../InvestorTour';
+import DemoTour from '../DemoTour';
 import InsightsCard from './InsightsCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -292,7 +292,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
   if (loading) {
     return (
       <>
-        <InvestorTour />
+        <DemoTour />
         <InsightsCard />
         <div className="flex flex-col justify-center items-center py-24 gap-3" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
           <Loader2 className="w-8 h-8 text-green-700 animate-spin" />
@@ -479,7 +479,7 @@ export function AdminDashboard({ onViewChange }: AdminDashboardProps) {
 
   return (
     <div className="space-y-8" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <InvestorTour />
+      <DemoTour />
       <InsightsCard />
       {/* Header */}
       <motion.div

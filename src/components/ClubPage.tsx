@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SlotBoard from './SlotBoard';
+import PresencePill from './PresencePill';
+import MembershipPurchaseModal from './MembershipPurchaseModal';
 import PartnershipsStrip from './PartnershipsStrip';
 import CoachesSection from './CoachesSection';
 import RequestModal from './RequestModal';
@@ -526,6 +528,9 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-1.5 line-clamp-2">
                 {facility.name}
               </h1>
+              <div className="mt-2">
+                <PresencePill channel={`club:${facility.id}`} tone="dark" verb="here now" />
+              </div>
               <button
                 onClick={() => {
                   const address = '645 National Blvd, Medford, NY 11763';
