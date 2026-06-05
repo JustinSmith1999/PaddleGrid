@@ -28,7 +28,7 @@ export default function ReviewsTab({ facilityId, facilityName }: Props) {
     setLoading(true);
     const { data } = await supabase
       .from('facility_reviews')
-      .select('id, rating, title, content, created_at, profiles!facility_reviews_user_id_fkey(id, full_name, profile_picture_url)')
+      .select('id, rating, title, content, created_at, profiles:user_id(id, full_name, profile_picture_url)')
       .eq('facility_id', facilityId)
       .order('created_at', { ascending: false })
       .limit(50);

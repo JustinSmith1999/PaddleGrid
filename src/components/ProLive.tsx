@@ -42,12 +42,12 @@ export default function ProLive() {
     void (async () => {
       const [{ data: s }, { data: p }] = await Promise.all([
         supabase.from('pro_live_sessions')
-          .select('id, title, description, status, scheduled_at, viewer_peak, pro:profiles!pro_live_sessions_pro_id_fkey(id, full_name, profile_picture_url)')
+          .select('id, title, description, status, scheduled_at, viewer_peak, pro:pro_id(id, full_name, profile_picture_url)')
           .in('status', ['scheduled', 'live'])
           .order('scheduled_at', { ascending: true })
           .limit(20),
         supabase.from('pro_products')
-          .select('id, pro_id, name, image_url, price_cents, affiliate_partner, affiliate_url, pro:profiles!pro_products_pro_id_fkey(full_name, profile_picture_url)')
+          .select('id, pro_id, name, image_url, price_cents, affiliate_partner, affiliate_url, pro:pro_id(full_name, profile_picture_url)')
           .eq('is_active', true)
           .order('created_at', { ascending: false })
           .limit(20),

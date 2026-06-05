@@ -39,7 +39,7 @@ export default function VirtualCoachingPage() {
   const load = async () => {
     const { data } = await supabase
       .from('virtual_coaching_sessions')
-      .select('id, topic, scheduled_at, duration_min, price_cents, status, meeting_url, pro:profiles!virtual_coaching_sessions_pro_id_fkey(id, full_name, profile_picture_url, pro_specialties)')
+      .select('id, topic, scheduled_at, duration_min, price_cents, status, meeting_url, pro:pro_id(id, full_name, profile_picture_url, pro_specialties)')
       .in('status', ['open', 'booked'])
       .gte('scheduled_at', new Date().toISOString())
       .order('scheduled_at', { ascending: true })

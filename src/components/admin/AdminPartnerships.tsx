@@ -80,7 +80,7 @@ function CoachesTab({ facilityId }: { facilityId?: string }) {
     if (!facilityId) return;
     const { data } = await supabase
       .from('ambassadors')
-      .select('id, pro_id, status, title, display_order, profiles!ambassadors_pro_id_fkey(id, full_name, profile_picture_url, pro_specialties)')
+      .select('id, pro_id, status, title, display_order, profiles:pro_id(id, full_name, profile_picture_url, pro_specialties)')
       .eq('facility_id', facilityId)
       .order('display_order', { ascending: true });
     setCoaches((data as any) || []);

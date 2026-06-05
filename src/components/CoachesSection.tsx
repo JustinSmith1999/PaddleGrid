@@ -42,7 +42,7 @@ export default function CoachesSection({ facilityId, onRequestLesson, onRequestC
         .from('ambassadors')
         .select(`
           id, pro_id, title, display_order,
-          profiles!ambassadors_pro_id_fkey(id, full_name, profile_picture_url, pro_bio, pro_specialties, pro_hourly_rate)
+          profiles:pro_id(id, full_name, profile_picture_url, pro_bio, pro_specialties, pro_hourly_rate)
         `)
         .eq('facility_id', facilityId)
         .eq('status', 'active')
