@@ -25,6 +25,14 @@ export default function MobileMenu({
   const [isOpen, setIsOpen] = useState(false);
   const [facilities, setFacilities] = useState<Array<{ id: string; name: string; slug: string; logo_url: string | null; city: string | null }>>([]);
 
+
+  // Global hook: bottom-nav ☰ button broadcasts 'pg:open-menu'.
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('pg:open-menu', handler);
+    return () => window.removeEventListener('pg:open-menu', handler);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       fetchFacilities();
@@ -82,18 +90,6 @@ export default function MobileMenu({
 
   return (
     <>
-      {/* Hamburger Button - Bottom Left */}
-      {activeView !== 'messages' && (
-        <button
-          onClick={() => setIsOpen(true)}
-          aria-expanded={isOpen}
-          aria-label="Open navigation menu"
-          className="lg:hidden fixed bottom-24 left-6 w-14 h-14 bg-green-700 text-white rounded-full flex items-center justify-center hover:bg-green-600 transition-all shadow-lg hover:scale-110 z-40"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
-      )}
-
       {/* Overlay + Slide-out Menu */}
       <AnimatePresence>
         {isOpen && (

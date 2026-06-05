@@ -22,6 +22,14 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
   const touchStartY = useRef<number>(0);
   const heroRef = useRef<HTMLDivElement>(null);
 
+
+  // Global hook: bottom-nav + button broadcasts 'pg:compose-post'.
+  useEffect(() => {
+    const handler = () => setShowComposer(true);
+    window.addEventListener('pg:compose-post', handler);
+    return () => window.removeEventListener('pg:compose-post', handler);
+  }, []);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -163,16 +171,6 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         onClubClick={handleClubClick}
         onViewChange={(view) => setActiveView(view)}
       />
-
-      {/* Floating action button */}
-      {activeView !== 'messages' && (
-        <button
-          onClick={() => setShowComposer(true)}
-          className="fixed bottom-24 right-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all shadow-lg hover:scale-110 z-40"
-        >
-          <Plus className="w-6 h-6" />
-        </button>
-      )}
 
       {/* Post Composer Modal */}
       {showComposer && (
