@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SponsorSlot from './SponsorSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, ShoppingBag, Filter, X, Plus, Minus, Check, CreditCard, Truck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -436,6 +437,7 @@ export default function MerchShop() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FC]">
+      <SponsorSlot location="shop_top" />
       {/* Sticky Header */}
       <div className="bg-white/80 backdrop-blur-lg border-b border-slate-200/60 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">

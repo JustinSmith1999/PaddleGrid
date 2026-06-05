@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import SponsorSlot from './SponsorSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, DollarSign, MapPin, Loader2, X, Filter, Search, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -237,6 +238,7 @@ export function UserBookings() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FC]">
+      <SponsorSlot location="bookings_top" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Payment success banner */}
         <AnimatePresence>

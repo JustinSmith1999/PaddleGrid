@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SponsorSlot from './SponsorSlot';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, MapPin, Building2, Search, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -121,6 +122,7 @@ export function BrowseCourts() {
     );
   }
 
+      <SponsorSlot location="play_top" />
   return (
     <div className="w-full max-w-7xl mx-auto px-6 pt-2 pb-8 lg:py-12">
       <div className="hidden lg:block text-center mb-6">
