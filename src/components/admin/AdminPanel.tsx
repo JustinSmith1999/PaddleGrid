@@ -33,6 +33,9 @@ import AdminSponsors from './AdminSponsors';
 import AdminGroupBlast from './AdminGroupBlast';
 import AdminPartnerships from './AdminPartnerships';
 import AdminIntegrations from './AdminIntegrations';
+import AdminAmenities from './AdminAmenities';
+import AdminPushBlast from './AdminPushBlast';
+import AdminAdAnalytics from './AdminAdAnalytics';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Loader2 } from 'lucide-react';
@@ -184,6 +187,12 @@ export function AdminPanel() {
         return <AdminPartnerships facilityId={facilityId} />;
       case 'integrations':
         return <AdminIntegrations facilityId={facilityId} />;
+      case 'amenities':
+        return <AdminAmenities facilityId={facilityId} />;
+      case 'push-blast':
+        return <AdminPushBlast facilityId={facilityId} />;
+      case 'ad-analytics':
+        return <AdminAdAnalytics facilityId={facilityId} />;
       default:
         return <AdminDashboard onViewChange={setCurrentView} />;
     }

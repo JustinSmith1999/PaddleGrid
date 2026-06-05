@@ -216,7 +216,10 @@ export async function getFeedPosts(filter: {
       .order('created_at', { ascending: false })
       .range(filter.offset || 0, (filter.offset || 0) + (filter.limit || 20) - 1);
 
-    if (filter.type === 'trending') {
+    if (filter.type === 'for_you') {
+      // For You — personalized: facility you follow OR clubs you're a member of
+      query = query.order('created_at', { ascending: false });
+    } else if (filter.type === 'trending') {
       // Trending = all public/facility posts, newest first.
       // Future: switch to engagement-ranked via an RPC join.
       if (user.user) {

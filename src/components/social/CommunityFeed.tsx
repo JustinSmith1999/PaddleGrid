@@ -29,7 +29,7 @@ interface CommunityFeedProps {
 export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, onProfileClick, onViewChange }: CommunityFeedProps) {
   const { user, profile } = useAuth();
   const [activeView, setActiveView] = useState<'feed' | 'explore' | 'search' | 'notifications' | 'messages' | 'bookmarks' | 'profile'>('feed');
-  const [activeTab, setActiveTab] = useState<'trending' | 'following' | 'my_clubs'>('trending');
+  const [activeTab, setActiveTab] = useState<'for_you' | 'trending' | 'following'>('for_you');
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -180,7 +180,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
     try {
       const feedPosts = await getFeedPosts({
         type: activeTab,
-        facilityIds: activeTab === 'my_clubs' ? userFacilityIds : undefined,
+        facilityIds: activeTab === 'for_you' ? userFacilityIds : undefined,
         limit: 100
       });
 
@@ -427,7 +427,7 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                   {([
                     { id: 'trending',  label: 'Trending'  },
                     { id: 'following', label: 'Following' },
-                    { id: 'my_clubs',  label: 'My Clubs'  },
+                    { id: 'for_you',  label: 'For You'  },
                   ] as const).map((t) => {
                     const isActive = activeTab === t.id;
                     return (
@@ -518,18 +518,18 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
                     className="bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-center py-16 px-6"
                   >
                     <div className="text-5xl mb-4">
-                      {activeTab === 'my_clubs' ? '🏢' : activeTab === 'following' ? '👥' : '📣'}
+                      {activeTab === 'for_you' ? '🏢' : activeTab === 'following' ? '👥' : '📣'}
                     </div>
                     <p className="text-slate-800 font-bold text-lg mb-2">
-                      {activeTab === 'my_clubs'
+                      {activeTab === 'for_you'
                         ? 'No posts from your clubs yet'
                         : activeTab === 'following'
                         ? 'No posts from followed players'
                         : 'No posts yet'}
                     </p>
                     <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
-                      {activeTab === 'my_clubs'
-                        ? 'Be the first to share with members of your clubs!'
+                      {activeTab === 'for_you'
+                        ? 'Be the first to share with followers of your clubs!'
                         : activeTab === 'following'
                         ? 'Follow some players to see their posts here. Visit player profiles and click Follow.'
                         : user

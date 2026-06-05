@@ -70,7 +70,7 @@ export default function CoachesSection({ facilityId, onRequestLesson, onRequestC
           <AvatarStack
             size="sm"
             max={4}
-            members={coaches.slice(0, 4).map(c => ({
+            followers={coaches.slice(0, 4).map(c => ({
               id: c.id,
               name: c.profiles?.full_name || null,
               avatarUrl: c.profiles?.profile_picture_url || null,
