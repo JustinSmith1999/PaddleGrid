@@ -15,7 +15,11 @@ export type SponsorLocation =
   | 'admin_top'
   | 'leaderboard_top'
   | 'event_detail_top'
-  | 'global_banner';
+  | 'global_banner'
+  | 'match_requests_top'
+  | 'series_top'
+  | 'club_page_top'
+  | 'groups_top';
 
 interface SponsorRow {
   id: string;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import SponsorSlot from '../SponsorSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, Users, Trophy, DollarSign, Plus, Loader2, Check } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -123,6 +124,7 @@ export default function MatchRequestsBoard({ facilityId, withinDays = 14 }: Prop
 
   return (
     <div className="space-y-4">
+      <SponsorSlot location="match_requests_top" facilityId={facilityId} />
       <div className="flex items-center justify-between px-4 sm:px-0">
         <div>
           <h2 className="text-xl font-bold text-slate-900" style={{ fontFamily: "'Cinzel','Manrope',serif" }}>Request to play</h2>

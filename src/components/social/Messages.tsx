@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import SponsorSlot from '../SponsorSlot';
 import { useSearchParams } from 'react-router-dom';
 import { Send, Search, MessageCircle, User, Image as ImageIcon, Video, X, Loader2, ArrowLeft, Plus, Users, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -477,6 +478,8 @@ export default function Messages({ startWithUserId, sidebarCollapsed, onToggleSi
 
   return (
     <div className="flex h-full bg-[#F8F9FC]">
+      <SponsorSlot location="messages_top" />
+
       {/* Conversation List */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-slate-200/60 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
         {/* List Header */}
