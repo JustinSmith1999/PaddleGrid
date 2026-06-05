@@ -68,6 +68,16 @@ export function AdminPanel() {
   const renderSeriesView = () => {
     switch (seriesView) {
       case 'list':
+        // QA: friendly not-authorized state instead of a blank page
+        if (!facilityId) {
+          return (
+            <div className="px-6 py-20 text-center">
+              <p className="text-sm font-semibold text-slate-700 mb-1">Not authorized — sign in</p>
+              <p className="text-xs text-slate-500">Sign in as a facility admin to access this page.</p>
+            </div>
+          );
+        }
+
         return (
           <SeriesManagement
             onCreateNew={() => {
