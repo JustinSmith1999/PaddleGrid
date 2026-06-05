@@ -425,9 +425,9 @@ export default function CommunityFeed({ onCreatePost, onPostClick, onClubClick, 
               <>
                 <div className="flex items-center justify-center gap-6 px-3 pt-2 pb-2 bg-white border-b border-slate-100">
                   {([
+                    { id: 'for_you',  label: 'For You'  },
                     { id: 'trending',  label: 'Trending'  },
                     { id: 'following', label: 'Following' },
-                    { id: 'for_you',  label: 'For You'  },
                   ] as const).map((t) => {
                     const isActive = activeTab === t.id;
                     return (
