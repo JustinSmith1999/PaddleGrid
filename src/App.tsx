@@ -284,7 +284,12 @@ function AppContent() {
             <div className="pb-20">
               <AdminPanel />
             </div>
-          ) : <div className="min-h-screen bg-gray-50 pb-20" />
+          ) : (
+            <div className="min-h-screen pb-20 px-6 py-24 text-center max-w-md mx-auto">
+              <p className="text-base font-semibold text-slate-800 mb-1" style={{ fontFamily: "'Cinzel','Trajan Pro',serif" }}>Not authorized</p>
+              <p className="text-sm text-slate-500">Sign in as a facility admin to access this page. If you think you should have access, contact your facility owner.</p>
+            </div>
+          )
         } />
 
         <Route path="/series" element={<SeriesBrowserRoute />} />
