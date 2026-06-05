@@ -26,13 +26,32 @@ export default function ReviewsTab({ facilityId, facilityName }: Props) {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
+    // Two-step fetch: facility_reviews.user_id references auth.users (not
+    // public.profiles), so the PostgREST FK embed `profiles:user_id(...)`
+    // returns 400. Fetch the rows first, then hydrate authors keyed by user_id.
+    const { data: rows } = await supabase
       .from('facility_reviews')
-      .select('id, rating, title, content, created_at, profiles:user_id(id, full_name, profile_picture_url)')
+      .select('id, rating, title, content, created_at, user_id')
       .eq('facility_id', facilityId)
       .order('created_at', { ascending: false })
       .limit(50);
-    setReviews((data as any) || []);
+
+    const userIds = Array.from(new Set(((rows as any[]) || []).map((r) => r.user_id).filter(Boolean)));
+    const profileMap = new Map<string, { id: string; full_name: string; profile_picture_url: string | null }>();
+    if (userIds.length) {
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url')
+        .in('id', userIds);
+      for (const p of (profs as any[]) || []) profileMap.set(p.id, p);
+    }
+
+    const hydrated: Review[] = ((rows as any[]) || []).map((r) => ({
+      ...r,
+      profiles: profileMap.get(r.user_id) || undefined,
+    }));
+
+    setReviews(hydrated);
     setLoading(false);
   };
   useEffect(() => { void load(); }, [facilityId]);
