@@ -8,7 +8,7 @@ interface Review {
   id: string;
   rating: number;
   title: string | null;
-  content: string | null;
+  review_text: string | null;
   created_at: string;
   profiles?: { id: string; full_name: string; profile_picture_url?: string | null };
 }
@@ -31,7 +31,7 @@ export default function ReviewsTab({ facilityId, facilityName }: Props) {
     // returns 400. Fetch the rows first, then hydrate authors keyed by user_id.
     const { data: rows } = await supabase
       .from('facility_reviews')
-      .select('id, rating, title, content, created_at, user_id')
+      .select('id, rating, title, review_text, created_at, user_id')
       .eq('facility_id', facilityId)
       .order('created_at', { ascending: false })
       .limit(50);
@@ -151,7 +151,7 @@ function ReviewCard({ r, delay }: { r: Review; delay: number }) {
             <span className="text-[10px] text-slate-400 tabular-nums">{relTime(r.created_at)}</span>
           </div>
           {r.title && <p className="text-sm font-semibold text-slate-900 mt-1.5">{r.title}</p>}
-          {r.content && <p className="text-sm text-slate-600 mt-1 leading-relaxed">{r.content}</p>}
+          {r.review_text && <p className="text-sm text-slate-600 mt-1 leading-relaxed">{r.review_text}</p>}
         </div>
       </div>
     </motion.article>
@@ -177,7 +177,7 @@ function WriteReviewModal({ facilityId, facilityName, onClose, onSubmitted }: { 
       user_id: user.id,
       rating,
       title: fullTitle,
-      content: content || null,
+      review_text: content || null,
     });
     setBusy(false);
     if (!error) { setStep('success'); setTimeout(() => { onSubmitted(); onClose(); }, 1200); }
