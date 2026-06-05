@@ -32,7 +32,7 @@ export default function SwipePartnerDeck({ facilityId }: { facilityId?: string }
     setLoading(true);
     let q = supabase
       .from('profiles')
-      .select('id, full_name, profile_picture_url, skill_level, bio, city, is_pro')
+      .select('id, full_name, profile_picture_url, pro_bio, is_pro')
       .neq('id', user?.id || '00000000-0000-0000-0000-000000000000')
       .not('profile_picture_url', 'is', null)
       .order('created_at', { ascending: false })

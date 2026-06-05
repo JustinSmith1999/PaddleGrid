@@ -27,7 +27,7 @@ export default function ProsDirectory({ onOpenProfile }: { onOpenProfile?: (id: 
     void (async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, pro_bio, pro_specialties, pro_hourly_rate, city')
+        .select('id, full_name, profile_picture_url, pro_bio, pro_specialties, pro_hourly_rate')
         .eq('is_pro', true)
         .order('pro_since', { ascending: false })
         .limit(100);
