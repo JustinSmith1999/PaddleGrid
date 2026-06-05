@@ -81,6 +81,7 @@ const navigationSections: NavSection[] = [
       { id: 'sponsors', label: 'Sponsors', icon: <DollarSign className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'group-blast', label: 'Reach Out to Groups', icon: <MessageSquare className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'partnerships', label: 'Partnerships', icon: <Building2 className="w-[18px] h-[18px]" />, badge: 'NEW' },
+      { id: 'integrations', label: 'Integrations', icon: <Zap className="w-[18px] h-[18px]" />, badge: 'NEW' },
     ]
   },
   {
