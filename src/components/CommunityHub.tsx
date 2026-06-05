@@ -23,13 +23,6 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
   const heroRef = useRef<HTMLDivElement>(null);
 
 
-  // Global hook: bottom-nav + button broadcasts 'pg:compose-post'.
-  useEffect(() => {
-    const handler = () => setShowComposer(true);
-    window.addEventListener('pg:compose-post', handler);
-    return () => window.removeEventListener('pg:compose-post', handler);
-  }, []);
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -172,15 +165,7 @@ export default function CommunityHub({ onAuthRequired }: CommunityHubProps) {
         onViewChange={(view) => setActiveView(view)}
       />
 
-      {/* Post Composer Modal */}
-      {showComposer && (
-        <PostComposer
-          onClose={() => setShowComposer(false)}
-          onSuccess={() => {
-            setRefreshTrigger(prev => prev + 1);
-          }}
-        />
-      )}
+
     </div>
   );
 }
