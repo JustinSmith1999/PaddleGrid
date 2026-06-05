@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Award, MessageCircle, BookOpen } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import AvatarStack from './AvatarStack';
 
 interface Coach {
   id: string;
@@ -65,7 +66,19 @@ export default function CoachesSection({ facilityId, onRequestLesson, onRequestC
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">PaddleGrid Pros affiliated with this facility</p>
         </div>
-        <span className="text-[11px] text-slate-400 font-medium">{coaches.length} {coaches.length === 1 ? 'pro' : 'pros'}</span>
+        <div className="flex items-center gap-2">
+          <AvatarStack
+            size="sm"
+            max={4}
+            members={coaches.slice(0, 4).map(c => ({
+              id: c.id,
+              name: c.profiles?.full_name || null,
+              avatarUrl: c.profiles?.profile_picture_url || null,
+            }))}
+            totalCount={coaches.length}
+          />
+          <span className="text-[11px] text-slate-400 font-medium">{coaches.length} {coaches.length === 1 ? 'pro' : 'pros'}</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

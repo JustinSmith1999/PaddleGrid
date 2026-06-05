@@ -3,6 +3,7 @@ import SponsorSlot from '../SponsorSlot';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, Users, Trophy, DollarSign, Plus, Loader2, Check } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import AvatarStack from '../AvatarStack';
 import { useAuth } from '../../contexts/AuthContext';
 import MatchRequestComposer from './MatchRequestComposer';
 
@@ -15,6 +16,7 @@ interface Request {
   play_end_time: string;
   spots_needed: number;
   spots_filled: number;
+  participants?: { id: string; name: string | null; avatarUrl: string | null }[];
   skill_min: number | null;
   skill_max: number | null;
   requires_payment: boolean;
@@ -80,6 +82,29 @@ export default function MatchRequestsBoard({ facilityId, withinDays = 14 }: Prop
         .in('post_id', ids);
       const joinedSet = new Set((parts || []).map((p: any) => p.post_id));
       rows.forEach(r => { r.joined = joinedSet.has(r.id); });
+    }
+
+    // Batched fetch of joined player avatars for every request shown
+    if (rows.length) {
+      const ids = rows.map(r => r.id);
+      const { data: pRows } = await supabase
+        .from('social_post_participants')
+        .select('post_id, profiles!social_post_participants_user_id_fkey(id, full_name, profile_picture_url)')
+        .in('post_id', ids)
+        .limit(rows.length * 8);
+      const participantsMap = new Map<string, { id: string; name: string | null; avatarUrl: string | null }[]>();
+      ((pRows as any) || []).forEach((row: any) => {
+        if (!row.profiles) return;
+        const arr = participantsMap.get(row.post_id) || [];
+        if (arr.length >= 5) return;
+        arr.push({
+          id: row.profiles.id,
+          name: row.profiles.full_name,
+          avatarUrl: row.profiles.profile_picture_url,
+        });
+        participantsMap.set(row.post_id, arr);
+      });
+      rows.forEach(r => { r.participants = participantsMap.get(r.id) || []; });
     }
 
     setRequests(rows);
@@ -206,9 +231,17 @@ export default function MatchRequestsBoard({ facilityId, withinDays = 14 }: Prop
                         <Trophy className="w-3.5 h-3.5 text-slate-400" />
                         {skillLabel}
                       </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5 text-slate-400" />
-                        {r.spots_filled}/{r.spots_needed}
+                      <span className="inline-flex items-center gap-1.5">
+                        <AvatarStack
+                          size="xs"
+                          max={3}
+                          members={[
+                            { id: r.profiles?.id || r.author_id, name: r.profiles?.full_name || null, avatarUrl: r.profiles?.profile_picture_url || null },
+                            ...(r.participants || []),
+                          ]}
+                          totalCount={r.spots_filled}
+                        />
+                        <span className="text-slate-600">{r.spots_filled}/{r.spots_needed}</span>
                       </span>
                       {r.requires_payment && r.price_per_person ? (
                         <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
