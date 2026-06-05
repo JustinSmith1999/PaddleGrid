@@ -4,6 +4,7 @@ import { Users, Plus, Lock, Globe, UserPlus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import CreateGroupModal from './CreateGroupModal';
+import AvatarStack from '../AvatarStack';
 
 interface Group {
   id: string;
@@ -15,6 +16,7 @@ interface Group {
   owner_id: string | null;
   is_member?: boolean;
   my_role?: 'owner' | 'admin' | 'member' | null;
+  preview_members?: { id: string; name: string | null; avatarUrl: string | null }[];
 }
 
 interface Props {
@@ -57,6 +59,30 @@ export default function GroupsList({ facilityId, onOpenGroup }: Props) {
       g.is_member = myIds.has(g.id);
       g.my_role = myRoles.get(g.id) || null;
     });
+
+    // One batched query: pull up to ~3 member previews per group.
+    const groupIds = all.map((g) => g.id);
+    const previewMap = new Map<string, { id: string; name: string | null; avatarUrl: string | null }[]>();
+    if (groupIds.length > 0) {
+      const { data: memberPreviewRows } = await supabase
+        .from('group_members')
+        .select('group_id, profiles!group_members_user_id_fkey(id, full_name, profile_picture_url)')
+        .in('group_id', groupIds)
+        .order('joined_at', { ascending: false })
+        .limit(groupIds.length * 8);
+      ((memberPreviewRows as any) || []).forEach((row: any) => {
+        if (!row.profiles) return;
+        const arr = previewMap.get(row.group_id) || [];
+        if (arr.length >= 3) return;
+        arr.push({
+          id: row.profiles.id,
+          name: row.profiles.full_name,
+          avatarUrl: row.profiles.profile_picture_url,
+        });
+        previewMap.set(row.group_id, arr);
+      });
+    }
+    all.forEach((g) => { g.preview_members = previewMap.get(g.id) || []; });
     setYours(all.filter((g) => g.is_member));
     setDiscover(all.filter((g) => !g.is_member && g.visibility !== 'invite_only'));
     setLoading(false);
@@ -161,9 +187,15 @@ function GroupCard({ group, onOpen, onJoin }: { group: Group; onOpen?: () => voi
         </div>
         {group.description && <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-2.5">{group.description}</p>}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5 text-[11px] text-slate-500">
-            <span className="inline-flex items-center gap-1 font-semibold"><Users className="w-3 h-3" /> {group.member_count}</span>
-            <span className="inline-flex items-center gap-1"><VisIcon className="w-3 h-3" /> {group.visibility.replace('_', ' ')}</span>
+          <div className="flex items-center gap-3 text-[11px] text-slate-500">
+            <AvatarStack
+              members={group.preview_members || []}
+              totalCount={group.member_count}
+              size="sm"
+              max={3}
+            />
+            <span className="font-semibold text-slate-700">{group.member_count} member{group.member_count === 1 ? '' : 's'}</span>
+            <span className="inline-flex items-center gap-1 text-slate-400"><VisIcon className="w-3 h-3" /> {group.visibility.replace('_', ' ')}</span>
           </div>
           {onJoin && !group.is_member && (
             <button
