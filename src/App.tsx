@@ -45,6 +45,13 @@ const LoyaltyRewards = lazy(() => import('./components/LoyaltyRewards'));
 const MerchShop = lazy(() => import('./components/MerchShop'));
 const PostComposer = lazy(() => import('./components/social/PostComposer'));
 const NotificationsPanel = lazy(() => import('./components/social/NotificationsPanel'));
+const ProsDirectory = lazy(() => import('./components/ProsDirectory'));
+const AmbassadorsDirectory = lazy(() => import('./components/AmbassadorsDirectory'));
+const JuniorsLanding = lazy(() => import('./components/JuniorsLanding'));
+const SwipePartnerDeck = lazy(() => import('./components/SwipePartnerDeck'));
+const ProLive = lazy(() => import('./components/ProLive'));
+const VirtualCoachingPage = lazy(() => import('./components/VirtualCoachingPage'));
+const CharitiesPage = lazy(() => import('./components/CharitiesPage'));
 const GroupsList = lazy(() => import('./components/groups/GroupsList'));
 const GroupDetail = lazy(() => import('./components/groups/GroupDetail'));
 const MatchRequestsBoard = lazy(() => import('./components/social/MatchRequestsBoard'));
@@ -338,6 +345,13 @@ function AppContent() {
           ) : <div className="min-h-screen bg-gray-50 pb-20" />
         } />
 
+                <Route path="/pros" element={<ProsDirectory onOpenProfile={(id) => navigate('/player/' + id)} />} />
+        <Route path="/ambassadors" element={<AmbassadorsDirectory onOpenProfile={(id) => navigate('/player/' + id)} onOpenClub={(slug) => navigate('/club/' + slug)} />} />
+        <Route path="/juniors" element={<JuniorsLanding />} />
+        <Route path="/find-partner" element={<SwipePartnerDeck />} />
+        <Route path="/pro-live" element={<ProLive />} />
+        <Route path="/coaching" element={<VirtualCoachingPage />} />
+        <Route path="/charities" element={<CharitiesPage />} />
         <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

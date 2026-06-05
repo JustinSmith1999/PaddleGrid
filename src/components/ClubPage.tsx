@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SlotBoard from './SlotBoard';
+import ReviewsTab from './ReviewsTab';
 import PresencePill from './PresencePill';
 import MembershipPurchaseModal from './MembershipPurchaseModal';
 import PartnershipsStrip from './PartnershipsStrip';
@@ -310,7 +311,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
       const { error } = await supabase.from('facility_users').insert({
         facility_id: facilityId,
         user_id: user.id,
-        role: 'member',
+        role: 'follower',
       });
 
       if (error) throw error;
@@ -878,7 +879,7 @@ export default function ClubPage({ facilityId, onBack }: ClubPageProps) {
                     <UserPlus className="w-7 h-7 text-green-700" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 mb-1.5">Follow This Club</h3>
-                  <p className="text-slate-500 mb-5 text-sm leading-relaxed">Stay updated on events and connect with members.</p>
+                  <p className="text-slate-500 mb-5 text-sm leading-relaxed">Stay updated on events and connect with followers.</p>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

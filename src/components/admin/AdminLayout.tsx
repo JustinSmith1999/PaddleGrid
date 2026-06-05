@@ -58,7 +58,7 @@ const navigationSections: NavSection[] = [
   {
     label: 'MEMBERS',
     items: [
-      { id: 'members', label: 'Member List', icon: <Users className="w-[18px] h-[18px]" /> },
+      { id: 'followers', label: 'Member List', icon: <Users className="w-[18px] h-[18px]" /> },
       { id: 'engagement', label: 'Engagement', icon: <Activity className="w-[18px] h-[18px]" />, badge: 'AI' },
       { id: 'churn-alerts', label: 'Churn Alerts', icon: <AlertTriangle className="w-[18px] h-[18px]" />, badge: 'AI' },
       { id: 'pre-registered', label: 'Import / Onboard', icon: <UserPlus className="w-[18px] h-[18px]" /> },
@@ -82,6 +82,9 @@ const navigationSections: NavSection[] = [
       { id: 'group-blast', label: 'Reach Out to Groups', icon: <MessageSquare className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'partnerships', label: 'Partnerships', icon: <Building2 className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'integrations', label: 'Integrations', icon: <Zap className="w-[18px] h-[18px]" />, badge: 'NEW' },
+      { id: 'amenities', label: 'Amenities', icon: <Sparkles className="w-[18px] h-[18px]" />, badge: 'NEW' },
+      { id: 'push-blast', label: 'Push Blast', icon: <Bell className="w-[18px] h-[18px]" />, badge: 'NEW' },
+      { id: 'ad-analytics', label: 'Ad Analytics', icon: <BarChart3 className="w-[18px] h-[18px]" />, badge: 'NEW' },
     ]
   },
   {
