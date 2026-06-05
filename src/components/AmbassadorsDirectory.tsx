@@ -28,18 +28,38 @@ export default function AmbassadorsDirectory({ onOpenProfile, onOpenClub }: { on
 
   useEffect(() => {
     void (async () => {
-      const { data, error } = await supabase
+      // Two-step fetch: ambassadors.pro_id references auth.users (not public.profiles),
+      // so the PostgREST FK embed `profiles:pro_id(...)` returns 400. We fetch the rows
+      // first, then hydrate profile data in a second query keyed by pro_id IN (...).
+      const { data: ambs, error } = await supabase
         .from('ambassadors')
         .select(`
-          id, title, runs_open_play, runs_events, roles,
-          facilities:facility_id(id, name, slug, logo_url),
-          profiles:pro_id(id, full_name, profile_picture_url)
+          id, title, runs_open_play, runs_events, roles, pro_id,
+          facilities:facility_id(id, name, slug, logo_url)
         `)
         .eq('status', 'active')
         .order('display_order', { ascending: true })
         .limit(100);
       if (error) console.error('Ambassadors query', error);
-      setRows((data as any) || []);
+
+      const proIds = Array.from(new Set(((ambs as any[]) || []).map((a) => a.pro_id).filter(Boolean)));
+      let profileMap = new Map<string, { id: string; full_name: string; profile_picture_url: string | null }>();
+      if (proIds.length) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url')
+          .in('id', proIds);
+        for (const p of (profs as any[]) || []) profileMap.set(p.id, p);
+      }
+
+      const hydrated: Row[] = ((ambs as any[]) || [])
+        .map((a) => ({
+          ...a,
+          profiles: profileMap.get(a.pro_id) || null,
+        }))
+        .filter((a) => a.profiles && a.facilities);
+
+      setRows(hydrated);
       setLoading(false);
     })();
   }, []);
