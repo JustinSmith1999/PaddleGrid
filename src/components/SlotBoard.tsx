@@ -219,7 +219,7 @@ export default function SlotBoard({ facilityId, courts, onBookSlot }: Props) {
                       {allBooked ? 'Fully booked' : `${bucketStats.free} court-slots free`}
                     </span>
                   </div>
-                  <div className="grid grid-cols-4 gap-1.5">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
                     {slots.map(t => {
                       const d = density(t);
                       const disabled = d.free === 0;
@@ -228,10 +228,10 @@ export default function SlotBoard({ facilityId, courts, onBookSlot }: Props) {
                           key={t}
                           onClick={() => bookSlot(t)}
                           disabled={disabled}
-                          className={`flex flex-col items-center justify-center py-2 rounded-xl ring-1 transition ${pillTheme(d.pct, disabled)}`}
+                          className={`flex flex-col items-center justify-center py-2.5 rounded-xl ring-1 transition active:scale-[0.97] ${pillTheme(d.pct, disabled)}`}
                         >
-                          <span className="text-[12px] font-bold tabular-nums leading-tight">{fmtTime(t)}</span>
-                          <span className="text-[10px] opacity-80 mt-0.5 tabular-nums">{d.free}/{d.total}</span>
+                          <span className="text-[12px] sm:text-[13px] font-bold tabular-nums leading-tight whitespace-nowrap">{fmtTime(t)}</span>
+                          <span className="text-[11px] opacity-80 mt-0.5 tabular-nums">{d.free}/{d.total}</span>
                         </button>
                       );
                     })}
