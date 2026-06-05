@@ -1,3 +1,4 @@
+import ProBadge from './ProBadge';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, Calendar, Clock, Users, MapPin, Trophy, MoreHorizontal, Trash2, X, ChevronLeft, ChevronRight, Bookmark, CreditCard } from 'lucide-react';
@@ -410,6 +411,7 @@ export default function PostCard({ post, onClick, onUpdate, onClubClick, onProfi
                       ? post.facilities.name
                       : (post.profiles?.full_name || 'Unknown User')}
                   </button>
+                  {!post.posted_as_facility && <ProBadge isPro={post.profiles?.is_pro} />}
                   <span className="text-slate-300 text-xs flex-shrink-0">&middot;</span>
                   <span className="text-xs text-slate-400 font-medium flex-shrink-0">{formatTimeAgo(post.created_at)}</span>
                 </div>

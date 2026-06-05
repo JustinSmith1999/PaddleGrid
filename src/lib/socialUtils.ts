@@ -43,6 +43,7 @@ export interface SocialPost {
     email: string;
     skill_level?: number;
     profile_picture_url?: string;
+    is_pro?: boolean | null;
   };
   facilities?: {
     id: string;
