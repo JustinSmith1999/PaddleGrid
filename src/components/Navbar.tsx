@@ -64,7 +64,7 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
     <nav role="navigation" aria-label="Main navigation" className="bg-white sticky top-0 z-40 will-change-transform border-b border-slate-200/60">
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-2">
         <div className="flex items-center justify-between h-12 relative">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => handleViewChange('community')}
               className="group flex-shrink-0 flex items-center gap-2.5"
@@ -75,6 +75,21 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
                 className="hidden sm:block h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-[1.03]"
               />
             </button>
+
+            {user && (
+              <button
+                onClick={() => setShowNotifications(true)}
+                aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+                className="relative p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-sm">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* Mobile-only centered wordmark — exact font + color from the logo */}
             <button
@@ -129,18 +144,6 @@ export function Navbar({ onAuthClick, onViewChange }: NavbarProps) {
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                <button
-                  onClick={() => setShowNotifications(true)}
-                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-                  className="relative p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center"
-                >
-                  <Bell className="w-5 h-5" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-sm">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </button>
                 <div className="relative" data-profile-menu>
                   <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
