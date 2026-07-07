@@ -1,41 +1,42 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import AdminLayout from './AdminLayout';
 import { AdminDashboard } from './AdminDashboard';
-import { AdminReporting } from './AdminReporting';
-import { AdminBookings } from './AdminBookings';
-import CourtScheduleView from './CourtScheduleView';
-import MemberSearch from './MemberSearch';
-import AdminSettings from './AdminSettings';
-import FacilityManagement from './FacilityManagement';
-import SeriesManagement from './SeriesManagement';
-import SeriesEditor from './SeriesEditor';
-import SeriesDetails from './SeriesDetails';
-import SeriesCalendar from './SeriesCalendar';
+const AdminReporting = lazy(() => import('./AdminReporting').then(m => ({ default: m.AdminReporting })));
+const AdminBookings = lazy(() => import('./AdminBookings').then(m => ({ default: m.AdminBookings })));
+const CourtScheduleView = lazy(() => import('./CourtScheduleView'));
+const MemberSearch = lazy(() => import('./MemberSearch'));
+const AdminSettings = lazy(() => import('./AdminSettings'));
+const FacilityManagement = lazy(() => import('./FacilityManagement'));
+const SeriesManagement = lazy(() => import('./SeriesManagement'));
+const SeriesEditor = lazy(() => import('./SeriesEditor'));
+const SeriesDetails = lazy(() => import('./SeriesDetails'));
+const SeriesCalendar = lazy(() => import('./SeriesCalendar'));
 import { CourtAvailabilityManagement } from './CourtAvailabilityManagement';
 import { OperatingHours } from './OperatingHours';
-import PreRegisteredUsers from './PreRegisteredUsers';
-import TransactionsSync from './TransactionsSync';
-import BookingNotificationTest from './BookingNotificationTest';
-import SignedWaiversPanel from './SignedWaiversPanel';
-import ClubAchievementsManager from './ClubAchievementsManager';
-import PodPlaySync from './PodPlaySync';
-import SmartAnalytics from './SmartAnalytics';
-import MembershipsPage from './MembershipsPage';
-import CampaignsPage from './CampaignsPage';
-import DynamicPricing from './DynamicPricing';
-import SmartFill from './SmartFill';
-import EngagementScoring from './EngagementScoring';
-import ChurnAlerts from './ChurnAlerts';
-import WaitlistManager from './WaitlistManager';
-import NotificationTemplates from './NotificationTemplates';
-import RevenueCharts from './RevenueCharts';
-import AdminSponsors from './AdminSponsors';
-import AdminGroupBlast from './AdminGroupBlast';
-import AdminPartnerships from './AdminPartnerships';
-import AdminIntegrations from './AdminIntegrations';
-import AdminAmenities from './AdminAmenities';
-import AdminPushBlast from './AdminPushBlast';
-import AdminAdAnalytics from './AdminAdAnalytics';
+const PreRegisteredUsers = lazy(() => import('./PreRegisteredUsers'));
+const TransactionsSync = lazy(() => import('./TransactionsSync'));
+const BookingNotificationTest = lazy(() => import('./BookingNotificationTest'));
+const SignedWaiversPanel = lazy(() => import('./SignedWaiversPanel'));
+const ClubAchievementsManager = lazy(() => import('./ClubAchievementsManager'));
+const PodPlaySync = lazy(() => import('./PodPlaySync'));
+const SmartAnalytics = lazy(() => import('./SmartAnalytics'));
+const MembershipsPage = lazy(() => import('./MembershipsPage'));
+const CampaignsPage = lazy(() => import('./CampaignsPage'));
+const DynamicPricing = lazy(() => import('./DynamicPricing'));
+const SmartFill = lazy(() => import('./SmartFill'));
+const EngagementScoring = lazy(() => import('./EngagementScoring'));
+const ChurnAlerts = lazy(() => import('./ChurnAlerts'));
+const WaitlistManager = lazy(() => import('./WaitlistManager'));
+const NotificationTemplates = lazy(() => import('./NotificationTemplates'));
+const RevenueCharts = lazy(() => import('./RevenueCharts'));
+const AdminSponsors = lazy(() => import('./AdminSponsors'));
+const AdminGroupBlast = lazy(() => import('./AdminGroupBlast'));
+const AdminPartnerships = lazy(() => import('./AdminPartnerships'));
+const AdminIntegrations = lazy(() => import('./AdminIntegrations'));
+const AdminAmenities = lazy(() => import('./AdminAmenities'));
+const AdminPushBlast = lazy(() => import('./AdminPushBlast'));
+const AdminAdAnalytics = lazy(() => import('./AdminAdAnalytics'));
+const AdminProLive = lazy(() => import('./AdminProLive'));
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Loader2 } from 'lucide-react';
@@ -196,6 +197,8 @@ export function AdminPanel() {
         return <AdminAmenities facilityId={facilityId} />;
       case 'push-blast':
         return <AdminPushBlast facilityId={facilityId} />;
+      case 'pro-live':
+        return <AdminProLive />;
       case 'ad-analytics':
         return <AdminAdAnalytics facilityId={facilityId} />;
       default:
@@ -222,8 +225,10 @@ export function AdminPanel() {
   }
 
   return (
-    <AdminLayout currentView={currentView} onViewChange={setCurrentView}>
-      {renderView()}
-    </AdminLayout>
+    <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-emerald-700"/></div>}>
+      <AdminLayout currentView={currentView} onViewChange={setCurrentView}>
+        {renderView()}
+      </AdminLayout>
+    </Suspense>
   );
 }

@@ -55,6 +55,7 @@ export function AuthModal({ isOpen, onClose, mode = 'login' }: AuthModalProps) {
   const [ownerName, setOwnerName] = useState('');
   const [ownerPhone, setOwnerPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [error, setError] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
