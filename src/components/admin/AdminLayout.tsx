@@ -82,7 +82,8 @@ const navigationSections: NavSection[] = [
       { id: 'group-blast', label: 'Reach Out to Groups', icon: <MessageSquare className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'partnerships', label: 'Partnerships', icon: <Building2 className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'integrations', label: 'Integrations', icon: <Zap className="w-[18px] h-[18px]" />, badge: 'NEW' },
-      { id: 'amenities', label: 'Amenities', icon: <Sparkles className="w-[18px] h-[18px]" />, badge: 'NEW' },
+      { id: 'pro-live', label: 'Pro Live', icon: 'Radio' },
+  { id: 'amenities', label: 'Amenities', icon: <Sparkles className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'push-blast', label: 'Push Blast', icon: <Bell className="w-[18px] h-[18px]" />, badge: 'NEW' },
       { id: 'ad-analytics', label: 'Ad Analytics', icon: <BarChart3 className="w-[18px] h-[18px]" />, badge: 'NEW' },
     ]

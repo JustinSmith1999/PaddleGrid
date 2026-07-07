@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import LiveStreamViewer from './live/LiveStreamViewer';
+import GoLiveModal from './live/GoLiveModal';
 import { motion } from 'framer-motion';
 import { Loader2, Play, Tag, Calendar, ShoppingBag, Radio, Tv2, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -34,6 +37,8 @@ interface Product {
  *   3. SHOP THE PICKS  (product grid)
  */
 export default function ProLive() {
+  const [viewSession, setViewSession] = useState<string | null>(null);
+  const [showGoLive, setShowGoLive] = useState(false);
   const [sessions, setSessions] = useState<LiveSession[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -128,6 +133,8 @@ export default function ProLive() {
           </>
         )}
       </div>
+      {viewSession && <LiveStreamViewer sessionId={viewSession} onClose={() => setViewSession(null)} />}
+      {showGoLive && <GoLiveModal onClose={() => setShowGoLive(false)} onLive={(id) => { setShowGoLive(false); setViewSession(id); }} />}
     </div>
   );
 }

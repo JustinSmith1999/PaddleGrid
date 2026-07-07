@@ -14,6 +14,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { A11yAnnouncerProvider } from './components/A11yAnnouncer';
 import InstallPWA from './components/InstallPWA';
 import AchievementCelebrationModal from './components/AchievementCelebrationModal';
+import { CookieConsent } from './components/CookieConsent';
 import { useAchievementNotifications } from './hooks/useAchievementNotifications';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -351,7 +352,8 @@ function AppContent() {
         <Route path="/ambassadors" element={<AmbassadorsDirectory onOpenProfile={(id) => navigate('/player/' + id)} onOpenClub={(slug) => navigate('/club/' + slug)} />} />
         <Route path="/juniors" element={<JuniorsLanding />} />
         <Route path="/find-partner" element={<SwipePartnerDeck />} />
-        <Route path="/pro-live" element={<ProLive />} />
+        <Route path="/pro-live/:id" element={<ProLive />} />
+            <Route path="/pro-live" element={<ProLive />} />
         <Route path="/coaching" element={<VirtualCoachingPage />} />
         <Route path="/charities" element={<CharitiesPage />} />
         <Route path="*" element={<NotFound />} />
@@ -642,7 +644,8 @@ function App() {
           </Sentry.ErrorBoundary>
         </A11yAnnouncerProvider>
       </AuthProvider>
-    </BrowserRouter>
+    <CookieConsent />
+      </BrowserRouter>
   );
 }
 
